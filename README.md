@@ -6,13 +6,21 @@ Automatically increments version in package.json, commit, tag, push, publish, do
 
 ![Release-It](./Release-It.gif)
 
-Obviously, **Release It** has released itself. Cool, heh?!
+Obviously, **Release It** has released itself. Cool, heh?! There's also a [Grunt plugin](https://github.com/webpro/grunt-release-it).
 
 ## Install
 
 ```shell
 npm install release-it -g
 ```
+
+Personally, I prefer to alias it to `release`:
+
+```shell
+alias release="release-it"
+```
+
+The examples below assume this alias to be defined.
 
 ## Configuration
 
@@ -108,13 +116,13 @@ release 2.0.0-rc.3
 You can also do a dry run, which won't write/touch anything, but does output the commands it would execute, and shows the interactivity:
 
 ```shell
-release-it --dry-run
+release --dry-run
 ```
 
 If you don't like questions and trust the tool, you can use the `non-interactive` mode:
 
 ```shell
-release-it --non-interactive
+release --non-interactive
 ```
 
 ## Credits
