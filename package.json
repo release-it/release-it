@@ -1,6 +1,6 @@
 {
   "name": "release-it",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Interactive release tool for Git repositories. Supports to build and release to a distribution/component repository. Publish to npm.",
   "keywords": [
     "release",
