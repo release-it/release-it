@@ -59,7 +59,8 @@ Options:
     "distBase": "dist",
     "distFiles": ["**/*"],
     "publish": false
-}```
+}
+```
 
 
 If you also want to release to "distribution repo", you'll need to set `distRepo` to a git endpoint (e.g. `'git@github.com:webpro/awesome-component.git'`).
@@ -125,7 +126,7 @@ The following Grunt plugins have been a source of inspiration:
 * [grunt-release](https://github.com/geddski/grunt-release)
 * [grunt-release-component](https://github.com/walmartlabs/grunt-release-component)
 
-Why did I need to create yet another "release" tool/plugin? I think it
+Why did I need to create yet another "release" tool/plugin? I think it..
 
 * Should be a stand-alone CLI tool.
 * Should be simple to release the current project you're working at.
