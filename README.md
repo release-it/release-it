@@ -26,7 +26,7 @@ The examples below assume this alias to be defined.
 
 **Release It** can do a lot out-of-the-box, but has plenty of options to configure it.
 
-## Help
+### Help
 
 ```
 Release It! v0.0.1
@@ -48,7 +48,7 @@ Options:
   -V, --verbose          Verbose output                                                                          
 ```
 
-## Default Settings
+### Default Settings
 
 ```js
 {
@@ -73,11 +73,18 @@ Options:
 
 If you also want to release to "distribution repo", you'll need to set `distRepo` to a git endpoint (e.g. `'git@github.com:webpro/awesome-component.git'`).
 
-## Overrides
+### Overrides
 
 Place a `.release.json` file and **Release It** will use it to overwrite default settings. You can use `--config` if you want to use another filename/location. Most options can be set on the command-line (these will have highest priority).
 
-### What it does
+### Notes
+
+The tool assumes you've configured your SSH keys and remotes correctly. In case you need to configure things, the following pages might be of help.
+
+* GitHub Help: [SSH](https://help.github.com/categories/56/articles)
+* GitHub Help: [Managing Remotes](https://help.github.com/categories/18/articles)
+
+## What it does
 
 Many steps need your confirmation before execution.
 
@@ -97,7 +104,7 @@ Additionally, if a distribution repository is configured:
 1. Steps 1-4 above are executed for the distribution repository.
 1. The package is published. 
 
-### Usage
+## Usage examples
 
 Make a "patch" release (increments the 0.0.x):
 
