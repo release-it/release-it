@@ -1,6 +1,6 @@
 # Release It!
 
-Interactive release tool for Git repositories. Supports to build and release to a distribution/component repository. Publish to npm.
+Interactive release tool for Git repositories. Publish to npm. Optionally build and release to a distribution/component repository.
 
 Automatically increments version in package.json, commit, tag, push, publish, done.
 
@@ -29,7 +29,8 @@ The examples below assume this alias to be defined.
 ### Help
 
 ```
-Release It! v0.0.1
+$ release --help
+Release It! v0.0.9
 
 Usage: release <increment> [options]
 
@@ -43,9 +44,9 @@ Options:
   -h, --help             Print help                                                                              
   -i, --increment        Incrementing "major", "minor", or "patch" version; or specify version [default: "patch"]
   -n, --non-interactive  No interaction (assume default answers to questions)                                    
-  -p, --publish          Publish to npm                                                                          
+  -p, --publish          Publish to npm (only in --non-interactive mode)                                         
   -v, --version          Print version number                                                                    
-  -V, --verbose          Verbose output                                                                          
+  -V, --verbose          Verbose output
 ```
 
 ### Default Settings
@@ -91,28 +92,28 @@ Many steps need your confirmation before execution.
 By default, with the current repository:
 
 1. The version in each of the `pkgFiles` will be incremented.
-1. This change will be committed with the `commitMessage`.
-1. This commit is tagged with `tagName` (and `tagAnnotation`). The `%s` will be replaced with the updated version.
-1. The commit plus the tag are pushed.
-1. If no `distRepo` is configured, the package is published.
+1. This change will be committed with `commitMessage`.
+1. This commit is tagged with `tagName` (and `tagAnnotation`). The `%s` is replaced with the incremented version.
+1. Both the commit and tag are pushed.
+1. Without a configured `distRepo`, the package is published to npm.
 
 Additionally, if a distribution repository is configured:
 
-1. The plugin will create the distribution build using the `distBuildTask` Grunt task.
-1. The `distStageDir` is where the plugin will clone the `distRepo`.
+1. The plugin will create the distribution build using the `distBuildTask` shell command.
+1. The `distRepo` is cloned in `distStageDir`.
 1. The `distFiles` are copied here (normalized by removing the `distBase` from the target path).
 1. Steps 1-4 above are executed for the distribution repository.
-1. The package is published. 
+1. The package is published to npm.
 
 ## Usage examples
 
-Make a "patch" release (increments the 0.0.x):
+Release a "patch" update (increments the `x` in `0.0.x` by one):
 
 ```shell
 release
 ```
 
-Make a patch, minor, major or specific version release with e.g.:
+Release a patch, minor, major, or specific version:
 
 ```shell
 release minor
@@ -120,7 +121,7 @@ release 0.8.3
 release 2.0.0-rc.3
 ```
 
-You can also do a dry run, which won't write/touch anything, but does output the commands it would execute, and shows the interactivity:
+You can also do a dry run, which won't write/touch anything, but does output the commands it would execute, and show the interactivity:
 
 ```shell
 release --dry-run
@@ -145,8 +146,8 @@ Why did I need to create yet another "release" tool/plugin? I think it..
 
 * Should be a stand-alone CLI tool.
 * Should be simple to release the current project you're working at.
-* Feature releasing to a separate distribution repository.
-* Should be as quiet or verbose as you need it.
+* Should allow to release a separate distribution repository.
+* Should be as quiet or verbose as you want it to be.
 
 ## License
 
