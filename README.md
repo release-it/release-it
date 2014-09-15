@@ -67,7 +67,8 @@ Options:
     "distStageDir": ".stage",
     "distBase": "dist",
     "distFiles": ["**/*"],
-    "publish": false
+    "publish": false,
+    "publishPath": "bin"
 }
 ```
 
