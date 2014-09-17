@@ -68,7 +68,7 @@ Options:
     "distBase": "dist",
     "distFiles": ["**/*"],
     "publish": false,
-    "publishPath": "bin"
+    "publishPath": "."
 }
 ```
 
