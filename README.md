@@ -67,6 +67,7 @@ Options:
     "distStageDir": ".stage",
     "distBase": "dist",
     "distFiles": ["**/*"],
+    "private": false,
     "publish": false,
     "publishPath": "."
 }
@@ -105,6 +106,8 @@ Additionally, if a distribution repository is configured:
 1. The `distFiles` are copied here (normalized by removing the `distBase` from the target path).
 1. Steps 1-4 above are executed for the distribution repository.
 1. The package is published to npm.
+
+If present, your `"private": true` setting in package.json will be respected and you will not be bothered with the question to publish to npm.
 
 ## Usage examples
 

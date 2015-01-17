@@ -13,6 +13,7 @@
     "distStageDir": ".stage",
     "distBase": "dist",
     "distFiles": ["**/*"],
+    "private": false,
     "publish": false,
     "publishPath": "."
 }
