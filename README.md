@@ -97,7 +97,7 @@ By default, with the current repository:
 1. This change will be committed with `commitMessage`.
 1. This commit is tagged with `tagName` (and `tagAnnotation`). The `%s` is replaced with the incremented version.
 1. Both the commit and tag are pushed.
-1. Without a configured `distRepo`, the package is published to npm.
+1. Without a configured `distRepo`, the package can be published directly to npm.
 
 Additionally, if a distribution repository is configured:
 
@@ -105,7 +105,7 @@ Additionally, if a distribution repository is configured:
 1. The `distRepo` is cloned in `distStageDir`.
 1. The `distFiles` are copied here (normalized by removing the `distBase` from the target path).
 1. Steps 1-4 above are executed for the distribution repository.
-1. The package is published to npm.
+1. The distribution package can be published to npm.
 
 If present, your `"private": true` setting in package.json will be respected and you will not be bothered with the question to publish to npm.
 
