@@ -3,21 +3,21 @@
   "version": "0.0.15",
   "description": "Interactive release tool for Git repositories. Increment version, commit, tag, push, build, publish to npm. Supports to build and release to a distribution/component repository.",
   "keywords": [
-    "release",
-    "tool",
-    "shell",
-    "script",
-    "publish",
-    "repository",
     "build",
-    "distribution",
-    "npm",
-    "interactive",
-    "git",
-    "version",
     "commit",
+    "distribution",
+    "git",
+    "interactive",
+    "npm",
+    "publish",
+    "push",
+    "release",
+    "repository",
+    "script",
+    "shell",
     "tag",
-    "push"
+    "tool",
+    "version"
   ],
   "repository": {
     "type": "git",
@@ -26,19 +26,20 @@
   "bin": "./bin/release.js",
   "main": "./lib/release.js",
   "author": {
-    "name": "Lars Kappert",
-    "email": "lars@webpro.nl"
+    "email": "lars@webpro.nl",
+    "name": "Lars Kappert"
   },
   "license": "MIT",
   "dependencies": {
+    "chalk": "^0.4.0",
+    "glob": "^4.0.2",
+    "graceful-fs": "^3.0.2",
+    "inquirer": "^0.5.1",
+    "insight": "^0.6.0",
+    "mkdirp": "^0.5.0",
     "optimist": "^0.6.1",
     "semver": "^2.3.1",
     "shelljs": "^0.3.0",
-    "inquirer": "^0.5.1",
-    "when": "^3.2.3",
-    "chalk": "^0.4.0",
-    "mkdirp": "^0.5.0",
-    "glob": "^4.0.2",
-    "graceful-fs": "^3.0.2"
+    "when": "^3.2.3"
   }
 }
