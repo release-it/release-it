@@ -36,6 +36,7 @@
     "graceful-fs": "^3.0.2",
     "inquirer": "^0.5.1",
     "insight": "^0.6.0",
+    "lodash": "^3.10.0",
     "mkdirp": "^0.5.0",
     "optimist": "^0.6.1",
     "semver": "^2.3.1",
