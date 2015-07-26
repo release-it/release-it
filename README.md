@@ -69,7 +69,11 @@ Options:
     "distFiles": ["**/*"],
     "private": false,
     "publish": false,
-    "publishPath": "."
+    "publishPath": ".",
+    "githubTokenRef": "GITHUB_TOKEN",
+    "githubRelease": false,
+    "githubReleaseName": "Release %s",
+    "githubReleaseBodyCommand": "git log --pretty=format:'* %s (%h)' [REV_RANGE]"
 }
 ```
 
@@ -87,6 +91,14 @@ The tool assumes you've configured your SSH keys and remotes correctly. In case 
 * GitHub Help: [SSH](https://help.github.com/categories/56/articles)
 * GitHub Help: [Managing Remotes](https://help.github.com/categories/18/articles)
 
+### GitHub release
+
+To create [GitHub releases](https://help.github.com/articles/creating-releases/), you'll need to set `githubRelease` to true, get a [GitHub access token](https://github.com/settings/tokens), and make this available as the environment variable defined with `githubTokenRef`. With the default settings, you could set it like this:
+
+```shell
+export GITHUB_TOKEN="f941e0..."
+```
+
 ## What it does
 
 Many steps need your confirmation before execution.
@@ -97,6 +109,7 @@ By default, with the current repository:
 1. This change will be committed with `commitMessage`.
 1. This commit is tagged with `tagName` (and `tagAnnotation`). The `%s` is replaced with the incremented version.
 1. Both the commit and tag are pushed.
+1. The version can be released on GitHub (with `githubReleaseName` and output of `githubReleaseBodyCommand`).
 1. Without a configured `distRepo`, the package can be published directly to npm.
 
 Additionally, if a distribution repository is configured:
@@ -104,7 +117,7 @@ Additionally, if a distribution repository is configured:
 1. The plugin will create the distribution build using the `distBuildTask` shell command.
 1. The `distRepo` is cloned in `distStageDir`.
 1. The `distFiles` are copied here (normalized by removing the `distBase` from the target path).
-1. Steps 1-4 above are executed for the distribution repository.
+1. Steps 1-5 above are executed for the distribution repository.
 1. The distribution package can be published to npm.
 
 If present, your `"private": true` setting in package.json will be respected and you will not be bothered with the question to publish to npm.
@@ -137,9 +150,19 @@ If you don't like questions and trust the tool, you can use the `non-interactive
 release --non-interactive
 ```
 
+Provide a custom name for the GitHub release:
+
+```shell
+release --githubReleaseName="Awesome Ants"
+```
+
 ## Credits
 
-This tool uses [ShellJS](http://documentup.com/arturadib/shelljs) and [Inquirer.js](https://github.com/SBoudrias/Inquirer.js), two awesome projects that you need to check out anyway.
+Major dependencies:
+
+* [ShellJS](http://documentup.com/arturadib/shelljs)
+* [Inquirer.js](https://github.com/SBoudrias/Inquirer.js)
+* [node-github](https://github.com/mikedeboer/node-github)
 
 The following Grunt plugins have been a source of inspiration:
 
