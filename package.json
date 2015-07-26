@@ -17,7 +17,8 @@
     "shell",
     "tag",
     "tool",
-    "version"
+    "version",
+    "github"
   ],
   "repository": {
     "type": "git",
@@ -32,6 +33,7 @@
   "license": "MIT",
   "dependencies": {
     "chalk": "^0.4.0",
+    "github": "^0.2.4",
     "glob": "^4.0.2",
     "graceful-fs": "^3.0.2",
     "inquirer": "^0.5.1",
@@ -39,6 +41,7 @@
     "lodash": "^3.10.0",
     "mkdirp": "^0.5.0",
     "optimist": "^0.6.1",
+    "repo-path-parse": "^1.0.1",
     "semver": "^2.3.1",
     "shelljs": "^0.3.0",
     "when": "^3.2.3"

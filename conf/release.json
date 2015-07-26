@@ -15,5 +15,9 @@
     "distFiles": ["**/*"],
     "private": false,
     "publish": false,
-    "publishPath": "."
+    "publishPath": ".",
+    "githubTokenRef": "GITHUB_TOKEN",
+    "githubRelease": false,
+    "githubReleaseName": "Release %s",
+    "githubReleaseBodyCommand": "git log --pretty=format:'* %s (%h)' [REV_RANGE]"
 }
