@@ -58,6 +58,7 @@ Options:
     "verbose": false,
     "force": false,
     "pkgFiles": ["package.json"],
+    "distPkgFiles": undefined, /* Defaults to pkgFiles */
     "increment": "patch",
     "commitMessage": "Release %s",
     "tagName": "%s",
