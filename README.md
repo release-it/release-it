@@ -30,7 +30,7 @@ The examples below assume this alias to be defined.
 
 ```
 $ release --help
-Release It! v0.0.9
+Release It! v0.1.3
 
 Usage: release <increment> [options]
 
@@ -78,27 +78,37 @@ Options:
 }
 ```
 
+### Distribution Repository
 
-If you also want to release to "distribution repo", you'll need to set `distRepo` to a git endpoint (e.g. `'git@github.com:webpro/awesome-component.git'`).
+Some projects use a special distribution repository.
 
-### Overrides
+There might be multiple reasons to do.
 
-Place a `.release.json` file and **Release It** will use it to overwrite default settings. You can use `--config` if you want to use another filename/location. Most options can be set on the command-line (these will have highest priority).
+* Distribute more "clean" file structures (without unrelated test, manifest, documentation files etc.).
+* Distribute to target specific package managers (without any test files). One example is the "shims" repositories in [https://github.com/components](https://github.com/components).
 
-### Notes
+To release to a separate "distribution repo", you'll need to set `distRepo` to a git endpoint (e.g. `"git@github.com:webpro/awesome-component.git"`).
 
-The tool assumes you've configured your SSH keys and remotes correctly. In case you need to configure things, the following pages might be of help.
+### GitHub
+
+#### SSH keys & git remotes
+
+The tool assumes you've configured your SSH keys and remotes correctly. In case you need to configure things for GitHub, the following pages might be of help.
 
 * GitHub Help: [SSH](https://help.github.com/categories/56/articles)
 * GitHub Help: [Managing Remotes](https://help.github.com/categories/18/articles)
 
-### GitHub release
+#### GitHub release
 
-To create [GitHub releases](https://help.github.com/articles/creating-releases/), you'll need to set `githubRelease` to true, get a [GitHub access token](https://github.com/settings/tokens), and make this available as the environment variable defined with `githubTokenRef`. With the default settings, you could set it like this:
+To create [GitHub releases](https://help.github.com/articles/creating-releases/), you'll need to set `githubRelease` to `true`, get a [GitHub access token](https://github.com/settings/tokens), and make this available as the environment variable defined with `githubTokenRef`. With the default settings, you could set it like this:
 
 ```shell
 export GITHUB_TOKEN="f941e0..."
 ```
+
+### Local overrides
+
+Place a `.release.json` file in your project root, and **Release It** will use it to overwrite default settings. You can use `--config` if you want to use another filename/location. Most options can be set on the command-line (these will have highest priority).
 
 ## What it does
 
