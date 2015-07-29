@@ -64,7 +64,7 @@ Options:
     "tagAnnotation": "Release %s",
     "buildCommand": false,
     "distRepo": false,
-    "distPkgFiles": undefined, /* Defaults to pkgFiles */
+    "distPkgFiles": null, /* Defaults to pkgFiles */
     "distStageDir": ".stage",
     "distBase": "dist",
     "distFiles": ["**/*"],
