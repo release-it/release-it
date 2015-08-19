@@ -1,0 +1,5 @@
+{
+    "distBase": "tmp",
+	"distRepo": "git@github.com:webpro/release-it.git#gh-pages",
+	"buildCommand": "cat gh-pages/index.yml README.md > tmp/index.md"
+}
