@@ -2,7 +2,7 @@
 
 Interactive release tool for Git repositories. Publish to npm. Optionally build and release to a distribution/component repository.
 
-Automatically increments version in package.json, commit, tag, push, publish, done.
+Automatically bump version, commit, tag, push, publish, done.
 
 ![Release-It](./Release-It.gif)
 
@@ -14,13 +14,39 @@ Obviously, **Release It** has released itself. Cool, heh?! There's also a [Grunt
 npm install release-it -g
 ```
 
-Personally, I prefer to alias it to `release`:
+## Examples
+
+Release a "patch" update (increments the `x` in `0.0.x` by one):
 
 ```shell
-alias release="release-it"
+release-it
 ```
 
-The examples below assume this alias to be defined.
+Release a patch, minor, major, or specific version:
+
+```shell
+release-it minor
+release-it 0.8.3
+release-it 2.0.0-rc.3
+```
+
+You can also do a dry run, which won't write/touch anything, but does output the commands it would execute, and show the interactivity:
+
+```shell
+release-it --dry-run
+```
+
+If you don't like questions and trust the tool, you can use the `non-interactive` mode:
+
+```shell
+release-it --non-interactive
+```
+
+Provide a custom name for the GitHub release:
+
+```shell
+release-it --githubReleaseName="Awesome Ants"
+```
 
 ## Configuration
 
@@ -30,7 +56,7 @@ The examples below assume this alias to be defined.
 
 ```
 $ release --help
-Release It! v0.1.3
+Release It! v1.0.0
 
 Usage: release <increment> [options]
 
@@ -80,14 +106,16 @@ Options:
 
 ### Distribution Repository
 
-Some projects use a special distribution repository.
-
-There might be multiple reasons to do.
+Some projects use a special distribution repository. There might be multiple reasons to do.
 
 * Distribute more "clean" file structures (without unrelated test, manifest, documentation files etc.).
-* Distribute to target specific package managers (without any test files). One example is the "shims" repositories in [https://github.com/components](https://github.com/components).
+* Distribute to target specific package managers. One example is the "shims" repositories in [https://github.com/components](https://github.com/components) (the actual source files are elsewhere).
+* Distribute just documentation to a Github Pages branch.
 
-To release to a separate "distribution repo", you'll need to set `distRepo` to a git endpoint (e.g. `"git@github.com:webpro/awesome-component.git"`).
+Notes:
+
+* To release to a separate "distribution repo", set `distRepo` to a git endpoint (e.g. `"git@github.com:components/ember.git"`).
+* Note that this can also be a branch, possibly of the same source repository, using `#` notation (e.g. `"git@github.com:webpro/release-it.git#gh-pages"`).
 
 ### GitHub
 
@@ -112,60 +140,29 @@ Place a `.release.json` file in your project root, and **Release It** will use i
 
 ## What it does
 
-Many steps need your confirmation before execution.
+To keep you in control, many steps need your confirmation before execution. This is what happens if you answer "Yes" to each question:
 
-By default, with the current repository:
+With the current repository:
 
-1. The version in each of the `pkgFiles` will be incremented.
-1. This change will be committed with `commitMessage`.
-1. This commit is tagged with `tagName` (and `tagAnnotation`). The `%s` is replaced with the incremented version.
-1. Both the commit and tag are pushed.
-1. The version can be released on GitHub (with `githubReleaseName` and output of `githubReleaseBodyCommand`).
-1. Without a configured `distRepo`, the package can be published directly to npm.
+1. Bump version in `pkgFiles`.
+1. Commit changes with `commitMessage` (`%s` is replaced with the new version).
+1. Tag commit with `tagName` (and `tagAnnotation`).
+1. Push commit and tag.
+1. Create release on GitHub (with `githubReleaseName` and output of `githubReleaseBodyCommand`).
+1. No `distRepo`? Publish package to npm.
 
 Additionally, if a distribution repository is configured:
 
-1. The plugin will create the distribution build using the `distBuildTask` shell command.
-1. The `distRepo` is cloned in `distStageDir`.
-1. The `distFiles` are copied here (normalized by removing the `distBase` from the target path).
-1. Steps 1-5 above are executed for the distribution repository.
-1. The distribution package can be published to npm.
+1. Clean `distBase` and execute the `buildCommand`.
+1. Clone `distRepo` in `distStageDir`.
+1. Copy `distFiles` from `distBase` to `distRepo`.
+1. Bump version, commit, tag, push `distRepo`.
+1. Published package to npm.
 
-If present, your `"private": true` setting in package.json will be respected and you will not be bothered with the question to publish to npm.
+Notes:
 
-## Usage examples
-
-Release a "patch" update (increments the `x` in `0.0.x` by one):
-
-```shell
-release
-```
-
-Release a patch, minor, major, or specific version:
-
-```shell
-release minor
-release 0.8.3
-release 2.0.0-rc.3
-```
-
-You can also do a dry run, which won't write/touch anything, but does output the commands it would execute, and show the interactivity:
-
-```shell
-release --dry-run
-```
-
-If you don't like questions and trust the tool, you can use the `non-interactive` mode:
-
-```shell
-release --non-interactive
-```
-
-Provide a custom name for the GitHub release:
-
-```shell
-release --githubReleaseName="Awesome Ants"
-```
+* The first 3 steps of the `distRepo` process are actually executed before you are asked to commit anything (even in the source repo), so you know about build, clone, or copy issues as soon as possible.
+* If present, your `"private": true` setting in package.json will be respected and you will not be bothered with the question to publish to npm.
 
 ## Credits
 
@@ -180,15 +177,16 @@ The following Grunt plugins have been a source of inspiration:
 * [grunt-release](https://github.com/geddski/grunt-release)
 * [grunt-release-component](https://github.com/walmartlabs/grunt-release-component)
 
-Why did I need to create yet another "release" tool/plugin? I think it..
+## Why YA...
 
-* Should be a stand-alone CLI tool.
-* Should be simple to release the current project you're working at.
-* Should allow to release a separate distribution repository.
-* Should be as quiet or verbose as you want it to be.
+Why did I need to create yet another "release" tool/plugin? I think this tool stands out:
+
+* As a user-friendly, stand-alone CLI tool.
+* Making it simple to release the current project you're working at.
+* Working without any configuration, but also provides many options.
+* Releasing a separate distribution repository (in a single run).
+* Being as quiet or verbose as you want it to be.
 
 ## License
 
 [MIT](http://webpro.mit-license.org/)
-
-![Analytics](https://ga-beacon.appspot.com/UA-17415234-3/release-it/readme?pixel)
