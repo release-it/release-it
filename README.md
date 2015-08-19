@@ -4,13 +4,13 @@ Interactive release tool for Git repositories. Publish to npm. Optionally build 
 
 Automatically bump version, commit, tag, push, publish, done.
 
-![Release-It](./Release-It.gif)
+![Release-It](https://webpro.github.com/release-it/Release-It.gif)
 
 Obviously, **Release It** has released itself. Cool, heh?! There's also a [Grunt plugin](https://github.com/webpro/grunt-release-it).
 
 ## Install
 
-```shell
+```bash
 npm install release-it -g
 ```
 
@@ -18,13 +18,13 @@ npm install release-it -g
 
 Release a "patch" update (increments the `x` in `0.0.x` by one):
 
-```shell
+```bash
 release-it
 ```
 
 Release a patch, minor, major, or specific version:
 
-```shell
+```bash
 release-it minor
 release-it 0.8.3
 release-it 2.0.0-rc.3
@@ -32,19 +32,19 @@ release-it 2.0.0-rc.3
 
 You can also do a dry run, which won't write/touch anything, but does output the commands it would execute, and show the interactivity:
 
-```shell
+```bash
 release-it --dry-run
 ```
 
 If you don't like questions and trust the tool, you can use the `non-interactive` mode:
 
-```shell
+```bash
 release-it --non-interactive
 ```
 
 Provide a custom name for the GitHub release:
 
-```shell
+```bash
 release-it --githubReleaseName="Awesome Ants"
 ```
 
@@ -77,7 +77,7 @@ Options:
 
 ### Default Settings
 
-```js
+```json
 {
     "non-interactive": false,
     "dry-run": false,
@@ -132,7 +132,7 @@ The tool assumes you've configured your SSH keys and remotes correctly. In case 
 
 To create [GitHub releases](https://help.github.com/articles/creating-releases/), you'll need to set `githubRelease` to `true`, get a [GitHub access token](https://github.com/settings/tokens), and make this available as the environment variable defined with `githubTokenRef`. With the default settings, you could set it like this:
 
-```shell
+```bash
 export GITHUB_TOKEN="f941e0..."
 ```
 
