@@ -97,6 +97,7 @@ Options:
     "private": false,
     "publish": false,
     "publishPath": ".",
+    "forcePublishSourceRepo": false,
     "githubTokenRef": "GITHUB_TOKEN",
     "githubRelease": false,
     "githubReleaseName": "Release %s",
@@ -116,6 +117,7 @@ Notes:
 
 * To release to a separate "distribution repo", set `distRepo` to a git endpoint (e.g. `"git@github.com:components/ember.git"`).
 * Note that this can also be a branch, possibly of the same source repository, using `#` notation (e.g. `"git@github.com:webpro/release-it.git#gh-pages"`).
+* In case you want to update `distRepo`, but still want to publish the source repository to npm, make sure to set `"forcePublishSourceRepo": true`.
 
 ### GitHub
 
