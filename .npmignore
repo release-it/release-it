@@ -1,2 +1,6 @@
 .idea
 tmp
+gh-pages
+.stage
+.release.json
+webpro.github.io
