@@ -9,16 +9,23 @@
     "tagName": "%s",
     "tagAnnotation": "Release %s",
     "buildCommand": false,
-    "distRepo": false,
-    "distStageDir": ".stage",
-    "distBase": "dist",
-    "distFiles": ["**/*"],
-    "private": false,
-    "publish": false,
-    "publishPath": ".",
-    "forcePublishSourceRepo": false,
-    "githubTokenRef": "GITHUB_TOKEN",
-    "githubRelease": false,
-    "githubReleaseName": "Release %s",
-    "githubReleaseBodyCommand": "git log --pretty=format:'* %s (%h)' [REV_RANGE]"
+    "dist": {
+        "repo": false,
+        "stageDir": ".stage",
+        "baseDir": "dist",
+        "files": ["**/*"],
+        "pkgFiles": null
+    },
+    "npm": {
+        "publish": false,
+        "publishPath": ".",
+        "private": false,
+        "forcePublishSourceRepo": false
+    },
+    "github": {
+        "release": false,
+        "releaseName": "Release %s",
+        "releaseBodyCommand": "git log --pretty=format:'* %s (%h)' [REV_RANGE]",
+        "tokenRef": "GITHUB_TOKEN"
+    }
 }
