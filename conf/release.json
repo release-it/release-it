@@ -9,6 +9,7 @@
     "tagName": "%s",
     "tagAnnotation": "Release %s",
     "buildCommand": false,
+    "changelogCommand": "git log --pretty=format:'* %s (%h)' [REV_RANGE]",
     "dist": {
         "repo": false,
         "stageDir": ".stage",
@@ -25,7 +26,6 @@
     "github": {
         "release": false,
         "releaseName": "Release %s",
-        "releaseBodyCommand": "git log --pretty=format:'* %s (%h)' [REV_RANGE]",
         "tokenRef": "GITHUB_TOKEN"
     }
 }
