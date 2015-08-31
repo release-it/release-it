@@ -13,7 +13,7 @@ release.cli(args).then(function() {
     if(!isDebug) {
         console.error(error);
     } else {
-        throw new Error(err)
+        throw new Error(err);
     }
 });
 
