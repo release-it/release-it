@@ -1,8 +1,8 @@
 # Release It!
 
-Interactive release tool for Git repositories. Publish to npm. Optionally build and release to a distribution/component repository.
+Interactive release tool for Git repositories. Options: run build command first, release to distribution repository (or branch), create GitHub release, publish to npm.
 
-Automatically bump version, commit, tag, push, publish, done.
+Automatically bump version, commit, tag, push, done.
 
 ![Release-It](https://webpro.github.com/release-it/Release-It.gif)
 
@@ -45,7 +45,7 @@ release-it --non-interactive
 Provide a custom name for the GitHub release:
 
 ```bash
-release-it --githubReleaseName="Awesome Ants"
+release-it --github.releaseName="Awesome Ants"
 ```
 
 ## Configuration
@@ -56,7 +56,7 @@ release-it --githubReleaseName="Awesome Ants"
 
 ```
 $ release --help
-Release It! v1.0.0
+Release It! v2.0.0
 
 Usage: release <increment> [options]
 
@@ -70,7 +70,7 @@ Options:
   -h, --help             Print help                                                                              
   -i, --increment        Incrementing "major", "minor", or "patch" version; or specify version [default: "patch"]
   -n, --non-interactive  No interaction (assume default answers to questions)                                    
-  -p, --publish          Publish to npm (only in --non-interactive mode)                                         
+  -p, --npm.publish      Publish to npm (only in --non-interactive mode)                                         
   -v, --version          Print version number                                                                    
   -V, --verbose          Verbose output
 ```
@@ -89,19 +89,25 @@ Options:
     "tagName": "%s",
     "tagAnnotation": "Release %s",
     "buildCommand": false,
-    "distRepo": false,
-    "distPkgFiles": null, /* Defaults to pkgFiles */
-    "distStageDir": ".stage",
-    "distBase": "dist",
-    "distFiles": ["**/*"],
-    "private": false,
-    "publish": false,
-    "publishPath": ".",
-    "forcePublishSourceRepo": false,
-    "githubTokenRef": "GITHUB_TOKEN",
-    "githubRelease": false,
-    "githubReleaseName": "Release %s",
-    "githubReleaseBodyCommand": "git log --pretty=format:'* %s (%h)' [REV_RANGE]"
+    "changelogCommand": "git log --pretty=format:'* %s (%h)' [REV_RANGE]",
+    "dist": {
+        "repo": false,
+        "stageDir": ".stage",
+        "baseDir": "dist",
+        "files": ["**/*"],
+        "pkgFiles": null
+    },
+    "npm": {
+        "publish": false,
+        "publishPath": ".",
+        "private": false,
+        "forcePublishSourceRepo": false
+    },
+    "github": {
+        "release": false,
+        "releaseName": "Release %s",
+        "tokenRef": "GITHUB_TOKEN"
+    }
 }
 ```
 
@@ -115,9 +121,9 @@ Some projects use a special distribution repository. There might be multiple rea
 
 Notes:
 
-* To release to a separate "distribution repo", set `distRepo` to a git endpoint (e.g. `"git@github.com:components/ember.git"`).
+* To release to a separate "distribution repo", set `dist.repo` to a git endpoint (e.g. `"git@github.com:components/ember.git"`).
 * Note that this can also be a branch, possibly of the same source repository, using `#` notation (e.g. `"git@github.com:webpro/release-it.git#gh-pages"`).
-* In case you want to update `distRepo`, but still want to publish the source repository to npm, make sure to set `"forcePublishSourceRepo": true`.
+* In case you want to update `dist.repo`, but still want to publish the source repository to npm, make sure to set `"forcePublishSourceRepo": true`.
 
 ### GitHub
 
@@ -130,13 +136,15 @@ The tool assumes you've configured your SSH keys and remotes correctly. In case 
 
 #### GitHub release
 
-To create [GitHub releases](https://help.github.com/articles/creating-releases/), you'll need to set `githubRelease` to `true`, get a [GitHub access token](https://github.com/settings/tokens), and make this available as the environment variable defined with `githubTokenRef`. With the default settings, you could set it like this:
+To create [GitHub releases](https://help.github.com/articles/creating-releases/), you'll need to set `github.release` to `true`, get a [GitHub access token](https://github.com/settings/tokens), and make this available as the environment variable defined with `github.tokenRef`. With the default settings, you could set it like this:
 
 ```bash
 export GITHUB_TOKEN="f941e0..."
 ```
 
-### Local overrides
+In non-interactive mode, the release is created only for the source repository.
+
+### Local configuration file 
 
 Place a `.release.json` file in your project root, and **Release It** will use it to overwrite default settings. You can use `--config` if you want to use another filename/location. Most options can be set on the command-line (these will have highest priority).
 
@@ -147,23 +155,24 @@ To keep you in control, many steps need your confirmation before execution. This
 With the current repository:
 
 1. Bump version in `pkgFiles`.
+1. Is `buildCommand` provided? Clean `dist.baseDir` and execute the `buildCommand`.
 1. Commit changes with `commitMessage` (`%s` is replaced with the new version).
 1. Tag commit with `tagName` (and `tagAnnotation`).
 1. Push commit and tag.
-1. Create release on GitHub (with `githubReleaseName` and output of `githubReleaseBodyCommand`).
-1. No `distRepo`? Publish package to npm.
+1. Create release on GitHub (with `github.releaseName` and output of `changelogCommand`).
+1. No `dist.repo`? Publish package to npm.
 
 Additionally, if a distribution repository is configured:
 
-1. Clean `distBase` and execute the `buildCommand`.
-1. Clone `distRepo` in `distStageDir`.
-1. Copy `distFiles` from `distBase` to `distRepo`.
-1. Bump version, commit, tag, push `distRepo`.
-1. Published package to npm.
+1. Clone `dist.repo` in `dist.stageDir`.
+1. Copy `dist.files` from `dist.baseDir` to `dist.repo`.
+1. Bump version in `dist.pkgFiles`, commit, tag, push `dist.repo`.
+1. Create release on GitHub (with `github.releaseName` and output of `changelogCommand`).
+1. Publish package to npm.
 
 Notes:
 
-* The first 3 steps of the `distRepo` process are actually executed before you are asked to commit anything (even in the source repo), so you know about build, clone, or copy issues as soon as possible.
+* In the background, some steps of the distribution repo process are actually executed before you are asked to commit anything (even in the source repo), so you know about build, clone, or copy issues as soon as possible.
 * If present, your `"private": true` setting in package.json will be respected and you will not be bothered with the question to publish to npm.
 
 ## Credits
