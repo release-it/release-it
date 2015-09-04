@@ -4,6 +4,8 @@ Interactive release tool for Git repositories. Options: run build command first,
 
 Automatically bump version, commit, tag, push, done.
 
+Here's an extended article about [Using Release It!](https://medium.com/@webprolific/using-release-it-60b96515c073)
+
 ![Release-It](https://webpro.github.com/release-it/Release-It.gif)
 
 Obviously, **Release It** has released itself. Cool, heh?! There's also a [Grunt plugin](https://github.com/webpro/grunt-release-it).
