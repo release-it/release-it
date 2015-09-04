@@ -2,7 +2,8 @@
     "buildCommand": "cat gh-pages/index.yml README.md > tmp/index.md",
     "dist": {
         "repo": "git@github.com:webpro/release-it.git#gh-pages",
-        "baseDir": "tmp"
+        "baseDir": "tmp",
+        "pkgFiles": []
     },
     "npm": {
         "forcePublishSourceRepo": true
