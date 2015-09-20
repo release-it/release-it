@@ -12,6 +12,9 @@
     "buildCommand": false,
     "changelogCommand": "git log --pretty=format:'* %s (%h)' [REV_RANGE]",
     "requireCleanWorkingDir": false,
+    "src": {
+        "pushRepo": null
+    },
     "dist": {
         "repo": false,
         "stageDir": ".stage",
