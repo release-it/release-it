@@ -69,7 +69,7 @@ release-it --github.releaseName="Awesome Ants"
 
 ```
 $ release --help
-Release It! v2.0.0
+Release It! v2.1.0
 
 Usage: release <increment> [options]
 
@@ -81,10 +81,12 @@ Options:
   -e, --debug            Output exceptions                                                                       
   -f, --force            Force tagging with Git                                                                  
   -h, --help             Print help                                                                              
-  -i, --increment        Incrementing "major", "minor", or "patch" version; or specify version [default: "patch"]
+  -i, --increment        Increment "major", "minor", "patch", or "pre*" version; or specify version [default: "patch"]
+  -m, --message          Commit message [default: "Release %s"]
   -n, --non-interactive  No interaction (assume default answers to questions)                                    
       --prereleaseId     Identifier for pre-releases (e.g. "beta" in "1.0.0-beta.1")
-  -p, --npm.publish      Publish to npm (only in --non-interactive mode)                                         
+  -p, --npm.publish      Auto-publish to npm (only relevant in --non-interactive mode)
+      --npm.tag          Register published package with given tag (default: "latest")
   -v, --version          Print version number                                                                    
   -V, --verbose          Verbose output
 ```
@@ -116,6 +118,7 @@ Options:
     "npm": {
         "publish": false,
         "publishPath": ".",
+        "tag": "latest",
         "private": false,
         "forcePublishSourceRepo": false
     },
