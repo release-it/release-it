@@ -18,7 +18,7 @@ npm install release-it -g
 
 ## Examples
 
-Release a "patch" update (increments the `x` in `0.0.x` by one):
+Release a new patch (increments from e.g. `1.0.4` to `1.0.5`):
 
 ```bash
 release-it
@@ -31,6 +31,17 @@ release-it minor
 release-it 0.8.3
 release-it 2.0.0-rc.3
 ```
+
+Create a pre-release using `prelease`, `prepatch`, `preminor`, or `premajor`:
+
+```bash
+release-it premajor --prereleaseId="beta"
+release-it premajor
+```
+
+The first example would increment from e.g. `1.0.6` to `2.0.0-beta.0`, the second from `2.0.0-beta.0` to `2.0.0-beta.1`.
+
+See [node-semver](https://github.com/npm/node-semver#readme) for more details.
 
 You can also do a dry run, which won't write/touch anything, but does output the commands it would execute, and show the interactivity:
 
@@ -72,6 +83,7 @@ Options:
   -h, --help             Print help                                                                              
   -i, --increment        Incrementing "major", "minor", or "patch" version; or specify version [default: "patch"]
   -n, --non-interactive  No interaction (assume default answers to questions)                                    
+      --prereleaseId     Identifier for pre-releases (e.g. "beta" in "1.0.0-beta.1")
   -p, --npm.publish      Publish to npm (only in --non-interactive mode)                                         
   -v, --version          Print version number                                                                    
   -V, --verbose          Verbose output
@@ -87,6 +99,7 @@ Options:
     "force": false,
     "pkgFiles": ["package.json"],
     "increment": "patch",
+    "prereleaseId": null,
     "commitMessage": "Release %s",
     "tagName": "%s",
     "tagAnnotation": "Release %s",

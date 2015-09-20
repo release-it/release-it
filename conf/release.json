@@ -5,6 +5,7 @@
     "force": false,
     "pkgFiles": ["package.json"],
     "increment": "patch",
+    "prereleaseId": null,
     "commitMessage": "Release %s",
     "tagName": "%s",
     "tagAnnotation": "Release %s",
