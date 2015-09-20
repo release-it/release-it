@@ -92,6 +92,7 @@ Options:
     "tagAnnotation": "Release %s",
     "buildCommand": false,
     "changelogCommand": "git log --pretty=format:'* %s (%h)' [REV_RANGE]",
+    "requireCleanWorkingDir": false,
     "dist": {
         "repo": false,
         "stageDir": ".stage",
