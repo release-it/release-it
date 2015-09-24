@@ -150,7 +150,7 @@ Some projects use a special distribution repository. There might be multiple rea
 
 * Distribute more "clean" file structures (without unrelated test, manifest, documentation files etc.).
 * Distribute to target specific package managers. One example is the "shims" repositories in [https://github.com/components](https://github.com/components) (the actual source files are elsewhere).
-* Distribute just documentation to a Github Pages branch.
+* Distribute just documentation to a Github Pages branch. Also see [Using GitHub Pages, the easy way](https://medium.com/@webprolific/using-github-pages-the-easy-way-bb7acc46f45b).
 
 Notes:
 
