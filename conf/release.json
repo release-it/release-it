@@ -13,14 +13,19 @@
     "changelogCommand": "git log --pretty=format:'* %s (%h)' [REV_RANGE]",
     "requireCleanWorkingDir": false,
     "src": {
-        "pushRepo": null
+        "pushRepo": null,
+        "beforeStartCommand": false,
+        "beforeStageCommand": false,
+        "afterReleaseCommand": false
     },
     "dist": {
         "repo": false,
         "stageDir": ".stage",
         "baseDir": "dist",
         "files": ["**/*"],
-        "pkgFiles": null
+        "pkgFiles": null,
+        "beforeStageCommand": false,
+        "afterReleaseCommand": false
     },
     "npm": {
         "publish": false,
