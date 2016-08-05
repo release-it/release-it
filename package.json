@@ -40,7 +40,7 @@
     "lodash": "^4.6.1",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
-    "repo-path-parse": "^1.0.1",
+    "parse-repo": "^1.0.1",
     "semver": "^5.1.0",
     "shelljs": "^0.7.0",
     "when": "^3.7.7"
