@@ -1,4 +1,4 @@
-# Release It!
+# Modified Release It!
 
 Interactive release tool for Git repositories. Options: run build command first, release to distribution repository (or branch), create GitHub release, publish to npm.
 
@@ -177,7 +177,7 @@ export GITHUB_TOKEN="f941e0..."
 
 In non-interactive mode, the release is created only for the source repository.
 
-### Local configuration file 
+### Local configuration file
 
 Place a `.release.json` file in your project root, and **Release It** will use it to overwrite default settings. You can use `--config` if you want to use another filename/location. Most options can be set on the command-line (these will have highest priority).
 
