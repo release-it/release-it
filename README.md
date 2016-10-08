@@ -32,14 +32,15 @@ release-it 0.8.3
 release-it 2.0.0-rc.3
 ```
 
-Create a pre-release using `prelease`, `prepatch`, `preminor`, or `premajor`:
+Create a pre-release using `pre`, `prelease`, `prepatch`, `preminor`, or `premajor`:
 
 ```bash
 release-it premajor --prereleaseId="beta"
 release-it premajor
+release-it pre
 ```
 
-The first example would increment from e.g. `1.0.6` to `2.0.0-beta.0`, the second from `2.0.0-beta.0` to `2.0.0-beta.1`.
+The first example would increment from e.g. `1.0.6` to `2.0.0-beta.0`, the second from `2.0.0-beta.0` to `3.0.0-beta.0`, the latest from `2.0.0-beta.0` to `2.0.0-beta.1`.
 
 See [node-semver](https://github.com/npm/node-semver#readme) for more details.
 
@@ -177,7 +178,7 @@ export GITHUB_TOKEN="f941e0..."
 
 In non-interactive mode, the release is created only for the source repository.
 
-### Local configuration file 
+### Local configuration file
 
 Place a `.release.json` file in your project root, and **Release It** will use it to overwrite default settings. You can use `--config` if you want to use another filename/location. Most options can be set on the command-line (these will have highest priority).
 
