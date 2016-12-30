@@ -11,7 +11,7 @@ release.cli(args).then(function() {
 }).catch(function(err) {
     exitCode = 1;
     if(!isDebug) {
-        console.error(error);
+        console.error(err);
     } else {
         throw new Error(err);
     }
