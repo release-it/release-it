@@ -133,6 +133,7 @@ Options:
     "github": {
         "release": false,
         "releaseName": "Release %s",
+        "prerelease": false,
         "tokenRef": "GITHUB_TOKEN"
     }
 }
