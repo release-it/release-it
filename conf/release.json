@@ -37,6 +37,7 @@
     "github": {
         "release": false,
         "releaseName": "Release %s",
+        "preRelease": false,
         "tokenRef": "GITHUB_TOKEN"
     }
 }
