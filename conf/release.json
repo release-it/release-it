@@ -9,6 +9,7 @@
     "commitMessage": "Release %s",
     "tagName": "%s",
     "tagAnnotation": "Release %s",
+    "releaseDate": false,
     "buildCommand": false,
     "changelogCommand": "git log --pretty=format:'* %s (%h)' [REV_RANGE]",
     "requireCleanWorkingDir": false,
