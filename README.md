@@ -102,6 +102,7 @@ Options:
     "pkgFiles": ["package.json"],
     "increment": "patch",
     "prereleaseId": null,
+    "noCommit": false,
     "commitMessage": "Release %s",
     "tagName": "%s",
     "tagAnnotation": "Release %s",
@@ -162,6 +163,7 @@ Notes:
 * If `src.pushRepo` has a falsey value, just `git push` is used. Otherwise, it's the url or name of a remote in `git push <src.pushRepo>`.
 * If `dist.pkgFiles` has a falsey value, it will take the value of `pkgFiles`.
 * The `after*/before*` commands are executed from the root/working directory of the source or distribution repository. The `beforeStageCommand` is executed before files are staged for commit, and after a version bump.
+* If `noCommit` has a truthy value, nothing is committed or pushed. The created tag will point to the current commit.
 
 ### Distribution Repository
 
@@ -196,7 +198,7 @@ export GITHUB_TOKEN="f941e0..."
 
 In non-interactive mode, the release is created only for the source repository.
 
-### Local configuration file 
+### Local configuration file
 
 Place a `.release.json` file in your project root, and **Release It** will use it to overwrite default settings. You can use `--config` if you want to use another filename/location. Most options can be set on the command-line (these will have highest priority).
 
