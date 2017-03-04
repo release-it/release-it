@@ -7,5 +7,11 @@
     },
     "npm": {
         "forcePublishSourceRepo": true
+    },
+    "prompt": {
+        "dist": {
+            "push": false,
+            "release": false
+        }
     }
 }
