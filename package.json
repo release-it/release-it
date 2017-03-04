@@ -26,6 +26,9 @@
   },
   "bin": "./bin/release.js",
   "main": "./lib/release.js",
+  "scripts": {
+    "lint": "eslint lib"
+  },
   "author": {
     "email": "lars@webpro.nl",
     "name": "Lars Kappert"
@@ -44,5 +47,8 @@
     "semver": "5.3.0",
     "shelljs": "0.7.6",
     "when": "3.7.8"
+  },
+  "devDependencies": {
+    "eslint": "^3.17.0"
   }
 }
