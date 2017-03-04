@@ -2,9 +2,13 @@
   "env": {
     "node": true
   },
+  "parserOptions": {
+    "ecmaVersion": 6
+  },
   "extends": "eslint:recommended",
   "rules": {
     "indent": ["error", 2],
-    "quotes": ["error", "single"]
+    "quotes": ["error", "single"],
+    "one-var-declaration-per-line": ["error", "always"]
   }
 }
