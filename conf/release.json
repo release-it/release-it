@@ -1,61 +1,61 @@
 {
-    "non-interactive": false,
-    "dry-run": false,
-    "verbose": false,
-    "force": false,
-    "pkgFiles": ["package.json"],
-    "increment": "patch",
-    "prereleaseId": null,
-    "commitMessage": "Release %s",
-    "tagName": "%s",
-    "tagAnnotation": "Release %s",
-    "buildCommand": false,
-    "changelogCommand": "git log --pretty=format:'* %s (%h)' [REV_RANGE]",
-    "requireCleanWorkingDir": false,
+  "non-interactive": false,
+  "dry-run": false,
+  "verbose": false,
+  "force": false,
+  "pkgFiles": ["package.json"],
+  "increment": "patch",
+  "prereleaseId": null,
+  "commitMessage": "Release %s",
+  "tagName": "%s",
+  "tagAnnotation": "Release %s",
+  "buildCommand": false,
+  "changelogCommand": "git log --pretty=format:'* %s (%h)' [REV_RANGE]",
+  "requireCleanWorkingDir": false,
+  "src": {
+    "pushRepo": null,
+    "beforeStartCommand": false,
+    "beforeStageCommand": false,
+    "afterReleaseCommand": false
+  },
+  "dist": {
+    "repo": false,
+    "stageDir": ".stage",
+    "baseDir": "dist",
+    "files": ["**/*"],
+    "pkgFiles": null,
+    "beforeStageCommand": false,
+    "afterReleaseCommand": false
+  },
+  "npm": {
+    "publish": false,
+    "publishPath": ".",
+    "tag": "latest",
+    "private": false,
+    "forcePublishSourceRepo": false
+  },
+  "github": {
+    "release": false,
+    "releaseName": "Release %s",
+    "preRelease": false,
+    "tokenRef": "GITHUB_TOKEN"
+  },
+  "prompt": {
     "src": {
-        "pushRepo": null,
-        "beforeStartCommand": false,
-        "beforeStageCommand": false,
-        "afterReleaseCommand": false
+      "status": false,
+      "commit": true,
+      "tag": true,
+      "push": true,
+      "release": true,
+      "publish": false
     },
     "dist": {
-        "repo": false,
-        "stageDir": ".stage",
-        "baseDir": "dist",
-        "files": ["**/*"],
-        "pkgFiles": null,
-        "beforeStageCommand": false,
-        "afterReleaseCommand": false
-    },
-    "npm": {
-        "publish": false,
-        "publishPath": ".",
-        "tag": "latest",
-        "private": false,
-        "forcePublishSourceRepo": false
-    },
-    "github": {
-        "release": false,
-        "releaseName": "Release %s",
-        "preRelease": false,
-        "tokenRef": "GITHUB_TOKEN"
-    },
-    "prompt": {
-        "src": {
-            "status": false,
-            "commit": true,
-            "tag": true,
-            "push": true,
-            "release": true,
-            "publish": false
-        },
-        "dist": {
-          "status": false,
-          "commit": true,
-          "tag": true,
-          "push": true,
-          "release": true,
-          "publish": false
-        }
+      "status": false,
+      "commit": true,
+      "tag": true,
+      "push": true,
+      "release": true,
+      "publish": false
     }
+  }
 }
