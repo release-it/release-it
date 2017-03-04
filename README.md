@@ -133,8 +133,26 @@ Options:
     "github": {
         "release": false,
         "releaseName": "Release %s",
-        "prerelease": false,
+        "preRelease": false,
         "tokenRef": "GITHUB_TOKEN"
+    },
+    "prompt": {
+        "src": {
+            "status": false,
+            "commit": true,
+            "tag": true,
+            "push": true,
+            "release": true,
+            "publish": false
+        },
+        "dist": {
+          "status": false,
+          "commit": true,
+          "tag": true,
+          "push": true,
+          "release": true,
+          "publish": false
+        }
     }
 }
 ```
