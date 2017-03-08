@@ -105,6 +105,7 @@ Options:
     "commitMessage": "Release %s",
     "tagName": "%s",
     "tagAnnotation": "Release %s",
+    "releaseDate": false,
     "buildCommand": false,
     "changelogCommand": "git log --pretty=format:'* %s (%h)' [REV_RANGE]",
     "requireCleanWorkingDir": false,
@@ -206,7 +207,7 @@ To keep you in control, many steps need your confirmation before execution. This
 
 With the current repository:
 
-1. Bump version in `pkgFiles`.
+1. Bump version in `pkgFiles` (if you put `releaseDate` to `true`, it will add a `releaseDate` to your `package.json`).
 1. Is `buildCommand` provided? Clean `dist.baseDir` and execute the `buildCommand`.
 1. Commit changes with `commitMessage` (`%s` is replaced with the new version).
 1. Tag commit with `tagName` (and `tagAnnotation`).
