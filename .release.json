@@ -10,6 +10,7 @@
   },
   "prompt": {
     "dist": {
+      "tag": false,
       "push": false,
       "release": false
     }
