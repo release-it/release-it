@@ -210,8 +210,8 @@ Notes:
 The tool assumes you've configured your SSH keys and remotes correctly.
 In case you need to configure things for GitHub, the following pages might be of help.
 
-* GitHub Help: [SSH](https://help.github.com/categories/56/articles)
-* GitHub Help: [Managing Remotes](https://help.github.com/categories/18/articles)
+* GitHub Help: [SSH](https://help.github.com/articles/connecting-to-github-with-ssh/)
+* GitHub Help: [Managing Remotes](https://help.github.com/categories/managing-remotes/)
 
 ### GitHub Release
 
@@ -251,7 +251,7 @@ Additionally, if a distribution repository is configured:
 
 Major dependencies:
 
-* [ShellJS](http://documentup.com/arturadib/shelljs)
+* [ShellJS](http://documentup.com/shelljs/shelljs)
 * [Inquirer.js](https://github.com/SBoudrias/Inquirer.js)
 * [node-github](https://github.com/mikedeboer/node-github)
 
