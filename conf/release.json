@@ -7,7 +7,7 @@
   "increment": "patch",
   "prereleaseId": null,
   "buildCommand": false,
-  "changelogCommand": "git log --pretty=format:'* %s (%h)' [REV_RANGE]",
+  "changelogCommand": "git log --pretty=format:\"* %s (%h)\" [REV_RANGE]",
   "requireCleanWorkingDir": false,
   "src": {
     "commitMessage": "Release %s",
