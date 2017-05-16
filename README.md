@@ -32,7 +32,7 @@ release-it 0.8.3
 release-it 2.0.0-rc.3
 ```
 
-Create a pre-release using `prelease`, `prepatch`, `preminor`, or `premajor`:
+Create a pre-release using `prerelease`, `prepatch`, `preminor`, or `premajor`:
 
 ```bash
 release-it premajor --prereleaseId="beta"
