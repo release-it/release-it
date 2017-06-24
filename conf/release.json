@@ -16,7 +16,8 @@
     "pushRepo": null,
     "beforeStartCommand": false,
     "beforeStageCommand": false,
-    "afterReleaseCommand": false
+    "afterReleaseCommand": false,
+    "githubAssets": false
   },
   "dist": {
     "repo": false,
@@ -28,7 +29,8 @@
     "tagName": "%s",
     "tagAnnotation": "Release %s",
     "beforeStageCommand": false,
-    "afterReleaseCommand": false
+    "afterReleaseCommand": false,
+    "githubAssets": false
   },
   "npm": {
     "publish": false,
