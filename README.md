@@ -104,7 +104,7 @@ Here is the full list of settings:
   "increment": "patch",
   "prereleaseId": null,
   "buildCommand": false,
-  "changelogCommand": "git log --pretty=format:'* %s (%h)' [REV_RANGE]",
+  "changelogCommand": "git log --pretty=format:\"* %s (%h)\" [REV_RANGE]",
   "requireCleanWorkingDir": false,
   "src": {
     "commitMessage": "Release %s",
@@ -113,7 +113,8 @@ Here is the full list of settings:
     "pushRepo": null,
     "beforeStartCommand": false,
     "beforeStageCommand": false,
-    "afterReleaseCommand": false
+    "afterReleaseCommand": false,
+    "githubAssets": false
   },
   "dist": {
     "repo": false,
@@ -125,7 +126,8 @@ Here is the full list of settings:
     "tagName": "%s",
     "tagAnnotation": "Release %s",
     "beforeStageCommand": false,
-    "afterReleaseCommand": false
+    "afterReleaseCommand": false,
+    "githubAssets": false
   },
   "npm": {
     "publish": false,
