@@ -13,10 +13,16 @@ release.cli(args).then(function() {
   if(!isDebug) {
     console.error(err);
   } else {
-    throw new Error(err);
+    throw err;
   }
 });
 
 process.on('exit', function() {
   process.exit(exitCode);
+});
+
+process.on('unhandledRejection', function(err){
+  if(isDebug && err instanceof Error) {
+    console.error(err);
+  }
 });
