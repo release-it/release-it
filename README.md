@@ -140,6 +140,7 @@ Here is the full list of settings:
     "release": false,
     "releaseName": "Release %s",
     "preRelease": false,
+    "draft": false,
     "tokenRef": "GITHUB_TOKEN"
   },
   "prompt": {
