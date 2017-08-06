@@ -5,6 +5,9 @@
     "baseDir": "tmp",
     "pkgFiles": []
   },
+  "github": {
+    "release": true
+  },
   "npm": {
     "forcePublishSourceRepo": true
   },
