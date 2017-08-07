@@ -1,6 +1,8 @@
 .idea
+.nyc_output
+.release.json
+.stage
+coverage
 tmp
 gh-pages
-.stage
-.release.json
 webpro.github.io

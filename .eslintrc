@@ -4,12 +4,17 @@
     "es6": true
   },
   "parserOptions": {
-    "ecmaVersion": 6
+    "ecmaVersion": 8,
+    "sourceType": "module"
   },
-  "extends": "eslint:recommended",
+  "extends": [
+    "eslint:recommended",
+    "prettier"
+  ],
+  "plugins": [
+    "prettier"
+  ],
   "rules": {
-    "indent": ["error", 2],
-    "quotes": ["error", "single"],
-    "one-var-declaration-per-line": ["error", "always"]
+    "prettier/prettier": ["error", {"singleQuote": true, "printWidth": 120}]
   }
 }

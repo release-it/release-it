@@ -10,14 +10,30 @@
   "changelogCommand": "git log --pretty=format:\"* %s (%h)\" [REV_RANGE]",
   "requireCleanWorkingDir": false,
   "src": {
+    "commit": true,
     "commitMessage": "Release %s",
+    "tag": true,
     "tagName": "%s",
     "tagAnnotation": "Release %s",
+    "push": true,
     "pushRepo": null,
     "beforeStartCommand": false,
-    "beforeStageCommand": false,
-    "afterReleaseCommand": false,
-    "githubAssets": false
+    "afterReleaseCommand": false
+  },
+  "npm": {
+    "publish": true,
+    "publishPath": ".",
+    "tag": "latest",
+    "private": false,
+    "access": null
+  },
+  "github": {
+    "release": true,
+    "releaseName": "Release %s",
+    "preRelease": false,
+    "draft": false,
+    "tokenRef": "GITHUB_TOKEN",
+    "assets": false
   },
   "dist": {
     "repo": false,
@@ -25,26 +41,20 @@
     "baseDir": "dist",
     "files": ["**/*"],
     "pkgFiles": null,
+    "commit": true,
     "commitMessage": "Release %s",
+    "tag": true,
     "tagName": "%s",
     "tagAnnotation": "Release %s",
+    "push": true,
     "beforeStageCommand": false,
     "afterReleaseCommand": false,
-    "githubAssets": false
-  },
-  "npm": {
-    "publish": false,
-    "publishPath": ".",
-    "tag": "latest",
-    "private": false,
-    "forcePublishSourceRepo": false
-  },
-  "github": {
-    "release": false,
-    "releaseName": "Release %s",
-    "preRelease": false,
-    "draft": false,
-    "tokenRef": "GITHUB_TOKEN"
+    "github": {
+      "release": false
+    },
+    "npm": {
+      "publish": false
+    }
   },
   "prompt": {
     "src": {

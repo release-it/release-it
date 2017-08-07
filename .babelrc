@@ -1,0 +1,15 @@
+{
+  "presets": [
+    "stage-0",
+    ["env", {
+      "targets": {
+        "node": 4
+      }
+    }]
+  ],
+  "plugins": [
+    ["transform-runtime", {
+      "regenerator": true
+    }]
+  ]
+}

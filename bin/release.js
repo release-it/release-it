@@ -1,28 +1,8 @@
 #!/usr/bin/env node
 
-const release = require('../lib/release'),
-  args = [].slice.call(process.argv, 2),
-  isDebug = args.indexOf('--debug') !== -1;
+require('@std/esm');
+require('babel-register');
 
-var exitCode = 0;
+const release = require('../lib/index').default;
 
-release.cli(args).then(function() {
-  process.exit(exitCode);
-}).catch(function(err) {
-  exitCode = 1;
-  if(!isDebug) {
-    console.error(err);
-  } else {
-    throw err;
-  }
-});
-
-process.on('exit', function() {
-  process.exit(exitCode);
-});
-
-process.on('unhandledRejection', function(err){
-  if(isDebug && err instanceof Error) {
-    console.error(err);
-  }
-});
+release().then(() => process.exit(0), () => process.exit(1));

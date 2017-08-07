@@ -1,5 +1,2 @@
-tmp
-node_modules
-npm-debug.log*
-*.log
-
+.nyc_output
+coverage
