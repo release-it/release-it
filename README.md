@@ -1,20 +1,26 @@
 # Release It!
 
-Interactive release tool for Git repositories. Options: run build command first, release to distribution repository (or branch), create GitHub release, publish to npm.
+Advanced release tool for Git repos and npm packages.
 
-Automatically bump version, commit, tag, push, done.
+![screencast](./release-it.gif)
 
-Here's an extended article about [Using Release It!](https://medium.com/@webprolific/using-release-it-60b96515c073)
+If all you need is the following, you probably don't need this tool:
 
-![Release-It](https://webpro.github.com/release-it/Release-It.gif)
-
-Obviously, **Release It** has released itself. Cool, heh?! There's also a [Grunt plugin](https://github.com/webpro/grunt-release-it).
-
-## Install
-
-```bash
-npm install release-it -g
 ```
+npm version patch
+git push
+npm publish
+```
+
+Also see [npm-version](https://docs.npmjs.com/cli/version) for extra `script`-ing options.
+
+However, if you also want some of the following in a convenient tool:
+
+* Create GitHub releases (send changelog to https://github.com/webpro/release-it/releases)
+* Upload assets to GitHub release
+* Push to a distribution repository or branch (e.g. `gh-pages`) with a release.
+
+...then you should definitely give release-it a shot!
 
 ## Usage
 
@@ -29,7 +35,6 @@ Release a patch, minor, major, or specific version:
 ```bash
 release-it minor
 release-it 0.8.3
-release-it 2.0.0-rc.3
 ```
 
 Create a pre-release using `prerelease`, `prepatch`, `preminor`, or `premajor`:
@@ -61,38 +66,33 @@ release-it --non-interactive
 
 ```
 $ release-it --help
-Release It! v2.7.0
-
-Usage: release <increment> [options]
-
-Use e.g. "release minor" directly as shorthand for "release --increment=minor".
-
-Options:
-  -c, --config           Path to local configuration options [default: ".release.json"]                          
-  -d, --dry-run          Do not touch or write anything, but show the commands and interactivity                 
-  -e, --debug            Output exceptions                                                                       
-  -f, --force            Force tagging with Git                                                                  
-  -h, --help             Print help                                                                              
-  -i, --increment        Increment "major", "minor", "patch", or "pre*" version; or specify version [default: "patch"]
-  -m, --message          Commit message [default: "Release %s"]
-  -n, --non-interactive  No interaction (assume default answers to questions)                                    
-      --prereleaseId     Identifier for pre-releases (e.g. "beta" in "1.0.0-beta.1")
-  -p, --npm.publish      Auto-publish to npm (only relevant in --non-interactive mode)
-      --npm.tag          Register published package with given tag (default: "latest")
-  -v, --version          Print version number                                                                    
-  -V, --verbose          Verbose output
+Release It! v3.0.0-beta.3
+  
+  Usage: release-it <increment> [options]
+  
+  Use e.g. "release-it minor" directly as shorthand for "release-it --increment=minor".
+  
+  -c --config            Path to local configuration options [default: ".release.json"]
+  -d --dry-run           Do not touch or write anything, but show the commands
+  -f --force             Allow empty Git commit, force tag.
+  -h --help              Print this help
+  -i --increment         Increment "major", "minor", "patch", or "pre*" version; or specify version [default: "patch"]
+  -m --message           Commit message [default: "Release %s"]
+  -n --non-interactive   No questions asked.
+     --prereleaseId      Identifier for pre-releases (e.g. "beta" in "1.0.0-beta.1")
+  -v --version           Print version number
+  -V --verbose           Verbose output
 ```
 
-All default settings below can be overridden by your own config file.
-Put a `.release.json` file in your project root, and **Release It** will pick it up.
-You can use `--config` if you want to use another path.
+All default settings can be overridden with a config file: put a `.release.json` file in the project root, and it will be picked up. You can use `--config` if you want to use another path for this file.
+
 Options can also be set on the command-line (these will have highest priority). Example:
 
 ```bash
 release-it minor --src.tagName='v%s' --github.release
 ```
 
-Here is the full list of settings:
+Here is the full list of default settings:
 
 ```json
 {
@@ -107,14 +107,30 @@ Here is the full list of settings:
   "changelogCommand": "git log --pretty=format:\"* %s (%h)\" [REV_RANGE]",
   "requireCleanWorkingDir": false,
   "src": {
+    "commit": true,
     "commitMessage": "Release %s",
+    "tag": true,
     "tagName": "%s",
     "tagAnnotation": "Release %s",
+    "push": true,
     "pushRepo": null,
     "beforeStartCommand": false,
-    "beforeStageCommand": false,
-    "afterReleaseCommand": false,
-    "githubAssets": false
+    "afterReleaseCommand": false
+  },
+  "npm": {
+    "publish": true,
+    "publishPath": ".",
+    "tag": "latest",
+    "private": false,
+    "access": null
+  },
+  "github": {
+    "release": true,
+    "releaseName": "Release %s",
+    "preRelease": false,
+    "draft": false,
+    "tokenRef": "GITHUB_TOKEN",
+    "assets": false
   },
   "dist": {
     "repo": false,
@@ -122,26 +138,20 @@ Here is the full list of settings:
     "baseDir": "dist",
     "files": ["**/*"],
     "pkgFiles": null,
+    "commit": true,
     "commitMessage": "Release %s",
+    "tag": false,
     "tagName": "%s",
     "tagAnnotation": "Release %s",
+    "push": true,
     "beforeStageCommand": false,
     "afterReleaseCommand": false,
-    "githubAssets": false
-  },
-  "npm": {
-    "publish": false,
-    "publishPath": ".",
-    "tag": "latest",
-    "private": false,
-    "forcePublishSourceRepo": false
-  },
-  "github": {
-    "release": false,
-    "releaseName": "Release %s",
-    "preRelease": false,
-    "draft": false,
-    "tokenRef": "GITHUB_TOKEN"
+    "github": {
+      "release": false
+    },
+    "npm": {
+      "publish": false
+    }
   },
   "prompt": {
     "src": {
@@ -150,14 +160,14 @@ Here is the full list of settings:
       "tag": true,
       "push": true,
       "release": true,
-      "publish": false
+      "publish": true
     },
     "dist": {
       "status": false,
       "commit": true,
-      "tag": true,
+      "tag": false,
       "push": true,
-      "release": true,
+      "release": false,
       "publish": false
     }
   }
@@ -166,22 +176,21 @@ Here is the full list of settings:
 
 Notes:
 
-* If present, your `"private": true` setting in package.json will be respected and you will not be bothered with the question to publish to npm.
-* If `src.pushRepo` has a falsey value, the default `git push` is used when pushing to the remote.
+* While e.g. `npm.publish` represents whether or not to publish in _non-interactive_ mode, `prompt.src.publish` represents the default value (`Y/N`) in _interactive_ mode.
+* In the background, some steps of the `dist.repo` process are actually executed before you are asked to commit anything (in the source repo), so you know about build, clone, or copy issues as soon as possible.
+* The `"private": true` setting in package.json will be respected and the package won't be published to npm.
+* If `src.pushRepo` is `false`, the default `git push` is used when pushing to the remote.
 Otherwise, it's the url or name of a remote as in `git push <src.pushRepo>`.
-* If `dist.pkgFiles` has a falsey value, it will take the value of `pkgFiles`.
-* In the background, some steps of the distribution repo process are actually executed before you are asked to commit anything
-(also in the source repo), so you know about build, clone, or copy issues as soon as possible.
-* The `prompt` booleans represent the default answers to the interactive questions.
 
 ### Command Hooks
 
-The command hooks are executed from the directory of the `src` or `dist` repository, respectively:
+The command hooks are executed from the root directory of the `src` or `dist` repository, respectively:
 
-* `src.beforeStartCommand` - before version bump
-* `src.beforeStageCommand` and `dist.beforeStageCommand` - before `buildCommand`
+* `src.beforeStartCommand`
 * `buildCommand` - before files are staged for commit
-* `src.afterReleaseCommand` and `dist.afterReleaseCommand` - after release/publish steps
+* `src.afterReleaseCommand`
+* `dist.beforeStageCommand` - before files are staged in dist repo
+* `dist.afterReleaseCommand`
 
 All commands can use configuration variables (like template strings):
 
@@ -192,19 +201,17 @@ All commands can use configuration variables (like template strings):
 
 ## Distribution Repository
 
-Some projects use a special distribution repository. There might be multiple reasons to do.
+Some projects use a special distribution repository. There might be multiple reasons to do so:
 
 * Distribute more "clean" file structures (without unrelated test, manifest, documentation files etc.).
-* Distribute to target specific package managers. One example is the "shims" repositories in
+* Distribute to target specific package managers. An example is the shims repositories in
 [https://github.com/components](https://github.com/components) (the actual source files are elsewhere).
-* Distribute just documentation to a Github Pages branch.
-Also see [Using GitHub Pages, the easy way](https://medium.com/@webprolific/using-github-pages-the-easy-way-bb7acc46f45b).
+* Distribute to a Github Pages branch. Also see [Using GitHub Pages, the easy way](https://medium.com/@webprolific/using-github-pages-the-easy-way-bb7acc46f45b).
 
 Notes:
 
 * To release to a separate "distribution repo", set `dist.repo` to a git endpoint (e.g. `"git@github.com:components/ember.git"`).
-* Note that this can also be a branch, possibly of the same source repository, using `#` notation (e.g. `"git@github.com:webpro/release-it.git#gh-pages"`).
-* In case you want to update `dist.repo`, but still want to publish the source repository to npm, make sure to set `"forcePublishSourceRepo": true`.
+* Note that this can also be a branch (also of the same source repository) using `#` notation (e.g. `"git@github.com:webpro/release-it.git#gh-pages"`).
 
 ## GitHub
 
@@ -227,28 +234,6 @@ export GITHUB_TOKEN="f941e0..."
 ```
 
 In non-interactive mode, the release is created only for the source repository.
-
-## What it does
-
-To keep you in control, many steps need your confirmation before execution. This is what happens if you answer "Yes" to each question:
-
-With the current repository:
-
-1. Bump version in `pkgFiles`.
-1. Is `buildCommand` provided? Clean `dist.baseDir` and execute the `buildCommand`.
-1. Commit changes with `src.commitMessage` (`%s` is replaced with the new version).
-1. Tag commit with `src.tagName` (and `src.tagAnnotation`).
-1. Push commit and tag.
-1. Create release on GitHub (with `github.releaseName` and output of `changelogCommand`).
-1. No `dist.repo`? Publish package to npm.
-
-Additionally, if a distribution repository is configured:
-
-1. Clone `dist.repo` in `dist.stageDir`.
-1. Copy `dist.files` from `dist.baseDir` to `dist.repo`.
-1. Bump version in `dist.pkgFiles`, commit, tag, push `dist.repo`.
-1. Create release on GitHub (with `github.releaseName` and output of `changelogCommand`).
-1. Publish package to npm.
 
 ## Credits
 
