@@ -1,6 +1,6 @@
 import test from 'tape';
 import proxyquire from 'proxyquire';
-import * as logMock from '../mock/log';
+import * as logMock from './mock/log';
 import Config from '../lib/config';
 import { readJSON } from './util/index';
 import semver from 'semver';

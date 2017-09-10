@@ -1,6 +1,6 @@
 import test from 'tape';
 import proxyquire from 'proxyquire';
-import * as logMock from '../mock/log';
+import * as logMock from './mock/log';
 import path from 'path';
 import { readFile, readJSON } from './util/index';
 

@@ -1,7 +1,7 @@
 import test from 'tape';
 import proxyquire from 'proxyquire';
 import pkg from '../package.json';
-import * as logMock from '../mock/log';
+import * as logMock from './mock/log';
 
 const { version, help } = proxyquire('../lib/cli', {
   './log': logMock

@@ -1,6 +1,6 @@
 import test from 'tape';
 import proxyquire from 'proxyquire';
-import * as logMock from '../mock/log';
+import * as logMock from './mock/log';
 import Config from '../lib/config';
 import { pushd, popd, mkStageDir } from '../lib/shell';
 import { getRemoteUrl, clone, getLatestTag } from '../lib/git';
