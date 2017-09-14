@@ -24,8 +24,8 @@
     "type": "git",
     "url": "git@github.com:webpro/release-it.git"
   },
-  "bin": "./bin/release.js",
-  "main": "./lib/release.js",
+  "bin": "./bin/release-it.js",
+  "main": "./lib/index.js",
   "scripts": {
     "lint": "eslint lib test",
     "prettier": "prettier --write \"{lib,test}/**/*.js\"",
