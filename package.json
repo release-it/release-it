@@ -1,6 +1,6 @@
 {
   "name": "release-it",
-  "version": "3.0.0-beta.4",
+  "version": "3.0.0-beta.5",
   "description": "Interactive release tool for Git repositories + npm packages. Bump, commit, tag, push, build, publish to npm. GitHub releases, upload assets. Distribution/component repositories.",
   "keywords": [
     "build",
