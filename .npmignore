@@ -2,6 +2,7 @@
 .nyc_output
 .release-it.json
 .stage
+.tmp*
 coverage
 tmp
 gh-pages

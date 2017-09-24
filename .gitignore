@@ -1,2 +1,4 @@
 .nyc_output
+.stage
+.tmp*
 coverage
