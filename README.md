@@ -10,10 +10,11 @@ Release-it automates the tedious tasks of software releases:
 * Bump version (in e.g. `package.json`)
 * Generate changelog
 * Git commit, tag, push
-* Create release at GitHub
-* Upload assets to GitHub release
+* [Create release at GitHub](#github-release)
+* [Upload assets to GitHub release](#release-assets)
 * Publish to npm
-* Push build artefacts (bundles, docs) to a separate repository or branch.
+* [Manage pre-releases](#manage-pre-releases)
+* [Push build artefacts to a separate repository or branch](#distribution-repository)
 
 ## Usage
 
@@ -49,7 +50,7 @@ release-it --dry-run
 
 ## Configuration
 
-Out of the box, release-it can do a lot, but has plenty of options to configure it.
+Out of the box, release-it has sane defaults, and plenty of options to configure it.
 
 All [default settings](conf/release-it.json) can be overridden with a config file. Put a `.release-it.json` file in the project root, and it will be picked up. You can use `--config` if you want to use another path for this file.
 
@@ -59,7 +60,20 @@ Any option can also be set on the command-line, and will have highest priority. 
 release-it minor --src.tagName='v%s' --github.release
 ```
 
-Boolean arguments (e.g. `--github.release`) can be negated by using the `no-` prefix:
+This is the same as in `.release.json`:
+
+```
+{
+  "src": {
+    "tagName": "v%s"
+  },
+  "github": {
+    "release": true
+  }
+}
+```
+
+Boolean arguments can be negated by using the `no-` prefix:
 
 ```bash
 release-it --no-npm.publish
@@ -131,7 +145,7 @@ minified scripts, documentation), provide a [glob pattern](https://github.com/is
 }
 ```
 
-## Pre-releases
+## Manage pre-releases
 
 With release-it, it's easy to create pre-releases: a version of your software that you want to make available, while it's not in the stable semver range yet. Often "alpha", "beta", and "rc" (release candidate) are used as identifier for pre-releases.
 
