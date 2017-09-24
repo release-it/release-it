@@ -1,7 +1,7 @@
 {
   "name": "release-it",
   "version": "3.0.0-beta.7",
-  "description": "Interactive release tool for Git repositories + npm packages. Bump, commit, tag, push, build, publish to npm. GitHub releases, upload assets. Distribution/component repositories.",
+  "description": "CLI release tool for Git repos and npm packages.",
   "keywords": [
     "build",
     "commit",
@@ -24,6 +24,8 @@
     "type": "git",
     "url": "git@github.com:webpro/release-it.git"
   },
+  "homepage": "https://github.com/webpro/release-it#release-it",
+  "bugs": "https://github.com/webpro/release-it/issues",
   "bin": "./bin/release-it.js",
   "main": "./lib/index.js",
   "scripts": {
