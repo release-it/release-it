@@ -1,6 +1,6 @@
 import test from 'tape';
 import Config from '../lib/config';
-import defaultConfig from '../conf/release.json';
+import defaultConfig from '../conf/release-it.json';
 import localConfig from '../.release.json';
 import pkg from '../package.json';
 
@@ -18,12 +18,11 @@ test('config', t => {
 });
 
 test('config.parseArgs', t => {
-  const config = new Config({}, '1.0.0 --message="release %s" -f');
+  const config = new Config({}, '1.0.0 --src.commitMessage="release %s" -f');
   const { cliArguments } = config;
   t.equal(cliArguments.force, true);
   t.equal(cliArguments.increment, '1.0.0');
   t.equal(cliArguments.src.commitMessage, 'release %s');
-  t.equal(cliArguments.dist.commitMessage, 'release %s');
   t.end();
 });
 

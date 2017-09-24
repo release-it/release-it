@@ -28,12 +28,12 @@
     "access": null
   },
   "github": {
-    "release": true,
+    "release": false,
     "releaseName": "Release %s",
     "preRelease": false,
     "draft": false,
     "tokenRef": "GITHUB_TOKEN",
-    "assets": false
+    "assets": null
   },
   "dist": {
     "repo": false,
@@ -68,7 +68,7 @@
     "dist": {
       "status": false,
       "commit": true,
-      "tag": true,
+      "tag": false,
       "push": true,
       "release": true,
       "publish": false
