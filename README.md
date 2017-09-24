@@ -136,7 +136,7 @@ export GITHUB_TOKEN="f941e0..."
 ### Release Assets
 
 To upload binary release assets with a GitHub release (such as compiled executables,
-minified scripts, documentation), provide a [glob pattern](https://github.com/isaacs/node-glob#readme) for the `github.assets` option. After the release, the assets are available to download from the GitHub release page. Example:
+minified scripts, documentation), provide one or more [glob patterns](https://github.com/sindresorhus/globby#readme) for the `github.assets` option. After the release, the assets are available to download from the GitHub release page. Example:
 
 ```json
 "github": {
