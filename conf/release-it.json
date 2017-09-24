@@ -5,7 +5,7 @@
   "force": false,
   "pkgFiles": ["package.json"],
   "increment": "patch",
-  "prereleaseId": null,
+  "preReleaseId": null,
   "buildCommand": false,
   "changelogCommand": "git log --pretty=format:\"* %s (%h)\" [REV_RANGE]",
   "requireCleanWorkingDir": false,

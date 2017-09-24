@@ -37,3 +37,23 @@ test('config.mergeOptions', t => {
   t.equal(options.github.release, true);
   t.end();
 });
+
+test('config.preRelease', t => {
+  const config = new Config({}, 'major --preRelease=beta');
+  const { options } = config;
+  t.equal(options.increment, 'premajor');
+  t.equal(options.preReleaseId, 'beta');
+  t.equal(options.github.preRelease, true);
+  t.equal(options.npm.tag, 'beta');
+  t.end();
+});
+
+test('config.preRelease', t => {
+  const config = new Config({}, 'minor --preRelease=rc --npm.tag=next');
+  const { options } = config;
+  t.equal(options.increment, 'preminor');
+  t.equal(options.preReleaseId, 'rc');
+  t.equal(options.github.preRelease, true);
+  t.equal(options.npm.tag, 'next');
+  t.end();
+});

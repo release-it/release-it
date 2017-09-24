@@ -28,6 +28,8 @@ test('inc', t => {
   t.equal(inc('1.0.0-alpha.0', 'prerelease', 'beta'), '1.0.0-beta.0');
   t.equal(inc('1.0.0', 'pre', 'sha'), '1.0.0-sha.0');
   t.equal(inc('1.0.0', 'prerelease', 'sha'), '1.0.1-sha.0');
+  t.equal(inc('2.0.0-beta.0', 'major'), '2.0.0');
+  t.equal(inc('2.0.0-beta.0'), '2.0.0');
 });
 
 test('format', t => {

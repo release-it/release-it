@@ -131,6 +131,41 @@ minified scripts, documentation), provide a [glob pattern](https://github.com/is
 }
 ```
 
+## Pre-releases
+
+With release-it, it's easy to create pre-releases: a version of your software that you want to make available, while it's not in the stable semver range yet. Often "alpha", "beta", and "rc" (release candidate) are used as identifier for pre-releases.
+
+For example, if you're working on a new major update for `awesome-pkg` (while the latest release was v1.4.1), and you want others to try a beta version of it:
+
+```
+release-it major --preRelease=beta
+```
+
+This will tag and release version `2.0.0-beta.0`. This is actually a shortcut for:
+
+```
+release-it premajor --preReleaseId=beta --npm.tag=beta --github.preRelease
+```
+
+Consecutive beta releases (`v2.0.0-beta.1` and so on) are now easy:
+
+```
+release-it --preRelease=beta
+```
+
+Installing the package with npm:
+
+```
+npm install awesome-pkg         # Installs v1.4.1
+npm install awesome-pkg@beta    # Installs v2.0.0-beta.1
+```
+
+You can still override e.g. the npm tag being used:
+
+```
+release-it --preRelease=rc --npm.tag=next
+```
+
 ## Distribution Repository
 
 Some projects use a distribution repository. Reasons to do this include:
