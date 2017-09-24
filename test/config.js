@@ -1,7 +1,7 @@
 import test from 'tape';
 import Config from '../lib/config';
 import defaultConfig from '../conf/release-it.json';
-import localConfig from '../.release.json';
+import localConfig from '../.release-it.json';
 import pkg from '../package.json';
 
 test('config', t => {

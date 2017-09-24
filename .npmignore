@@ -1,6 +1,6 @@
 .idea
 .nyc_output
-.release.json
+.release-it.json
 .stage
 coverage
 tmp
