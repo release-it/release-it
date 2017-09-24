@@ -8,12 +8,12 @@ const { version, help } = proxyquire('../lib/cli', {
 });
 
 test('version', t => {
-  t.plan(1);
   t.equal(version(), `v${pkg.version}`);
+  t.end();
 });
 
 test('help', t => {
-  t.plan(2);
   t.ok(~help().indexOf('Release It!'));
   t.ok(~help().indexOf(pkg.version));
+  t.end();
 });

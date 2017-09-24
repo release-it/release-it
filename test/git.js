@@ -28,7 +28,7 @@ const {
   push
 } = proxyquire('../lib/git', mocks);
 
-test('isGitRepo + tagExists + isWorkingDirClean +  hasChanges', async t => {
+test('isGitRepo + tagExists + isWorkingDirClean + hasChanges', async t => {
   const dir = 'test/resources';
   const tmp = `${dir}/tmp`;
   await mkCleanDir(tmp);
