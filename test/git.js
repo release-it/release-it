@@ -14,7 +14,7 @@ const mocks = {
   }
 };
 
-const { run, pushd, popd, mkCleanDir } = proxyquire('../lib/shell', mocks);
+const { run, pushd, popd, mkCleanDir, copy } = proxyquire('../lib/shell', mocks);
 const {
   isGitRepo,
   tagExists,
@@ -64,11 +64,16 @@ test('getRemoteUrl', async t => {
 test('clone + stage + commit + tag + push', async t => {
   const dir = 'test/resources';
   const tmp = `${dir}/tmp`;
-  await mkCleanDir(tmp);
-  await clone('https://github.com/webpro/release-it-test.git', tmp);
+  const tmpOrigin = `${dir}/bare.git`;
+  await run(`git init --bare ${tmpOrigin}`);
+  await clone(tmpOrigin, tmp);
+  await copy('package.json', {}, tmp);
   await pushd(tmp);
+  await stage('package.json');
+  await commit('.', 'Add package.json');
   const pkgBefore = await readJSON('package.json');
   const versionBefore = pkgBefore.version;
+  await run(`git tag ${versionBefore}`);
   const actual_latestTagBefore = await getLatestTag();
   t.ok(await isGitRepo());
   t.equal(versionBefore, actual_latestTagBefore);
@@ -87,6 +92,7 @@ test('clone + stage + commit + tag + push', async t => {
   const status = await run('!git status -uno');
   t.ok(status.includes('nothing to commit'));
   await popd();
+  await run(`rm -rf ${tmpOrigin}`);
   await run(`rm -rf ${tmp}`);
   t.end();
 });
