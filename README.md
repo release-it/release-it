@@ -16,6 +16,8 @@ CLI release tool for Git repos and npm packages.
 * [Manage pre-releases](#manage-pre-releases)
 * [Push build artefacts to a separate repository or branch](#distribution-repository)
 
+Updating from v2 to v3 should be painless. See [v3.0.0 release notes](https://github.com/webpro/release-it/releases/tag/3.0.0)!
+
 ## 💾 Installation
 
 ```bash
