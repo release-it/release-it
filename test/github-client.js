@@ -2,7 +2,7 @@ import test from 'tape';
 import proxyquire from 'proxyquire';
 import * as logMock from './mock/log';
 import Config from '../lib/config';
-import { pushd, popd, mkStageDir } from '../lib/shell';
+import { pushd, popd, mkStageDir, run } from '../lib/shell';
 import { getRemoteUrl, clone, getLatestTag } from '../lib/git';
 import repoPathParse from 'parse-repo';
 
@@ -16,6 +16,7 @@ const mocks = {
 };
 
 const { release, uploadAssets } = proxyquire('../lib/github-client', mocks);
+const { push } = proxyquire('../lib/git', mocks);
 
 test('release + uploadAssets', async t => {
   const dir = 'test/resources';
@@ -25,7 +26,8 @@ test('release + uploadAssets', async t => {
   const { cleanup } = await mkStageDir(tmp);
   await clone(`${repository}.git`, tmp);
   await pushd(tmp);
-
+  await run('npm version patch');
+  await push();
   const version = await getLatestTag();
   const remoteUrl = await getRemoteUrl();
   const changelog = '';
