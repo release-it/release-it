@@ -57,7 +57,7 @@ test('isGitRepo + tagExists + isWorkingDirClean + hasChanges', async t => {
 
 test('getRemoteUrl', async t => {
   const remoteUrl = await getRemoteUrl();
-  t.equal(remoteUrl, 'git@github.com:webpro/release-it.git');
+  t.equal(remoteUrl, 'https://github.com/webpro/release-it.git');
   t.end();
 });
 
