@@ -39,8 +39,8 @@ test('format', t => {
 });
 
 test('template', t => {
-  t.equal(template('release v${v}', { v: '1.0.0' }), 'release v1.0.0');
-  t.equal(template('release v${v} (${name})', { v: '1.0.0', name: 'name' }), 'release v1.0.0 (name)');
+  t.equal(template('release v${version}', { version: '1.0.0' }), 'release v1.0.0');
+  t.equal(template('release v${version} (${name})', { version: '1.0.0', name: 'foo' }), 'release v1.0.0 (foo)');
   t.end();
 });
 
