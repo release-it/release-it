@@ -11,10 +11,12 @@ const { run, pushd, popd, mkCleanDir, copy, bump } = proxyquire('../lib/shell', 
 const dir = 'test/resources';
 
 test('pushd + popd', async t => {
-  const [to, from] = await pushd(dir);
+  const outputPush = await pushd(dir);
+  const [to, from] = outputPush.split(',');
   const diff = to.replace(from + '/', '');
   t.equal(diff, dir);
-  const trail = await popd();
+  const popOutput = await popd();
+  const trail = popOutput.split(',');
   t.equal(trail.length, 1);
   t.end();
 });
