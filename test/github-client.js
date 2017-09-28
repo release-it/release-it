@@ -1,14 +1,15 @@
 import test from 'tape';
 import proxyquire from 'proxyquire';
 import * as logMock from './mock/log';
+import * as github from './mock/github';
 import Config from '../lib/config';
-import { pushd, popd, mkStageDir, run } from '../lib/shell';
-import { getRemoteUrl, clone, getLatestTag } from '../lib/git';
+import { pushd, popd } from '../lib/shell';
 import repoPathParse from 'parse-repo';
 
 const config = new Config();
 
 const mocks = {
+  github,
   './log': logMock,
   './config': {
     config
@@ -16,20 +17,14 @@ const mocks = {
 };
 
 const { release, uploadAssets } = proxyquire('../lib/github-client', mocks);
-const { push } = proxyquire('../lib/git', mocks);
 
 test('release + uploadAssets', async t => {
   const dir = 'test/resources';
-  const tmp = `${dir}/tmp`;
-  const repository = 'https://github.com/webpro/release-it-test';
+  await pushd(dir);
+
+  const remoteUrl = 'https://github.com/webpro/release-it-test';
   const asset = 'file1';
-  const { cleanup } = await mkStageDir(tmp);
-  await clone(`${repository}.git`, tmp);
-  await pushd(tmp);
-  await run('npm version patch');
-  await push();
-  const version = await getLatestTag();
-  const remoteUrl = await getRemoteUrl();
+  const version = '2.0.1';
   const changelog = '';
   const tagName = 'v%s';
   const repo = repoPathParse(remoteUrl);
@@ -38,7 +33,7 @@ test('release + uploadAssets', async t => {
     preRelease: false,
     draft: false,
     assets: asset,
-    token: process.env.GITHUB_TOKEN
+    token: 'fake token'
   };
 
   const releaseResult = await release({
@@ -56,9 +51,8 @@ test('release + uploadAssets', async t => {
 
   t.equal(uploadResult.name, asset);
   t.equal(uploadResult.state, 'uploaded');
-  t.equal(uploadResult.browser_download_url, `${repository}/releases/download/v${version}/${asset}`);
+  t.equal(uploadResult.browser_download_url, `${remoteUrl}/releases/download/v${version}/${asset}`);
 
   await popd();
-  await cleanup();
   t.end();
 });
