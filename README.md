@@ -1,5 +1,7 @@
 # Release It! 🚀
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/webpro/release-it.svg)](https://greenkeeper.io/)
+
 CLI release tool for Git repos and npm packages.
 
 **Release It!** automates the tedious tasks of software releases:
