@@ -4,11 +4,27 @@ import * as logMock from './mock/log';
 import path from 'path';
 import { readFile, readJSON } from './util/index';
 
-const { run, pushd, popd, mkCleanDir, copy, bump } = proxyquire('../lib/shell', {
+const { run, runTemplateCommand, pushd, popd, mkCleanDir, copy, bump } = proxyquire('../lib/shell', {
   './log': logMock
 });
 
 const dir = 'test/resources';
+const pwd = process.cwd();
+
+test('run', async t => {
+  t.equal(await run('pwd'), pwd);
+  t.equal(await run('!pwd'), pwd);
+  t.end();
+});
+
+test('runTemplateCommand', async t => {
+  const run = cmd => runTemplateCommand(cmd, { verbose: false });
+  t.notOk(await run(''));
+  t.equal(await run('pwd'), pwd);
+  t.equal(await run('!echo ${src.commitMessage}'), 'Release %s');
+  t.equal(await run('printf "${src.tagAnnotation}" "1.0.0"'), 'Release 1.0.0');
+  t.end();
+});
 
 test('pushd + popd', async t => {
   const outputPush = await pushd(dir);
