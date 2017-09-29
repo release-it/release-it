@@ -1,7 +1,5 @@
 # Release It! 🚀
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/webpro/release-it.svg)](https://greenkeeper.io/)
-
 CLI release tool for Git repos and npm packages.
 
 **Release It!** automates the tedious tasks of software releases:
@@ -19,6 +17,10 @@ CLI release tool for Git repos and npm packages.
 * [Push build artefacts to a separate repository or branch](#distribution-repository)
 
 Updating from v2 to v3 should be painless. See [v3.0.0 release notes](https://github.com/webpro/release-it/releases/tag/3.0.0)!
+
+[![Build Status](https://travis-ci.org/webpro/release-it.svg?branch=master)](https://travis-ci.org/webpro/release-it)
+[![npm version](https://badge.fury.io/js/release-it.svg)](https://badge.fury.io/js/release-it)
+[![Greenkeeper badge](https://badges.greenkeeper.io/webpro/release-it.svg)](https://greenkeeper.io/)
 
 ## 💾 Installation
 
