@@ -63,7 +63,7 @@
     "yargs-parser": "7.0.0"
   },
   "devDependencies": {
-    "eslint": "4.7.2",
+    "eslint": "4.8.0",
     "eslint-config-prettier": "2.6.0",
     "eslint-plugin-prettier": "2.3.1",
     "nyc": "11.2.1",
