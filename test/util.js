@@ -1,5 +1,14 @@
 import test from 'tape';
-import { isValidVersion, inc, format, template, isSameRepo } from '../lib/util';
+import proxyquire from 'proxyquire';
+import { getLatestTag } from '../lib/git';
+
+const mocks = {
+  './git': {
+    getLatestTag
+  }
+};
+
+const { isValidVersion, inc, format, template, parseVersion, isSameRepo } = proxyquire('../lib/util', mocks);
 
 test('isValidVersion', t => {
   t.equal(isValidVersion('1.0.0'), true);
@@ -57,5 +66,19 @@ test('isSameRepo', t => {
     remote: 'https://github.com/webpro/release-it.git#dist'
   });
   t.ok(isSameRepo(repoA, repoB));
+  t.end();
+});
+
+test('parseVersion', async t => {
+  mocks['./git'].getLatestTag = () => 'rc-1.2.3.4';
+  t.deepEqual(await parseVersion({ increment: 'patch', npm: { version: '0.0.1' } }), {
+    latestVersion: '0.0.1',
+    version: '0.0.2'
+  });
+  mocks['./git'].getLatestTag = () => '2.2.0';
+  t.deepEqual(await parseVersion({ increment: 'patch', npm: { version: '0.0.1' } }), {
+    latestVersion: '2.2.0',
+    version: '2.2.1'
+  });
   t.end();
 });
