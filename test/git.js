@@ -25,7 +25,8 @@ const {
   commit,
   tag,
   getLatestTag,
-  push
+  push,
+  getChangelog
 } = proxyquire('../lib/git', mocks);
 
 test('isGitRepo + tagExists + isWorkingDirClean + hasChanges', async t => {
@@ -93,6 +94,50 @@ test('clone + stage + commit + tag + push', async t => {
   t.ok(status.includes('nothing to commit'));
   await popd();
   await run(`rm -rf ${tmpOrigin}`);
+  await run(`rm -rf ${tmp}`);
+  t.end();
+});
+
+test('getChangelog', async t => {
+  const dir = 'test/resources';
+  const tmp = `${dir}/tmp`;
+  await mkCleanDir(tmp);
+  await pushd(tmp);
+  await run('git init');
+  await run('!echo line >> file && git add file && git commit -m "First commit"');
+  await run('!echo line >> file && git add file && git commit -m "Second commit"');
+  t.shouldReject(
+    getChangelog(
+      {
+        changelogCommand: 'git log --invalid',
+        tagName: '%s',
+        latestVersion: '1.0.0'
+      },
+      /Could not create changelog/
+    )
+  );
+
+  const changelog = await getChangelog({
+    changelogCommand: config.options.changelogCommand,
+    tagName: '%s',
+    latestVersion: '1.0.0'
+  });
+  const pattern = /^\* Second commit \(\w{7}\)\n\* First commit \(\w{7}\)$/;
+  t.ok(pattern.test(changelog));
+
+  await run('git tag 1.0.0');
+  await run('!echo line C >> file && git add file && git commit -m "Third commit"');
+  await run('!echo line D >> file && git add file && git commit -m "Fourth commit"');
+
+  const changelogSinceTag = await getChangelog({
+    changelogCommand: config.options.changelogCommand,
+    tagName: '%s',
+    latestVersion: '1.0.0'
+  });
+  const pattern1 = /^\* Fourth commit \(\w{7}\)\n\* Third commit \(\w{7}\)$/;
+  t.ok(pattern1.test(changelogSinceTag));
+
+  await popd();
   await run(`rm -rf ${tmp}`);
   t.end();
 });
