@@ -8,7 +8,10 @@ const mocks = {
   }
 };
 
-const { isValidVersion, inc, format, template, parseVersion, isSameRepo } = proxyquire('../lib/util', mocks);
+const { isValidVersion, inc, format, template, parseVersion, isSameRepo, truncateLines } = proxyquire(
+  '../lib/util',
+  mocks
+);
 
 test('isValidVersion', t => {
   t.equal(isValidVersion('1.0.0'), true);
@@ -80,5 +83,12 @@ test('parseVersion', async t => {
     latestVersion: '2.2.0',
     version: '2.2.1'
   });
+  t.end();
+});
+
+test('truncateLines', t => {
+  const input = '1\n2\n3\n4\n5\n6';
+  t.equal(truncateLines(input), input);
+  t.equal(truncateLines(input, 3), '1\n2\n3\n...and 3 more');
   t.end();
 });
