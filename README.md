@@ -43,16 +43,7 @@ release-it minor
 release-it 0.8.3
 ```
 
-Create a pre-release using `prerelease`, `prepatch`, `preminor`, or `premajor`:
-
-```bash
-release-it premajor --prereleaseId="beta"
-release-it premajor
-```
-
-The first example would increment from e.g. `1.0.6` to `2.0.0-beta.0`, the second from `2.0.0-beta.0` to `2.0.0-beta.1`.
-
-See [node-semver](https://github.com/npm/node-semver#readme) for more details.
+See [manage pre-releases](#manage-pre-releases) for versions like `1.0.0-beta.2` and `npm install my-package@next`.
 
 You can also do a "dry run", which won't write/touch anything, but does output the commands it would execute, and show the interactivity:
 
@@ -189,6 +180,8 @@ You can still override e.g. the npm tag being used:
 ```
 release-it --preRelease=rc --npm.tag=next
 ```
+
+See [semver.org](http://semver.org/) for more details.
 
 ## 🚚 Distribution Repository
 
