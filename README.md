@@ -10,11 +10,11 @@ CLI release tool for Git repos and npm packages.
 * Bump version (in e.g. `package.json`)
 * Generate changelog
 * Git commit, tag, push
-* [Create release at GitHub](#github-release)
-* [Upload assets to GitHub release](#release-assets)
+* [Create release at GitHub](#️-github-release)
+* [Upload assets to GitHub release](#-release-assets)
 * Publish to npm
-* [Manage pre-releases](#manage-pre-releases)
-* [Push build artefacts to a separate repository or branch](#distribution-repository)
+* [Manage pre-releases](#-manage-pre-releases)
+* [Push build artefacts to a separate repository or branch](#-distribution-repository)
 
 Updating from v2 to v3 should be painless. See [v3.0.0 release notes](https://github.com/webpro/release-it/releases/tag/3.0.0)!
 
@@ -43,7 +43,7 @@ release-it minor
 release-it 0.8.3
 ```
 
-See [manage pre-releases](#manage-pre-releases) for versions like `1.0.0-beta.2` and `npm install my-package@next`.
+See [manage pre-releases](#-manage-pre-releases) for versions like `1.0.0-beta.2` and `npm install my-package@next`.
 
 You can also do a "dry run", which won't write/touch anything, but does output the commands it would execute, and show the interactivity:
 
