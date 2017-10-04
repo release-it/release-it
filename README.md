@@ -64,15 +64,7 @@ release-it --dry-run
 
 Out of the box, release-it has sane defaults, and plenty of options to configure it.
 
-All [default settings](conf/release-it.json) can be overridden with a config file. Put a `.release-it.json` file in the project root, and it will be picked up. You can use `--config` if you want to use another path for this file.
-
-Any option can also be set on the command-line, and will have highest priority. Example:
-
-```bash
-release-it minor --src.tagName='v%s' --github.release
-```
-
-This is the same as in `.release.json`:
+All [default settings](conf/release-it.json) can be overridden with a config file. Put the options to override in `.release-it.json` in the project root. You can use `--config` if you want to use another path for this file. Example:
 
 ```
 {
@@ -83,6 +75,12 @@ This is the same as in `.release.json`:
     "release": true
   }
 }
+```
+
+Any option can also be set on the command-line, and will have highest priority. Example:
+
+```bash
+release-it minor --src.tagName='v%s' --github.release
 ```
 
 Boolean arguments can be negated by using the `no-` prefix:
