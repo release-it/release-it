@@ -26,6 +26,18 @@ test('config.parseArgs', t => {
   t.end();
 });
 
+test('config.parseArgs (--increment)', t => {
+  const config = new Config({}, '--increment=1.0.0');
+  t.equal(config.cliArguments.increment, '1.0.0');
+  t.end();
+});
+
+test('config.parseArgs (-i)', t => {
+  const config = new Config({}, '-i 1.0.0');
+  t.equal(config.cliArguments.increment, '1.0.0');
+  t.end();
+});
+
 test('config.mergeOptions', t => {
   const config = new Config({}, '1.0.0 -eV --github.release');
   const { options } = config;
@@ -33,12 +45,21 @@ test('config.mergeOptions', t => {
   t.equal(config.isForce, false);
   t.equal(config.isDryRun, false);
   t.equal(config.isInteractive, true);
+  t.equal(config.isShowVersion, false);
+  t.equal(config.isShowHelp, false);
   t.equal(options.increment, '1.0.0');
   t.equal(options.github.release, true);
   t.end();
 });
 
-test('config.preRelease', t => {
+test('config.config', t => {
+  t.throws(() => {
+    const config = new Config({ config: 'nofile' });
+  }, /Could not load.+nofile/);
+  t.end();
+});
+
+test('config.preRelease (shorthand)', t => {
   const config = new Config({}, 'major --preRelease=beta');
   const { options } = config;
   t.equal(options.increment, 'premajor');

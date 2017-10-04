@@ -5,6 +5,7 @@ import Config from '../lib/config';
 import { readJSON } from './util/index';
 import semver from 'semver';
 
+const tmp = 'test/resources/tmp';
 const config = new Config();
 
 const mocks = {
@@ -20,6 +21,7 @@ const {
   tagExists,
   getRemoteUrl,
   isWorkingDirClean,
+  hasChanges,
   clone,
   stage,
   commit,
@@ -29,43 +31,48 @@ const {
   getChangelog
 } = proxyquire('../lib/git', mocks);
 
-test('isGitRepo + tagExists + isWorkingDirClean + hasChanges', async t => {
-  const dir = 'test/resources';
-  const tmp = `${dir}/tmp`;
+test('isGitRepo', async t => {
+  t.ok(await isGitRepo());
+  const tmp = 'test/resources';
+  await pushd(tmp);
+  t.notOk(await isGitRepo());
+  await popd();
+  t.end();
+});
+
+test('tagExists + isWorkingDirClean + hasChanges', async t => {
   await mkCleanDir(tmp);
   await pushd(tmp);
-  const actual_notIsGitRepo = await isGitRepo();
-  t.notOk(actual_notIsGitRepo);
   await run('git init');
-  const actual_isGitRepo = await isGitRepo();
-  t.ok(actual_isGitRepo);
-  const actual_notTagExists = await tagExists('1.0.0');
-  t.notOk(actual_notTagExists);
+  t.notOk(await tagExists('1.0.0'));
   await run('touch file1');
-  const actual_notIsWorkingDirClean = await isWorkingDirClean();
-  t.notOk(actual_notIsWorkingDirClean);
+  t.notOk(await isWorkingDirClean());
+  t.ok(await hasChanges());
   await run('git add file1');
   await run('git commit -am "Add file1"');
   await run('git tag 1.0.0');
-  const actual_tagExists = await tagExists('1.0.0');
-  t.ok(actual_tagExists);
-  const actual_isWorkingDirClean = await isWorkingDirClean();
-  t.ok(actual_isWorkingDirClean);
+  t.ok(await tagExists('1.0.0'));
+  t.ok(await isWorkingDirClean());
+  t.notOk(await hasChanges());
   await popd();
   await run(`rm -rf ${tmp}`);
   t.end();
 });
 
 test('getRemoteUrl', async t => {
-  const remoteUrl = await getRemoteUrl();
-  t.equal(remoteUrl, 'https://github.com/webpro/release-it.git');
+  await mkCleanDir(tmp);
+  await pushd(tmp);
+  await run(`git init`);
+  t.shouldReject(getRemoteUrl(), /Could not get remote Git url/);
+  await run(`git remote add origin foo`);
+  t.equal(await getRemoteUrl(), 'foo');
+  await popd();
+  await run(`rm -rf ${tmp}`);
   t.end();
 });
 
 test('clone + stage + commit + tag + push', async t => {
-  const dir = 'test/resources';
-  const tmp = `${dir}/tmp`;
-  const tmpOrigin = `${dir}/bare.git`;
+  const tmpOrigin = 'test/resources/bare.git';
   await run(`git init --bare ${tmpOrigin}`);
   await clone(tmpOrigin, tmp);
   await copy('package.json', {}, tmp);
@@ -99,22 +106,18 @@ test('clone + stage + commit + tag + push', async t => {
 });
 
 test('getChangelog', async t => {
-  const dir = 'test/resources';
-  const tmp = `${dir}/tmp`;
   await mkCleanDir(tmp);
   await pushd(tmp);
   await run('git init');
   await run('!echo line >> file && git add file && git commit -m "First commit"');
   await run('!echo line >> file && git add file && git commit -m "Second commit"');
   t.shouldReject(
-    getChangelog(
-      {
-        changelogCommand: 'git log --invalid',
-        tagName: '%s',
-        latestVersion: '1.0.0'
-      },
-      /Could not create changelog/
-    )
+    getChangelog({
+      changelogCommand: 'git log --invalid',
+      tagName: '%s',
+      latestVersion: '1.0.0'
+    }),
+    /Could not create changelog/
   );
 
   const changelog = await getChangelog({
