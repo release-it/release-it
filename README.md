@@ -22,6 +22,26 @@ Updating from v2 to v3 should be painless. See [v3.0.0 release notes](https://gi
 [![npm version](https://badge.fury.io/js/release-it.svg)](https://badge.fury.io/js/release-it)
 [![Greenkeeper badge](https://badges.greenkeeper.io/webpro/release-it.svg)](https://greenkeeper.io/)
 
+<details>
+ <summary>**Table of Contents** (click to expand)</summary>
+
+* [Installation](#-installation)
+* [Usage](#️-usage)
+* [Configuration](#️-configuration)
+* [Interactive vs. non-interactive mode](#-interactive-vs-non-interactive-mode)
+* [Command Hooks](#-command-hooks)
+* [SSH keys & git remotes](#-ssh-keys-git-remotes)
+* [GitHub Release](#️-github-release)
+* [Release Assets](#-release-assets)
+* [Manage Pre-releases](#-manage-pre-releases)
+* [Distribution Repository](#-distribution-repository)
+* [Notes](#-notes)
+* [Contributing](#-contributing)
+* [Credits](#️-credits)
+* [License](#-license)
+</details>
+
+
 ## 💾 Installation
 
 ```bash
