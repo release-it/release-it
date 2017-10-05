@@ -23,7 +23,7 @@ Updating from v2 to v3 should be painless. See [v3.0.0 release notes](https://gi
 [![Greenkeeper badge](https://badges.greenkeeper.io/webpro/release-it.svg)](https://greenkeeper.io/)
 
 <details>
- <summary>**Table of Contents** (click to expand)</summary>
+ <summary><strong>Table of Contents</strong> (click to expand)</summary>
 
 * [Installation](#-installation)
 * [Usage](#️-usage)
