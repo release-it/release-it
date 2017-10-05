@@ -60,7 +60,7 @@
     "shelljs": "0.7.8",
     "supports-color": "4.4.0",
     "tmp-promise": "1.0.3",
-    "yargs-parser": "7.0.0"
+    "yargs-parser": "8.0.0"
   },
   "devDependencies": {
     "eslint": "4.8.0",
