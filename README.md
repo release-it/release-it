@@ -4,7 +4,7 @@ CLI release tool for Git repos and npm packages.
 
 **Release It!** automates the tedious tasks of software releases:
 
-<img align="right" src="./assets/release-it.gif?raw=true" height="148px">
+<img align="right" src="./assets/release-it.gif?raw=true" height="148">
 
 * Execute build commands
 * Bump version (in e.g. `package.json`)
@@ -104,13 +104,14 @@ release-it --no-npm.publish
 
 By default, release-it is interactive and allows you to confirm each task before execution.
 
-<img src="./assets/release-it.png?raw=true" height="96px">
+<img src="./assets/release-it.png?raw=true" height="148">
 
 Once you are confident release-it does the right thing, you can fully automate it by using the `--non-interactive` (or `-n`) option (as demonstrated in the animated image above). An overview of the tasks that will be executed:
 
 Task | Option | Default | Prompt | Default
 :--|:--|:-:|:--|:-:
-Show staged files | - | | `prompt.src.status` | `N`
+Ready (confirm version) | N/A | N/A | - | `Y`
+Show staged files | N/A | N/A | `prompt.src.status` | `N`
 Git commit | `src.commit` | `true` | `prompt.src.commit` | `Y`
 Git push | `src.push` | `true` | `prompt.src.push` | `Y`
 Git tag | `src.tag` | `true` | `prompt.src.tag` | `Y`
