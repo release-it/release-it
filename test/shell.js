@@ -1,8 +1,10 @@
 import test from 'tape';
 import proxyquire from 'proxyquire';
+import shell from 'shelljs';
 import * as logMock from './mock/log';
 import path from 'path';
 import { readFile, readJSON } from './util/index';
+import { config } from '../lib/config';
 
 const { run, runTemplateCommand, pushd, popd, mkTmpDir, copy, bump } = proxyquire('../lib/shell', {
   './log': logMock
@@ -14,6 +16,15 @@ const pwd = process.cwd();
 test('run', async t => {
   t.equal(await run('pwd'), pwd);
   t.equal(await run('!pwd'), pwd);
+  t.end();
+});
+
+test('run (dry run)', async t => {
+  config.options['dry-run'] = true;
+  t.equal(await run('pwd'), undefined);
+  t.equal(await run('pwd', { isReadOnly: true }), pwd);
+  config.options['dry-run'] = false;
+  t.equal(await run('pwd'), pwd);
   t.end();
 });
 
@@ -37,14 +48,14 @@ test('pushd + popd', async t => {
   t.end();
 });
 
-test('mk + cp + run', async t => {
-  await pushd(dir);
-  await mkCleanDir('tmp');
-  await copy(['file1', 'file2'], {}, 'tmp');
-  await popd();
-  t.equal(await readFile(`${dir}/file1`), await readFile(`${dir}/tmp/file1`));
-  t.equal(await readFile(`${dir}/file2`), await readFile(`${dir}/tmp/file2`));
-  await run(`rm -rf ${dir}/tmp`);
+test('copy', async t => {
+  shell.pushd(dir);
+  shell.mkdir('tmp');
+  await copy(['file*'], {}, 'tmp');
+  t.equal(await readFile('file1'), await readFile('tmp/file1'));
+  t.equal(await readFile('file2'), await readFile('tmp/file2'));
+  shell.rm('-rf', 'tmp');
+  shell.popd();
   t.end();
 });
 
