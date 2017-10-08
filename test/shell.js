@@ -4,7 +4,7 @@ import * as logMock from './mock/log';
 import path from 'path';
 import { readFile, readJSON } from './util/index';
 
-const { run, runTemplateCommand, pushd, popd, mkCleanDir, copy, bump } = proxyquire('../lib/shell', {
+const { run, runTemplateCommand, pushd, popd, mkTmpDir, copy, bump } = proxyquire('../lib/shell', {
   './log': logMock
 });
 
@@ -63,5 +63,28 @@ test('bump', async t => {
   t.equal(pkgA.version, '2.0.0');
   t.equal(pkgB.version, '2.0.0');
   await run(`rm ${manifestA} ${manifestB}`);
+  t.end();
+});
+
+test('mkTmpDir', async t => {
+  shell.pushd(dir);
+  const { path, cleanup } = await mkTmpDir('tmp');
+  t.equal(path, 'tmp');
+  t.ok(shell.ls().includes('tmp'));
+  await cleanup();
+  t.notOk(shell.ls().includes('tmp'));
+  shell.popd();
+  t.end();
+});
+
+test('mkTmpDir (dry run)', async t => {
+  config.options['dry-run'] = true;
+  shell.pushd(dir);
+  const { path, cleanup } = await mkTmpDir();
+  t.ok(/\.tmp-(\w{8})/.test(path));
+  t.ok(shell.ls('-A').includes(path));
+  await cleanup();
+  t.notOk(shell.ls('-A').includes(path));
+  shell.popd();
   t.end();
 });
