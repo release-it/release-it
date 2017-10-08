@@ -31,7 +31,7 @@
   "scripts": {
     "lint": "eslint lib test",
     "prettier": "prettier --write \"{lib,test}/**/*.js\"",
-    "test": "tape -r babel-register -r ./test/tape-extend test/*.js",
+    "test": "tape -r babel-register -r ./test/util/setup test/*.js",
     "coverage": "nyc --reporter=lcov npm test"
   },
   "author": {

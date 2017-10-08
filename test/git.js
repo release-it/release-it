@@ -1,5 +1,6 @@
 import test from 'tape';
 import proxyquire from 'proxyquire';
+import shell from 'shelljs';
 import * as logMock from './mock/log';
 import Config from '../lib/config';
 import { readJSON } from './util/index';
@@ -34,15 +35,15 @@ const {
 test('isGitRepo', async t => {
   t.ok(await isGitRepo());
   const tmp = 'test/resources';
-  await pushd(tmp);
+  shell.pushd(tmp);
   t.notOk(await isGitRepo());
-  await popd();
+  shell.popd();
   t.end();
 });
 
 test('tagExists + isWorkingDirClean + hasChanges', async t => {
-  await mkCleanDir(tmp);
-  await pushd(tmp);
+  shell.mkdir(tmp);
+  shell.pushd(tmp);
   await run('git init');
   t.notOk(await tagExists('1.0.0'));
   await run('touch file1');
@@ -54,20 +55,20 @@ test('tagExists + isWorkingDirClean + hasChanges', async t => {
   t.ok(await tagExists('1.0.0'));
   t.ok(await isWorkingDirClean());
   t.notOk(await hasChanges());
-  await popd();
-  await run(`rm -rf ${tmp}`);
+  shell.popd();
+  shell.rm('-rf', tmp);
   t.end();
 });
 
 test('getRemoteUrl', async t => {
-  await mkCleanDir(tmp);
-  await pushd(tmp);
+  shell.mkdir(tmp);
+  shell.pushd(tmp);
   await run(`git init`);
   t.shouldReject(getRemoteUrl(), /Could not get remote Git url/);
   await run(`git remote add origin foo`);
   t.equal(await getRemoteUrl(), 'foo');
-  await popd();
-  await run(`rm -rf ${tmp}`);
+  shell.popd();
+  shell.rm('-rf', tmp);
   t.end();
 });
 
@@ -76,7 +77,7 @@ test('clone + stage + commit + tag + push', async t => {
   await run(`git init --bare ${tmpOrigin}`);
   await clone(tmpOrigin, tmp);
   await copy('package.json', {}, tmp);
-  await pushd(tmp);
+  shell.pushd(tmp);
   await stage('package.json');
   await commit('.', 'Add package.json');
   const pkgBefore = await readJSON('package.json');
@@ -99,15 +100,14 @@ test('clone + stage + commit + tag + push', async t => {
   await push();
   const status = await run('!git status -uno');
   t.ok(status.includes('nothing to commit'));
-  await popd();
-  await run(`rm -rf ${tmpOrigin}`);
-  await run(`rm -rf ${tmp}`);
+  shell.popd();
+  shell.rm('-rf', [tmpOrigin, tmp]);
   t.end();
 });
 
 test('getChangelog', async t => {
-  await mkCleanDir(tmp);
-  await pushd(tmp);
+  shell.mkdir(tmp);
+  shell.pushd(tmp);
   await run('git init');
   await run('!echo line >> file && git add file && git commit -m "First commit"');
   await run('!echo line >> file && git add file && git commit -m "Second commit"');
@@ -140,7 +140,7 @@ test('getChangelog', async t => {
   const pattern1 = /^\* Fourth commit \(\w{7}\)\n\* Third commit \(\w{7}\)$/;
   t.ok(pattern1.test(changelogSinceTag));
 
-  await popd();
-  await run(`rm -rf ${tmp}`);
+  shell.popd();
+  shell.rm('-rf', tmp);
   t.end();
 });

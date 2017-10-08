@@ -1,5 +1,6 @@
 import test from 'tape';
 import proxyquire from 'proxyquire';
+import shell from 'shelljs';
 import * as logMock from './mock/log';
 import * as github from './mock/github';
 import Config from '../lib/config';
@@ -20,7 +21,7 @@ const { release, uploadAssets } = proxyquire('../lib/github-client', mocks);
 
 test('release + uploadAssets', async t => {
   const dir = 'test/resources';
-  await pushd(dir);
+  shell.pushd(dir);
 
   const remoteUrl = 'https://github.com/webpro/release-it-test';
   const asset = 'file1';
@@ -53,6 +54,6 @@ test('release + uploadAssets', async t => {
   t.equal(uploadResult.state, 'uploaded');
   t.equal(uploadResult.browser_download_url, `${remoteUrl}/releases/download/v${version}/${asset}`);
 
-  await popd();
+  shell.popd();
   t.end();
 });
