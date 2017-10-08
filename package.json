@@ -28,6 +28,12 @@
   "bugs": "https://github.com/webpro/release-it/issues",
   "bin": "./bin/release-it.js",
   "main": "./lib/index.js",
+  "files": [
+    "bin",
+    "conf",
+    "lib",
+    ".babelrc"
+  ],
   "scripts": {
     "lint": "eslint lib test",
     "prettier": "prettier --write \"{lib,test}/**/*.js\"",
