@@ -36,6 +36,7 @@ Updating from v2 to v3 should be painless. See [v3.0.0 release notes](https://gi
 * [Manage Pre-releases](#-manage-pre-releases)
 * [Distribution Repository](#-distribution-repository)
 * [Notes](#-notes)
+* [Resources](#-resources)
 * [Contributing](#-contributing)
 * [Credits](#️-credits)
 * [License](#-license)
@@ -139,7 +140,7 @@ All commands can use configuration variables (like template strings):
 
 ## 📡 SSH keys & git remotes
 
-The tool assumes you've configured your GitHub SSH key and Git remotes correctly. In short: you're fine if you can `git push`. Otherwise, the following GitHub help pages might be useful: [SSH](https://help.github.com/articles/connecting-to-github-with-ssh/) and [Managing Remotes](https://help.github.com/categories/managing-remotes/).
+The tool assumes you've configured your SSH key and Git remotes correctly. In short: you're fine if you can `git push`. Otherwise, the following GitHub help pages might be useful: [SSH](https://help.github.com/articles/connecting-to-github-with-ssh/) and [Managing Remotes](https://help.github.com/categories/managing-remotes/).
 
 ## ✏️ GitHub Release
 
@@ -202,7 +203,7 @@ You can still override e.g. the npm tag being used:
 release-it --preRelease=rc --npm.tag=next
 ```
 
-See [semver.org](http://semver.org/) for more details.
+See [semver.org](http://semver.org) for more details.
 
 ## 🚚 Distribution Repository
 
@@ -234,6 +235,11 @@ During the release of a source and distribution repository, some "dist" tasks ar
 
 * The `"private": true` setting in package.json will be respected and the package won't be published to npm.
 * You can use `src.pushRepo` option to set an alternative url or name of a remote as in `git push <src.pushRepo>`. By default this is `null` and  `git push` is used when pushing to the remote.
+
+## 📚 Resources
+
+* [semver.org](http://semver.org)
+* [The npm Blog — Publishing what you mean to publish](http://blog.npmjs.org/post/165769683050/publishing-what-you-mean-to-publish)
 
 ## 🎁 Contributing
 
