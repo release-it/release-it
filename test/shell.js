@@ -78,12 +78,12 @@ test('bump', async t => {
 });
 
 test('bump (file not found)', async t => {
-  t.shouldReject(bump('foo.json'), /no such file/i);
+  await t.shouldReject(bump('foo.json'), /no such file/i);
   t.end();
 });
 
 test('bump (invalid)', async t => {
-  t.shouldReject(bump('test/resources/file1'), /unexpected token/i);
+  await t.shouldReject(bump('test/resources/file1'), /unexpected token/i);
   t.end();
 });
 
@@ -91,9 +91,9 @@ test('mkTmpDir', async t => {
   shell.pushd(dir);
   const { path, cleanup } = await mkTmpDir('tmp');
   t.equal(path, 'tmp');
-  t.ok(shell.ls().includes('tmp'));
+  t.ok(~shell.ls().indexOf('tmp'));
   await cleanup();
-  t.notOk(shell.ls().includes('tmp'));
+  t.notOk(~shell.ls().indexOf('tmp'));
   shell.popd();
   t.end();
 });
@@ -103,9 +103,9 @@ test('mkTmpDir (dry run)', async t => {
   shell.pushd(dir);
   const { path, cleanup } = await mkTmpDir();
   t.ok(/\.tmp-(\w{8})/.test(path));
-  t.ok(shell.ls('-A').includes(path));
+  t.ok(~shell.ls('-A').indexOf(path));
   await cleanup();
-  t.notOk(shell.ls('-A').includes(path));
+  t.notOk(~shell.ls('-A').indexOf(path));
   shell.popd();
   t.end();
 });
