@@ -77,6 +77,16 @@ test('bump', async t => {
   t.end();
 });
 
+test('bump (file not found)', async t => {
+  t.shouldReject(bump('foo.json'), /no such file/i);
+  t.end();
+});
+
+test('bump (invalid)', async t => {
+  t.shouldReject(bump('test/resources/file1'), /unexpected token/i);
+  t.end();
+});
+
 test('mkTmpDir', async t => {
   shell.pushd(dir);
   const { path, cleanup } = await mkTmpDir('tmp');

@@ -8,39 +8,11 @@ const mocks = {
   }
 };
 
-const { isValidVersion, inc, format, template, parseVersion, isSameRepo, truncateLines } = proxyquire(
-  '../lib/util',
-  mocks
-);
+const { isValidVersion, format, template, parseVersion, isSameRepo, truncateLines } = proxyquire('../lib/util', mocks);
 
 test('isValidVersion', t => {
   t.equal(isValidVersion('1.0.0'), true);
   t.equal(isValidVersion(1.0), false);
-  t.end();
-});
-
-test('inc', t => {
-  t.equal(inc('1.0.0'), '1.0.1');
-  t.end();
-});
-
-test('inc', t => {
-  t.equal(inc('1.0.0', 'patch', 'beta'), '1.0.1');
-  t.equal(inc('1.0.0', 'minor', 'beta'), '1.1.0');
-  t.equal(inc('1.0.0', 'major', 'beta'), '2.0.0');
-  t.equal(inc('1.0.0', 'prepatch', 'beta'), '1.0.1-beta.0');
-  t.equal(inc('1.0.0', 'preminor', 'beta'), '1.1.0-beta.0');
-  t.equal(inc('1.0.0', 'premajor', 'beta'), '2.0.0-beta.0');
-  t.equal(inc('1.0.0', 'prerelease', 'beta'), '1.0.1-beta.0');
-  t.equal(inc('1.0.0', 'pre', 'beta'), '1.0.0-beta.0');
-  t.equal(inc('1.0.0-alpha.0', 'prerelease'), '1.0.0-alpha.1');
-  t.equal(inc('1.0.0-alpha.0', 'prerelease', 'alpha'), '1.0.0-alpha.1');
-  t.equal(inc('1.0.0-alpha.0', 'prerelease', 'alpha'), '1.0.0-alpha.1');
-  t.equal(inc('1.0.0-alpha.0', 'prerelease', 'beta'), '1.0.0-beta.0');
-  t.equal(inc('1.0.0', 'pre', 'sha'), '1.0.0-sha.0');
-  t.equal(inc('1.0.0', 'prerelease', 'sha'), '1.0.1-sha.0');
-  t.equal(inc('2.0.0-beta.0', 'major'), '2.0.0');
-  t.equal(inc('2.0.0-beta.0'), '2.0.0');
   t.end();
 });
 
