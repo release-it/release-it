@@ -159,7 +159,7 @@ export GITHUB_TOKEN="f941e0..."
 ### 📦 Release Assets
 
 To upload binary release assets with a GitHub release (such as compiled executables,
-minified scripts, documentation), provide one or more [glob patterns](https://github.com/sindresorhus/globby#readme) for the `github.assets` option. After the release, the assets are available to download from the GitHub release page. Example:
+minified scripts, documentation), provide one or more glob patterns for the `github.assets` option. After the release, the assets are available to download from the GitHub release page. Example:
 
 ```json
 "github": {
@@ -239,7 +239,11 @@ During the release of a source and distribution repository, some "dist" tasks ar
 ## 📚 Resources
 
 * [semver.org](http://semver.org)
-* [The npm Blog — Publishing what you mean to publish](http://blog.npmjs.org/post/165769683050/publishing-what-you-mean-to-publish)
+* [GitHub Help](https://help.github.com) (→ [About Releases](https://help.github.com/articles/about-releases/))
+* [npm Blog: Publishing what you mean to publish](http://blog.npmjs.org/post/165769683050/publishing-what-you-mean-to-publish)
+* [npm Documentation: package.json](https://docs.npmjs.com/files/package.json)
+* [Prereleases and npm](https://medium.com/@mbostock/prereleases-and-npm-e778fc5e2420)
+* [Glob Primer (node-glob)](https://github.com/isaacs/node-glob#glob-primer) (release-it uses [globby](https://github.com/sindresorhus/globby#readme))
 
 ## 🎁 Contributing
 
