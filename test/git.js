@@ -1,23 +1,10 @@
 import test from 'tape';
-import proxyquire from 'proxyquire';
 import shell from 'shelljs';
-import * as logMock from './mock/log';
-import Config from '../lib/config';
+import { config } from '../lib/config';
 import { readJSON } from './util/index';
 import semver from 'semver';
-
-const tmp = 'test/resources/tmp';
-const config = new Config();
-
-const mocks = {
-  './log': logMock,
-  './config': {
-    config
-  }
-};
-
-const { run, pushd, popd, mkCleanDir, copy } = proxyquire('../lib/shell', mocks);
-const {
+import { run, pushd, popd, mkCleanDir, copy } from '../lib/shell';
+import {
   isGitRepo,
   tagExists,
   getRemoteUrl,
@@ -30,7 +17,9 @@ const {
   getLatestTag,
   push,
   getChangelog
-} = proxyquire('../lib/git', mocks);
+} from '../lib/git';
+
+const tmp = 'test/resources/tmp';
 
 test('isGitRepo', async t => {
   t.ok(await isGitRepo());

@@ -1,7 +1,4 @@
 import { Test } from 'tape';
-import shell from 'shelljs';
-
-shell.config.silent = true;
 
 const noop = () => {};
 

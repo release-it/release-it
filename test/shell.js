@@ -1,14 +1,10 @@
 import test from 'tape';
-import proxyquire from 'proxyquire';
 import shell from 'shelljs';
-import * as logMock from './mock/log';
+import mockStdIo from 'mock-stdio';
 import path from 'path';
 import { readFile, readJSON } from './util/index';
 import { config } from '../lib/config';
-
-const { run, runTemplateCommand, pushd, popd, mkTmpDir, copy, bump } = proxyquire('../lib/shell', {
-  './log': logMock
-});
+import { run, runTemplateCommand, pushd, popd, mkTmpDir, copy, bump } from '../lib/shell';
 
 const dir = 'test/resources';
 const pwd = process.cwd();
@@ -20,11 +16,29 @@ test('run', async t => {
 });
 
 test('run (dry run)', async t => {
+  mockStdIo.start();
   config.options['dry-run'] = true;
-  t.equal(await run('pwd'), undefined);
-  t.equal(await run('pwd', { isReadOnly: true }), pwd);
+  const pwd = await run('pwd');
+  const { stdout } = mockStdIo.end();
+  t.ok(/not executed in dry run/.test(stdout));
+  t.equal(pwd, undefined);
   config.options['dry-run'] = false;
-  t.equal(await run('pwd'), pwd);
+  t.end();
+});
+
+test('run (verbose)', async t => {
+  mockStdIo.start();
+  config.options.verbose = true;
+  const actual = await run('pwd');
+  const { stdout } = mockStdIo.end();
+  t.equal(stdout, `$ pwd\n${pwd}\n`);
+  t.equal(actual, pwd);
+  config.options.verbose = false;
+  t.end();
+});
+
+test('run (read-only command)', async t => {
+  t.equal(await run('pwd', { isReadOnly: true }), pwd);
   t.end();
 });
 

@@ -1,23 +1,11 @@
 import test from 'tape';
 import proxyquire from 'proxyquire';
 import shell from 'shelljs';
-import * as logMock from './mock/log';
 import * as github from './mock/github';
-import Config from '../lib/config';
 import { pushd, popd } from '../lib/shell';
 import repoPathParse from 'parse-repo';
 
-const config = new Config();
-
-const mocks = {
-  github,
-  './log': logMock,
-  './config': {
-    config
-  }
-};
-
-const { release, uploadAssets } = proxyquire('../lib/github-client', mocks);
+const { release, uploadAssets } = proxyquire('../lib/github-client', { github });
 
 test('release + uploadAssets', async t => {
   const dir = 'test/resources';

@@ -1,19 +1,20 @@
 import test from 'tape';
-import proxyquire from 'proxyquire';
+import mockStdIo from 'mock-stdio';
 import pkg from '../package.json';
-import * as logMock from './mock/log';
-
-const { version, help } = proxyquire('../lib/cli', {
-  './log': logMock
-});
+import { version, help } from '../lib/cli';
 
 test('version', t => {
-  t.equal(version(), `v${pkg.version}`);
+  mockStdIo.start();
+  version();
+  const { stdout } = mockStdIo.end();
+  t.equal(stdout, `v${pkg.version}\n`);
   t.end();
 });
 
 test('help', t => {
-  t.ok(~help().indexOf('Release It!'));
-  t.ok(~help().indexOf(pkg.version));
+  mockStdIo.start();
+  help();
+  const { stdout } = mockStdIo.end();
+  t.ok(RegExp(`Release It!.+${pkg.version}`).test(stdout));
   t.end();
 });
