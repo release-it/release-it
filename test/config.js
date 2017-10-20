@@ -54,7 +54,7 @@ test('config.mergeOptions', t => {
 
 test('config.config', t => {
   t.throws(() => {
-    const config = new Config({ config: 'nofile' });
+    new Config({ config: 'nofile' });
   }, /Could not load.+nofile/);
   t.end();
 });

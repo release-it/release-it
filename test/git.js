@@ -1,9 +1,9 @@
 import test from 'tape';
 import shell from 'shelljs';
+import semver from 'semver';
 import { config } from '../lib/config';
 import { readJSON } from './util/index';
-import semver from 'semver';
-import { run, pushd, popd, mkCleanDir, copy } from '../lib/shell';
+import { run, copy } from '../lib/shell';
 import {
   isGitRepo,
   tagExists,

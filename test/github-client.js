@@ -1,9 +1,8 @@
 import test from 'tape';
 import proxyquire from 'proxyquire';
 import shell from 'shelljs';
-import * as github from './mock/github';
-import { pushd, popd } from '../lib/shell';
 import repoPathParse from 'parse-repo';
+import * as github from './mock/github';
 
 const { release, uploadAssets } = proxyquire('../lib/github-client', { github });
 
