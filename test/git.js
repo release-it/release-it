@@ -75,7 +75,7 @@ test('clone + stage + commit + tag + push', async t => {
   const actual_latestTagBefore = await getLatestTag();
   t.ok(await isGitRepo());
   t.equal(versionBefore, actual_latestTagBefore);
-  await run('!echo line >> file1');
+  await run('echo line >> file1');
   await stage('file1');
   await commit('.', 'Update file1');
   await run('npm --no-git-tag-version version patch');
@@ -87,7 +87,7 @@ test('clone + stage + commit + tag + push', async t => {
   const actual_latestTagAfter = await getLatestTag();
   t.equal(pkgAfter.version, actual_latestTagAfter);
   await push();
-  const status = await run('!git status -uno');
+  const status = await run('git status -uno');
   t.ok(status.includes('nothing to commit'));
   shell.popd();
   shell.rm('-rf', [tmpOrigin, tmp]);
@@ -98,8 +98,8 @@ test('getChangelog', async t => {
   shell.mkdir(tmp);
   shell.pushd(tmp);
   await run('git init');
-  await run('!echo line >> file && git add file && git commit -m "First commit"');
-  await run('!echo line >> file && git add file && git commit -m "Second commit"');
+  await run('echo line >> file && git add file && git commit -m "First commit"');
+  await run('echo line >> file && git add file && git commit -m "Second commit"');
   t.shouldReject(
     getChangelog({
       changelogCommand: 'git log --invalid',
@@ -118,8 +118,8 @@ test('getChangelog', async t => {
   t.ok(pattern.test(changelog));
 
   await run('git tag 1.0.0');
-  await run('!echo line C >> file && git add file && git commit -m "Third commit"');
-  await run('!echo line D >> file && git add file && git commit -m "Fourth commit"');
+  await run('echo line C >> file && git add file && git commit -m "Third commit"');
+  await run('echo line D >> file && git add file && git commit -m "Fourth commit"');
 
   const changelogSinceTag = await getChangelog({
     changelogCommand: config.options.changelogCommand,
