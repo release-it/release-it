@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 require('babel-register')({
-  ignore: false,
   only: /release-it\/lib/
 });
 

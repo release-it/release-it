@@ -2,14 +2,12 @@
   "presets": [
     ["env", {
       "targets": {
-        "node": 4
-      }
+        "node": "current"
+      },
+      "exclude": ["transform-regenerator"]
     }]
   ],
   "plugins": [
-    "transform-es2015-modules-commonjs",
-    ["transform-runtime", {
-      "regenerator": true
-    }]
+    "transform-es2015-modules-commonjs"
   ]
 }
