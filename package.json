@@ -70,7 +70,7 @@
     "eslint": "4.9.0",
     "eslint-config-prettier": "2.6.0",
     "eslint-plugin-prettier": "2.3.1",
-    "mock-stdio": "1.0.0",
+    "mock-stdio": "1.0.1",
     "nyc": "11.2.1",
     "prettier": "1.7.3",
     "proxyquire": "1.8.0",
