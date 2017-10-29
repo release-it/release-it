@@ -1,5 +1,5 @@
 {
-  "pkgFiles": ["package.json", "package-lock.json"],
+  "pkgFiles": ["package.json"],
   "github": {
     "release": true
   },

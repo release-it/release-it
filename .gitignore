@@ -2,3 +2,4 @@
 .stage
 .tmp*
 coverage
+package-lock.json
