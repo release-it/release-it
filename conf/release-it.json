@@ -63,14 +63,14 @@
       "tag": true,
       "push": true,
       "release": true,
-      "publish": false
+      "publish": true
     },
     "dist": {
       "status": false,
       "commit": true,
       "tag": false,
       "push": true,
-      "release": true,
+      "release": false,
       "publish": false
     }
   }
