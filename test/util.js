@@ -58,6 +58,16 @@ test('parseVersion', async t => {
   t.end();
 });
 
+test('parseVersion (bump to provided version)', async t => {
+  mocks['./git'].getLatestTag = () => '1.0.0';
+  t.deepEqual(await parseVersion({ increment: '1.2.3' }), {
+    latestVersion: '1.0.0',
+    version: '1.2.3'
+  });
+  t.shouldReject(parseVersion({ increment: '0.8.0' }), /No or invalid version provided/);
+  t.end();
+});
+
 test('truncateLines', t => {
   const input = '1\n2\n3\n4\n5\n6';
   t.equal(truncateLines(input), input);
