@@ -64,7 +64,10 @@ test('parseVersion (bump to provided version)', async t => {
     latestVersion: '1.0.0',
     version: '1.2.3'
   });
-  t.shouldReject(parseVersion({ increment: '0.8.0' }), /No or invalid version provided/);
+  t.deepEqual(await parseVersion({ increment: '0.8.0' }), {
+    latestVersion: '1.0.0',
+    version: false
+  });
   t.end();
 });
 
