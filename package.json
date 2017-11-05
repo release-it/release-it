@@ -67,6 +67,7 @@
     "shelljs": "0.7.8",
     "supports-color": "4.4.0",
     "tmp-promise": "1.0.3",
+    "update-notifier": "2.3.0",
     "yargs-parser": "8.0.0"
   },
   "devDependencies": {
