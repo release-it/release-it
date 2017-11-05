@@ -45,9 +45,38 @@ Updating from v2 to v3 should be painless. See [v3.0.0 release notes](https://gi
 
 ## 💾 Installation
 
+### Global
+
+As a globally available CLI tool:
+
 ```bash
-npm install -g release-it
+npm install --global release-it
 ```
+
+### Local
+
+As a `devDependency` in your project:
+
+```
+npm install --save-dev release-it
+```
+
+Add this as a `script` to `package.json`:
+
+```
+{
+  "name": "my-package",
+  "version": "1.0.0".
+  "scripts": {
+    "release": "release-it"
+  },
+  "devDependencies": {
+    "release-it": "^4.2.0"
+  }
+}
+```
+
+Now you can run `npm run release` from the command line.
 
 ## ▶️ Usage
 
