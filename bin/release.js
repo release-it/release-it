@@ -1,10 +1,14 @@
 #!/usr/bin/env node
 
 const release = require('../lib/release'),
+  pkg = require('../package.json'),
+  updater = require('update-notifier'),
   args = [].slice.call(process.argv, 2),
   isDebug = args.indexOf('--debug') !== -1;
 
 var exitCode = 0;
+
+updater({ pkg: pkg}).notify();
 
 release.cli(args).then(function() {
   process.exit(exitCode);
