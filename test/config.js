@@ -1,4 +1,5 @@
 import test from 'tape';
+import isCI from 'is-ci';
 import Config from '../lib/config';
 import defaultConfig from '../conf/release-it.json';
 import localConfig from '../.release-it.json';
@@ -44,11 +45,17 @@ test('config.mergeOptions', t => {
   t.equal(config.isVerbose, true);
   t.equal(config.isForce, false);
   t.equal(config.isDryRun, false);
-  t.equal(config.isInteractive, true);
+  t.equal(config.isInteractive, !isCI);
   t.equal(config.isShowVersion, false);
   t.equal(config.isShowHelp, false);
   t.equal(options.increment, '1.0.0');
   t.equal(options.github.release, true);
+  t.end();
+});
+
+test('config.mergeOptions (override -n)', t => {
+  const config = new Config({}, '--no-n');
+  t.equal(config.isInteractive, true);
   t.end();
 });
 
