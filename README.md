@@ -74,9 +74,7 @@ release-it --dry-run
 
 ## ⚙️ Configuration
 
-Out of the box, release-it has sane defaults, and plenty of options to configure it.
-
-All [default settings](conf/release-it.json) can be overridden with a config file. Put the options to override in `.release-it.json` in the project root. You can use `--config` if you want to use another path for this file. Example:
+Out of the box, release-it has sane defaults, and plenty of options to configure it. Put the options to override in `.release-it.json` in the project root. Example:
 
 ```
 {
@@ -88,6 +86,9 @@ All [default settings](conf/release-it.json) can be overridden with a config fil
   }
 }
 ```
+
+* Only the settings to override need to be in `.release-it.json`. Everything else will fall back to the [default configuration](conf/release-it.json).
+* You can use `--config` if you want to use another path for the local `.release-it.json`. 
 
 Any option can also be set on the command-line, and will have highest priority. Example:
 
@@ -103,11 +104,11 @@ release-it --no-npm.publish
 
 ## 🤖 Interactive vs. non-interactive mode
 
-By default, release-it is interactive and allows you to confirm each task before execution.
+By default, release-it is interactive and allows you to confirm each task before execution:
 
 <img src="./assets/release-it.png?raw=true" height="148">
 
-Once you are confident release-it does the right thing, you can fully automate it by using the `--non-interactive` (or `-n`) option (as demonstrated in the animated image above). An overview of the tasks that will be executed:
+On a Continuous Integration (CI) environment, or by using the `-n` option, this is fully automated. No prompts are shown and the configured tasks will be executed. This is demonstrated in the first animation above. An overview of the default tasks:
 
 Task | Option | Default | Prompt | Default
 :--|:--|:-:|:--|:-:
@@ -116,10 +117,12 @@ Show staged files | N/A | N/A | `prompt.src.status` | `N`
 Git commit | `src.commit` | `true` | `prompt.src.commit` | `Y`
 Git push | `src.push` | `true` | `prompt.src.push` | `Y`
 Git tag | `src.tag` | `true` | `prompt.src.tag` | `Y`
-GitHub release | `github.release` | `true` | `prompt.src.release` | `Y`
+GitHub release | `github.release` | `false` | `prompt.src.release` | `Y`
 npm publish | `npm.publish` | `true` | `prompt.src.publish` | `Y`
 
-Note that the `prompt.*` options are used for the default answers in interactive mode. You can still change the answer to either `Y` or `N` as the questions show up.
+The left columns are default options in non-interactive (or CI) mode.
+
+The `prompt.*` options on the right in the table are used for the default answers in interactive mode. You can still change the answer to either `Y` or `N` as the questions show up (or cancel the process with `Ctrl-c`).
 
 ## 🔗 Command Hooks
 
@@ -235,6 +238,12 @@ During the release of a source and distribution repository, some "dist" tasks ar
 
 * The `"private": true` setting in package.json will be respected and the package won't be published to npm.
 * You can use `src.pushRepo` option to set an alternative url or name of a remote as in `git push <src.pushRepo>`. By default this is `null` and  `git push` is used when pushing to the remote.
+
+## Examples
+
+* [π.simloovoo.com](https://github.com/simshanith/pi.simloovoo.com) - Uses GitHub releases with attachments and various command hooks to run npm scripts.
+* [swagger-ui-cornify](https://github.com/shockey/swagger-ui-cornify) - Attaches minified release copies to GitHub releases
+* [React Truncate Markup](https://github.com/parsable/react-truncate-markup)
 
 ## 📚 Resources
 
