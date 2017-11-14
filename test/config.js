@@ -53,6 +53,22 @@ test('config.mergeOptions', t => {
   t.end();
 });
 
+test('config.assignOptions', t => {
+  const config = new Config({}, '1.0.0 -eV --github.release');
+  const options = {
+    verbose: false,
+    increment: 'major',
+    github: {
+      release: false
+    }
+  }
+  config.assignOptions(options);
+  t.equal(config.isVerbose, false);
+  t.equal(config.options.increment, 'major');
+  t.equal(config.options.github.release, false);
+  t.end();
+});
+
 test('config.mergeOptions (override -n)', t => {
   const config = new Config({}, '--no-n');
   t.equal(config.isInteractive, true);
