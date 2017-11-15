@@ -1,6 +1,6 @@
 {
   "name": "release-it",
-  "version": "4.4.0",
+  "version": "4.5.0-alpha.0",
   "description": "CLI release tool for Git repos and npm packages.",
   "keywords": [
     "build",
@@ -54,7 +54,7 @@
     "chalk": "2.2.2",
     "cpy": "6.0.0",
     "debug": "3.1.0",
-    "github": "12.0.0",
+    "github": "12.0.1",
     "globby": "6.1.0",
     "got": "7.1.0",
     "inquirer": "3.3.0",
