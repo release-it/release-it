@@ -24,7 +24,7 @@ const tmp = 'test/resources/tmp';
 
 test('isGitRepo', async t => {
   t.ok(await isGitRepo());
-  const tmp = 'test/resources';
+  const tmp = '..';
   shell.pushd(tmp);
   t.notOk(await isGitRepo());
   shell.popd();

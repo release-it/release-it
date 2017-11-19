@@ -78,7 +78,7 @@ test('config.mergeOptions (override -n)', t => {
 test('config.config', t => {
   t.throws(() => {
     new Config({ config: 'nofile' });
-  }, /Could not load.+nofile/);
+  }, /File not found.+nofile/);
   t.end();
 });
 
