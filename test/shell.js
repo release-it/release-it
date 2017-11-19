@@ -1,10 +1,10 @@
-import test from 'tape';
-import shell from 'shelljs';
-import mockStdIo from 'mock-stdio';
-import path from 'path';
-import { readFile, readJSON } from './util/index';
-import { config } from '../lib/config';
-import { run, runTemplateCommand, pushd, popd, mkTmpDir, copy, bump } from '../lib/shell';
+const test = require('tape');
+const shell = require('shelljs');
+const mockStdIo = require('mock-stdio');
+const path = require('path');
+const { readFile, readJSON } = require('./util/index');
+const { config } = require('../lib/config');
+const { run, runTemplateCommand, pushd, popd, mkTmpDir, copy, bump } = require('../lib/shell');
 
 const dir = 'test/resources';
 const pwd = process.cwd();

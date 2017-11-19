@@ -1,9 +1,9 @@
-import test from 'tape';
-import shell from 'shelljs';
-import semver from 'semver';
-import { config } from '../lib/config';
-import { readJSON } from './util/index';
-import { run, copy } from '../lib/shell';
+const test = require('tape');
+const shell = require('shelljs');
+const semver = require('semver');
+const { config } = require('../lib/config');
+const { readJSON } = require('./util/index');
+const { run, copy } = require('../lib/shell');
 import {
   isGitRepo,
   tagExists,
@@ -16,7 +16,8 @@ import {
   tag,
   getLatestTag,
   push,
-  getChangelog
+  getChangelog,
+  isSameRepo
 } from '../lib/git';
 
 const tmp = 'test/resources/tmp';

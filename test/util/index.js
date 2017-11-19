@@ -1,7 +1,7 @@
-import fs from 'fs';
-import path from 'path';
+const fs = require('fs');
+const path = require('path');
 
-export const readFile = file =>
+const readFile = file =>
   new Promise((resolve, reject) => {
     fs.readFile(path.resolve(file), 'utf8', (err, data) => {
       if (err) reject(err);
@@ -9,4 +9,9 @@ export const readFile = file =>
     });
   });
 
-export const readJSON = file => readFile(file).then(JSON.parse);
+const readJSON = file => readFile(file).then(JSON.parse);
+
+module.exports = {
+  readFile,
+  readJSON
+};

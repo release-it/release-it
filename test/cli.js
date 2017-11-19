@@ -1,7 +1,7 @@
-import test from 'tape';
-import mockStdIo from 'mock-stdio';
-import pkg from '../package.json';
-import { version, help } from '../lib/cli';
+const test = require('tape');
+const mockStdIo = require('mock-stdio');
+const pkg = require('../package.json');
+const { version, help } = require('../lib/cli');
 
 test('version', t => {
   mockStdIo.start();

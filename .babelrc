@@ -6,8 +6,5 @@
       },
       "exclude": ["transform-regenerator"]
     }]
-  ],
-  "plugins": [
-    "transform-es2015-modules-commonjs"
   ]
 }

@@ -1,10 +1,10 @@
-import test from 'tape';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
+const test = require('tape');
+const proxyquire = require('proxyquire');
+const sinon = require('sinon');
 
 const got = sinon.stub().returns(Promise.resolve({}));
 
-const { default: trackEvent } = proxyquire('../lib/metrics', {
+const { trackEvent } = proxyquire('../lib/metrics', {
   got
 });
 

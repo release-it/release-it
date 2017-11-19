@@ -1,9 +1,9 @@
-import test from 'tape';
-import isCI from 'is-ci';
-import Config from '../lib/config';
-import defaultConfig from '../conf/release-it.json';
-import localConfig from '../.release-it.json';
-import pkg from '../package.json';
+const test = require('tape');
+const isCI = require('is-ci');
+const { Config } = require('../lib/config');
+const defaultConfig = require('../conf/release-it.json');
+const localConfig = require('../.release-it.json');
+const pkg = require('../package.json');
 
 test('config', t => {
   const config = new Config();

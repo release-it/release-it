@@ -1,4 +1,4 @@
-import { Test } from 'tape';
+const { Test } = require('tape');
 
 const noop = () => {};
 

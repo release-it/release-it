@@ -1,14 +1,19 @@
-export default function GitHubApi() {}
+module.exports = class GitHubApi {
+  
+  get repos() {
+    return {
+      createRelease: (opts, cb) => {
+        cb(null, releaseResponse);
+      },
+      uploadAsset: (opts, cb) => {
+        cb(null, uploadResponse);
+      }
+    }
+  };
 
-GitHubApi.prototype.authenticate = () => {};
-GitHubApi.prototype.repos = {
-  createRelease: (opts, cb) => {
-    cb(null, releaseResponse);
-  },
-  uploadAsset: (opts, cb) => {
-    cb(null, uploadResponse);
-  }
-};
+  authenticate() {}
+  
+}
 
 const releaseResponse = {
   data: {

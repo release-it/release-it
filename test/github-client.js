@@ -1,8 +1,8 @@
-import test from 'tape';
-import proxyquire from 'proxyquire';
-import shell from 'shelljs';
-import repoPathParse from 'parse-repo';
-import * as github from './mock/github';
+const test = require('tape');
+const proxyquire = require('proxyquire');
+const shell = require('shelljs');
+const repoPathParse = require('parse-repo');
+const github = require('./mock/github');
 
 const { release, uploadAssets } = proxyquire('../lib/github-client', { github });
 

@@ -1,20 +1,5 @@
-import test from 'tape';
-import proxyquire from 'proxyquire';
-import { getLatestTag } from '../lib/git';
-
-const mocks = {
-  './git': {
-    getLatestTag
-  }
-};
-
-const { isValidVersion, format, template, parseVersion, isSameRepo, truncateLines } = proxyquire('../lib/util', mocks);
-
-test('isValidVersion', t => {
-  t.equal(isValidVersion('1.0.0'), true);
-  t.equal(isValidVersion(1.0), false);
-  t.end();
-});
+const test = require('tape');
+const { format, template, isSameRepo, truncateLines } = require('../lib/util');
 
 test('format', t => {
   t.equal(format('release v%s', '1.0.0'), 'release v1.0.0');
