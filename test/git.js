@@ -134,3 +134,20 @@ test('getChangelog', async t => {
   shell.rm('-rf', tmp);
   t.end();
 });
+
+test('isSameRepo', t => {
+  const repoA = {
+    remote: 'https://github.com/webpro/release-it.git',
+    protocol: 'https',
+    host: 'github.com',
+    repository: 'webpro/release-it',
+    owner: 'webpro',
+    project: 'release-it-test'
+  };
+  const repoB = Object.assign({}, repoA, {
+    remote: 'https://github.com/webpro/release-it.git#dist'
+  });
+  t.ok(isSameRepo(repoA, repoB));
+  t.end();
+});
+
