@@ -33,7 +33,8 @@
     "preRelease": false,
     "draft": false,
     "tokenRef": "GITHUB_TOKEN",
-    "assets": null
+    "assets": null,
+    "host": null
   },
   "dist": {
     "repo": false,
