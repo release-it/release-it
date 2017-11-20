@@ -1,10 +1,15 @@
 const test = require('tape');
+const sinon = require('sinon');
 const proxyquire = require('proxyquire');
 const shell = require('shelljs');
 const repoPathParse = require('parse-repo');
-const github = require('./mock/github');
+const GitHubApi = require('./mock/github');
 
-const { release, uploadAssets } = proxyquire('../lib/github-client', { github });
+const GitHubApiStub = sinon.stub().returns(new GitHubApi());
+
+const { release, uploadAssets } = proxyquire('../lib/github-client', {
+  github: GitHubApiStub
+});
 
 test('release + uploadAssets', async t => {
   const dir = 'test/resources';
@@ -41,6 +46,48 @@ test('release + uploadAssets', async t => {
   t.equal(uploadResult.state, 'uploaded');
   t.equal(uploadResult.browser_download_url, `${remoteUrl}/releases/download/v${version}/${asset}`);
 
+  t.equal(GitHubApiStub.callCount, 1);
+  t.deepEqual(GitHubApiStub.firstCall.args[0], {
+    version: '3.0.0',
+    debug: false,
+    protocol: 'https',
+    host: '',
+    pathPrefix: '',
+    timeout: 10000,
+    headers: { 'user-agent': 'webpro/release-it' }
+  });
+
   shell.popd();
+  GitHubApiStub.resetHistory();
+  t.end();
+});
+
+test('release + uploadAssets (enterprise)', async t => {
+  const releaseResult = await release({
+    repo: repoPathParse('https://github.my-GHE-enabled-company.com/user/repo'),
+    github: {}
+  });
+
+  t.equal(GitHubApiStub.callCount, 1);
+  t.equal(GitHubApiStub.firstCall.args[0].host, 'github.my-GHE-enabled-company.com');
+  t.equal(GitHubApiStub.firstCall.args[0].pathPrefix, '/api/v3');
+
+  GitHubApiStub.resetHistory();
+  t.end();
+});
+
+test('release + uploadAssets (override host)', async t => {
+  const releaseResult = await release({
+    repo: repoPathParse('https://github.my-GHE-enabled-company.com/user/repo'),
+    github: {
+      host: 'my-custom-host.org'
+    }
+  });
+
+  t.equal(GitHubApiStub.callCount, 1);
+  t.equal(GitHubApiStub.firstCall.args[0].host, 'my-custom-host.org');
+  t.equal(GitHubApiStub.firstCall.args[0].pathPrefix, '/api/v3');
+
+  GitHubApiStub.resetHistory();
   t.end();
 });
