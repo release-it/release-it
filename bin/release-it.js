@@ -3,7 +3,9 @@
 var updater = require('update-notifier');
 var pkg = require('../package.json');
 
-require('babel-register');
+require('babel-register')({
+  only: /release-it\/lib/
+});
 
 const release = require('../lib');
 
