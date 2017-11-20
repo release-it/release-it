@@ -150,4 +150,3 @@ test('isSameRepo', t => {
   t.ok(isSameRepo(repoA, repoB));
   t.end();
 });
-

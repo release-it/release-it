@@ -1,5 +1,4 @@
 module.exports = class GitHubApi {
-  
   get repos() {
     return {
       createRelease: (opts, cb) => {
@@ -8,12 +7,11 @@ module.exports = class GitHubApi {
       uploadAsset: (opts, cb) => {
         cb(null, uploadResponse);
       }
-    }
-  };
+    };
+  }
 
   authenticate() {}
-  
-}
+};
 
 const releaseResponse = {
   data: {

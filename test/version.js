@@ -2,9 +2,10 @@ const test = require('tape');
 const proxyquire = require('proxyquire');
 const { isValid } = require('../lib/version');
 
-const getMock = git => proxyquire('../lib/version', {
-  './git': git
-});
+const getMock = git =>
+  proxyquire('../lib/version', {
+    './git': git
+  });
 
 test('isValidVersion', t => {
   t.equal(isValid('1.0.0'), true);

@@ -61,7 +61,7 @@ test('config.assignOptions', t => {
     github: {
       release: false
     }
-  }
+  };
   config.assignOptions(options);
   t.equal(config.isVerbose, false);
   t.equal(config.options.increment, 'major');
