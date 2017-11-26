@@ -72,7 +72,7 @@
     "yargs-parser": "8.0.0"
   },
   "devDependencies": {
-    "eslint": "4.11.0",
+    "eslint": "4.12.0",
     "eslint-config-prettier": "2.8.0",
     "eslint-plugin-prettier": "2.3.1",
     "mock-stdio": "1.0.1",
