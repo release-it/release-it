@@ -55,8 +55,8 @@
     "debug": "3.1.0",
     "github": "12.1.0",
     "globby": "7.1.1",
-    "got": "8.0.0",
-    "inquirer": "4.0.0",
+    "got": "8.0.1",
+    "inquirer": "4.0.1",
     "is-ci": "1.0.10",
     "lodash": "4.17.4",
     "ora": "1.3.0",
@@ -64,7 +64,7 @@
     "parse-repo": "1.0.4",
     "semver": "5.4.1",
     "shelljs": "0.7.8",
-    "supports-color": "5.0.0",
+    "supports-color": "5.0.1",
     "tmp-promise": "1.0.4",
     "update-notifier": "2.3.0",
     "uuid": "3.1.0",
@@ -72,14 +72,14 @@
     "yargs-parser": "8.0.0"
   },
   "devDependencies": {
-    "eslint": "4.11.0",
-    "eslint-config-prettier": "2.8.0",
+    "eslint": "4.12.1",
+    "eslint-config-prettier": "2.9.0",
     "eslint-plugin-prettier": "2.3.1",
     "mock-stdio": "1.0.1",
     "nyc": "11.3.0",
-    "prettier": "1.8.2",
+    "prettier": "1.9.1",
     "proxyquire": "1.8.0",
-    "sinon": "4.1.2",
+    "sinon": "4.1.3",
     "tape": "4.8.0"
   },
   "engines": {
