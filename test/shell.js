@@ -121,5 +121,6 @@ test('mkTmpDir (dry run)', async t => {
   await cleanup();
   t.notOk(~shell.ls('-A').indexOf(path));
   shell.popd();
+  config.options['dry-run'] = false;
   t.end();
 });
