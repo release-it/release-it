@@ -39,7 +39,7 @@ test('parseVersion (bump to provided version)', async t => {
   });
   t.deepEqual(await parse({ increment: '0.8.0' }), {
     latestVersion: '1.0.0',
-    version: false
+    version: null
   });
   t.end();
 });
