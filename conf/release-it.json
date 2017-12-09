@@ -8,6 +8,7 @@
   "preReleaseId": null,
   "buildCommand": false,
   "safeBump": true,
+  "beforeChangelogCommand": false,
   "changelogCommand": "git log --pretty=format:\"* %s (%h)\" [REV_RANGE]",
   "requireCleanWorkingDir": false,
   "src": {
