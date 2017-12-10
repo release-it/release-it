@@ -34,7 +34,6 @@ test('isGitRepo', async t => {
 });
 
 test('hasUpstream', async t => {
-  t.ok(await hasUpstream());
   shell.mkdir(tmp);
   shell.pushd(tmp);
   await run('git init');
@@ -57,6 +56,8 @@ test('getBranchName', async t => {
   await run('git add file1');
   await run('git commit -am "Add file1"');
   t.equal(await getBranchName(), 'feat');
+  shell.popd();
+  shell.rm('-rf', tmp);
   t.end();
 });
 
