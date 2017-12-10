@@ -6,6 +6,8 @@ const { readJSON } = require('./util/index');
 const { run, copy } = require('../lib/shell');
 import {
   isGitRepo,
+  hasUpstream,
+  getBranchName,
   tagExists,
   getRemoteUrl,
   isWorkingDirClean,
@@ -28,6 +30,33 @@ test('isGitRepo', async t => {
   shell.pushd(tmp);
   t.notOk(await isGitRepo());
   shell.popd();
+  t.end();
+});
+
+test('hasUpstream', async t => {
+  t.ok(await hasUpstream());
+  shell.mkdir(tmp);
+  shell.pushd(tmp);
+  await run('git init');
+  await run('touch file1');
+  await run('git add file1');
+  await run('git commit -am "Add file1"');
+  t.notOk(await hasUpstream());
+  shell.popd();
+  shell.rm('-rf', tmp);
+  t.end();
+});
+
+test('getBranchName', async t => {
+  shell.mkdir(tmp);
+  shell.pushd(tmp);
+  await run('git init');
+  t.equal(await getBranchName(), null);
+  await run('git checkout -b feat');
+  await run('touch file1');
+  await run('git add file1');
+  await run('git commit -am "Add file1"');
+  t.equal(await getBranchName(), 'feat');
   t.end();
 });
 

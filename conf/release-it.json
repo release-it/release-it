@@ -9,6 +9,7 @@
   "buildCommand": false,
   "changelogCommand": "git log --pretty=format:\"* %s (%h)\" [REV_RANGE]",
   "requireCleanWorkingDir": false,
+  "requireUpstream": true,
   "src": {
     "commit": true,
     "commitMessage": "Release %s",
