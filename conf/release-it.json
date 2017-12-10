@@ -8,7 +8,7 @@
   "preReleaseId": null,
   "buildCommand": false,
   "changelogCommand": "git log --pretty=format:\"* %s (%h)\" [REV_RANGE]",
-  "requireCleanWorkingDir": false,
+  "requireCleanWorkingDir": true,
   "requireUpstream": true,
   "src": {
     "commit": true,
