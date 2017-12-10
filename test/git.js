@@ -84,7 +84,7 @@ test('getRemoteUrl', async t => {
   shell.mkdir(tmp);
   shell.pushd(tmp);
   await run(`git init`);
-  t.shouldReject(getRemoteUrl(), /Could not get remote Git url/);
+  t.equal(await getRemoteUrl(), null);
   await run(`git remote add origin foo`);
   t.equal(await getRemoteUrl(), 'foo');
   shell.popd();
