@@ -135,6 +135,9 @@ By default, release-it is interactive and allows you to confirm each task before
 
 <img src="./assets/release-it.png?raw=true" height="148">
 
+The prompted questions can be configured so that only some of them are shown (see the `Option` column
+in the table bellow).
+
 On a Continuous Integration (CI) environment, or by using the `-n` option, this is fully automated. No prompts are shown and the configured tasks will be executed. This is demonstrated in the first animation above. An overview of the default tasks:
 
 Task | Option | Default | Prompt | Default
