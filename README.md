@@ -135,9 +135,6 @@ By default, release-it is interactive and allows you to confirm each task before
 
 <img src="./assets/release-it.png?raw=true" height="148">
 
-The prompted questions can be configured so that only some of them are shown (see the `Option` column
-in the table bellow).
-
 On a Continuous Integration (CI) environment, or by using the `-n` option, this is fully automated. No prompts are shown and the configured tasks will be executed. This is demonstrated in the first animation above. An overview of the default tasks:
 
 Task | Option | Default | Prompt | Default
@@ -153,6 +150,8 @@ npm publish | `npm.publish` | `true` | `prompt.src.publish` | `Y`
 The left columns are default options in non-interactive (or CI) mode.
 
 The `prompt.*` options on the right in the table are used for the default answers in interactive mode. You can still change the answer to either `Y` or `N` as the questions show up (or cancel the process with `Ctrl-c`).
+
+Also, if e.g. `npm.publish` is `false`, the related prompt (`prompt.src.publish`) will not be shown (regardless of its default answer).
 
 ## 🔗 Command Hooks
 
