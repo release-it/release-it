@@ -1,5 +1,7 @@
 const test = require('tape');
 const proxyquire = require('proxyquire');
+const shell = require('shelljs');
+const { run } = require('../lib/shell');
 const { isValid } = require('../lib/version');
 
 const getMock = git =>
@@ -39,7 +41,29 @@ test('parseVersion (bump to provided version)', async t => {
   });
   t.deepEqual(await parse({ increment: '0.8.0' }), {
     latestVersion: '1.0.0',
-    version: false
+    version: null
   });
+  t.end();
+});
+
+test('parseVersion (recommended conventional bump)', async t => {
+  const { parse } = getMock({ getLatestTag: () => '1.0.0' });
+
+  const tmp = 'test/resources/tmp';
+  shell.mkdir(tmp);
+  shell.pushd(tmp);
+  await run('git init');
+  await run('echo line >> file && git add file && git commit -m "fix(thing): repair that thing"');
+  await run(`git tag 1.0.0`);
+  await run('echo line >> file && git add file && git commit -m "feat(foo): extend the foo"');
+  await run('echo line >> file && git add file && git commit -m "feat(bar): more bar"');
+
+  t.deepEqual(await parse({ increment: 'conventional:angular' }), {
+    latestVersion: '1.0.0',
+    version: '1.1.0'
+  });
+
+  shell.popd();
+  shell.rm('-rf', tmp);
   t.end();
 });

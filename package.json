@@ -1,6 +1,6 @@
 {
   "name": "release-it",
-  "version": "5.1.2",
+  "version": "5.2.0-alpha.0",
   "description": "CLI release tool for Git repos and npm packages.",
   "keywords": [
     "build",
@@ -51,6 +51,7 @@
     "babel-register": "6.26.0",
     "bump-file": "1.0.0",
     "chalk": "2.3.0",
+    "conventional-recommended-bump": "1.1.0",
     "cpy": "6.0.0",
     "debug": "3.1.0",
     "github": "12.1.0",
