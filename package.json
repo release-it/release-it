@@ -1,6 +1,6 @@
 {
   "name": "release-it",
-  "version": "5.2.0-alpha.0",
+  "version": "5.2.0-rc.0",
   "description": "CLI release tool for Git repos and npm packages.",
   "keywords": [
     "build",
