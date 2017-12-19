@@ -14,6 +14,7 @@ CLI release tool for Git repos and npm packages.
 * [Upload assets to GitHub release](#-release-assets)
 * Publish to npm
 * [Manage pre-releases](#-manage-pre-releases)
+* Support for [Conventional Changelog workflows](#custom-or-conventional-changelog)
 * [Push build artefacts to a separate repository or branch](#-distribution-repository)
 
 [![Build Status](https://travis-ci.org/webpro/release-it.svg?branch=master)](https://travis-ci.org/webpro/release-it)
@@ -32,6 +33,7 @@ CLI release tool for Git repos and npm packages.
 * [GitHub Release](#️-github-release)
 * [Release Assets](#-release-assets)
 * [Manage Pre-releases](#-manage-pre-releases)
+* [Custom or Conventional Changelog](#custom-or-conventional-changelog)
 * [Distribution Repository](#-distribution-repository)
 * [Notes](#-notes)
 * [Resources](#-resources)
@@ -156,6 +158,7 @@ The `prompt.*` options on the right in the table are used for the default answer
 The command hooks are executed from the root directory of the `src` or `dist` repository, respectively:
 
 * `src.beforeStartCommand`
+* `beforeChangelogCommand`
 * `buildCommand` - before files are staged for commit
 * `src.afterReleaseCommand`
 * `dist.beforeStageCommand` - before files are staged in dist repo
@@ -234,6 +237,33 @@ release-it --preRelease=rc --npm.tag=next
 ```
 
 See [semver.org](http://semver.org) for more details.
+
+## Custom or Conventional Changelog
+
+### Recommended Bump
+
+If your project follows the [Angular commit guidelines](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#commits), the special `conventional:angular` increment shorthand can be used to get the recommended bump based on the commit messages:
+
+```
+{
+  "increment": "conventional:angular"
+}
+```
+
+### Generate Custom Changelog
+
+You can use tools like [conventional-changelog-cli](https://www.npmjs.com/package/conventional-changelog-cli) to generate the changelog for the GitHub release. Make sure that the `changelogCommand` outputs the changelog to `stdout`. In the next example, `beforeChangelogCommand` is also used, to update the `CHANGELOG.md` file (and part of the release commit).
+
+```
+{
+  "increment": "conventional:angular",
+  "beforeChangelogCommand": "conventional-changelog -p angular -i CHANGELOG.md -s",
+  "changelogCommand": "conventional-changelog -p angular | tail -n +3",
+  "safeBump": false
+}
+```
+
+The `safeBump` option was introduced for this use case, to make sure the bump is done as late as possible (after the `changelogCommand` is executed).
 
 ## 🚚 Distribution Repository
 
