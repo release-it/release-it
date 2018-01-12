@@ -46,6 +46,15 @@ test('parseVersion (bump to provided version)', async t => {
   t.end();
 });
 
+test('parseVersion (no bump)', async t => {
+  const { parse } = getMock({ getLatestTag: () => '1.0.0' });
+  t.deepEqual(await parse({ increment: false }), {
+    latestVersion: '1.0.0',
+    version: '1.0.0'
+  });
+  t.end();
+});
+
 test('parseVersion (recommended conventional bump)', async t => {
   const { parse } = getMock({ getLatestTag: () => '1.0.0' });
 
