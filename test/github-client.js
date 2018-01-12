@@ -13,7 +13,7 @@ const { release, uploadAssets } = proxyquire('../lib/github-client', {
 
 test('release + uploadAssets', async t => {
   const dir = 'test/resources';
-  shell.pushd(dir);
+  shell.pushd('-q', dir);
 
   const remoteUrl = 'https://github.com/webpro/release-it-test';
   const asset = 'file1';
@@ -57,7 +57,7 @@ test('release + uploadAssets', async t => {
     headers: { 'user-agent': 'webpro/release-it' }
   });
 
-  shell.popd();
+  shell.popd('-q');
   GitHubApiStub.resetHistory();
   t.end();
 });

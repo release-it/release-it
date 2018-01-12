@@ -63,13 +63,13 @@ test('pushd + popd', async t => {
 });
 
 test('copy', async t => {
-  shell.pushd(dir);
+  shell.pushd('-q', dir);
   shell.mkdir('tmp');
   await copy(['file*'], {}, 'tmp');
   t.equal(await readFile('file1'), await readFile('tmp/file1'));
   t.equal(await readFile('file2'), await readFile('tmp/file2'));
   shell.rm('-rf', 'tmp');
-  shell.popd();
+  shell.popd('-q');
   t.end();
 });
 
@@ -102,25 +102,25 @@ test('bump (invalid)', async t => {
 });
 
 test('mkTmpDir', async t => {
-  shell.pushd(dir);
+  shell.pushd('-q', dir);
   const { path, cleanup } = await mkTmpDir('tmp');
   t.equal(path, 'tmp');
   t.ok(~shell.ls().indexOf('tmp'));
   await cleanup();
   t.notOk(~shell.ls().indexOf('tmp'));
-  shell.popd();
+  shell.popd('-q');
   t.end();
 });
 
 test('mkTmpDir (dry run)', async t => {
   config.options['dry-run'] = true;
-  shell.pushd(dir);
+  shell.pushd('-q', dir);
   const { path, cleanup } = await mkTmpDir();
   t.ok(/\.tmp-(\w{8})/.test(path));
   t.ok(~shell.ls('-A').indexOf(path));
   await cleanup();
   t.notOk(~shell.ls('-A').indexOf(path));
-  shell.popd();
+  shell.popd('-q');
   config.options['dry-run'] = false;
   t.end();
 });

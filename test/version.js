@@ -51,7 +51,7 @@ test('parseVersion (recommended conventional bump)', async t => {
 
   const tmp = 'test/resources/tmp';
   shell.mkdir(tmp);
-  shell.pushd(tmp);
+  shell.pushd('-q', tmp);
   await run('git init');
   await run('echo line >> file && git add file && git commit -m "fix(thing): repair that thing"');
   await run(`git tag 1.0.0`);
@@ -63,7 +63,7 @@ test('parseVersion (recommended conventional bump)', async t => {
     version: '1.1.0'
   });
 
-  shell.popd();
+  shell.popd('-q');
   shell.rm('-rf', tmp);
   t.end();
 });

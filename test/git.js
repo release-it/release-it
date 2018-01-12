@@ -27,28 +27,28 @@ const tmp = 'test/resources/tmp';
 test('isGitRepo', async t => {
   t.ok(await isGitRepo());
   const tmp = '..';
-  shell.pushd(tmp);
+  shell.pushd('-q', tmp);
   t.notOk(await isGitRepo());
-  shell.popd();
+  shell.popd('-q');
   t.end();
 });
 
 test('hasUpstream', async t => {
   shell.mkdir(tmp);
-  shell.pushd(tmp);
+  shell.pushd('-q', tmp);
   await run('git init');
   await run('touch file1');
   await run('git add file1');
   await run('git commit -am "Add file1"');
   t.notOk(await hasUpstream());
-  shell.popd();
+  shell.popd('-q');
   shell.rm('-rf', tmp);
   t.end();
 });
 
 test('getBranchName', async t => {
   shell.mkdir(tmp);
-  shell.pushd(tmp);
+  shell.pushd('-q', tmp);
   await run('git init');
   t.equal(await getBranchName(), null);
   await run('git checkout -b feat');
@@ -56,14 +56,14 @@ test('getBranchName', async t => {
   await run('git add file1');
   await run('git commit -am "Add file1"');
   t.equal(await getBranchName(), 'feat');
-  shell.popd();
+  shell.popd('-q');
   shell.rm('-rf', tmp);
   t.end();
 });
 
 test('tagExists + isWorkingDirClean + hasChanges', async t => {
   shell.mkdir(tmp);
-  shell.pushd(tmp);
+  shell.pushd('-q', tmp);
   await run('git init');
   t.notOk(await tagExists('1.0.0'));
   await run('touch file1');
@@ -75,19 +75,19 @@ test('tagExists + isWorkingDirClean + hasChanges', async t => {
   t.ok(await tagExists('1.0.0'));
   t.ok(await isWorkingDirClean());
   t.notOk(await hasChanges());
-  shell.popd();
+  shell.popd('-q');
   shell.rm('-rf', tmp);
   t.end();
 });
 
 test('getRemoteUrl', async t => {
   shell.mkdir(tmp);
-  shell.pushd(tmp);
+  shell.pushd('-q', tmp);
   await run(`git init`);
   t.equal(await getRemoteUrl(), null);
   await run(`git remote add origin foo`);
   t.equal(await getRemoteUrl(), 'foo');
-  shell.popd();
+  shell.popd('-q');
   shell.rm('-rf', tmp);
   t.end();
 });
@@ -97,7 +97,7 @@ test('clone + stage + commit + tag + push', async t => {
   await run(`git init --bare ${tmpOrigin}`);
   await clone(tmpOrigin, tmp);
   await copy('package.json', {}, tmp);
-  shell.pushd(tmp);
+  shell.pushd('-q', tmp);
   await stage('package.json');
   await commit('.', 'Add package.json');
   const pkgBefore = await readJSON('package.json');
@@ -120,14 +120,14 @@ test('clone + stage + commit + tag + push', async t => {
   await push();
   const status = await run('git status -uno');
   t.ok(status.includes('nothing to commit'));
-  shell.popd();
+  shell.popd('-q');
   shell.rm('-rf', [tmpOrigin, tmp]);
   t.end();
 });
 
 test('getChangelog', async t => {
   shell.mkdir(tmp);
-  shell.pushd(tmp);
+  shell.pushd('-q', tmp);
   await run('git init');
   await run('echo line >> file && git add file && git commit -m "First commit"');
   await run('echo line >> file && git add file && git commit -m "Second commit"');
@@ -160,7 +160,7 @@ test('getChangelog', async t => {
   const pattern1 = /^\* Fourth commit \(\w{7}\)\n\* Third commit \(\w{7}\)$/;
   t.ok(pattern1.test(changelogSinceTag));
 
-  shell.popd();
+  shell.popd('-q');
   shell.rm('-rf', tmp);
   t.end();
 });
