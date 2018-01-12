@@ -7,6 +7,8 @@
   "increment": "patch",
   "preReleaseId": null,
   "buildCommand": false,
+  "safeBump": true,
+  "beforeChangelogCommand": false,
   "changelogCommand": "git log --pretty=format:\"* %s (%h)\" [REV_RANGE]",
   "requireCleanWorkingDir": true,
   "requireUpstream": true,
