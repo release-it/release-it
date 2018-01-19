@@ -14,7 +14,7 @@ CLI release tool for Git repos and npm packages.
 * [Upload assets to GitHub release](#-release-assets)
 * Publish to npm
 * [Manage pre-releases](#-manage-pre-releases)
-* Support for [Conventional Changelog workflows](#custom-or-conventional-changelog)
+* Support [Conventional Changelog workflows](#custom-or-conventional-changelog)
 * [Push build artefacts to a separate repository or branch](#-distribution-repository)
 
 [![Build Status](https://travis-ci.org/webpro/release-it.svg?branch=master)](https://travis-ci.org/webpro/release-it)
@@ -185,11 +185,13 @@ To create [GitHub releases](https://help.github.com/articles/creating-releases/)
 
 * The `github.release` option must be `true`.
 * Obtain a [GitHub access token](https://github.com/settings/tokens).
-* Make this available as the environment variable defined with `github.tokenRef`. Example:
+* Make sure the token is available as an environment variable. Example:
 
 ```bash
 export GITHUB_TOKEN="f941e0..."
 ```
+
+Do not put the actual token in the `github.tokenRef` configuration, it should be the name of the environment variable.
 
 ### 📦 Release Assets
 
@@ -265,7 +267,7 @@ You can use tools like [conventional-changelog-cli](https://www.npmjs.com/packag
 }
 ```
 
-The `safeBump` option was introduced for this use case, to make sure the bump is done as late as possible (after the `changelogCommand` is executed).
+The `safeBump` option was introduced for this use case, to make sure the bump is done as late as possible, as in this case the `conventional-changelog` tool needs to run from the current version.
 
 ## 🚚 Distribution Repository
 
