@@ -4,6 +4,12 @@ This document lists breaking changes for each major release.
 
 See the GitHub Releases page for detailed changelogs: [https://github.com/webpro/release-it/releases](https://github.com/webpro/release-it/releases)
 
+## v6
+
+* Default value for `requireCleanWorkingDir` is now `true` (previously: `false`)
+* Skip prompt (interactive) if corresponding task (non-interactive) is disabled.
+  E.g. `npm.publish: false` will also not show "publish" prompt.
+
 ## v5
 
 * Drop support for Node v4.
