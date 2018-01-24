@@ -49,7 +49,6 @@ test('release + uploadAssets', async t => {
   t.equal(GitHubApiStub.callCount, 1);
   t.deepEqual(GitHubApiStub.firstCall.args[0], {
     version: '3.0.0',
-    debug: false,
     protocol: 'https',
     host: '',
     pathPrefix: '',
