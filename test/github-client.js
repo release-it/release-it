@@ -40,7 +40,7 @@ test('release + uploadAssets', async t => {
   t.equal(releaseResult.tag_name, 'v' + version);
   t.equal(releaseResult.name, 'Release ' + version);
 
-  const [uploadResult] = await uploadAssets({ releaseId: releaseResult.id, repo, github });
+  const [uploadResult] = await uploadAssets({ release: releaseResult, repo, github });
 
   t.equal(uploadResult.name, asset);
   t.equal(uploadResult.state, 'uploaded');
@@ -63,7 +63,7 @@ test('release + uploadAssets', async t => {
 });
 
 test('release + uploadAssets (enterprise)', async t => {
-  const releaseResult = await release({
+  await release({
     repo: repoPathParse('https://github.my-GHE-enabled-company.com/user/repo'),
     github: {}
   });
@@ -77,7 +77,7 @@ test('release + uploadAssets (enterprise)', async t => {
 });
 
 test('release + uploadAssets (override host)', async t => {
-  const releaseResult = await release({
+  await release({
     repo: repoPathParse('https://github.my-GHE-enabled-company.com/user/repo'),
     github: {
       host: 'my-custom-host.org'
