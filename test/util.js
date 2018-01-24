@@ -1,5 +1,5 @@
 const test = require('tape');
-const { format, template, isSameRepo, truncateLines } = require('../lib/util');
+const { format, template, truncateLines } = require('../lib/util');
 
 test('format', t => {
   t.equal(format('release v%s', '1.0.0'), 'release v1.0.0');
