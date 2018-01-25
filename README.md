@@ -184,7 +184,7 @@ See this project's [releases page](https://github.com/webpro/release-it/releases
 To create [GitHub releases](https://help.github.com/articles/creating-releases/):
 
 * The `github.release` option must be `true`.
-* Obtain a [GitHub access token](https://github.com/settings/tokens).
+* Obtain a [GitHub access token](https://github.com/settings/tokens) (release-it only needs "repo" access; no "admin" or other scopes).
 * Make sure the token is available as an environment variable. Example:
 
 ```bash
