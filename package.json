@@ -76,7 +76,7 @@
   "devDependencies": {
     "eslint": "4.16.0",
     "eslint-config-prettier": "2.9.0",
-    "eslint-plugin-prettier": "2.5.0",
+    "eslint-plugin-prettier": "2.6.0",
     "mock-stdio": "1.0.1",
     "nyc": "11.4.1",
     "prettier": "1.10.2",
