@@ -173,7 +173,7 @@ All commands can use configuration variables (like template strings):
 "afterReleaseCommand": "echo Successfully released ${version} to ${dist.repo}."
 ```
 
-The variables can be found in the [default configuration](https://github.com/webpro/release-it/blob/master/conf/release-it.json). Additionally `version`, `latestVersion` and `changelog` are exposed in custom commands.
+The variables can be found in the [default configuration](https://github.com/webpro/release-it/blob/master/conf/release-it.json). Additionally, `version`, `latestVersion` and `changelog` are exposed in custom commands. Also the `repo` object (with properties `remote`, `protocol`, `host`, `owner`, `repository` and `project`) is available.
 
 ## 📡 SSH keys & git remotes
 
