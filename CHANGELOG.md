@@ -4,9 +4,13 @@ This document lists breaking changes for each major release.
 
 See the GitHub Releases page for detailed changelogs: [https://github.com/webpro/release-it/releases](https://github.com/webpro/release-it/releases)
 
+## v7
+
+* No longer adds untracked files to release commit. (#230)
+
 ## v6
 
-* Default value for `requireCleanWorkingDir` is now `true` (previously: `false`)
+* Default value for `requireCleanWorkingDir` is now `true` (previously: `false`). (#173)
 * Skip prompt (interactive) if corresponding task (non-interactive) is disabled.
   E.g. `npm.publish: false` will also not show "publish" prompt.
 
