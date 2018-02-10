@@ -8,7 +8,7 @@ const GitHubApi = require('./mock/github');
 const GitHubApiStub = sinon.stub().returns(new GitHubApi());
 
 const { release, uploadAssets } = proxyquire('../lib/github-client', {
-  github: GitHubApiStub
+  '@octokit/rest': GitHubApiStub
 });
 
 test('release + uploadAssets', async t => {

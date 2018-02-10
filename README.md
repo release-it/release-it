@@ -327,7 +327,7 @@ Major dependencies:
 
 * [ShellJS](https://documentup.com/shelljs/shelljs)
 * [Inquirer.js](https://github.com/SBoudrias/Inquirer.js)
-* [node-github](https://github.com/mikedeboer/node-github)
+* [@octokit/rest](https://github.com/octokit/rest.js)
 
 The following Grunt plugins have been a source of inspiration:
 
