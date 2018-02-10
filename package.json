@@ -81,7 +81,7 @@
     "nyc": "11.4.1",
     "prettier": "1.10.2",
     "proxyquire": "1.8.0",
-    "sinon": "4.2.2",
+    "sinon": "4.2.3",
     "tape": "4.8.0"
   },
   "engines": {
