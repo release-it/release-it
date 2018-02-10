@@ -46,6 +46,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@octokit/rest": "14.0.6",
     "async-retry": "1.1.4",
     "babel-preset-env": "1.6.1",
     "babel-register": "6.26.0",
@@ -54,7 +55,6 @@
     "conventional-recommended-bump": "1.2.1",
     "cpy": "6.0.0",
     "debug": "3.1.0",
-    "github": "13.1.0",
     "globby": "7.1.1",
     "got": "8.0.3",
     "inquirer": "5.1.0",
