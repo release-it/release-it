@@ -36,6 +36,9 @@ CLI release tool for Git repos and npm packages.
 * [Custom or Conventional Changelog](#custom-or-conventional-changelog)
 * [Distribution Repository](#-distribution-repository)
 * [Notes](#-notes)
+* [Troubleshooting & debugging](#-troubleshooting--debugging)
+* [Using release-it Programmatically](#-using-release-it-programmatically)
+* [Examples](#-examples)
 * [Resources](#-resources)
 * [Contributing](#-contributing)
 * [Credits](#️-credits)
@@ -302,7 +305,26 @@ During the release of a source and distribution repository, some "dist" tasks ar
 * The `"private": true` setting in package.json will be respected and the package won't be published to npm.
 * You can use `src.pushRepo` option to set an alternative url or name of a remote as in `git push <src.pushRepo>`. By default this is `null` and  `git push` is used when pushing to the remote.
 
-## Examples
+## 🐛 Troubleshooting & debugging
+
+* Use `--verbose` to output commands that release-it executes.
+* Use `--debug` to output configuration and additional (error) logs.
+* Use `DEBUG=octokit:rest* release-it [...]` for debug logs with GitHub releases & assets.
+
+## ⏩ Using release-it Programmatically
+
+From Node.js scripts, release-it can also be used as a dependency:
+
+```
+const releaseIt = require('release-it');
+
+releaseIt(options).then(output => {
+  console.log(output);
+  // { version, latestVersion, changelog }
+});
+```
+
+## 💼 Examples
 
 * [π.simloovoo.com](https://github.com/simshanith/pi.simloovoo.com) - Uses GitHub releases with attachments and various command hooks to run npm scripts.
 * [swagger-ui-cornify](https://github.com/shockey/swagger-ui-cornify) - Attaches minified release copies to GitHub releases
