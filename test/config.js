@@ -92,7 +92,17 @@ test('config.preRelease (shorthand)', t => {
   t.end();
 });
 
-test('config.preRelease', t => {
+test('config.preRelease (shorthand w/o increment)', t => {
+  const config = new Config({}, '--preRelease=alpha');
+  const { options } = config;
+  t.equal(options.increment, 'prerelease');
+  t.equal(options.preReleaseId, 'alpha');
+  t.equal(options.github.preRelease, true);
+  t.equal(options.npm.tag, 'alpha');
+  t.end();
+});
+
+test('config.preRelease (override npm.tag)', t => {
   const config = new Config({}, 'minor --preRelease=rc --npm.tag=next');
   const { options } = config;
   t.equal(options.increment, 'preminor');

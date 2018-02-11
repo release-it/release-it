@@ -55,6 +55,51 @@ test('parseVersion (no bump)', async t => {
   t.end();
 });
 
+test('parseVersion (patch pre-release)', async t => {
+  const { parse } = getMock({ getLatestTag: () => '0.2.0' });
+  t.deepEqual(await parse({ increment: 'prepatch', preReleaseId: 'alpha' }), {
+    latestVersion: '0.2.0',
+    version: '0.2.1-alpha.0'
+  });
+  t.end();
+});
+
+test('parseVersion (patch pre-release with --preRelease=alpha)', async t => {
+  const { parse } = getMock({ getLatestTag: () => '0.2.1' });
+  t.deepEqual(await parse({ increment: 'prerelease', preReleaseId: 'alpha' }), {
+    latestVersion: '0.2.1',
+    version: '0.2.2-alpha.0'
+  });
+  t.end();
+});
+
+test('parseVersion (prepatch follow-up)', async t => {
+  const { parse } = getMock({ getLatestTag: () => '0.2.1-alpha.0' });
+  t.deepEqual(await parse({ increment: 'prerelease' }), {
+    latestVersion: '0.2.1-alpha.0',
+    version: '0.2.1-alpha.1'
+  });
+  t.end();
+});
+
+test('parseVersion (non-numeric prepatch follow-up)', async t => {
+  const { parse } = getMock({ getLatestTag: () => '0.2.1-alpha' });
+  t.deepEqual(await parse({ increment: 'prerelease' }), {
+    latestVersion: '0.2.1-alpha',
+    version: '0.2.1-alpha.0'
+  });
+  t.end();
+});
+
+test('parseVersion (patch release after pre-release)', async t => {
+  const { parse } = getMock({ getLatestTag: () => '0.2.1-alpha.1' });
+  t.deepEqual(await parse({ increment: 'patch' }), {
+    latestVersion: '0.2.1-alpha.1',
+    version: '0.2.1'
+  });
+  t.end();
+});
+
 test('parseVersion (recommended conventional bump)', async t => {
   const { parse } = getMock({ getLatestTag: () => '1.0.0' });
 
