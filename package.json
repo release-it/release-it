@@ -55,7 +55,7 @@
     "conventional-recommended-bump": "1.2.1",
     "cpy": "6.0.0",
     "debug": "3.1.0",
-    "globby": "7.1.1",
+    "globby": "8.0.0",
     "got": "8.0.3",
     "inquirer": "5.1.0",
     "is-ci": "1.1.0",
