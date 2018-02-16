@@ -60,7 +60,7 @@
     "inquirer": "5.1.0",
     "is-ci": "1.1.0",
     "lodash": "4.17.5",
-    "mime-types": "2.1.17",
+    "mime-types": "2.1.18",
     "ora": "1.4.0",
     "os-name": "2.0.1",
     "parse-repo": "1.0.4",
