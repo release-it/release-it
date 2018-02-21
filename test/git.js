@@ -99,7 +99,10 @@ test('clone + stage + commit + tag + push', async t => {
   await copy('package.json', {}, tmp);
   shell.pushd('-q', tmp);
   await stage('package.json');
-  await commit('.', 'Add package.json');
+  await commit({
+    path: '.',
+    message: 'Add package.json'
+  });
   const pkgBefore = await readJSON('package.json');
   const versionBefore = pkgBefore.version;
   await run(`git tag ${versionBefore}`);
@@ -108,16 +111,19 @@ test('clone + stage + commit + tag + push', async t => {
   t.equal(versionBefore, actual_latestTagBefore);
   await run('echo line >> file1');
   await stage('file1');
-  await commit('.', 'Update file1');
+  await commit({
+    path: '.',
+    message: 'Update file1'
+  });
   await run('npm --no-git-tag-version version patch');
   await stage('package.json');
   const nextVersion = semver.inc(versionBefore, 'patch');
-  await commit('.', 'Release v%s', nextVersion);
+  await commit('.', 'Release v%s', nextVersion, '');
   await tag(nextVersion, 'v%s', 'Release v%');
   const pkgAfter = await readJSON('package.json');
   const actual_latestTagAfter = await getLatestTag();
   t.equal(pkgAfter.version, actual_latestTagAfter);
-  await push();
+  await push({});
   const status = await run('git status -uno');
   t.ok(status.includes('nothing to commit'));
   shell.popd('-q');
