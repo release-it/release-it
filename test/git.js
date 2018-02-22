@@ -100,7 +100,6 @@ test('clone + stage + commit + tag + push', async t => {
   shell.pushd('-q', tmp);
   await stage('package.json');
   await commit({
-    path: '.',
     message: 'Add package.json'
   });
   const pkgBefore = await readJSON('package.json');
@@ -112,18 +111,20 @@ test('clone + stage + commit + tag + push', async t => {
   await run('echo line >> file1');
   await stage('file1');
   await commit({
-    path: '.',
     message: 'Update file1'
   });
   await run('npm --no-git-tag-version version patch');
   await stage('package.json');
   const nextVersion = semver.inc(versionBefore, 'patch');
-  await commit('.', 'Release v%s', nextVersion, '');
+  await commit({
+    message: 'Release v%s',
+    version: nextVersion
+  });
   await tag(nextVersion, 'v%s', 'Release v%');
   const pkgAfter = await readJSON('package.json');
   const actual_latestTagAfter = await getLatestTag();
   t.equal(pkgAfter.version, actual_latestTagAfter);
-  await push({});
+  await push();
   const status = await run('git status -uno');
   t.ok(status.includes('nothing to commit'));
   shell.popd('-q');
