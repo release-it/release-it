@@ -15,10 +15,12 @@
   "src": {
     "commit": true,
     "commitMessage": "Release %s",
+    "commitArgs": "",
     "tag": true,
     "tagName": "%s",
     "tagAnnotation": "Release %s",
     "push": true,
+    "pushArgs": "",
     "pushRepo": null,
     "beforeStartCommand": false,
     "afterReleaseCommand": false
@@ -47,10 +49,12 @@
     "pkgFiles": null,
     "commit": true,
     "commitMessage": "Release %s",
+    "commitArgs": "",
     "tag": true,
     "tagName": "%s",
     "tagAnnotation": "Release %s",
     "push": true,
+    "pushArgs": "",
     "beforeStageCommand": false,
     "afterReleaseCommand": false,
     "github": {
