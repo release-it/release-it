@@ -251,13 +251,15 @@ See [semver.org](http://semver.org) for more details.
 
 ### Recommended Bump
 
-If your project follows the [Angular commit guidelines](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#commits), the special `conventional:angular` increment shorthand can be used to get the recommended bump based on the commit messages:
+If your project follows for example the [Angular commit guidelines](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#commits), the special `conventional:angular` increment shorthand can be used to get the recommended bump based on the commit messages:
 
 ```
 {
   "increment": "conventional:angular"
 }
 ```
+
+Please find the list of [available conventions](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages) (`angular`, `ember`, etc).
 
 ### Generate Custom Changelog
 
