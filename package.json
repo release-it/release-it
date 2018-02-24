@@ -53,7 +53,7 @@
     "bump-file": "1.0.0",
     "chalk": "2.3.1",
     "conventional-changelog": "1.1.16",
-    "conventional-recommended-bump": "2.0.5",
+    "conventional-recommended-bump": "2.0.6",
     "cpy": "6.0.0",
     "debug": "3.1.0",
     "globby": "8.0.1",
