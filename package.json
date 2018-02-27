@@ -47,7 +47,7 @@
   "license": "MIT",
   "dependencies": {
     "@octokit/rest": "14.0.9",
-    "async-retry": "1.1.4",
+    "async-retry": "1.2.0",
     "babel-preset-env": "1.6.1",
     "babel-register": "6.26.0",
     "bump-file": "1.0.0",
