@@ -67,7 +67,7 @@
     "parse-repo": "1.0.4",
     "semver": "5.5.0",
     "shelljs": "0.8.1",
-    "supports-color": "5.2.0",
+    "supports-color": "5.3.0",
     "tmp-promise": "1.0.4",
     "update-notifier": "2.3.0",
     "uuid": "3.2.1",
