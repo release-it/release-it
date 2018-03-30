@@ -23,7 +23,8 @@
     "pushArgs": "",
     "pushRepo": null,
     "beforeStartCommand": false,
-    "afterReleaseCommand": false
+    "afterReleaseCommand": false,
+    "addUntrackedFiles": false
   },
   "npm": {
     "publish": true,
@@ -57,6 +58,7 @@
     "pushArgs": "",
     "beforeStageCommand": false,
     "afterReleaseCommand": false,
+    "addUntrackedFiles": false,
     "github": {
       "release": false
     },

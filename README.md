@@ -305,6 +305,7 @@ During the release of a source and distribution repository, some "dist" tasks ar
 ## 📝 Notes
 
 * The `"private": true` setting in package.json will be respected and the package won't be published to npm.
+* By default, untracked files are not added to the release commit. Use `src.addUntrackedFiles: true` to override this behavior.
 * You can use `src.pushRepo` option to set an alternative url or name of a remote as in `git push <src.pushRepo>`. By default this is `null` and  `git push` is used when pushing to the remote.
 
 ## 🐛 Troubleshooting & debugging
