@@ -1,4 +1,10 @@
 {
+  "errors" : {
+    "not-a-git-repo" : "Not a git repository!",
+    "working-dir-must-be-clean" : "Working dir must be clean!",
+    "no-remote-git-url" : "'Could not get remote Git url!",
+    "no-upstream" : "No upstream configured for current branch!"
+  },
   "non-interactive": false,
   "dry-run": false,
   "verbose": false,
