@@ -47,7 +47,7 @@ Unsure about whether you should open a pull request? Feel free to discuss it fir
 Set up the project on your machine:
 
 ```bash
-git clone git@github.com:webpro/release-it.git
+git clone https://github.com/webpro/release-it
 cd release-it
 npm install
 ```
