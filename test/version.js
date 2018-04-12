@@ -1,6 +1,7 @@
 const test = require('tape');
 const proxyquire = require('proxyquire');
 const shell = require('shelljs');
+const mockStdIo = require('mock-stdio');
 const { run } = require('../lib/shell');
 const { isValid } = require('../lib/version');
 
@@ -15,16 +16,19 @@ test('isValidVersion', t => {
   t.end();
 });
 
-test('parseVersion (tag)', async t => {
+test('parse (tag)', async t => {
   const { parse } = getMock({ getLatestTag: () => '2.2.0' });
+  mockStdIo.start();
   t.deepEqual(await parse({ increment: 'patch', npm: { version: '0.0.1' } }), {
     latestVersion: '2.2.0',
     version: '2.2.1'
   });
+  const { stdout } = mockStdIo.end();
+  t.ok(/Latest Git tag \(2\.2\.0\) doesn't match package\.json#version \(0\.0\.1\)/.test(stdout));
   t.end();
 });
 
-test('parseVersion (package.json#version fallback)', async t => {
+test('parse (package.json#version fallback)', async t => {
   const { parse } = getMock({ getLatestTag: () => null });
   t.deepEqual(await parse({ increment: 'patch', npm: { version: '0.6.3' } }), {
     latestVersion: '0.6.3',
@@ -33,7 +37,7 @@ test('parseVersion (package.json#version fallback)', async t => {
   t.end();
 });
 
-test('parseVersion (bump to provided version)', async t => {
+test('parse (bump to provided version)', async t => {
   const { parse } = getMock({ getLatestTag: () => '1.0.0' });
   t.deepEqual(await parse({ increment: '1.2.3' }), {
     latestVersion: '1.0.0',
@@ -46,7 +50,7 @@ test('parseVersion (bump to provided version)', async t => {
   t.end();
 });
 
-test('parseVersion (no bump)', async t => {
+test('parse (no bump)', async t => {
   const { parse } = getMock({ getLatestTag: () => '1.0.0' });
   t.deepEqual(await parse({ increment: false }), {
     latestVersion: '1.0.0',
@@ -55,7 +59,7 @@ test('parseVersion (no bump)', async t => {
   t.end();
 });
 
-test('parseVersion (patch pre-release)', async t => {
+test('parse (patch pre-release)', async t => {
   const { parse } = getMock({ getLatestTag: () => '0.2.0' });
   t.deepEqual(await parse({ increment: 'prepatch', preReleaseId: 'alpha' }), {
     latestVersion: '0.2.0',
@@ -64,7 +68,7 @@ test('parseVersion (patch pre-release)', async t => {
   t.end();
 });
 
-test('parseVersion (patch pre-release with --preRelease=alpha)', async t => {
+test('parse (patch pre-release with --preRelease=alpha)', async t => {
   const { parse } = getMock({ getLatestTag: () => '0.2.1' });
   t.deepEqual(await parse({ increment: 'prerelease', preReleaseId: 'alpha' }), {
     latestVersion: '0.2.1',
@@ -73,7 +77,7 @@ test('parseVersion (patch pre-release with --preRelease=alpha)', async t => {
   t.end();
 });
 
-test('parseVersion (prepatch follow-up)', async t => {
+test('parse (prepatch follow-up)', async t => {
   const { parse } = getMock({ getLatestTag: () => '0.2.1-alpha.0' });
   t.deepEqual(await parse({ increment: 'prerelease' }), {
     latestVersion: '0.2.1-alpha.0',
@@ -82,7 +86,7 @@ test('parseVersion (prepatch follow-up)', async t => {
   t.end();
 });
 
-test('parseVersion (non-numeric prepatch follow-up)', async t => {
+test('parse (non-numeric prepatch follow-up)', async t => {
   const { parse } = getMock({ getLatestTag: () => '0.2.1-alpha' });
   t.deepEqual(await parse({ increment: 'prerelease' }), {
     latestVersion: '0.2.1-alpha',
@@ -91,7 +95,7 @@ test('parseVersion (non-numeric prepatch follow-up)', async t => {
   t.end();
 });
 
-test('parseVersion (patch release after pre-release)', async t => {
+test('parse (patch release after pre-release)', async t => {
   const { parse } = getMock({ getLatestTag: () => '0.2.1-alpha.1' });
   t.deepEqual(await parse({ increment: 'patch' }), {
     latestVersion: '0.2.1-alpha.1',
@@ -100,7 +104,7 @@ test('parseVersion (patch release after pre-release)', async t => {
   t.end();
 });
 
-test('parseVersion (recommended conventional bump)', async t => {
+test('parse (recommended conventional bump)', async t => {
   const { parse } = getMock({ getLatestTag: () => '1.0.0' });
 
   const tmp = 'test/resources/tmp';
