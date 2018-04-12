@@ -5,20 +5,11 @@ const { run, copy } = require('../lib/shell');
 
 const tmp = 'test/resources/tmp';
 
-test('test not-a-git-repo error message', async t => {
+test('test not a git repository', async t => {
   shell.pushd('-q', '..');
-  // await run('touch file1');
-  // await run('git add file1');
-  // await run('git commit -am "Add file1"');
 
-  let options = {
-    errors: {
-      'not-a-git-repo': 'Not a repo man!'
-    }
-  };
-
-  await tasks(options).catch(e => {
-    t.equal(e.message, options.errors['not-a-git-repo']);
+  await tasks({}).catch(e => {
+    t.equal(e.code, 'NOT_GIT_REPO');
   });
 
   shell.popd('-q');
@@ -34,14 +25,8 @@ test('test no-remote-git-url error message', async t => {
   await run('git add file1');
   await run('git commit -am "Add file1"');
 
-  let options = {
-    errors: {
-      'no-remote-git-url': 'no remote...'
-    }
-  };
-
-  await tasks(options).catch(e => {
-    t.equal(e.message, options.errors['no-remote-git-url']);
+  await tasks({}).catch(e => {
+    t.equal(e.code, 'NO_REMOTE_URL');
   });
 
   shell.popd('-q');
@@ -58,14 +43,8 @@ test('test working-dir-must-be-clean error message', async t => {
   await run('git remote add origin foo');
   await run('git add file1');
 
-  let options = {
-    errors: {
-      'working-dir-must-be-clean': 'Not clean - Not cool!'
-    }
-  };
-
-  await tasks(options).catch(e => {
-    t.equal(e.message, options.errors['working-dir-must-be-clean']);
+  await tasks({}).catch(e => {
+    t.equal(e.code, 'WORKING_DIR_MUST_BE_CLEAN');
   });
 
   shell.popd('-q');
@@ -83,15 +62,10 @@ test('test has upstream error message', async t => {
   await run('git add file1');
   await run('git commit -am "Add file1"');
 
-  let options = {
-    errors: {
-      'no-upstream': 'Cant find upstream'
-    },
+  await tasks({
     requireUpstream: true
-  };
-
-  await tasks(options).catch(e => {
-    t.equal(e.message, options.errors['no-upstream']);
+  }).catch(e => {
+    t.equal(e.code, 'NO_UPSTREAM');
   });
 
   shell.popd('-q');
@@ -109,12 +83,10 @@ test('test no github token', async t => {
   await run('git add file1');
   await run('git commit -am "Add file1"');
 
-  let options = {
+  await tasks({
     requireUpstream: false
-  };
-
-  await tasks(options).catch(e => {
-    t.ok(e.message.indexOf('GITHUB_TOKEN') >= 0);
+  }).catch(e => {
+    t.equal(e.code, 'NO_GITHUB_TOKENREF');
   });
 
   shell.popd('-q');
