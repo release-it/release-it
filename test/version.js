@@ -1,6 +1,7 @@
 const test = require('tape');
 const proxyquire = require('proxyquire');
 const shell = require('shelljs');
+const mockStdIo = require('mock-stdio');
 const { run } = require('../lib/shell');
 const { isValid } = require('../lib/version');
 
@@ -17,10 +18,13 @@ test('isValidVersion', t => {
 
 test('parse (tag)', async t => {
   const { parse } = getMock({ getLatestTag: () => '2.2.0' });
+  mockStdIo.start();
   t.deepEqual(await parse({ increment: 'patch', npm: { version: '0.0.1' } }), {
     latestVersion: '2.2.0',
     version: '2.2.1'
   });
+  const { stdout } = mockStdIo.end();
+  t.ok(/Latest Git tag \(2\.2\.0\) doesn't match package\.json#version \(0\.0\.1\)/.test(stdout));
   t.end();
 });
 
