@@ -138,7 +138,7 @@ test('getChangelog', async t => {
   await run('git init');
   await run('echo line >> file && git add file && git commit -m "First commit"');
   await run('echo line >> file && git add file && git commit -m "Second commit"');
-  t.shouldReject(
+  await t.shouldReject(
     getChangelog({
       changelogCommand: 'git log --invalid',
       tagName: '%s',
