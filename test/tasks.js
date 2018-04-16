@@ -105,7 +105,10 @@ test('should throw if invalid increment value is provided (in non-interactive mo
     new Config({
       increment: 'mini',
       'non-interactive': true,
-      requireUpstream: false
+      requireUpstream: false,
+      github: {
+        release: false
+      }
     })
   );
   shell.rm('-rf', tmp);
