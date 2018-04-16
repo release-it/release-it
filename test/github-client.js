@@ -49,9 +49,7 @@ test('release + uploadAssets', async t => {
   t.equal(GitHubApiStub.callCount, 1);
   t.deepEqual(GitHubApiStub.firstCall.args[0], {
     version: '3.0.0',
-    protocol: 'https',
-    host: 'api.github.com',
-    pathPrefix: '',
+    baseUrl: 'https://api.github.com',
     timeout: 10000,
     headers: { 'user-agent': 'webpro/release-it' }
   });
@@ -68,8 +66,7 @@ test('release + uploadAssets (enterprise)', async t => {
   });
 
   t.equal(GitHubApiStub.callCount, 1);
-  t.equal(GitHubApiStub.firstCall.args[0].host, 'github.my-GHE-enabled-company.com');
-  t.equal(GitHubApiStub.firstCall.args[0].pathPrefix, '/api/v3');
+  t.equal(GitHubApiStub.firstCall.args[0].baseUrl, 'https://github.my-GHE-enabled-company.com/api/v3');
 
   GitHubApiStub.resetHistory();
   t.end();
@@ -84,8 +81,7 @@ test('release + uploadAssets (override host)', async t => {
   });
 
   t.equal(GitHubApiStub.callCount, 1);
-  t.equal(GitHubApiStub.firstCall.args[0].host, 'my-custom-host.org');
-  t.equal(GitHubApiStub.firstCall.args[0].pathPrefix, '/api/v3');
+  t.equal(GitHubApiStub.firstCall.args[0].baseUrl, 'https://my-custom-host.org/api/v3');
 
   GitHubApiStub.resetHistory();
   t.end();
