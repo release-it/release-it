@@ -51,7 +51,7 @@
     "babel-preset-env": "1.6.1",
     "babel-register": "6.26.0",
     "bump-file": "1.0.0",
-    "chalk": "2.3.2",
+    "chalk": "2.4.0",
     "conventional-changelog": "1.1.24",
     "conventional-recommended-bump": "2.0.9",
     "cpy": "6.0.0",
