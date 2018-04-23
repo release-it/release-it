@@ -12,6 +12,7 @@
   "changelogCommand": "git log --pretty=format:\"* %s (%h)\" [REV_RANGE]",
   "requireCleanWorkingDir": true,
   "requireUpstream": true,
+  "timeout": 10000,
   "src": {
     "commit": true,
     "commitMessage": "Release %s",
