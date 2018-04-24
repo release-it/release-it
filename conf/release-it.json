@@ -40,7 +40,8 @@
     "draft": false,
     "tokenRef": "GITHUB_TOKEN",
     "assets": null,
-    "host": null
+	"host": null,
+	"timeout": 0
   },
   "dist": {
     "repo": false,
