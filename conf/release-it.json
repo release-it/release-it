@@ -12,7 +12,6 @@
   "changelogCommand": "git log --pretty=format:\"* %s (%h)\" [REV_RANGE]",
   "requireCleanWorkingDir": true,
   "requireUpstream": true,
-  "timeout": 10000,
   "src": {
     "commit": true,
     "commitMessage": "Release %s",
@@ -41,7 +40,8 @@
     "draft": false,
     "tokenRef": "GITHUB_TOKEN",
     "assets": null,
-    "host": null
+	"host": null,
+	"timeout": 0
   },
   "dist": {
     "repo": false,
