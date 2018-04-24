@@ -50,7 +50,7 @@ test('release + uploadAssets', async t => {
   t.deepEqual(GitHubApiStub.firstCall.args[0], {
     version: '3.0.0',
     baseUrl: 'https://api.github.com',
-    timeout: 10000,
+    timeout: 0,
     headers: { 'user-agent': 'webpro/release-it' }
   });
 
