@@ -46,7 +46,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@octokit/rest": "15.2.7",
+    "@octokit/rest": "15.4.0",
     "async-retry": "1.2.1",
     "babel-preset-env": "1.6.1",
     "babel-register": "6.26.0",
