@@ -66,7 +66,7 @@
     "os-name": "2.0.1",
     "parse-repo": "1.0.4",
     "semver": "5.5.0",
-    "shelljs": "0.8.1",
+    "shelljs": "0.8.2",
     "supports-color": "5.4.0",
     "tmp-promise": "1.0.4",
     "update-notifier": "2.5.0",
