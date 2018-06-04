@@ -51,7 +51,7 @@ const releaseResponse = {
     zipball_url: 'https://api.github.com/repos/webpro/release-it-test/zipball/v2.0.1',
     body: ''
   },
-  meta: {
+  headers: {
     'x-ratelimit-limit': '5000',
     'x-ratelimit-remaining': '4992',
     'x-ratelimit-reset': '1506638741',
@@ -97,7 +97,7 @@ const uploadResponse = {
     updated_at: '2017-09-28T21:54:35Z',
     browser_download_url: 'https://github.com/webpro/release-it-test/releases/download/v2.0.1/file1'
   },
-  meta: {
+  headers: {
     'x-oauth-scopes': 'repo',
     'x-github-request-id': 'DF5A:75EB:17448CD:18B3107:59CD6F9B',
     'x-github-media-type': 'github.v3; format=json',
