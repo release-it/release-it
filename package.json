@@ -83,7 +83,7 @@
     "prettier": "1.13.4",
     "proxyquire": "2.0.1",
     "sinon": "5.0.10",
-    "tape": "4.9.0"
+    "tape": "4.9.1"
   },
   "engines": {
     "node": ">=6"
