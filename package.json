@@ -80,7 +80,7 @@
     "eslint-plugin-prettier": "2.6.0",
     "mock-stdio": "1.0.3",
     "nyc": "12.0.2",
-    "prettier": "1.13.4",
+    "prettier": "1.13.5",
     "proxyquire": "2.0.1",
     "sinon": "5.0.10",
     "tape": "4.9.0"
