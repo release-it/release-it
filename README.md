@@ -15,7 +15,7 @@ CLI release tool for Git repos and npm packages.
 * Publish to npm
 * [Manage pre-releases](#-manage-pre-releases)
 * Support [Conventional Changelog workflows](#custom-or-conventional-changelog)
-* [Push build artifacts to a separate repository or branch](#-distribution-repository)
+* [Push build artifacts to a distribution repository](#-distribution-repository)
 
 [![Build Status](https://travis-ci.org/webpro/release-it.svg?branch=master)](https://travis-ci.org/webpro/release-it)
 [![npm version](https://badge.fury.io/js/release-it.svg)](https://badge.fury.io/js/release-it)
@@ -74,7 +74,7 @@ Add this as a `script` to `package.json`:
     "release": "release-it"
   },
   "devDependencies": {
-    "release-it": "^4.2.0"
+    "release-it": "^7.4.7"
   }
 }
 ```
@@ -140,23 +140,21 @@ By default, release-it is interactive and allows you to confirm each task before
 
 <img src="./assets/release-it.png?raw=true" height="148">
 
-On a Continuous Integration (CI) environment, or by using the `-n` option, this is fully automated. No prompts are shown and the configured tasks will be executed. This is demonstrated in the first animation above. An overview of the default tasks:
+On a Continuous Integration (CI) environment, or by using the `-n` option, this is fully automated. No prompts are shown and the configured tasks will be executed. This is demonstrated in the first animation above. An overview of the tasks:
 
 Task | Option | Default | Prompt | Default
 :--|:--|:-:|:--|:-:
 Ready (confirm version) | N/A | N/A | - | `Y`
 Show staged files | N/A | N/A | `prompt.src.status` | `N`
 Git commit | `src.commit` | `true` | `prompt.src.commit` | `Y`
-Git push | `src.push` | `true` | `prompt.src.push` | `Y`
 Git tag | `src.tag` | `true` | `prompt.src.tag` | `Y`
+Git push | `src.push` | `true` | `prompt.src.push` | `Y`
 GitHub release | `github.release` | `false` | `prompt.src.release` | `Y`
 npm publish | `npm.publish` | `true` | `prompt.src.publish` | `Y`
 
-The left columns are default options in non-interactive (or CI) mode.
+The "Option" + "Default" columns represent default options in non-interactive/CI mode. The "Prompt" + "Default" columns represent the prompts and their default answers in interactive mode. You can still change the answer to either `Y` or `N` as the questions show up (or cancel the process with `Ctrl-c`).
 
-The `prompt.*` options on the right in the table are used for the default answers in interactive mode. You can still change the answer to either `Y` or `N` as the questions show up (or cancel the process with `Ctrl-c`).
-
-Also, if e.g. `npm.publish` is `false`, the related prompt (`prompt.src.publish`) will not be shown (regardless of its default answer).
+Note that, if an option (e.g. `npm.publish`) is `false`, the related prompt (`prompt.src.publish`) will not be shown at all in interactive mode (regardless of its default answer).
 
 ## 🔗 Command Hooks
 
@@ -180,13 +178,11 @@ The variables can be found in the [default configuration](https://github.com/web
 
 ## 📡 SSH keys & git remotes
 
-The tool assumes you've configured your SSH key and Git remotes correctly. In short: you're fine if you can `git push`. Otherwise, the following GitHub help pages might be useful: [SSH](https://help.github.com/articles/connecting-to-github-with-ssh/) and [Managing Remotes](https://help.github.com/categories/managing-remotes/).
+The tool assumes SSH keys and Git remotes to be configured correctly. If `git push` works, release-it should work. Otherwise, the following GitHub help pages might be useful: [SSH](https://help.github.com/articles/connecting-to-github-with-ssh/) and [Managing Remotes](https://help.github.com/categories/managing-remotes/).
 
 ## ✏️ GitHub Release
 
-See this project's [releases page](https://github.com/webpro/release-it/releases) for an example.
-
-To create [GitHub releases](https://help.github.com/articles/creating-releases/):
+See this project's [releases page](https://github.com/webpro/release-it/releases) for an example. To create [GitHub releases](https://help.github.com/articles/creating-releases/):
 
 * The `github.release` option must be `true`.
 * Obtain a [GitHub access token](https://github.com/settings/tokens) (release-it only needs "repo" access; no "admin" or other scopes).
@@ -214,7 +210,7 @@ minified scripts, documentation), provide one or more glob patterns for the `git
 
 With release-it, it's easy to create pre-releases: a version of your software that you want to make available, while it's not in the stable semver range yet. Often "alpha", "beta", and "rc" (release candidate) are used as identifier for pre-releases.
 
-For example, if you're working on a new major update for `awesome-pkg` (while the latest release was v1.4.1), and you want others to try a beta version of it:
+For example, if you're working on a new major update for `awesome-pkg` (while the latest release was v1.4.1), and you want others to try your latest beta version:
 
 ```
 release-it major --preRelease=beta
@@ -239,19 +235,19 @@ npm install awesome-pkg         # Installs v1.4.1
 npm install awesome-pkg@beta    # Installs v2.0.0-beta.1
 ```
 
-You can still override e.g. the npm tag being used:
+You can still override individual options, e.g. the npm tag being used:
 
 ```
 release-it --preRelease=rc --npm.tag=next
 ```
 
-See [semver.org](http://semver.org) for more details.
+See [semver.org](http://semver.org) for more details about semantic versioning.
 
 ## Custom or Conventional Changelog
 
 ### Recommended Bump
 
-If your project follows for example the [Angular commit guidelines](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#commits), the special `conventional:angular` increment shorthand can be used to get the recommended bump based on the commit messages:
+If your project follows conventions, such as the [Angular commit guidelines](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#commits), the special `conventional:angular` increment shorthand can be used to get the recommended bump based on the commit messages:
 
 ```
 {
@@ -259,11 +255,11 @@ If your project follows for example the [Angular commit guidelines](https://gith
 }
 ```
 
-Please find the list of [available conventions](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages) (`angular`, `ember`, etc).
+Please find the [list of available conventions](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages) (`angular`, `ember`, etc).
 
 ### Generate Custom Changelog
 
-You can use tools like [conventional-changelog-cli](https://www.npmjs.com/package/conventional-changelog-cli) to generate the changelog for the GitHub release. Make sure that the `changelogCommand` outputs the changelog to `stdout`. In the next example, `beforeChangelogCommand` is also used, to update the `CHANGELOG.md` file (and part of the release commit).
+With release-it, you can use tools like [conventional-changelog-cli](https://www.npmjs.com/package/conventional-changelog-cli) to generate the changelog for the GitHub release. Make sure that the command defined in the `changelogCommand` option outputs the changelog to `stdout`. In the next example, `beforeChangelogCommand` is also used, to update the `CHANGELOG.md` file. This change will also be included in the release commit.
 
 ```
 {
@@ -274,33 +270,33 @@ You can use tools like [conventional-changelog-cli](https://www.npmjs.com/packag
 }
 ```
 
-The `safeBump` option was introduced for this use case, to make sure the bump is done as late as possible, as in this case the `conventional-changelog` tool needs to run from the current version.
+For this use case, the `safeBump` option was introduced. Set this to `false` to bump `package.json#version` _before_ the `beforeChangelogCommand` is executed, as the `conventional-changelog` tool needs to run from the current version.
 
 ## 🚚 Distribution Repository
 
-Some projects use a distribution repository. Reasons to do this include:
+Some projects use a distribution repository. Generated files (such as compiled assets or documentation) can be distributed to a separate repository. Or to a separate branch, such as a `gh-pages` (also see [Using GitHub Pages, the easy way](https://medium.com/@webprolific/using-github-pages-the-easy-way-bb7acc46f45b)).
 
-* Distribute to target specific package managers.
-* Distribute to a Github Pages branch (also see [Using GitHub Pages, the easy way](https://medium.com/@webprolific/using-github-pages-the-easy-way-bb7acc46f45b)).
+Some examples include [shim repositories](https://github.com/components) and a separate [packaged Angular.js repository](https://github.com/angular/bower-angular) for distribution on npm and Bower.
 
-Overall, it comes down to a need to release generated files (such as compiled bundles, documentation) into a separate repository. Some examples include:
-
-* Projects like Ember, Modernizr and Bootstrap are in separate [shim repositories](https://github.com/components).
-* AngularJS maintains a separate [packaged angular repository](https://github.com/angular/bower-angular) for distribution on npm and Bower.
-
-To use this feature, set the `dist.repo` option to a git endpoint. This can be a branch (also of the same source repository), like `"git@github.com:webpro/release-it.git#gh-pages"`. Example:
+To use this feature, set the `dist.repo` option to a git endpoint. An example configuration:
 
 ```json
+"buildCommand": "npm run build",
 "dist": {
-  "repo": "git@github.com:components/ember.git"
+  "repo": "git@github.com:components/ember.git",
+  "stageDir": ".stage",
+  "baseDir": "dist",
+  "files": ["**/*"],
+  "github": {
+    "release": true
+  },
+  "npm": {
+    "publish": true
+  }
 }
 ```
 
-The repository will be cloned to `dist.stageDir`, and the `dist.files` (relative to `dist.baseDir`) will be copied from the source repository. The files will then be staged, commited and pushed back to the remote distribution repository.
-
-Make sure to set `dist.github.release` and `dist.npm.publish` to `true` as needed. The `dist.github.*` options will use the `github.*` values as defaults. Idem dito for `dist.npm.*` options, using `npm.*` for default values.
-
-During the release of a source and distribution repository, some "dist" tasks are executed before something is committed to the source repo. This is to make sure you find out about errors (e.g. while cloning or copying files) as soon as possible, and not after a release for the source repository first.
+With this example, `dist.repo` will be cloned to `.stage`. Then from the source repo `npm run build` is executed, and the generated files at `dist/**.*` will be copied to the `.stage` directory. The result is pushed back to `dist.repo`. Additionally, a GitHub release is created, and the package is published to npm.
 
 ## 📝 Notes
 
@@ -329,9 +325,12 @@ releaseIt(options).then(output => {
 
 ## 💼 Examples
 
-* [π.simloovoo.com](https://github.com/simshanith/pi.simloovoo.com) - Uses GitHub releases with attachments and various command hooks to run npm scripts.
-* [swagger-ui-cornify](https://github.com/shockey/swagger-ui-cornify) - Attaches minified release copies to GitHub releases
-* [React Truncate Markup](https://github.com/parsable/react-truncate-markup)
+* [StevenBlack/hosts](https://github.com/StevenBlack/hosts)
+* [infor-design/enterprise](https://github.com/infor-design/enterprise)
+* [nomadreservations/ngx-codemirror](https://github.com/nomadreservations/ngx-codemirror)
+* [InCuca/vue-standalone-component](https://github.com/InCuca/vue-standalone-component)
+* [parsable/react-truncate-markup](https://github.com/parsable/react-truncate-markup)
+* GitHub search for [projects with .release-it.json](https://github.com/search?o=desc&q=in%3Apath+.release-it.json&s=indexed&type=Code)
 
 ## 📚 Resources
 
