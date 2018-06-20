@@ -54,7 +54,7 @@
     "chalk": "2.4.1",
     "conventional-changelog": "2.0.0",
     "conventional-recommended-bump": "3.0.0",
-    "cpy": "7.0.0",
+    "cpy": "7.0.1",
     "debug": "3.1.0",
     "globby": "8.0.1",
     "got": "8.3.1",
