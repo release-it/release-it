@@ -70,7 +70,7 @@
     "supports-color": "5.4.0",
     "tmp-promise": "1.0.4",
     "update-notifier": "2.5.0",
-    "uuid": "3.2.1",
+    "uuid": "3.3.0",
     "window-size": "1.1.0",
     "yargs-parser": "10.0.0"
   },
