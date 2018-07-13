@@ -68,7 +68,7 @@
     "semver": "5.5.0",
     "shelljs": "0.8.2",
     "supports-color": "5.4.0",
-    "tmp-promise": "1.0.4",
+    "tmp-promise": "1.0.5",
     "update-notifier": "2.5.0",
     "uuid": "3.2.1",
     "window-size": "1.1.0",
