@@ -125,3 +125,27 @@ test('parse (recommended conventional bump)', async t => {
   shell.rm('-rf', tmp);
   t.end();
 });
+
+test('parse (invalid tag)', async t => {
+  const { parse } = getMock({ getLatestTag: () => 'a.b.c' });
+  mockStdIo.start();
+  t.deepEqual(await parse({ increment: 'patch', npm: { version: '0.0.1' } }), {
+    latestVersion: '0.0.1',
+    version: '0.0.2'
+  });
+  const { stdout } = mockStdIo.end();
+  t.ok(/Latest Git tag \(a\.b\.c\) is not a valid semver version/.test(stdout));
+  t.end();
+});
+
+test('parse (invalid npm version)', async t => {
+  const { parse } = getMock({ getLatestTag: () => '2.2.0' });
+  mockStdIo.start();
+  t.deepEqual(await parse({ increment: 'minor', npm: { version: '1.2' } }), {
+    latestVersion: '2.2.0',
+    version: '2.3.0'
+  });
+  const { stdout } = mockStdIo.end();
+  t.ok(/The npm version \(1\.2\) is not a valid semver version/.test(stdout));
+  t.end();
+});
