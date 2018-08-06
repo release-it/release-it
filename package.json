@@ -46,7 +46,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@octokit/rest": "15.9.4",
+    "@octokit/rest": "15.9.5",
     "async-retry": "1.2.1",
     "babel-preset-env": "1.7.0",
     "babel-register": "6.26.0",
@@ -71,11 +71,11 @@
     "tmp-promise": "1.0.5",
     "update-notifier": "2.5.0",
     "uuid": "3.3.2",
-    "window-size": "1.1.0",
+    "window-size": "1.1.1",
     "yargs-parser": "10.1.0"
   },
   "devDependencies": {
-    "eslint": "5.2.0",
+    "eslint": "5.3.0",
     "eslint-config-prettier": "2.9.0",
     "eslint-plugin-prettier": "2.6.2",
     "mock-stdio": "1.0.3",
