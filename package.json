@@ -58,7 +58,7 @@
     "debug": "3.1.0",
     "globby": "8.0.1",
     "got": "8.3.2",
-    "inquirer": "6.0.0",
+    "inquirer": "6.1.0",
     "is-ci": "1.1.0",
     "lodash": "4.17.10",
     "mime-types": "2.1.19",
@@ -76,13 +76,13 @@
   },
   "devDependencies": {
     "eslint": "5.3.0",
-    "eslint-config-prettier": "2.9.0",
+    "eslint-config-prettier": "3.0.1",
     "eslint-plugin-prettier": "2.6.2",
     "mock-stdio": "1.0.3",
     "nyc": "12.0.2",
-    "prettier": "1.14.0",
+    "prettier": "1.14.2",
     "proxyquire": "2.0.1",
-    "sinon": "6.1.4",
+    "sinon": "6.1.5",
     "tape": "4.9.1"
   },
   "engines": {
