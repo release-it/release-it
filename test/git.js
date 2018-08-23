@@ -85,8 +85,13 @@ test('getRemoteUrl', async t => {
   shell.pushd('-q', tmp);
   await run(`git init`);
   t.equal(await getRemoteUrl(), null);
+  t.equal(await getRemoteUrl('git@github.com:webpro/release-it.git'), 'git@github.com:webpro/release-it.git');
+  t.equal(await getRemoteUrl('https://github.com/webpro/release-it.git'), 'https://github.com/webpro/release-it.git');
   await run(`git remote add origin foo`);
   t.equal(await getRemoteUrl(), 'foo');
+  t.equal(await getRemoteUrl('origin'), 'foo');
+  await run(`git remote add another bar`);
+  t.equal(await getRemoteUrl('another'), 'bar');
   shell.popd('-q');
   shell.rm('-rf', tmp);
   t.end();
