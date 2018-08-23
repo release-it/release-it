@@ -327,9 +327,10 @@ releaseIt(options).then(output => {
 
 * [StevenBlack/hosts](https://github.com/StevenBlack/hosts)
 * [infor-design/enterprise](https://github.com/infor-design/enterprise)
-* [nomadreservations/ngx-codemirror](https://github.com/nomadreservations/ngx-codemirror)
 * [InCuca/vue-standalone-component](https://github.com/InCuca/vue-standalone-component)
 * [parsable/react-truncate-markup](https://github.com/parsable/react-truncate-markup)
+* [tsqllint/tsqllint](https://github.com/tsqllint/tsqllint)
+* [adr/madr](https://github.com/adr/madr)
 * GitHub search for [projects with .release-it.json](https://github.com/search?o=desc&q=in%3Apath+.release-it.json&s=indexed&type=Code)
 
 ## 📚 Resources
