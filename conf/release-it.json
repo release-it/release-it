@@ -42,7 +42,8 @@
     "tokenRef": "GITHUB_TOKEN",
     "assets": null,
     "host": null,
-    "timeout": 0
+    "timeout": 0,
+    "proxy": false
   },
   "dist": {
     "repo": false,
