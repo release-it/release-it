@@ -55,7 +55,7 @@
     "conventional-changelog": "2.0.3",
     "conventional-recommended-bump": "4.0.1",
     "cpy": "7.0.1",
-    "debug": "3.1.0",
+    "debug": "3.2.1",
     "globby": "8.0.1",
     "got": "8.3.2",
     "inquirer": "6.2.0",
