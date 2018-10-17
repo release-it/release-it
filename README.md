@@ -206,6 +206,14 @@ minified scripts, documentation), provide one or more glob patterns for the `git
 }
 ```
 
+## 🔒 NPM Two-Factor Authentication (OTP)
+
+If you are using two-factor authentication for your NPM package/account you have to provide a one time password. Otherwise the release process will fail. You can do this by passing it as CLI argument. Replace `123456` with your generated password.
+
+```
+release-it --npm.otp=123456
+```
+
 ## 🐣 Manage Pre-releases
 
 With release-it, it's easy to create pre-releases: a version of your software that you want to make available, while it's not in the stable semver range yet. Often "alpha", "beta", and "rc" (release candidate) are used as identifier for pre-releases.
