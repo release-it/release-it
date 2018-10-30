@@ -19,6 +19,7 @@
     "tag": true,
     "tagName": "%s",
     "tagAnnotation": "Release %s",
+    "tagAnnotationChangelog": false,
     "push": true,
     "pushArgs": "",
     "pushRepo": "origin",
