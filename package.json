@@ -87,5 +87,10 @@
   },
   "engines": {
     "node": ">=6"
+  },
+  "greenkeeper": {
+    "ignore": [
+      "got"
+    ]
   }
 }
