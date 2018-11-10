@@ -72,7 +72,7 @@
     "update-notifier": "2.5.0",
     "uuid": "3.3.2",
     "window-size": "1.1.1",
-    "yargs-parser": "11.0.0"
+    "yargs-parser": "11.1.0"
   },
   "devDependencies": {
     "eslint": "5.9.0",
