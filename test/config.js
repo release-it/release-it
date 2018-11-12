@@ -19,9 +19,9 @@ test('config', t => {
 });
 
 test('config.parseArgs', t => {
-  const config = new Config({}, '1.0.0 --src.commitMessage="release %s" -f');
+  const config = new Config({}, '1.0.0 --src.commitMessage="release %s" -V');
   const { cliArguments } = config;
-  t.equal(cliArguments.force, true);
+  t.equal(cliArguments.verbose, true);
   t.equal(cliArguments.increment, '1.0.0');
   t.equal(cliArguments.src.commitMessage, 'release %s');
   t.end();
@@ -43,7 +43,6 @@ test('config.mergeOptions', t => {
   const config = new Config({}, '1.0.0 -eV --github.release');
   const { options } = config;
   t.equal(config.isVerbose, true);
-  t.equal(config.isForce, false);
   t.equal(config.isDryRun, false);
   t.equal(config.isInteractive, !isCI);
   t.equal(config.isShowVersion, false);

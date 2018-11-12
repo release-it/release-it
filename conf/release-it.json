@@ -2,7 +2,6 @@
   "non-interactive": false,
   "dry-run": false,
   "verbose": false,
-  "force": false,
   "pkgFiles": ["package.json"],
   "increment": "patch",
   "preReleaseId": null,
