@@ -30,13 +30,13 @@ CLI release tool for Git repos and npm packages.
 - [Configuration](#configuration)
 - [Interactive vs. non-interactive mode](#interactive-vs-non-interactive-mode)
 - [Command hooks](#command-hooks)
-- [SSH keys & Git remotes](#ssh-keys--git-remotes)
+- [Git](#git)
 - [GitHub Releases](#github-releases)
 - [Publishing to npm](#publishing-to-npm)
 - [Managing pre-releases](#managing-pre-releases)
 - [Custom or Conventional Changelog](#custom-or-conventional-changelog)
 - [Distribution repository](#distribution-repository)
-- [Notes](#notes)
+- [Metrics](#metrics)
 - [Troubleshooting & debugging](#troubleshooting--debugging)
 - [Using release-it programmatically](#using-release-it-programmatically)
 - [Examples](#examples)
@@ -185,11 +185,34 @@ For [distribution repositories](#distribution-repository), two additional hooks 
 - `dist.beforeStageCommand`
 - `dist.afterReleaseCommand`
 
-## SSH keys & Git remotes
+## Git
+
+### SSH keys & Git remotes
 
 The tool assumes SSH keys and Git remotes to be configured correctly. If a manual `git push` from the command line works, release-it should be able to do the same.
 
 The following GitHub help pages might be useful: [SSH](https://help.github.com/articles/connecting-to-github-with-ssh/) and [Managing Remotes](https://help.github.com/categories/managing-remotes/).
+
+### Remote repository
+
+By default, `release-it` uses `origin` as the remote name to push to. Use `src.pushRepo` to override this with a different remote name (or a different git url).
+
+### Extra arguments
+
+In case extra arguments should be provided to Git, these options are available:
+
+- `src.commitArgs`
+- `src.tagArgs`
+- `src.pushArgs`
+
+Notes:
+
+* For example, use `"src.commitArgs": "-S"` to sign commits (also see [#35](https://github.com/webpro/release-it/issues/350)).
+* The same options are available for the `dist` repository.
+
+### Untracked files
+
+By default, untracked files are not added to the release commit. Use `src.addUntrackedFiles: true` to override this behavior.
 
 ## GitHub Releases
 
@@ -223,12 +246,17 @@ minified scripts, documentation), provide one or more glob patterns for the `git
 
 No configuration is needed to publish the package to npm, as `npm.publish` is `true` by default. If a manual `npm publish` from the command line works, release-it should be able to do the same.
 
+The `"private": true` setting in package.json will be respected, and `release-it` will not publish the package to npm.
+
+### Two-factor authentication
+
 In case two-factor authentication (2FA) is enabled for the package, release-it will ask for the one-time password (OTP).
 
 Notes:
 
 - The OTP can be provided from the command line (`--npm.otp=123456`). However, providing the OTP without a prompt basically defeats the purpose of 2FA (also, the OTP expires after short period).
 - Getting an `ENEEDAUTH` error while a manual `npm publish` works? Please see [#95](https://github.com/webpro/release-it/issues/95#issuecomment-344919384).
+
 
 ## Managing pre-releases
 
@@ -330,12 +358,9 @@ With this example:
 - The result is pushed back to `dist.repo`.
 - A GitHub release is created, and the package is published to npm.
 
-## Notes
+## Metrics
 
-- The `"private": true` setting in package.json will be respected and the package won't be published to npm.
-- By default, untracked files are not added to the release commit. Use `src.addUntrackedFiles: true` to override this behavior.
-- Use `src.pushRepo` to `git push` to a different remote (default: `origin`).
-- Use `--disable-metrics` to disable sending some anonymous statistical data.
+Use `--disable-metrics` to disable sending some anonymous statistical data.
 
 ## Troubleshooting & debugging
 
