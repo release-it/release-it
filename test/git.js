@@ -126,7 +126,7 @@ test('clone + stage + commit + tag + push', async t => {
     message: 'Release v%s',
     version: nextVersion
   });
-  await tag(nextVersion, 'v%s', 'Release v%');
+  await tag({ version: nextVersion, name: 'v%s', annotation: 'Release v%' });
   const pkgAfter = await readJSON('package.json');
   const actual_latestTagAfter = await getLatestTag();
   t.equal(pkgAfter.version, actual_latestTagAfter);
