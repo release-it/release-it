@@ -124,6 +124,8 @@ Notes:
 
 - Only the settings to override need to be in `.release-it.json`. Everything else will fall back to the [default configuration](conf/release-it.json).
 - You can use `--config` if you want to use another path.
+- In `commitMessage` and `tagAnnotation` you can use variables (like template strings). These are the same variables as in the [command hooks](#command-hooks). 
+  However, be aware that these variables might inject new lines into the actual commands, and their execution will likely fail on windows.
 
 Any option can also be set on the command-line, and will have highest priority. Example:
 
