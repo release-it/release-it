@@ -37,7 +37,7 @@ test('hasUpstream', async t => {
   shell.mkdir(tmp);
   shell.pushd('-q', tmp);
   await run('git init');
-  await run('touch file1');
+  await run('!touch file1');
   await run('git add file1');
   await run('git commit -am "Add file1"');
   t.notOk(await hasUpstream());
@@ -52,7 +52,7 @@ test('getBranchName', async t => {
   await run('git init');
   t.equal(await getBranchName(), null);
   await run('git checkout -b feat');
-  await run('touch file1');
+  await run('!touch file1');
   await run('git add file1');
   await run('git commit -am "Add file1"');
   t.equal(await getBranchName(), 'feat');
@@ -66,7 +66,7 @@ test('tagExists + isWorkingDirClean + hasChanges', async t => {
   shell.pushd('-q', tmp);
   await run('git init');
   t.notOk(await tagExists('1.0.0'));
-  await run('touch file1');
+  await run('!touch file1');
   t.notOk(await isWorkingDirClean());
   t.ok(await hasChanges());
   await run('git add file1');

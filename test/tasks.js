@@ -32,7 +32,7 @@ test('should throw if there is no remote Git url', async t => {
   shell.mkdir(tmp);
   shell.pushd('-q', tmp);
   await run('git init');
-  await run('touch file1');
+  await run('!touch file1');
   await run('git add file1');
   await run('git commit -am "Add file1"');
   await t.shouldBailOut(tasks(), GitRemoteUrlError, /Could not get remote Git url/);
@@ -47,7 +47,7 @@ test('should throw if working dir is not clean', async t => {
   shell.mkdir(tmp);
   shell.pushd('-q', tmp);
   await run('git init');
-  await run('touch file1');
+  await run('!touch file1');
   await run('git remote add origin foo');
   await run('git add file1');
   await t.shouldBailOut(tasks(), GitCleanWorkingDirError, /Working dir must be clean/);
@@ -66,7 +66,7 @@ test('should throw if no upstream is configured for current branch', async t => 
   shell.mkdir(tmp);
   shell.pushd('-q', tmp);
   await run('git init');
-  await run('touch file1');
+  await run('!touch file1');
   await run('git remote add origin foo');
   await run('git add file1');
   await run('git commit -am "Add file1"');
@@ -90,7 +90,7 @@ test('should throw if no GitHub token environment variable is set', async t => {
   shell.mkdir(tmp);
   shell.pushd('-q', tmp);
   await run('git init');
-  await run('touch file1');
+  await run('!touch file1');
   await run('git remote add origin foo');
   await run('git add file1');
   await run('git commit -am "Add file1"');
@@ -115,7 +115,7 @@ test('should throw if invalid increment value is provided (in non-interactive mo
   shell.mkdir(tmp);
   shell.pushd('-q', tmp);
   await run('git init');
-  await run('touch file1');
+  await run('!touch file1');
   await run('git remote add origin foo');
   await run('git add file1');
   await run('git commit -am "Add file1"');

@@ -1,3 +1,4 @@
+const { EOL } = require('os');
 const test = require('tape');
 const { format, template, truncateLines } = require('../lib/util');
 
@@ -14,8 +15,8 @@ test('template', t => {
 });
 
 test('truncateLines', t => {
-  const input = '1\n2\n3\n4\n5\n6';
+  const input = `1${EOL}2${EOL}3${EOL}4${EOL}5${EOL}6`;
   t.equal(truncateLines(input), input);
-  t.equal(truncateLines(input, 3), '1\n2\n3\n...and 3 more');
+  t.equal(truncateLines(input, 3), `1${EOL}2${EOL}3${EOL}...and 3 more`);
   t.end();
 });

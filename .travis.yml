@@ -1,9 +1,16 @@
+os:
+  - windows
+  - linux
+  - osx
 language: node_js
 node_js:
   - "6"
   - "8"
   - "10"
   - "node"
+before_script:
+  - git config --global user.name "webpro"
+  - git config --global user.email "lars@webpro.nl"
 cache:
   directories:
     - "node_modules"
