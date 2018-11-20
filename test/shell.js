@@ -47,8 +47,8 @@ test('runTemplateCommand', async t => {
   const run = cmd => runTemplateCommand(cmd, { verbose: false });
   t.notOk(await run(''));
   t.equal(await run('!pwd'), pwd);
-  t.equal(await run('echo ${src.commitMessage}'), 'Release %s');
-  // t.equal(await run('printf "${src.tagAnnotation}" "1.0.0"'), 'Release 1.0.0');
+  t.equal(await run('echo ${src.pushRepo}'), 'origin');
+  t.equal(await run('echo -*- ${github.tokenRef} -*-'), '-*- GITHUB_TOKEN -*-');
   t.end();
 });
 

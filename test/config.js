@@ -19,11 +19,11 @@ test('config', t => {
 });
 
 test('config.parseArgs', t => {
-  const config = new Config({}, '1.0.0 --src.commitMessage="release %s" -V');
+  const config = new Config({}, '1.0.0 --src.commitMessage="release ${version}" -V');
   const { cliArguments } = config;
   t.equal(cliArguments.verbose, true);
   t.equal(cliArguments.increment, '1.0.0');
-  t.equal(cliArguments.src.commitMessage, 'release %s');
+  t.equal(cliArguments.src.commitMessage, 'release ${version}');
   t.end();
 });
 

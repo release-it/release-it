@@ -123,10 +123,10 @@ test('clone + stage + commit + tag + push', async t => {
   await stage('package.json');
   const nextVersion = semver.inc(versionBefore, 'patch');
   await commit({
-    message: 'Release v%s',
+    message: 'Release v${version}',
     version: nextVersion
   });
-  await tag({ version: nextVersion, name: 'v%s', annotation: 'Release v%' });
+  await tag({ version: nextVersion, name: 'v${version}', annotation: 'Release v${version}' });
   const pkgAfter = await readJSON('package.json');
   const actual_latestTagAfter = await getLatestTag();
   t.equal(pkgAfter.version, actual_latestTagAfter);
@@ -147,7 +147,7 @@ test('getChangelog', async t => {
   await t.shouldReject(
     getChangelog({
       changelogCommand: 'git log --invalid',
-      tagName: '%s',
+      tagName: '${version}',
       latestVersion: '1.0.0'
     }),
     /Could not create changelog/
@@ -155,7 +155,7 @@ test('getChangelog', async t => {
 
   const changelog = await getChangelog({
     changelogCommand: config.options.changelogCommand,
-    tagName: '%s',
+    tagName: '${version}',
     latestVersion: '1.0.0'
   });
   const pattern = /^\* Second commit \(\w{7}\)\n\* First commit \(\w{7}\)$/;
@@ -167,7 +167,7 @@ test('getChangelog', async t => {
 
   const changelogSinceTag = await getChangelog({
     changelogCommand: config.options.changelogCommand,
-    tagName: '%s',
+    tagName: '${version}',
     latestVersion: '1.0.0'
   });
   const pattern1 = /^\* Fourth commit \(\w{7}\)\n\* Third commit \(\w{7}\)$/;
