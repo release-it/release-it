@@ -1,12 +1,8 @@
 module.exports = class GitHubApi {
   get repos() {
     return {
-      createRelease: (opts, cb) => {
-        cb(null, releaseResponse);
-      },
-      uploadAsset: (opts, cb) => {
-        cb(null, uploadResponse);
-      }
+      createRelease: () => releaseResponse,
+      uploadReleaseAsset: () => uploadResponse
     };
   }
 
