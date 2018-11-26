@@ -75,7 +75,7 @@ Add this as a `script` to `package.json`:
     "release": "release-it"
   },
   "devDependencies": {
-    "release-it": "^7.4.7"
+    "release-it": "^8.1.0"
   }
 }
 ```
@@ -112,7 +112,7 @@ Out of the box, release-it has sane defaults, and [plenty of options](conf/relea
 ```
 {
   "src": {
-    "tagName": "v%s"
+    "tagName": "v${version}"
   },
   "github": {
     "release": true
@@ -128,7 +128,7 @@ Notes:
 Any option can also be set on the command-line, and will have highest priority. Example:
 
 ```bash
-release-it minor --src.tagName='v%s' --github.release
+release-it minor --src.tagName='v${version}' --github.release
 ```
 
 Boolean arguments can be negated by using the `no-` prefix:
@@ -207,8 +207,8 @@ In case extra arguments should be provided to Git, these options are available:
 
 Notes:
 
-* For example, use `"src.commitArgs": "-S"` to sign commits (also see [#35](https://github.com/webpro/release-it/issues/350)).
-* The same options are available for the `dist` repository.
+- For example, use `"src.commitArgs": "-S"` to sign commits (also see [#35](https://github.com/webpro/release-it/issues/350)).
+- The same options are available for the `dist` repository.
 
 ### Untracked files
 
@@ -256,7 +256,6 @@ Notes:
 
 - The OTP can be provided from the command line (`--npm.otp=123456`). However, providing the OTP without a prompt basically defeats the purpose of 2FA (also, the OTP expires after short period).
 - Getting an `ENEEDAUTH` error while a manual `npm publish` works? Please see [#95](https://github.com/webpro/release-it/issues/95#issuecomment-344919384).
-
 
 ## Managing pre-releases
 
@@ -388,6 +387,7 @@ releaseIt(options).then(output => {
 - [react-native-community/react-native-tab-view](https://github.com/react-native-community/react-native-tab-view)
 - [callstack/linaria](https://github.com/callstack/linaria)
 - [swagger-api/swagger-js](https://github.com/swagger-api/swagger-js)
+- [vuejs/vuefire](https://github.com/vuejs/vuefire)
 - [posva/vue-promised](https://github.com/posva/vue-promised)
 - [blockchain/blockchain-wallet-v4-frontend](https://github.com/blockchain/blockchain-wallet-v4-frontend)
 - [infor-design/enterprise](https://github.com/infor-design/enterprise)
