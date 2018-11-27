@@ -31,5 +31,6 @@ test('truncateLines', t => {
   const input = `1${EOL}2${EOL}3${EOL}4${EOL}5${EOL}6`;
   t.equal(truncateLines(input), input);
   t.equal(truncateLines(input, 3), `1${EOL}2${EOL}3${EOL}...and 3 more`);
+  t.equal(truncateLines(input, 1, '...'), `1...`);
   t.end();
 });
