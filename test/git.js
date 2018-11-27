@@ -123,10 +123,9 @@ test('clone + stage + commit + tag + push', async t => {
   await stage('package.json');
   const nextVersion = semver.inc(versionBefore, 'patch');
   await commit({
-    message: 'Release v${version}',
-    version: nextVersion
+    message: `Release v${nextVersion}`
   });
-  await tag({ version: nextVersion, name: 'v${version}', annotation: 'Release v${version}' });
+  await tag({ name: `v${nextVersion}`, annotation: `Release v${nextVersion}` });
   const pkgAfter = await readJSON('package.json');
   const actual_latestTagAfter = await getLatestTag();
   t.equal(pkgAfter.version, actual_latestTagAfter);
