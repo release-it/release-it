@@ -9,6 +9,7 @@ test('config', t => {
   const config = new Config();
   t.deepEqual(config.cliArguments, {});
   t.deepEqual(config.localOptions, localConfig);
+  t.deepEqual(config.localPkgOptions, {});
   t.deepEqual(config.defaultOptions, defaultConfig);
   t.deepEqual(config.npm, {
     version: pkg.version,

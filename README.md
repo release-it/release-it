@@ -120,10 +120,24 @@ Out of the box, release-it has sane defaults, and [plenty of options](conf/relea
 }
 ```
 
+Or in a `release-it` property in `package.json`:
+
+```
+{
+  "name": "my-package",
+  "devDependencies": {
+    "release-it": "^8.1.0"
+  },
+  "release-it": {
+    "buildCommand": "npm run build"
+  }
+}
+```
+
 Notes:
 
-- Only the settings to override need to be in `.release-it.json`. Everything else will fall back to the [default configuration](conf/release-it.json).
-- You can use `--config` if you want to use another path.
+- Only the settings to override need to be in `.release-it.json` (or `package.json`). Everything else will fall back to the [default configuration](conf/release-it.json).
+- You can use `--config` if you want to use another path for `.release-it.json`.
 
 Any option can also be set on the command-line, and will have highest priority. Example:
 
