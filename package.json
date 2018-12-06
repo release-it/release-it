@@ -47,7 +47,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@octokit/rest": "16.0.5",
+    "@octokit/rest": "16.1.0",
     "async-retry": "1.2.3",
     "babel-preset-env": "1.7.0",
     "babel-register": "6.26.0",
@@ -59,8 +59,8 @@
     "debug": "4.1.0",
     "globby": "8.0.1",
     "got": "8.3.2",
-    "inquirer": "6.2.0",
-    "is-ci": "1.2.1",
+    "inquirer": "6.2.1",
+    "is-ci": "2.0.0",
     "lodash": "4.17.11",
     "mime-types": "2.1.21",
     "ora": "3.0.0",
@@ -82,7 +82,7 @@
     "markdown-toc": "1.2.0",
     "mock-stdio": "1.0.3",
     "nyc": "13.1.0",
-    "prettier": "1.15.2",
+    "prettier": "1.15.3",
     "proxyquire": "2.1.0",
     "sinon": "7.1.1",
     "tape": "4.9.1"
