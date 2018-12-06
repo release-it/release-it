@@ -397,16 +397,16 @@ releaseIt(options).then(output => {
 ## Examples
 
 - [react-navigation/react-navigation](https://github.com/react-navigation/react-navigation)
+- [swagger-api/swagger-ui](https://github.com/swagger-api/swagger-ui)
 - [StevenBlack/hosts](https://github.com/StevenBlack/hosts)
 - [react-native-community/react-native-tab-view](https://github.com/react-native-community/react-native-tab-view)
 - [callstack/linaria](https://github.com/callstack/linaria)
-- [swagger-api/swagger-js](https://github.com/swagger-api/swagger-js)
 - [vuejs/vuefire](https://github.com/vuejs/vuefire)
 - [posva/vue-promised](https://github.com/posva/vue-promised)
 - [blockchain/blockchain-wallet-v4-frontend](https://github.com/blockchain/blockchain-wallet-v4-frontend)
 - [infor-design/enterprise](https://github.com/infor-design/enterprise)
 - [tsqllint/tsqllint](https://github.com/tsqllint/tsqllint)
-- [adr/madr](https://github.com/adr/madr)
+- [segmentio/typewriter](https://github.com/segmentio/typewriter)
 - GitHub search for [projects with .release-it.json](https://github.com/search?o=desc&q=in%3Apath+.release-it.json&s=indexed&type=Code)
 
 ## Resources
