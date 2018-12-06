@@ -67,7 +67,7 @@ npm install --save-dev release-it
 
 Add this as a `script` to `package.json`:
 
-```
+```json
 {
   "name": "my-package",
   "version": "1.0.0",
@@ -75,7 +75,7 @@ Add this as a `script` to `package.json`:
     "release": "release-it"
   },
   "devDependencies": {
-    "release-it": "^8.1.0"
+    "release-it": "*"
   }
 }
 ```
@@ -109,7 +109,7 @@ release-it --dry-run
 
 Out of the box, release-it has sane defaults, and [plenty of options](conf/release-it.json) to configure it. Put the options to override in `.release-it.json` in the project root. Example:
 
-```
+```json
 {
   "src": {
     "tagName": "v${version}"
@@ -122,14 +122,14 @@ Out of the box, release-it has sane defaults, and [plenty of options](conf/relea
 
 Or in a `release-it` property in `package.json`:
 
-```
+```json
 {
   "name": "my-package",
   "devDependencies": {
-    "release-it": "^8.1.0"
+    "release-it": "*"
   },
   "release-it": {
-    "buildCommand": "npm run build"
+    "requireCleanWorkingDir": false
   }
 }
 ```
@@ -258,9 +258,7 @@ minified scripts, documentation), provide one or more glob patterns for the `git
 
 ## Publishing to npm
 
-No configuration is needed to publish the package to npm, as `npm.publish` is `true` by default. If a manual `npm publish` from the command line works, release-it should be able to do the same.
-
-The `"private": true` setting in package.json will be respected, and `release-it` will not publish the package to npm.
+No configuration is needed to publish the package to npm, as `npm.publish` is `true` by default. If a manual `npm publish` from the command line works, release-it should be able to do the same. The `"private": true` setting in package.json will be respected, and `release-it` will not publish the package to npm.
 
 ### Public scoped packages
 
@@ -274,9 +272,7 @@ Set `npm.access` to `"public"` to [publish scoped packages](https://docs.npmjs.c
 
 ### Two-factor authentication
 
-In case two-factor authentication (2FA) is enabled for the package, release-it will ask for the one-time password (OTP).
-
-Notes:
+In case two-factor authentication (2FA) is enabled for the package, release-it will ask for the one-time password (OTP). Notes:
 
 - The OTP can be provided from the command line (`--npm.otp=123456`). However, providing the OTP without a prompt basically defeats the purpose of 2FA (also, the OTP expires after short period).
 - Getting an `ENEEDAUTH` error while a manual `npm publish` works? Please see [#95](https://github.com/webpro/release-it/issues/95#issuecomment-344919384).
