@@ -262,6 +262,16 @@ No configuration is needed to publish the package to npm, as `npm.publish` is `t
 
 The `"private": true` setting in package.json will be respected, and `release-it` will not publish the package to npm.
 
+### Public scoped packages
+
+Set `npm.access` to `"public"` to [publish scoped packages](https://docs.npmjs.com/misc/scope#publishing-scoped-packages), or make sure this is in `package.json`:
+
+```json
+"publishConfig": {
+  "access": "public"
+}
+```
+
 ### Two-factor authentication
 
 In case two-factor authentication (2FA) is enabled for the package, release-it will ask for the one-time password (OTP).
