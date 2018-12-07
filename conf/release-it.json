@@ -5,9 +5,9 @@
   "pkgFiles": ["package.json"],
   "increment": "patch",
   "preReleaseId": null,
-  "buildCommand": false,
+  "buildCommand": null,
   "safeBump": true,
-  "beforeChangelogCommand": false,
+  "beforeChangelogCommand": null,
   "changelogCommand": "git log --pretty=format:\"* %s (%h)\" [REV_RANGE]",
   "requireCleanWorkingDir": true,
   "requireUpstream": true,
@@ -22,8 +22,8 @@
     "push": true,
     "pushArgs": "",
     "pushRepo": "origin",
-    "beforeStartCommand": false,
-    "afterReleaseCommand": false,
+    "beforeStartCommand": null,
+    "afterReleaseCommand": null,
     "addUntrackedFiles": false
   },
   "npm": {
@@ -43,7 +43,7 @@
     "assets": null,
     "host": null,
     "timeout": 0,
-    "proxy": false
+    "proxy": null
   },
   "dist": {
     "repo": false,
@@ -60,9 +60,9 @@
     "tagArgs": "",
     "push": true,
     "pushArgs": "",
-    "beforeStageCommand": false,
-    "afterReleaseCommand": false,
-    "addUntrackedFiles": false,
+    "beforeStageCommand": null,
+    "afterReleaseCommand": null,
+    "addUntrackedFiles": null,
     "github": {
       "release": false
     },
