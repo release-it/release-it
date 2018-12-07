@@ -10,31 +10,40 @@ const { run, runTemplateCommand, pushd, popd, mkTmpDir, copy, bump } = require('
 const dir = 'test/resources';
 const pwd = process.cwd();
 
-test('run', async t => {
-  t.equal(await run('echo foo'), 'foo');
-  t.equal(await run('!echo bar'), 'bar');
+test('run (shell.exec)', async t => {
+  t.equal(await run('echo bar'), 'bar');
+  t.end();
+});
+
+test('run (shelljs command)', async t => {
+  mockStdIo.start();
+  await run('!echo foo');
+  const { stdout } = mockStdIo.end();
+  t.equal(stdout, 'foo\n');
   t.end();
 });
 
 test('run (dry run)', async t => {
+  const { 'dry-run': dryRun } = config.options;
   mockStdIo.start();
   config.options['dry-run'] = true;
   const pwd = await run('!pwd');
   const { stdout } = mockStdIo.end();
   t.ok(/not executed in dry run/.test(stdout));
   t.equal(pwd, undefined);
-  config.options['dry-run'] = false;
+  config.options['dry-run'] = dryRun;
   t.end();
 });
 
 test('run (verbose)', async t => {
+  const { verbose } = config.options;
   mockStdIo.start();
   config.options.verbose = true;
   const actual = await run('echo foo');
   const { stdout } = mockStdIo.end();
   t.equal(stdout, `$ echo foo\nfoo${EOL}`);
   t.equal(actual, 'foo');
-  config.options.verbose = false;
+  config.options.verbose = verbose;
   t.end();
 });
 
@@ -117,6 +126,7 @@ test('mkTmpDir', async t => {
 });
 
 test('mkTmpDir (dry run)', async t => {
+  const { 'dry-run': dryRun } = config.options;
   config.options['dry-run'] = true;
   shell.pushd('-q', dir);
   const { path, cleanup } = await mkTmpDir();
@@ -125,6 +135,6 @@ test('mkTmpDir (dry run)', async t => {
   await cleanup();
   t.notOk(~shell.ls('-A').indexOf(path));
   shell.popd('-q');
-  config.options['dry-run'] = false;
+  config.options['dry-run'] = dryRun;
   t.end();
 });

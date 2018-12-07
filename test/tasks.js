@@ -56,7 +56,7 @@ test('should throw if working dir is not clean', async t => {
   t.end();
 });
 
-test('should throw if no upstream is configured for current branch', async t => {
+test('should throw if no upstream is configured', async t => {
   const tasks = getMock(
     new Config({
       requireUpstream: true
@@ -100,7 +100,7 @@ test('should throw if no GitHub token environment variable is set', async t => {
   t.end();
 });
 
-test('should throw if invalid increment value is provided (in non-interactive mode)', async t => {
+test('should throw if invalid increment value is provided', async t => {
   const tasks = getMock(
     new Config({
       increment: 'mini',
