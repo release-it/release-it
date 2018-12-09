@@ -2,7 +2,6 @@
   "increment": null,
   "preReleaseId": null,
   "pkgFiles": ["package.json"],
-  "safeBump": true,
   "scripts": {
     "beforeStart": null,
     "beforeBump": null,
