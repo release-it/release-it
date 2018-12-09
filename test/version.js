@@ -3,7 +3,7 @@ const proxyquire = require('proxyquire');
 const shell = require('shelljs');
 const mockStdIo = require('mock-stdio');
 const { run } = require('../lib/shell');
-const { isValid } = require('../lib/version');
+const { isValid, isPreRelease } = require('../lib/version');
 
 const getMock = git =>
   proxyquire('../lib/version', {
@@ -13,6 +13,12 @@ const getMock = git =>
 test('isValidVersion', t => {
   t.equal(isValid('1.0.0'), true);
   t.equal(isValid(1.0), false);
+  t.end();
+});
+
+test('isPreRelease', t => {
+  t.equal(isPreRelease('1.0.0-beta.0'), true);
+  t.equal(isPreRelease('1.0.0'), false);
   t.end();
 });
 
@@ -52,9 +58,9 @@ test('parse (bump to provided version)', async t => {
 
 test('parse (no bump)', async t => {
   const { parse } = getMock({ getLatestTag: () => '1.0.0' });
-  t.deepEqual(await parse({ increment: false }), {
+  t.deepEqual(await parse({ increment: null }), {
     latestVersion: '1.0.0',
-    version: '1.0.0'
+    version: null
   });
   t.end();
 });
@@ -62,6 +68,15 @@ test('parse (no bump)', async t => {
 test('parse (patch pre-release)', async t => {
   const { parse } = getMock({ getLatestTag: () => '0.2.0' });
   t.deepEqual(await parse({ increment: 'prepatch', preReleaseId: 'alpha' }), {
+    latestVersion: '0.2.0',
+    version: '0.2.1-alpha.0'
+  });
+  t.end();
+});
+
+test('parse (patch pre-release normalized)', async t => {
+  const { parse } = getMock({ getLatestTag: () => '0.2.0' });
+  t.deepEqual(await parse({ increment: 'patch', preReleaseId: 'alpha' }), {
     latestVersion: '0.2.0',
     version: '0.2.1-alpha.0'
   });
@@ -77,7 +92,7 @@ test('parse (patch pre-release with --preRelease=alpha)', async t => {
   t.end();
 });
 
-test('parse (prepatch follow-up)', async t => {
+test('parse (prepatch continuation)', async t => {
   const { parse } = getMock({ getLatestTag: () => '0.2.1-alpha.0' });
   t.deepEqual(await parse({ increment: 'prerelease' }), {
     latestVersion: '0.2.1-alpha.0',
@@ -86,7 +101,25 @@ test('parse (prepatch follow-up)', async t => {
   t.end();
 });
 
-test('parse (non-numeric prepatch follow-up)', async t => {
+test('parse (preReleaseId continuation)', async t => {
+  const { parse } = getMock({ getLatestTag: () => '0.2.1-alpha.0' });
+  t.deepEqual(await parse({ preReleaseId: 'alpha' }), {
+    latestVersion: '0.2.1-alpha.0',
+    version: '0.2.1-alpha.1'
+  });
+  t.end();
+});
+
+test('parse (prepatch/preReleaseId continuation)', async t => {
+  const { parse } = getMock({ getLatestTag: () => '0.2.1-alpha.0' });
+  t.deepEqual(await parse({ increment: 'prerelease', preReleaseId: 'alpha' }), {
+    latestVersion: '0.2.1-alpha.0',
+    version: '0.2.1-alpha.1'
+  });
+  t.end();
+});
+
+test('parse (non-numeric prepatch continuation)', async t => {
   const { parse } = getMock({ getLatestTag: () => '0.2.1-alpha' });
   t.deepEqual(await parse({ increment: 'prerelease' }), {
     latestVersion: '0.2.1-alpha',

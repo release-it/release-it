@@ -9,7 +9,7 @@ const {
   GitCleanWorkingDirError,
   GitUpstreamError,
   GithubTokenError,
-  VersionNotFoundError
+  InvalidVersionError
 } = require('../lib/errors');
 
 const getMock = config =>
@@ -119,7 +119,7 @@ test('should throw if invalid increment value is provided', async t => {
   await run('git remote add origin foo');
   await run('git add file1');
   await run('git commit -am "Add file1"');
-  await t.shouldBailOut(tasks(), VersionNotFoundError, /no or an invalid version is provided/);
+  await t.shouldBailOut(tasks(), InvalidVersionError, /invalid version was provided/);
   shell.popd('-q');
   shell.rm('-rf', tmp);
   t.end();
