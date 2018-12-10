@@ -1,12 +1,15 @@
 {
-  "pkgFiles": ["package.json"],
-  "requireUpstream": false,
+  "git": {
+    "requireUpstream": false
+  },
   "github": {
     "release": true
   },
   "dist": {
     "repo": "git@github.com:webpro/release-it.git#gh-pages",
-    "beforeStageCommand": "cat ../gh-pages/index.yml ../README.md > index.md && cp ../assets/* ./assets",
-    "pkgFiles": []
+    "pkgFiles": [],
+    "scripts": {
+      "beforeStage": "cat ../gh-pages/index.yml ../README.md > index.md && cp ../assets/* ./assets"
+    }
   }
 }

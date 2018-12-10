@@ -1,17 +1,20 @@
 {
-  "non-interactive": false,
-  "dry-run": false,
-  "verbose": false,
-  "pkgFiles": ["package.json"],
   "increment": null,
   "preReleaseId": null,
-  "buildCommand": null,
+  "pkgFiles": ["package.json"],
   "safeBump": true,
-  "beforeChangelogCommand": null,
-  "changelogCommand": "git log --pretty=format:\"* %s (%h)\" [REV_RANGE]",
-  "requireCleanWorkingDir": true,
-  "requireUpstream": true,
-  "src": {
+  "scripts": {
+    "beforeStart": null,
+    "beforeBump": null,
+    "afterBump": null,
+    "beforeStage": null,
+    "changelog": "git log --pretty=format:\"* %s (%h)\" [REV_RANGE]",
+    "afterRelease": null
+  },
+  "git": {
+    "requireCleanWorkingDir": true,
+    "requireUpstream": true,
+    "addUntrackedFiles": false,
     "commit": true,
     "commitMessage": "Release ${version}",
     "commitArgs": "",
@@ -21,10 +24,7 @@
     "tagArgs": "",
     "push": true,
     "pushArgs": "",
-    "pushRepo": "origin",
-    "beforeStartCommand": null,
-    "afterReleaseCommand": null,
-    "addUntrackedFiles": false
+    "pushRepo": "origin"
   },
   "npm": {
     "publish": true,
@@ -51,18 +51,22 @@
     "baseDir": "dist",
     "files": ["**/*"],
     "pkgFiles": null,
-    "commit": true,
-    "commitMessage": "Release ${version}",
-    "commitArgs": "",
-    "tag": true,
-    "tagName": "${version}",
-    "tagAnnotation": "Release ${version}",
-    "tagArgs": "",
-    "push": true,
-    "pushArgs": "",
-    "beforeStageCommand": null,
-    "afterReleaseCommand": null,
-    "addUntrackedFiles": null,
+    "scripts": {
+      "beforeStage": null,
+      "afterRelease": null
+    },
+    "git": {
+      "addUntrackedFiles": null,
+      "commit": true,
+      "commitMessage": "Release ${version}",
+      "commitArgs": "",
+      "tag": true,
+      "tagName": "${version}",
+      "tagAnnotation": "Release ${version}",
+      "tagArgs": "",
+      "push": true,
+      "pushArgs": ""
+    },
     "github": {
       "release": false
     },
@@ -71,14 +75,12 @@
     }
   },
   "prompt": {
-    "src": {
-      "status": false,
-      "commit": true,
-      "tag": true,
-      "push": true,
-      "release": true,
-      "publish": true
-    },
+    "status": false,
+    "commit": true,
+    "tag": true,
+    "push": true,
+    "release": true,
+    "publish": true,
     "dist": {
       "status": false,
       "commit": true,

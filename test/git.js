@@ -145,7 +145,7 @@ test('getChangelog', async t => {
   await run('echo line >> file && git add file && git commit -m "Second commit"');
   await t.shouldReject(
     getChangelog({
-      changelogCommand: 'git log --invalid',
+      command: 'git log --invalid',
       tagName: '${version}',
       latestVersion: '1.0.0'
     }),
@@ -153,7 +153,7 @@ test('getChangelog', async t => {
   );
 
   const changelog = await getChangelog({
-    changelogCommand: config.options.changelogCommand,
+    command: config.options.scripts.changelog,
     tagName: '${version}',
     latestVersion: '1.0.0'
   });
@@ -165,7 +165,7 @@ test('getChangelog', async t => {
   await run('echo line D >> file && git add file && git commit -m "Fourth commit"');
 
   const changelogSinceTag = await getChangelog({
-    changelogCommand: config.options.changelogCommand,
+    command: config.options.scripts.changelog,
     tagName: '${version}',
     latestVersion: '1.0.0'
   });

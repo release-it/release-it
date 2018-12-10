@@ -1,0 +1,46 @@
+{
+  "buildCommand": "scripts.beforeStage",
+  "beforeChangelogCommand": "scripts.afterBump",
+  "changelogCommand": "scripts.changelog",
+  "requireCleanWorkingDir": "git.requireCleanWorkingDir",
+  "requireUpstream": "git.requireUpstream",
+  "src": {
+    "commit": "git.commit",
+    "commitMessage": "git.commitMessage",
+    "commitArgs": "git.commitArgs",
+    "tag": "git.tag",
+    "tagName": "git.tagName",
+    "tagAnnotation": "git.tagAnnotation",
+    "tagArgs": "git.tagArgs",
+    "push": "git.push",
+    "pushArgs": "git.pushArgs",
+    "pushRepo": "git.pushRepo",
+    "beforeStartCommand": "scripts.beforeStart",
+    "afterReleaseCommand": "scripts.afterRelease",
+    "addUntrackedFiles": "git.addUntrackedFiles"
+  },
+  "dist": {
+    "commit": "dist.git.commit",
+    "commitMessage": "dist.git.commitMessage",
+    "commitArgs": "dist.git.commitArgs",
+    "tag": "dist.git.tag",
+    "tagName": "dist.git.tagName",
+    "tagAnnotation": "dist.git.tagAnnotation",
+    "tagArgs": "dist.git.tagArgs",
+    "push": "dist.git.push",
+    "pushArgs": "dist.git.pushArgs",
+    "beforeStageCommand": "dist.scripts.beforeStage",
+    "afterReleaseCommand": "dist.scripts.afterRelease",
+    "addUntrackedFiles": "dist.git.addUntrackedFiles"
+  },
+  "prompt": {
+    "src": {
+      "status": "prompt.status",
+      "commit": "prompt.commit",
+      "tag": "prompt.tag",
+      "push": "prompt.push",
+      "release": "prompt.release",
+      "publish": "prompt.publish"
+    }
+  }
+}
