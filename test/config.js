@@ -95,7 +95,7 @@ test('config.preRelease (shorthand)', t => {
 test('config.preRelease (shorthand w/o increment)', t => {
   const config = new Config({}, '--preRelease=alpha');
   const { options } = config;
-  t.equal(options.increment, 'prerelease');
+  t.equal(options.increment, 'patch');
   t.equal(options.preReleaseId, 'alpha');
   t.equal(options.github.preRelease, true);
   t.equal(options.npm.tag, 'alpha');

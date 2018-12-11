@@ -138,7 +138,7 @@ test('parse (recommended conventional bump w/ pre-release)', async t => {
   await run('echo line >> file && git add file && git commit -m "feat(foo): extend the foo"');
   await run('echo line >> file && git add file && git commit -m "feat(bar): more bar"');
 
-  t.deepEqual(await parse({ increment: 'conventional:angular', preReleaseId: 'canary' }), {
+  t.deepEqual(await parse({ increment: 'conventional:angular', preReleaseId: 'canary', preRelease: true }), {
     latestVersion: '1.0.0',
     version: '1.1.0-canary.0'
   });
@@ -160,7 +160,7 @@ test('parse (recommended conventional bump w/ pre-release continuation)', async 
   await run('echo line >> file && git add file && git commit -m "feat(foo): extend the foo"');
   await run('echo line >> file && git add file && git commit -m "feat(bar): more bar"');
 
-  t.deepEqual(await parse({ increment: 'conventional:angular', preReleaseId: true }), {
+  t.deepEqual(await parse({ increment: 'conventional:angular', preRelease: true }), {
     latestVersion: '1.0.0-canary.1',
     version: '1.0.0-canary.2'
   });
