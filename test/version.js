@@ -126,6 +126,50 @@ test('parse (recommended conventional bump)', async t => {
   t.end();
 });
 
+test('parse (recommended conventional bump w/ pre-release)', async t => {
+  const { parse } = getMock({ getLatestTag: () => '1.0.0' });
+
+  const tmp = 'test/resources/tmp';
+  shell.mkdir(tmp);
+  shell.pushd('-q', tmp);
+  await run('git init');
+  await run('echo line >> file && git add file && git commit -m "fix(thing): repair that thing"');
+  await run(`git tag 1.0.0`);
+  await run('echo line >> file && git add file && git commit -m "feat(foo): extend the foo"');
+  await run('echo line >> file && git add file && git commit -m "feat(bar): more bar"');
+
+  t.deepEqual(await parse({ increment: 'conventional:angular', preReleaseId: 'canary' }), {
+    latestVersion: '1.0.0',
+    version: '1.1.0-canary.0'
+  });
+
+  shell.popd('-q');
+  shell.rm('-rf', tmp);
+  t.end();
+});
+
+test('parse (recommended conventional bump w/ pre-release continuation)', async t => {
+  const { parse } = getMock({ getLatestTag: () => '1.0.0-canary.1' });
+
+  const tmp = 'test/resources/tmp';
+  shell.mkdir(tmp);
+  shell.pushd('-q', tmp);
+  await run('git init');
+  await run('echo line >> file && git add file && git commit -m "fix(thing): repair that thing"');
+  await run(`git tag 1.0.0`);
+  await run('echo line >> file && git add file && git commit -m "feat(foo): extend the foo"');
+  await run('echo line >> file && git add file && git commit -m "feat(bar): more bar"');
+
+  t.deepEqual(await parse({ increment: 'conventional:angular', preReleaseId: true }), {
+    latestVersion: '1.0.0-canary.1',
+    version: '1.0.0-canary.2'
+  });
+
+  shell.popd('-q');
+  shell.rm('-rf', tmp);
+  t.end();
+});
+
 test('parse (invalid tag)', async t => {
   const { parse } = getMock({ getLatestTag: () => 'a.b.c' });
   mockStdIo.start();

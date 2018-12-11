@@ -1,6 +1,6 @@
 {
   "name": "release-it",
-  "version": "7.6.2",
+  "version": "8.4.2",
   "description": "CLI release tool for Git repos and npm packages.",
   "keywords": [
     "build",
@@ -38,7 +38,8 @@
     "lint": "eslint lib test",
     "format": "prettier --write \"{lib,test}/**/*.js\"",
     "test": "tape -r babel-register -r ./test/util/setup test/*.js",
-    "coverage": "nyc --reporter=lcov npm test"
+    "coverage": "nyc --reporter=lcov npm test",
+    "readme": "markdown-toc README.md -i --no-firsth1 --maxdepth=1 --bullets=-"
   },
   "author": {
     "email": "lars@webpro.nl",
@@ -46,46 +47,52 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@octokit/rest": "15.13.1",
+    "@octokit/rest": "16.1.0",
     "async-retry": "1.2.3",
     "babel-preset-env": "1.7.0",
     "babel-register": "6.26.0",
     "bump-file": "1.0.0",
     "chalk": "2.4.1",
-    "conventional-changelog": "2.0.3",
-    "conventional-recommended-bump": "4.0.1",
+    "conventional-changelog": "3.0.5",
+    "conventional-recommended-bump": "4.0.4",
     "cpy": "7.0.1",
     "debug": "4.1.0",
     "globby": "8.0.1",
     "got": "8.3.2",
-    "inquirer": "6.2.0",
-    "is-ci": "1.2.1",
+    "inquirer": "6.2.1",
+    "is-ci": "2.0.0",
     "lodash": "4.17.11",
-    "mime-types": "2.1.20",
+    "mime-types": "2.1.21",
     "ora": "3.0.0",
-    "os-name": "2.0.1",
+    "os-name": "3.0.0",
     "parse-repo": "1.0.4",
     "semver": "5.6.0",
-    "shelljs": "0.8.2",
+    "shelljs": "0.8.3",
     "supports-color": "5.5.0",
     "tmp-promise": "1.0.5",
     "update-notifier": "2.5.0",
     "uuid": "3.3.2",
     "window-size": "1.1.1",
-    "yargs-parser": "11.0.0"
+    "yargs-parser": "11.1.1"
   },
   "devDependencies": {
-    "eslint": "5.7.0",
-    "eslint-config-prettier": "3.1.0",
+    "eslint": "5.10.0",
+    "eslint-config-prettier": "3.3.0",
     "eslint-plugin-prettier": "3.0.0",
+    "markdown-toc": "1.2.0",
     "mock-stdio": "1.0.3",
     "nyc": "13.1.0",
-    "prettier": "1.14.3",
+    "prettier": "1.15.3",
     "proxyquire": "2.1.0",
-    "sinon": "7.0.0",
+    "sinon": "7.2.0",
     "tape": "4.9.1"
   },
   "engines": {
     "node": ">=6"
+  },
+  "greenkeeper": {
+    "ignore": [
+      "got"
+    ]
   }
 }

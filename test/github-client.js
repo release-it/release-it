@@ -19,10 +19,10 @@ test('release + uploadAssets', async t => {
   const asset = 'file1';
   const version = '2.0.1';
   const changelog = '';
-  const tagName = 'v%s';
+  const tagName = 'v${version}';
   const repo = repoPathParse(remoteUrl);
   const github = {
-    releaseName: 'Release %s',
+    releaseName: 'Release ${version}',
     preRelease: false,
     draft: false,
     assets: asset,

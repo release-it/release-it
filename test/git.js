@@ -37,7 +37,7 @@ test('hasUpstream', async t => {
   shell.mkdir(tmp);
   shell.pushd('-q', tmp);
   await run('git init');
-  await run('touch file1');
+  await run('!touch file1');
   await run('git add file1');
   await run('git commit -am "Add file1"');
   t.notOk(await hasUpstream());
@@ -52,7 +52,7 @@ test('getBranchName', async t => {
   await run('git init');
   t.equal(await getBranchName(), null);
   await run('git checkout -b feat');
-  await run('touch file1');
+  await run('!touch file1');
   await run('git add file1');
   await run('git commit -am "Add file1"');
   t.equal(await getBranchName(), 'feat');
@@ -66,7 +66,7 @@ test('tagExists + isWorkingDirClean + hasChanges', async t => {
   shell.pushd('-q', tmp);
   await run('git init');
   t.notOk(await tagExists('1.0.0'));
-  await run('touch file1');
+  await run('!touch file1');
   t.notOk(await isWorkingDirClean());
   t.ok(await hasChanges());
   await run('git add file1');
@@ -85,6 +85,7 @@ test('getRemoteUrl', async t => {
   shell.pushd('-q', tmp);
   await run(`git init`);
   t.equal(await getRemoteUrl(), null);
+  t.equal(await getRemoteUrl('git://github.com/webpro/release-it.git'), 'git://github.com/webpro/release-it.git');
   t.equal(await getRemoteUrl('git@github.com:webpro/release-it.git'), 'git@github.com:webpro/release-it.git');
   t.equal(await getRemoteUrl('https://github.com/webpro/release-it.git'), 'https://github.com/webpro/release-it.git');
   await run(`git remote add origin foo`);
@@ -122,10 +123,9 @@ test('clone + stage + commit + tag + push', async t => {
   await stage('package.json');
   const nextVersion = semver.inc(versionBefore, 'patch');
   await commit({
-    message: 'Release v%s',
-    version: nextVersion
+    message: `Release v${nextVersion}`
   });
-  await tag(nextVersion, 'v%s', 'Release v%');
+  await tag({ name: `v${nextVersion}`, annotation: `Release v${nextVersion}` });
   const pkgAfter = await readJSON('package.json');
   const actual_latestTagAfter = await getLatestTag();
   t.equal(pkgAfter.version, actual_latestTagAfter);
@@ -146,7 +146,7 @@ test('getChangelog', async t => {
   await t.shouldReject(
     getChangelog({
       changelogCommand: 'git log --invalid',
-      tagName: '%s',
+      tagName: '${version}',
       latestVersion: '1.0.0'
     }),
     /Could not create changelog/
@@ -154,7 +154,7 @@ test('getChangelog', async t => {
 
   const changelog = await getChangelog({
     changelogCommand: config.options.changelogCommand,
-    tagName: '%s',
+    tagName: '${version}',
     latestVersion: '1.0.0'
   });
   const pattern = /^\* Second commit \(\w{7}\)\n\* First commit \(\w{7}\)$/;
@@ -166,7 +166,7 @@ test('getChangelog', async t => {
 
   const changelogSinceTag = await getChangelog({
     changelogCommand: config.options.changelogCommand,
-    tagName: '%s',
+    tagName: '${version}',
     latestVersion: '1.0.0'
   });
   const pattern1 = /^\* Fourth commit \(\w{7}\)\n\* Third commit \(\w{7}\)$/;
