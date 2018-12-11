@@ -204,7 +204,7 @@ test('parse (recommended conventional bump w/ pre-release continuation)', async 
 });
 
 test('parse (invalid tag)', async t => {
-  const { parse } = getMock({ getLatestTag: () => 'a.b.c' });
+  const { parse } = getMock(getLatestTag('a.b.c'));
   mockStdIo.start();
   t.deepEqual(await parse({ increment: 'patch', npm: { version: '0.0.1' } }), {
     latestVersion: '0.0.1',
