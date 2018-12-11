@@ -74,14 +74,12 @@
     }
   },
   "prompt": {
-    "status": false,
     "commit": true,
     "tag": true,
     "push": true,
     "release": true,
     "publish": true,
     "dist": {
-      "status": false,
       "commit": true,
       "tag": false,
       "push": true,

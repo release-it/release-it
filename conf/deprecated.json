@@ -35,12 +35,15 @@
   },
   "prompt": {
     "src": {
-      "status": "prompt.status",
+      "status": null,
       "commit": "prompt.commit",
       "tag": "prompt.tag",
       "push": "prompt.push",
       "release": "prompt.release",
       "publish": "prompt.publish"
+    },
+    "dist": {
+      "status": null
     }
   }
 }
