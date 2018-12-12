@@ -164,8 +164,7 @@ test('parse (recommended conventional bump)', async t => {
 
   t.deepEqual(await parse({ increment: 'conventional:angular' }), {
     latestVersion: '1.0.0',
-    version: '1.1.0',
-    isLateChangeLog: true
+    version: '1.1.0'
   });
 
   shell.popd('-q');
@@ -177,8 +176,7 @@ test('parse (recommended conventional bump w/ pre-release)', async t => {
   const { parse } = getMock(getLatestTag('1.0.0'), getRecommendedType('minor'));
   t.deepEqual(await parse({ increment: 'conventional:angular', preRelease: true, preReleaseId: 'canary' }), {
     latestVersion: '1.0.0',
-    version: '1.1.0-canary.0',
-    isLateChangeLog: true
+    version: '1.1.0-canary.0'
   });
   t.end();
 });
@@ -187,8 +185,7 @@ test('parse (recommended conventional bump w/o preRelease)', async t => {
   const { parse } = getMock(getLatestTag('1.0.0'), getRecommendedType('minor'));
   t.deepEqual(await parse({ increment: 'conventional:angular', preReleaseId: 'canary' }), {
     latestVersion: '1.0.0',
-    version: '1.1.0',
-    isLateChangeLog: true
+    version: '1.1.0'
   });
   t.end();
 });
@@ -197,8 +194,7 @@ test('parse (recommended conventional bump w/ pre-release continuation)', async 
   const { parse } = getMock(getLatestTag('1.0.0-canary.1'), getRecommendedType('minor'));
   t.deepEqual(await parse({ increment: 'conventional:angular', preRelease: true, preReleaseId: 'canary' }), {
     latestVersion: '1.0.0-canary.1',
-    version: '1.0.0-canary.2',
-    isLateChangeLog: true
+    version: '1.0.0-canary.2'
   });
   t.end();
 });
