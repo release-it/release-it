@@ -5,7 +5,7 @@ const path = require('path');
 const { EOL } = require('os');
 const { readFile, readJSON } = require('./util/index');
 const { config } = require('../lib/config');
-const { run, runTemplateCommand, pushd, popd, mkTmpDir, copy, bump } = require('../lib/shell');
+const { run, runTemplateCommand, pushd, popd, copy, bump } = require('../lib/shell');
 
 const dir = 'test/resources';
 const pwd = process.cwd();
@@ -111,30 +111,5 @@ test('bump (file not found)', async t => {
 
 test('bump (invalid)', async t => {
   await t.shouldReject(bump('test/resources/file1'), /unexpected token/i);
-  t.end();
-});
-
-test('mkTmpDir', async t => {
-  shell.pushd('-q', dir);
-  const { path, cleanup } = await mkTmpDir('tmp');
-  t.equal(path, 'tmp');
-  t.ok(~shell.ls().indexOf('tmp'));
-  await cleanup();
-  t.notOk(~shell.ls().indexOf('tmp'));
-  shell.popd('-q');
-  t.end();
-});
-
-test('mkTmpDir (dry run)', async t => {
-  const { 'dry-run': dryRun } = config.options;
-  config.options['dry-run'] = true;
-  shell.pushd('-q', dir);
-  const { path, cleanup } = await mkTmpDir();
-  t.ok(/\.tmp-(\w{8})/.test(path));
-  t.ok(~shell.ls('-A').indexOf(path));
-  await cleanup();
-  t.notOk(~shell.ls('-A').indexOf(path));
-  shell.popd('-q');
-  config.options['dry-run'] = dryRun;
   t.end();
 });
