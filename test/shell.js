@@ -66,7 +66,7 @@ test('pushd + popd', async t => {
   const [to, from] = outputPush.split(',');
   const diff = to
     .replace(from, '')
-    .replace(/^[\/|\\\\]/, '')
+    .replace(/^[/|\\\\]/, '')
     .replace(/\\/g, '/');
   t.equal(diff, dir);
   const popOutput = await popd();

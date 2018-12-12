@@ -5,7 +5,7 @@ const mockStdIo = require('mock-stdio');
 const { run } = require('../lib/shell');
 const { isValid, isPreRelease } = require('../lib/version');
 
-const getLatestTag = (version = '1.0.0') => ({ getLatestTag: () => version });
+const getLatestTag = version => ({ getLatestTag: () => version });
 const getRecommendedType = (type = null) => ({ getRecommendedType: () => type });
 
 const getMock = (git = getLatestTag(), recommendations = {}) =>
@@ -224,7 +224,7 @@ test('parse (invalid npm version)', async t => {
 });
 
 test('parse (coerce)', async t => {
-  const { parse } = getMock();
+  const { parse } = getMock(getLatestTag('1.0.0'));
   mockStdIo.start();
   t.deepEqual(await parse({ increment: '2' }), {
     latestVersion: '1.0.0',
