@@ -4,6 +4,7 @@
   "changelogCommand": "scripts.changelog",
   "requireCleanWorkingDir": "git.requireCleanWorkingDir",
   "requireUpstream": "git.requireUpstream",
+  "safeBump": null,
   "src": {
     "commit": "git.commit",
     "commitMessage": "git.commitMessage",
