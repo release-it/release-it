@@ -5,6 +5,7 @@ var pkg = require('../package.json');
 var semver = require('semver');
 
 if (semver.major(process.version) < 7) {
+  console.warn('Deprecation notice: release-it will no longer support Node v6 in the next major release.');
   require('babel-register')({
     only: /release-it\/lib/
   });
