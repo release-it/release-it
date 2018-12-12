@@ -4,6 +4,17 @@ This document lists breaking changes for each major release.
 
 See the GitHub Releases page for detailed changelogs: [https://github.com/webpro/release-it/releases](https://github.com/webpro/release-it/releases)
 
+## v9
+
+There should be no breaking changes, but there have been major internal refactorings and an improved UI.
+A bunch of new features and bug fixes have been implemented.
+Last but not least, the configuration structure is changed significantly. For this (backwards compatible) change,
+deprecation warnings are shown, and configurations must be migrated with the next major release (v10).
+See [deprecated.json](./conf/deprecated.json) for the changes, mainly:
+
+- All "command hooks" have been moved to `scripts.*`, and some have been renamed.
+- All `src.*` options have been moved to `git.*` (and `scripts.*`)
+
 ## v8
 
 - Drop the `--force` flag. It's only use was to move a Git tag.
