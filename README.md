@@ -49,6 +49,13 @@ CLI release tool for Git repos and npm packages.
 
 </details>
 
+## Using release-it v8?
+
+These are the docs for the latest & greatest.
+Please see the [documentation for v8](https://github.com/webpro/release-it/blob/8.4.2/README.md) instead.
+
+Alternatively, you can install the latest beta of v9: `npm install release-it@beta`.
+
 ## Installation
 
 ### Global
