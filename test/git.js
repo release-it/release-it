@@ -4,7 +4,7 @@ const semver = require('semver');
 const { config } = require('../lib/config');
 const { readJSON } = require('./util/index');
 const { run, copy } = require('../lib/shell');
-import {
+const {
   isGitRepo,
   hasUpstream,
   getBranchName,
@@ -20,7 +20,7 @@ import {
   push,
   getChangelog,
   isSameRepo
-} from '../lib/git';
+} = require('../lib/git');
 
 const tmp = 'test/resources/tmp';
 
