@@ -6,7 +6,7 @@ CLI release tool for Git repos and npm packages.
 
 <img align="right" src="./assets/release-it.gif?raw=true" height="170">
 
-- Execute build commands
+- Execute test & build commands
 - Bump version (in e.g. `package.json`)
 - Generate changelog
 - Git commit, tag, push
@@ -16,7 +16,7 @@ CLI release tool for Git repos and npm packages.
 - [Manage pre-releases](#managing-pre-releases)
 - Support [Conventional Changelog](#custom-or-conventional-changelog) workflows
 - Support [monorepo](#monorepos) workflows
-- [Push build artifacts to a distribution repository](#distribution-repository)
+- Push build artifacts to a [distribution repository](#distribution-repository)
 
 [![Build Status](https://travis-ci.org/webpro/release-it.svg?branch=master)](https://travis-ci.org/webpro/release-it)
 [![npm version](https://badge.fury.io/js/release-it.svg)](https://badge.fury.io/js/release-it)
@@ -201,10 +201,7 @@ In case extra arguments should be provided to Git, these options are available:
 - `git.tagArgs`
 - `git.pushArgs`
 
-Notes:
-
-- For example, use `"git.commitArgs": "-S"` to sign commits (also see [#35](https://github.com/webpro/release-it/issues/350)).
-- The same options are available for the `dist` repository.
+For example, use `"git.commitArgs": "-S"` to sign commits (also see [#35](https://github.com/webpro/release-it/issues/350)).
 
 ### Untracked files
 
@@ -242,7 +239,9 @@ minified scripts, documentation), provide one or more glob patterns for the `git
 
 ## Publishing to npm
 
-No configuration is needed to publish the package to npm, as `npm.publish` is `true` by default. If a manual `npm publish` from the command line works, release-it should be able to do the same. The `"private": true` setting in package.json will be respected, and `release-it` will not publish the package to npm.
+No configuration is needed to publish the package to npm, as `npm.publish` is `true` by default. If a manual `npm publish` from the command line works, release-it delegating to `npm-publish` should behave the same. The `"private": true` setting in package.json will be respected, and `release-it` will skip this step.
+
+Getting an `ENEEDAUTH` error while a manual `npm publish` works? Please see [#95](https://github.com/webpro/release-it/issues/95#issuecomment-344919384).
 
 ### Public scoped packages
 
@@ -260,8 +259,7 @@ Set `npm.access` to `"public"` to [publish scoped packages](https://docs.npmjs.c
 
 In case two-factor authentication (2FA) is enabled for the package, release-it will ask for the one-time password (OTP). Notes:
 
-- The OTP can be provided from the command line (`--npm.otp=123456`). However, providing the OTP without a prompt basically defeats the purpose of 2FA (also, the OTP expires after short period).
-- Getting an `ENEEDAUTH` error while a manual `npm publish` works? Please see [#95](https://github.com/webpro/release-it/issues/95#issuecomment-344919384).
+The OTP can be provided from the command line (`--npm.otp=123456`). However, providing the OTP without a prompt basically defeats the purpose of 2FA (also, the OTP expires after a short period).
 
 ## Managing pre-releases
 
@@ -305,7 +303,7 @@ release-it major
 
 Notes:
 
-- By default, release-it will always ask for your confirmation before publishing the package with the next version.
+- Pre-releases can work together with [recommended bumps](#recommended-bump).
 - You can still override individual options (e.g. `release-it --preRelease=rc --npm.tag=next`).
 - See [semver.org](http://semver.org) for more details about semantic versioning.
 
@@ -373,7 +371,7 @@ Please find the [list of available conventions](https://github.com/conventional-
 
 ### Generating a custom changelog
 
-With release-it, you can use tools like [conventional-changelog-cli](https://www.npmjs.com/package/conventional-changelog-cli) to generate the changelog for the GitHub release. Make sure that the command defined in the `scripts.changelog` option outputs the changelog to `stdout`. In the next example, `scripts.afterBump` is also used, to update the `CHANGELOG.md` file. This change will also be included in the release commit.
+With release-it, you can use tools like [conventional-changelog-cli](https://www.npmjs.com/package/conventional-changelog-cli) to generate the changelog for the GitHub release. Make sure that the command defined in the `scripts.changelog` option outputs the changelog to `stdout`. In the next example, `scripts.afterBump` is also used, to update the `CHANGELOG.md` file.
 
 ```json
 {
