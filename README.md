@@ -272,7 +272,7 @@ The OTP can be provided from the command line (`--npm.otp=123456`). However, pro
 
 With release-it, it's easy to create pre-releases: a version of your software that you want to make available, while it's not in the stable semver range yet. Often "alpha", "beta", and "rc" (release candidate) are used as identifier for pre-releases.
 
-An example. The `awesome-pkg` is at version 1.4.1, and work is done for a new major update. To publish the latest beta of the new major version:
+An example. The `awesome-pkg` is at version 1.3.0, and work is done for a new major update. To publish the latest beta of the new major version:
 
 ```
 release-it major --preRelease=beta
@@ -280,7 +280,7 @@ release-it major --preRelease=beta
 
 This will tag and release version `2.0.0-beta.0`. Notes:
 
-- A normal installation of `awesome-pkg` will still be at version 1.4.1.
+- A normal installation of `awesome-pkg` will still be at version 1.3.0.
 - The [npm tag](https://docs.npmjs.com/cli/dist-tag) will be "beta", install it using `npm install awesome-pkg@beta`
 - A GitHub release will be marked as a "Pre-release".
 
@@ -307,6 +307,8 @@ And eventually, for `2.0.0`:
 ```
 release-it major
 ```
+
+<img src="./assets/release-it-prerelease.gif?raw=true" height="524">
 
 Notes:
 
