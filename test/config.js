@@ -92,6 +92,24 @@ test('config.preRelease (shorthand)', t => {
   t.end();
 });
 
+test('config.preRelease (shorthand w/o npm.tag)', t => {
+  const config = new Config({}, '--preRelease');
+  const { options } = config;
+  t.equal(options.preRelease, true);
+  t.equal(options.preReleaseId, null);
+  t.equal(options.npm.tag, null);
+  t.end();
+});
+
+test('config.preRelease (shorthand w/ npm.tag)', t => {
+  const config = new Config({}, '--preRelease --npm.tag=alpha');
+  const { options } = config;
+  t.equal(options.preRelease, true);
+  t.equal(options.preReleaseId, null);
+  t.equal(options.npm.tag, 'alpha');
+  t.end();
+});
+
 test('config.preRelease (shorthand w/o increment)', t => {
   const config = new Config({}, '--preRelease=alpha');
   const { options } = config;
