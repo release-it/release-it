@@ -85,7 +85,8 @@ test('config.config', t => {
 test('config.preRelease (shorthand)', t => {
   const config = new Config({}, 'major --preRelease=beta');
   const { options } = config;
-  t.equal(options.increment, 'premajor');
+  t.equal(options.increment, 'major');
+  t.equal(options.preRelease, true);
   t.equal(options.preReleaseId, 'beta');
   t.equal(options.github.preRelease, true);
   t.equal(options.npm.tag, 'beta');
@@ -95,17 +96,30 @@ test('config.preRelease (shorthand)', t => {
 test('config.preRelease (shorthand w/o increment)', t => {
   const config = new Config({}, '--preRelease=alpha');
   const { options } = config;
-  t.equal(options.increment, 'prerelease');
+  t.equal(options.increment, null);
+  t.equal(options.preRelease, true);
   t.equal(options.preReleaseId, 'alpha');
   t.equal(options.github.preRelease, true);
   t.equal(options.npm.tag, 'alpha');
   t.end();
 });
 
+test('config.preRelease (w/o preRelease, non-interactive)', t => {
+  const config = new Config({}, '--preReleaseId=alpha -n');
+  const { options } = config;
+  t.equal(options.increment, 'patch');
+  t.equal(options.preRelease, false);
+  t.equal(options.preReleaseId, 'alpha');
+  t.equal(options.github.preRelease, false);
+  t.equal(options.npm.tag, 'latest');
+  t.end();
+});
+
 test('config.preRelease (override npm.tag)', t => {
   const config = new Config({}, 'minor --preRelease=rc --npm.tag=next');
   const { options } = config;
-  t.equal(options.increment, 'preminor');
+  t.equal(options.increment, 'minor');
+  t.equal(options.preRelease, true);
   t.equal(options.preReleaseId, 'rc');
   t.equal(options.github.preRelease, true);
   t.equal(options.npm.tag, 'next');

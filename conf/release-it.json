@@ -3,7 +3,7 @@
   "dry-run": false,
   "verbose": false,
   "pkgFiles": ["package.json"],
-  "increment": "patch",
+  "increment": null,
   "preReleaseId": null,
   "buildCommand": null,
   "safeBump": true,
