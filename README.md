@@ -22,6 +22,8 @@ CLI release tool for Git repos and npm packages.
 [![npm version](https://badge.fury.io/js/release-it.svg)](https://badge.fury.io/js/release-it)
 [![Greenkeeper badge](https://badges.greenkeeper.io/webpro/release-it.svg)](https://greenkeeper.io/)
 
+_See [CHANGELOG.md](CHANGELOG.md) for major updates and breaking changes; the [releases](https://github.com/webpro/release-it/releases) section for a detailed version history._
+
 <details>
   <summary><strong>Table of Contents</strong> (click to expand)</summary>
 
@@ -48,13 +50,6 @@ CLI release tool for Git repos and npm packages.
 <!-- tocstop -->
 
 </details>
-
-## Using release-it v8?
-
-These are the docs for the latest & greatest.
-Please see the [documentation for v8](https://github.com/webpro/release-it/blob/8.4.2/README.md) instead.
-
-Alternatively, you can install the latest beta of v9: `npm install release-it@beta`.
 
 ## Installation
 
