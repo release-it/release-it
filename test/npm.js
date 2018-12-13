@@ -24,3 +24,9 @@ test('getTag (pre-release continuation)', t => {
   t.equal(npm.getTag(), 'alpha');
   t.end();
 });
+
+test('getTag (pre-release w/ different tag)', t => {
+  const npm = getMock(new Config({}, '--preRelease=beta --npm.tag=rc'));
+  t.equal(npm.getTag(), 'rc');
+  t.end();
+});

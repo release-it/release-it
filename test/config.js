@@ -97,7 +97,7 @@ test('config.preRelease (shorthand w/o npm.tag)', t => {
   const { options } = config;
   t.equal(options.preRelease, true);
   t.equal(options.preReleaseId, null);
-  t.equal(options.npm.tag, null);
+  t.equal(options.npm.tag, 'latest');
   t.end();
 });
 
