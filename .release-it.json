@@ -4,12 +4,5 @@
   },
   "github": {
     "release": true
-  },
-  "dist": {
-    "repo": "git@github.com:webpro/release-it.git#gh-pages",
-    "pkgFiles": [],
-    "scripts": {
-      "beforeStage": "cat ../gh-pages/index.yml ../README.md > index.md && cp ../assets/* ./assets"
-    }
   }
 }

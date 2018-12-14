@@ -24,7 +24,7 @@
     "type": "git",
     "url": "https://github.com/webpro/release-it.git"
   },
-  "homepage": "https://github.com/webpro/release-it#release-it",
+  "homepage": "https://github.com/webpro/release-it#readme",
   "bugs": "https://github.com/webpro/release-it/issues",
   "bin": "./bin/release-it.js",
   "main": "./lib/index.js",
