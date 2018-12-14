@@ -177,6 +177,14 @@ test('getChangelog', async t => {
   t.end();
 });
 
+test('getChangelog (custom)', async t => {
+  const changelog = await getChangelog({
+    command: 'echo ${name}'
+  });
+  t.equal(changelog, 'release-it');
+  t.end();
+});
+
 test('isSameRepo', t => {
   const repoA = {
     remote: 'https://github.com/webpro/release-it.git',
