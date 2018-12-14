@@ -11,7 +11,6 @@ const {
   tagExists,
   getRemoteUrl,
   isWorkingDirClean,
-  hasChanges,
   clone,
   stage,
   commit,
@@ -61,20 +60,18 @@ test('getBranchName', async t => {
   t.end();
 });
 
-test('tagExists + isWorkingDirClean + hasChanges', async t => {
+test('tagExists + isWorkingDirClean', async t => {
   shell.mkdir(tmp);
   shell.pushd('-q', tmp);
   await run('git init');
   t.notOk(await tagExists('1.0.0'));
   await run('!touch file1');
   t.notOk(await isWorkingDirClean());
-  t.ok(await hasChanges());
   await run('git add file1');
   await run('git commit -am "Add file1"');
   await run('git tag 1.0.0');
   t.ok(await tagExists('1.0.0'));
   t.ok(await isWorkingDirClean());
-  t.notOk(await hasChanges());
   shell.popd('-q');
   shell.rm('-rf', tmp);
   t.end();
