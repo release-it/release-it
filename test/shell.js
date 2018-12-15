@@ -8,7 +8,7 @@ const { config } = require('../lib/config');
 const { run, runTemplateCommand, pushd, popd, copy, isSubDir, bump } = require('../lib/shell');
 
 const dir = 'test/resources';
-const pwd = process.cwd();
+const cwd = process.cwd();
 
 test('run (shell.exec)', async t => {
   t.equal(await run('echo bar'), 'bar');
@@ -48,14 +48,14 @@ test('run (verbose)', async t => {
 });
 
 test.skip('run (read-only command)', async t => {
-  t.equal(await run('!pwd', { isReadOnly: true }), pwd);
+  t.equal(await run('!pwd', { isReadOnly: true }), cwd);
   t.end();
 });
 
 test('runTemplateCommand', async t => {
   const run = cmd => runTemplateCommand(cmd, { verbose: false });
   t.notOk(await run(''));
-  t.equal(await run('!pwd'), pwd);
+  t.equal(await run('!pwd'), cwd);
   t.equal(await run('echo ${git.pushRepo}'), 'origin');
   t.equal(await run('echo -*- ${github.tokenRef} -*-'), '-*- GITHUB_TOKEN -*-');
   t.end();
