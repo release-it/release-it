@@ -93,15 +93,15 @@ Release a new version:
 release-it
 ```
 
-You will be prompted to select the new version. To skip the first prompt and release a patch, minor, major, or specific version:
+You will be prompted to select the new version. To skip the first prompt, provide a specific increment or version:
 
 ```bash
 release-it minor
 release-it 0.8.3
 ```
 
-See [manage pre-releases](#managing-pre-releases) for versions like `1.0.0-beta.2` and npm tags.
-You can also do a "dry run", which won't write/touch anything, but does output the commands it would execute, and show the interactivity:
+For versions like `1.0.0-beta.2` and npm tags, see [manage pre-releases](#managing-pre-releases).
+For a "dry run", to show the interactivity and the commands it _would_ execute:
 
 ```bash
 release-it --dry-run
@@ -113,7 +113,7 @@ Out of the box, release-it has sane defaults, and [plenty of options](conf/relea
 
 ```json
 {
-  "src": {
+  "git": {
     "tagName": "v${version}"
   },
   "github": {
@@ -312,7 +312,7 @@ Notes:
 
 ## Scripts
 
-The scripts (previously "command hooks") are executed from the root directory of the `src` or `dist` repository, respectively:
+These script hooks can be used to execute commands (from the root directory of the repository):
 
 - `scripts.beforeStart`
 - `scripts.beforeBump`
