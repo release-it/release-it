@@ -5,7 +5,7 @@ const path = require('path');
 const { EOL } = require('os');
 const { readFile, readJSON } = require('./util/index');
 const { config } = require('../lib/config');
-const { run, runTemplateCommand, pushd, popd, copy, bump } = require('../lib/shell');
+const { run, runTemplateCommand, pushd, popd, copy, isSubDir, bump } = require('../lib/shell');
 
 const dir = 'test/resources';
 const pwd = process.cwd();
@@ -83,6 +83,21 @@ test('copy', async t => {
   t.equal(await readFile('file2'), await readFile('tmp/file2'));
   shell.rm('-rf', 'tmp');
   shell.popd('-q');
+  t.end();
+});
+
+test('isSubDir', t => {
+  t.equal(isSubDir(), false);
+  t.equal(isSubDir(''), false);
+  t.equal(isSubDir('.'), false);
+  t.equal(isSubDir('..'), false);
+  t.equal(isSubDir('foo'), true);
+  t.equal(isSubDir('foo/bar'), true);
+  t.equal(isSubDir('foo', '.'), true);
+  t.equal(isSubDir('foo/bar', 'foo'), true);
+  t.equal(isSubDir('', '.'), false);
+  t.equal(isSubDir('..', '..'), false);
+  t.equal(isSubDir('..', 'foo'), false);
   t.end();
 });
 
