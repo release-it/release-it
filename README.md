@@ -16,7 +16,6 @@ CLI release tool for Git repos and npm packages.
 - [Manage pre-releases](#managing-pre-releases)
 - Support [Conventional Changelog](#custom-or-conventional-changelog) workflows
 - Support [monorepo](#monorepos) workflows
-- Push build artifacts to a [distribution repository](#distribution-repository)
 
 [![Build Status](https://travis-ci.org/webpro/release-it.svg?branch=master)](https://travis-ci.org/webpro/release-it)
 [![npm version](https://badge.fury.io/js/release-it.svg)](https://badge.fury.io/js/release-it)
