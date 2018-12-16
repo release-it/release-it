@@ -4,14 +4,13 @@ const semver = require('semver');
 const { config } = require('../lib/config');
 const { readJSON } = require('./util/index');
 const { run, copy } = require('../lib/shell');
-import {
+const {
   isGitRepo,
   hasUpstream,
   getBranchName,
   tagExists,
   getRemoteUrl,
   isWorkingDirClean,
-  hasChanges,
   clone,
   stage,
   commit,
@@ -20,7 +19,7 @@ import {
   push,
   getChangelog,
   isSameRepo
-} from '../lib/git';
+} = require('../lib/git');
 
 const tmp = 'test/resources/tmp';
 
@@ -61,20 +60,18 @@ test('getBranchName', async t => {
   t.end();
 });
 
-test('tagExists + isWorkingDirClean + hasChanges', async t => {
+test('tagExists + isWorkingDirClean', async t => {
   shell.mkdir(tmp);
   shell.pushd('-q', tmp);
   await run('git init');
   t.notOk(await tagExists('1.0.0'));
   await run('!touch file1');
   t.notOk(await isWorkingDirClean());
-  t.ok(await hasChanges());
   await run('git add file1');
   await run('git commit -am "Add file1"');
   await run('git tag 1.0.0');
   t.ok(await tagExists('1.0.0'));
   t.ok(await isWorkingDirClean());
-  t.notOk(await hasChanges());
   shell.popd('-q');
   shell.rm('-rf', tmp);
   t.end();
@@ -174,6 +171,14 @@ test('getChangelog', async t => {
 
   shell.popd('-q');
   shell.rm('-rf', tmp);
+  t.end();
+});
+
+test('getChangelog (custom)', async t => {
+  const changelog = await getChangelog({
+    command: 'echo ${name}'
+  });
+  t.equal(changelog, 'release-it');
   t.end();
 });
 

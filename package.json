@@ -1,6 +1,6 @@
 {
   "name": "release-it",
-  "version": "9.0.0-beta.0",
+  "version": "9.1.0",
   "description": "CLI release tool for Git repos and npm packages.",
   "keywords": [
     "build",
@@ -24,7 +24,7 @@
     "type": "git",
     "url": "https://github.com/webpro/release-it.git"
   },
-  "homepage": "https://github.com/webpro/release-it#release-it",
+  "homepage": "https://github.com/webpro/release-it#readme",
   "bugs": "https://github.com/webpro/release-it/issues",
   "bin": "./bin/release-it.js",
   "main": "./lib/index.js",
@@ -39,7 +39,8 @@
     "format": "prettier --write \"{lib,test}/**/*.js\"",
     "test": "tape -r babel-register -r ./test/util/setup test/*.js",
     "coverage": "nyc --reporter=lcov npm test",
-    "readme": "markdown-toc README.md -i --no-firsth1 --maxdepth=1 --bullets=-"
+    "readme": "markdown-toc README.md -i --no-firsth1 --maxdepth=1 --bullets=-",
+    "release": "./bin/release-it.js"
   },
   "author": {
     "email": "lars@webpro.nl",
@@ -69,7 +70,6 @@
     "semver": "5.6.0",
     "shelljs": "0.8.3",
     "supports-color": "5.5.0",
-    "tmp-promise": "1.0.5",
     "update-notifier": "2.5.0",
     "uuid": "3.3.2",
     "window-size": "1.1.1",

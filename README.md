@@ -6,7 +6,7 @@ CLI release tool for Git repos and npm packages.
 
 <img align="right" src="./assets/release-it.gif?raw=true" height="170">
 
-- Execute build commands
+- Execute test & build commands
 - Bump version (in e.g. `package.json`)
 - Generate changelog
 - Git commit, tag, push
@@ -16,11 +16,12 @@ CLI release tool for Git repos and npm packages.
 - [Manage pre-releases](#managing-pre-releases)
 - Support [Conventional Changelog](#custom-or-conventional-changelog) workflows
 - Support [monorepo](#monorepos) workflows
-- [Push build artifacts to a distribution repository](#distribution-repository)
 
 [![Build Status](https://travis-ci.org/webpro/release-it.svg?branch=master)](https://travis-ci.org/webpro/release-it)
 [![npm version](https://badge.fury.io/js/release-it.svg)](https://badge.fury.io/js/release-it)
 [![Greenkeeper badge](https://badges.greenkeeper.io/webpro/release-it.svg)](https://greenkeeper.io/)
+
+_See [CHANGELOG.md](CHANGELOG.md) for major updates and breaking changes; the [releases](https://github.com/webpro/release-it/releases) section for a detailed version history._
 
 <details>
   <summary><strong>Table of Contents</strong> (click to expand)</summary>
@@ -92,15 +93,15 @@ Release a new version:
 release-it
 ```
 
-You will be prompted to select the new version. To skip the first prompt and release a patch, minor, major, or specific version:
+You will be prompted to select the new version. To skip the first prompt, provide a specific increment or version:
 
 ```bash
 release-it minor
 release-it 0.8.3
 ```
 
-See [manage pre-releases](#managing-pre-releases) for versions like `1.0.0-beta.2` and npm tags.
-You can also do a "dry run", which won't write/touch anything, but does output the commands it would execute, and show the interactivity:
+For versions like `1.0.0-beta.2` and npm tags, see [manage pre-releases](#managing-pre-releases).
+For a "dry run", to show the interactivity and the commands it _would_ execute:
 
 ```bash
 release-it --dry-run
@@ -112,7 +113,7 @@ Out of the box, release-it has sane defaults, and [plenty of options](conf/relea
 
 ```json
 {
-  "src": {
+  "git": {
     "tagName": "v${version}"
   },
   "github": {
@@ -201,10 +202,7 @@ In case extra arguments should be provided to Git, these options are available:
 - `git.tagArgs`
 - `git.pushArgs`
 
-Notes:
-
-- For example, use `"git.commitArgs": "-S"` to sign commits (also see [#35](https://github.com/webpro/release-it/issues/350)).
-- The same options are available for the `dist` repository.
+For example, use `"git.commitArgs": "-S"` to sign commits (also see [#35](https://github.com/webpro/release-it/issues/350)).
 
 ### Untracked files
 
@@ -242,7 +240,9 @@ minified scripts, documentation), provide one or more glob patterns for the `git
 
 ## Publishing to npm
 
-No configuration is needed to publish the package to npm, as `npm.publish` is `true` by default. If a manual `npm publish` from the command line works, release-it should be able to do the same. The `"private": true` setting in package.json will be respected, and `release-it` will not publish the package to npm.
+No configuration is needed to publish the package to npm, as `npm.publish` is `true` by default. If a manual `npm publish` from the command line works, release-it delegating to `npm-publish` should behave the same. The `"private": true` setting in package.json will be respected, and `release-it` will skip this step.
+
+Getting an `ENEEDAUTH` error while a manual `npm publish` works? Please see [#95](https://github.com/webpro/release-it/issues/95#issuecomment-344919384).
 
 ### Public scoped packages
 
@@ -260,14 +260,13 @@ Set `npm.access` to `"public"` to [publish scoped packages](https://docs.npmjs.c
 
 In case two-factor authentication (2FA) is enabled for the package, release-it will ask for the one-time password (OTP). Notes:
 
-- The OTP can be provided from the command line (`--npm.otp=123456`). However, providing the OTP without a prompt basically defeats the purpose of 2FA (also, the OTP expires after short period).
-- Getting an `ENEEDAUTH` error while a manual `npm publish` works? Please see [#95](https://github.com/webpro/release-it/issues/95#issuecomment-344919384).
+The OTP can be provided from the command line (`--npm.otp=123456`). However, providing the OTP without a prompt basically defeats the purpose of 2FA (also, the OTP expires after a short period).
 
 ## Managing pre-releases
 
 With release-it, it's easy to create pre-releases: a version of your software that you want to make available, while it's not in the stable semver range yet. Often "alpha", "beta", and "rc" (release candidate) are used as identifier for pre-releases.
 
-An example. The `awesome-pkg` is at version 1.4.1, and work is done for a new major update. To publish the latest beta of the new major version:
+An example. The `awesome-pkg` is at version 1.3.0, and work is done for a new major update. To publish the latest beta of the new major version:
 
 ```
 release-it major --preRelease=beta
@@ -275,7 +274,7 @@ release-it major --preRelease=beta
 
 This will tag and release version `2.0.0-beta.0`. Notes:
 
-- A normal installation of `awesome-pkg` will still be at version 1.4.1.
+- A normal installation of `awesome-pkg` will still be at version 1.3.0.
 - The [npm tag](https://docs.npmjs.com/cli/dist-tag) will be "beta", install it using `npm install awesome-pkg@beta`
 - A GitHub release will be marked as a "Pre-release".
 
@@ -303,15 +302,17 @@ And eventually, for `2.0.0`:
 release-it major
 ```
 
+<img src="./assets/release-it-prerelease.gif?raw=true" height="524">
+
 Notes:
 
-- By default, release-it will always ask for your confirmation before publishing the package with the next version.
+- Pre-releases can work together with [recommended bumps](#recommended-bump).
 - You can still override individual options (e.g. `release-it --preRelease=rc --npm.tag=next`).
 - See [semver.org](http://semver.org) for more details about semantic versioning.
 
 ## Scripts
 
-The scripts (previously "command hooks") are executed from the root directory of the `src` or `dist` repository, respectively:
+These script hooks can be used to execute commands (from the root directory of the repository):
 
 - `scripts.beforeStart`
 - `scripts.beforeBump`
@@ -373,7 +374,7 @@ Please find the [list of available conventions](https://github.com/conventional-
 
 ### Generating a custom changelog
 
-With release-it, you can use tools like [conventional-changelog-cli](https://www.npmjs.com/package/conventional-changelog-cli) to generate the changelog for the GitHub release. Make sure that the command defined in the `scripts.changelog` option outputs the changelog to `stdout`. In the next example, `scripts.afterBump` is also used, to update the `CHANGELOG.md` file. This change will also be included in the release commit.
+With release-it, you can use tools like [conventional-changelog-cli](https://www.npmjs.com/package/conventional-changelog-cli) to generate the changelog for the GitHub release. Make sure that the command defined in the `scripts.changelog` option outputs the changelog to `stdout`. In the next example, `scripts.afterBump` is also used, to update the `CHANGELOG.md` file.
 
 ```json
 {
@@ -447,7 +448,7 @@ releaseIt(options).then(output => {
 });
 ```
 
-## Examples
+## Example projects using release-it
 
 - [react-navigation/react-navigation](https://github.com/react-navigation/react-navigation)
 - [swagger-api/swagger-ui](https://github.com/swagger-api/swagger-ui)
@@ -460,6 +461,7 @@ releaseIt(options).then(output => {
 - [infor-design/enterprise](https://github.com/infor-design/enterprise)
 - [tsqllint/tsqllint](https://github.com/tsqllint/tsqllint)
 - [segmentio/typewriter](https://github.com/segmentio/typewriter)
+- [Repositories that depend on release-it](https://github.com/webpro/release-it/network/dependents)
 - GitHub search for [projects with .release-it.json](https://github.com/search?o=desc&q=in%3Apath+.release-it.json&s=indexed&type=Code)
 
 ## Resources

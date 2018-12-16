@@ -55,16 +55,10 @@
       "afterRelease": null
     },
     "git": {
-      "addUntrackedFiles": null,
+      "addUntrackedFiles": false,
       "commit": true,
-      "commitMessage": "Release ${version}",
-      "commitArgs": "",
       "tag": true,
-      "tagName": "${version}",
-      "tagAnnotation": "Release ${version}",
-      "tagArgs": "",
-      "push": true,
-      "pushArgs": ""
+      "push": true
     },
     "github": {
       "release": false
