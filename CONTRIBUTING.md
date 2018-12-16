@@ -63,3 +63,9 @@ To make release-it globally available so you can run it on your (test) project:
 ```
 npm link
 ```
+
+To test locally, e.g. disabling the distribution repository (`--no-dist.repo`) and clean working directory requirement (`--no-git.requireCleanWorkingDir`):
+
+```
+node bin/release-it --dry-run --verbose --no-dist.repo --no-git.requireCleanWorkingDir
+```
