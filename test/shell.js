@@ -5,10 +5,10 @@ const path = require('path');
 const { EOL } = require('os');
 const { readFile, readJSON } = require('./util/index');
 const { config } = require('../lib/config');
-const { run, runTemplateCommand, pushd, popd, mkTmpDir, copy, bump } = require('../lib/shell');
+const { run, runTemplateCommand, pushd, popd, copy, isSubDir, bump } = require('../lib/shell');
 
 const dir = 'test/resources';
-const pwd = process.cwd();
+const cwd = process.cwd();
 
 test('run (shell.exec)', async t => {
   t.equal(await run('echo bar'), 'bar');
@@ -48,14 +48,14 @@ test('run (verbose)', async t => {
 });
 
 test.skip('run (read-only command)', async t => {
-  t.equal(await run('!pwd', { isReadOnly: true }), pwd);
+  t.equal(await run('!pwd', { isReadOnly: true }), cwd);
   t.end();
 });
 
 test('runTemplateCommand', async t => {
   const run = cmd => runTemplateCommand(cmd, { verbose: false });
   t.notOk(await run(''));
-  t.equal(await run('!pwd'), pwd);
+  t.equal(await run('!pwd'), cwd);
   t.equal(await run('echo ${git.pushRepo}'), 'origin');
   t.equal(await run('echo -*- ${github.tokenRef} -*-'), '-*- GITHUB_TOKEN -*-');
   t.end();
@@ -66,7 +66,7 @@ test('pushd + popd', async t => {
   const [to, from] = outputPush.split(',');
   const diff = to
     .replace(from, '')
-    .replace(/^[\/|\\\\]/, '')
+    .replace(/^[/|\\\\]/, '')
     .replace(/\\/g, '/');
   t.equal(diff, dir);
   const popOutput = await popd();
@@ -83,6 +83,21 @@ test('copy', async t => {
   t.equal(await readFile('file2'), await readFile('tmp/file2'));
   shell.rm('-rf', 'tmp');
   shell.popd('-q');
+  t.end();
+});
+
+test('isSubDir', t => {
+  t.equal(isSubDir(), false);
+  t.equal(isSubDir(''), false);
+  t.equal(isSubDir('.'), false);
+  t.equal(isSubDir('..'), false);
+  t.equal(isSubDir('foo'), true);
+  t.equal(isSubDir('foo/bar'), true);
+  t.equal(isSubDir('foo', '.'), true);
+  t.equal(isSubDir('foo/bar', 'foo'), true);
+  t.equal(isSubDir('', '.'), false);
+  t.equal(isSubDir('..', '..'), false);
+  t.equal(isSubDir('..', 'foo'), false);
   t.end();
 });
 
@@ -111,30 +126,5 @@ test('bump (file not found)', async t => {
 
 test('bump (invalid)', async t => {
   await t.shouldReject(bump('test/resources/file1'), /unexpected token/i);
-  t.end();
-});
-
-test('mkTmpDir', async t => {
-  shell.pushd('-q', dir);
-  const { path, cleanup } = await mkTmpDir('tmp');
-  t.equal(path, 'tmp');
-  t.ok(~shell.ls().indexOf('tmp'));
-  await cleanup();
-  t.notOk(~shell.ls().indexOf('tmp'));
-  shell.popd('-q');
-  t.end();
-});
-
-test('mkTmpDir (dry run)', async t => {
-  const { 'dry-run': dryRun } = config.options;
-  config.options['dry-run'] = true;
-  shell.pushd('-q', dir);
-  const { path, cleanup } = await mkTmpDir();
-  t.ok(/\.tmp-(\w{8})/.test(path));
-  t.ok(~shell.ls('-A').indexOf(path));
-  await cleanup();
-  t.notOk(~shell.ls('-A').indexOf(path));
-  shell.popd('-q');
-  config.options['dry-run'] = dryRun;
   t.end();
 });
