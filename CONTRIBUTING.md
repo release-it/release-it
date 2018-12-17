@@ -46,11 +46,32 @@ Unsure about whether you should open a pull request? Feel free to discuss it fir
 
 Set up the project on your machine:
 
+First fork the the project on [GitHub](https://github.com/webpro/release-it).
+
 ```bash
-git clone https://github.com/webpro/release-it
+git clone https://github.com/<your-github-username>/release-it
 cd release-it
 npm install
 ```
+
+Setup the upstream to the original repo to stay in sync with it:
+
+```bash
+# Copy the URI from the original repo you forked and use it here
+$ git remote add upstream git://github.com/<forked-from-user>/<forked-from-repo>.git
+$ git fetch upstream
+```
+
+Sync with the original repo:
+
+```bash
+# Execute the following command to do the actual sync, which is like a "git pull" meaning it does a fetch + merge
+$ git merge upstream/master master
+# Or better, replay your local work on top of the fetched branch, which is like a "git pull --rebase"
+$ git rebase upstream/master
+```
+
+**Pro tip**: Always sync with the original repo before submitting a pull request to make sure your changes are working with the latest code base!
 
 Verify the tests are passing:
 
