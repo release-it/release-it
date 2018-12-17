@@ -15,7 +15,8 @@ test('config', t => {
     version: pkg.version,
     name: pkg.name,
     private: pkg.private,
-    publish: true
+    publish: true,
+    packageUrl: 'https://www.npmjs.com/package/' + pkg.name
   });
   t.end();
 });
