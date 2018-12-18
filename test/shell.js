@@ -86,21 +86,6 @@ test('copy', async t => {
   t.end();
 });
 
-test('isSubDir', t => {
-  t.equal(isSubDir(), false);
-  t.equal(isSubDir(''), false);
-  t.equal(isSubDir('.'), false);
-  t.equal(isSubDir('..'), false);
-  t.equal(isSubDir('foo'), true);
-  t.equal(isSubDir('foo/bar'), true);
-  t.equal(isSubDir('foo', '.'), true);
-  t.equal(isSubDir('foo/bar', 'foo'), true);
-  t.equal(isSubDir('', '.'), false);
-  t.equal(isSubDir('..', '..'), false);
-  t.equal(isSubDir('..', 'foo'), false);
-  t.end();
-});
-
 test('bump', async t => {
   const target = path.resolve(dir);
   const manifestA = path.join(target, 'package.json');

@@ -9,7 +9,8 @@ const {
   GitCleanWorkingDirError,
   GitUpstreamError,
   GithubTokenError,
-  InvalidVersionError
+  InvalidVersionError,
+  DistRepoStageDirError
 } = require('../lib/errors');
 
 const getMock = config =>
@@ -120,6 +121,30 @@ test('should throw if invalid increment value is provided', async t => {
   await run('git add file1');
   await run('git commit -am "Add file1"');
   await t.shouldBailOut(tasks(), InvalidVersionError, /invalid version was provided/);
+  shell.popd('-q');
+  shell.rm('-rf', tmp);
+  t.end();
+});
+
+test('should throw if not a subdir is provided for dist.staging', async t => {
+  const tasks = getMock(
+    new Config({
+      increment: 'patch',
+      'non-interactive': true,
+      dist: {
+        repo: 'foo',
+        stageDir: '..'
+      }
+    })
+  );
+  shell.mkdir(tmp);
+  shell.pushd('-q', tmp);
+  await run('git init');
+  await run('!touch file1');
+  await run('git remote add origin foo');
+  await run('git add file1');
+  await run('git commit -am "Add file1"');
+  await t.shouldBailOut(tasks(), DistRepoStageDirError, /`dist.stageDir` \(".."\) must resolve to a sub directory/);
   shell.popd('-q');
   shell.rm('-rf', tmp);
   t.end();
