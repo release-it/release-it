@@ -21,7 +21,9 @@ CLI release tool for Git repos and npm packages.
 [![npm version](https://badge.fury.io/js/release-it.svg)](https://badge.fury.io/js/release-it)
 [![Greenkeeper badge](https://badges.greenkeeper.io/webpro/release-it.svg)](https://greenkeeper.io/)
 
-_See [CHANGELOG.md](CHANGELOG.md) for major updates and breaking changes; the [releases](https://github.com/webpro/release-it/releases) section for a detailed version history._
+_See [CHANGELOG.md](CHANGELOG.md) for major updates and breaking changes.
+Refer to the [releases](https://github.com/webpro/release-it/releases) section for a detailed version history.
+Want to help out, or hack on release-it? Great! Please read [CONTRIBUTING.md](CONTRIBUTING.md) on how to participate._
 
 <details>
   <summary><strong>Table of Contents</strong> (click to expand)</summary>
