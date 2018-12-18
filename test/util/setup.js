@@ -25,7 +25,11 @@ Test.prototype.shouldBailOut = function(promise, expected, expectedStdErr) {
         throw err;
       };
       this.throws(f, expected);
-      this.ok(expectedStdErr.test(stderr));
+      const result = expectedStdErr.test(stderr);
+      this.ok(result);
+      if (!result) {
+        console.error(err);
+      }
     }
   );
 };
