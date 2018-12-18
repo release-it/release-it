@@ -258,7 +258,7 @@ Set `npm.access` to `"public"` to [publish scoped packages](https://docs.npmjs.c
 
 ### Two-factor authentication
 
-In case two-factor authentication (2FA) is enabled for the package, release-it will ask for the one-time password (OTP). Notes:
+In case two-factor authentication (2FA) is enabled for the package, release-it will ask for the one-time password (OTP).
 
 The OTP can be provided from the command line (`--npm.otp=123456`). However, providing the OTP without a prompt basically defeats the purpose of 2FA (also, the OTP expires after a short period).
 
