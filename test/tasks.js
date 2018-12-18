@@ -20,6 +20,22 @@ const getMock = config =>
 
 const tmp = 'test/resources/tmp';
 
+const prepare = async () => {
+  shell.rm('-rf', tmp);
+  shell.mkdir(tmp);
+  shell.pushd('-q', tmp);
+  await run('git init');
+  await run('git remote add origin foo');
+  await run('!touch file1');
+  await run('git add file1');
+  await run('git commit -am "Add file1"');
+};
+
+const cleanup = async () => {
+  shell.popd('-q');
+  shell.rm('-rf', tmp);
+};
+
 test('should throw when not a Git repository', async t => {
   const tasks = getMock(new Config());
   shell.pushd('-q', '..');
@@ -30,30 +46,19 @@ test('should throw when not a Git repository', async t => {
 
 test('should throw if there is no remote Git url', async t => {
   const tasks = getMock(new Config());
-  shell.mkdir(tmp);
-  shell.pushd('-q', tmp);
-  await run('git init');
-  await run('!touch file1');
-  await run('git add file1');
-  await run('git commit -am "Add file1"');
+  await prepare();
+  await run('git remote remove origin');
   await t.shouldBailOut(tasks(), GitRemoteUrlError, /Could not get remote Git url/);
-  shell.popd('-q');
-  shell.rm('-rf', tmp);
+  await cleanup();
   t.end();
 });
 
 test('should throw if working dir is not clean', async t => {
   const tasks = getMock(new Config());
-  shell.rm('-rf', tmp);
-  shell.mkdir(tmp);
-  shell.pushd('-q', tmp);
-  await run('git init');
-  await run('!touch file1');
-  await run('git remote add origin foo');
-  await run('git add file1');
+  await prepare();
+  await run('rm file1');
   await t.shouldBailOut(tasks(), GitCleanWorkingDirError, /Working dir must be clean/);
-  shell.popd('-q');
-  shell.rm('-rf', tmp);
+  await cleanup();
   t.end();
 });
 
@@ -65,17 +70,9 @@ test('should throw if no upstream is configured', async t => {
       }
     })
   );
-  shell.rm('-rf', tmp);
-  shell.mkdir(tmp);
-  shell.pushd('-q', tmp);
-  await run('git init');
-  await run('!touch file1');
-  await run('git remote add origin foo');
-  await run('git add file1');
-  await run('git commit -am "Add file1"');
+  await prepare();
   await t.shouldBailOut(tasks(), GitUpstreamError, /No upstream configured for current branch/);
-  shell.popd('-q');
-  shell.rm('-rf', tmp);
+  await cleanup();
   t.end();
 });
 
@@ -88,17 +85,9 @@ test('should throw if no GitHub token environment variable is set', async t => {
       }
     })
   );
-  shell.rm('-rf', tmp);
-  shell.mkdir(tmp);
-  shell.pushd('-q', tmp);
-  await run('git init');
-  await run('!touch file1');
-  await run('git remote add origin foo');
-  await run('git add file1');
-  await run('git commit -am "Add file1"');
+  await prepare();
   await t.shouldBailOut(tasks(), GithubTokenError, /Environment variable "GITHUB_FOO" is required for GitHub releases/);
-  shell.popd('-q');
-  shell.rm('-rf', tmp);
+  await cleanup();
   t.end();
 });
 
@@ -112,17 +101,9 @@ test('should throw if invalid increment value is provided', async t => {
       }
     })
   );
-  shell.rm('-rf', tmp);
-  shell.mkdir(tmp);
-  shell.pushd('-q', tmp);
-  await run('git init');
-  await run('!touch file1');
-  await run('git remote add origin foo');
-  await run('git add file1');
-  await run('git commit -am "Add file1"');
+  await prepare();
   await t.shouldBailOut(tasks(), InvalidVersionError, /invalid version was provided/);
-  shell.popd('-q');
-  shell.rm('-rf', tmp);
+  await cleanup();
   t.end();
 });
 
@@ -137,15 +118,8 @@ test('should throw if not a subdir is provided for dist.staging', async t => {
       }
     })
   );
-  shell.mkdir(tmp);
-  shell.pushd('-q', tmp);
-  await run('git init');
-  await run('!touch file1');
-  await run('git remote add origin foo');
-  await run('git add file1');
-  await run('git commit -am "Add file1"');
+  await prepare();
   await t.shouldBailOut(tasks(), DistRepoStageDirError, /`dist.stageDir` \(".."\) must resolve to a sub directory/);
-  shell.popd('-q');
-  shell.rm('-rf', tmp);
+  await cleanup();
   t.end();
 });
