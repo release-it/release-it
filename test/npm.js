@@ -1,12 +1,17 @@
 const test = require('tape');
 const proxyquire = require('proxyquire');
 const { Config } = require('../lib/config');
-const { getTag } = require('../lib/npm');
+const { getPackageUrl, getTag } = require('../lib/npm');
 
 const getMock = config =>
   proxyquire('../lib/npm', {
     './config': { config }
   });
+
+test('getPackageUrl', t => {
+  t.equal(getPackageUrl('my-cool-package'), 'https://www.npmjs.com/package/my-cool-package');
+  t.end();
+});
 
 test('getTag', t => {
   t.equal(getTag(), 'latest');
