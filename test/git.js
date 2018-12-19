@@ -1,8 +1,10 @@
+const { EOL } = require('os');
 const test = require('tape');
 const shell = require('shelljs');
 const semver = require('semver');
+const mockStdIo = require('mock-stdio');
 const { config } = require('../lib/config');
-const { readJSON } = require('./util/index');
+const { readFile, readJSON } = require('./util/index');
 const { run, copy } = require('../lib/shell');
 const {
   isGitRepo,
@@ -13,6 +15,7 @@ const {
   isWorkingDirClean,
   clone,
   stage,
+  reset,
   commit,
   tag,
   getLatestTag,
@@ -131,6 +134,26 @@ test('clone + stage + commit + tag + push', async t => {
   t.ok(status.includes('nothing to commit'));
   shell.popd('-q');
   shell.rm('-rf', [tmpOrigin, tmp]);
+  t.end();
+});
+
+test('reset', async t => {
+  shell.mkdir(tmp);
+  shell.pushd('-q', tmp);
+  await run('git init');
+  await run('echo line >> file1');
+  await run('git add file1');
+  await run('git commit -am "Add file1"');
+  await run('echo line >> file1');
+  t.equal(await readFile('file1'), `line${EOL}line${EOL}`);
+  await reset('file1');
+  t.equal(await readFile('file1'), `line${EOL}`);
+  mockStdIo.start();
+  await reset(['file2, file3']);
+  const { stdout } = mockStdIo.end();
+  t.ok(/Could not reset file2, file3/.test(stdout));
+  shell.popd('-q');
+  shell.rm('-rf', tmp);
   t.end();
 });
 
