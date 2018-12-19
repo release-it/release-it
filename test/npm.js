@@ -1,7 +1,9 @@
 const test = require('tape');
 const proxyquire = require('proxyquire');
 const mockStdIo = require('mock-stdio');
+const semver = require('semver');
 const { Config, config } = require('../lib/config');
+const { run } = require('../lib/shell');
 const { getPackageUrl, getTag, publish } = require('../lib/npm');
 
 const getMock = config =>
@@ -38,6 +40,11 @@ test('getTag (pre-release w/ different tag)', t => {
 });
 
 test('publish', async t => {
+  const npmMajor = semver.major(await run(`npm --version`));
+  if (npmMajor < 6) {
+    return t.end();
+  }
+
   const { verbose, 'dry-run': dryRun } = config.options;
   config.options.verbose = true;
   config.options['dry-run'] = true;
