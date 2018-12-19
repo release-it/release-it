@@ -25,10 +25,10 @@ In case you've encountered a bug, please make sure:
 - You have read the [documentation](https://github.com/webpro/release-it/blob/master/README.md) first, and double-checked your configuration.
 - You have acknowledged from using `--verbose` and `--debug` the errors are likely a bug in this project, and not coming from e.g. your environment or custom scripts/commands.
 - In your issue description, please include:
-  _ What you expected to see, and what happened instead.
-  _ Your operating system and other environment information.
-  _ As much information as possible, such as the command and configuration used.
-  _ Interesting logs with `--verbose` and/or `--debug`. \* All steps to reproduce the issue.
+  - What you expected to see, and what happened instead.
+  - Your operating system and other environment information.
+  - As much information as possible, such as the command and configuration used.
+  - Interesting logs with `--verbose` and/or `--debug`. \* All steps to reproduce the issue.
 
 ## 🎁 Pull Requests
 
