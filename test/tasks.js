@@ -107,11 +107,14 @@ test('should throw if invalid increment value is provided', async t => {
   t.end();
 });
 
-test('should throw if not a subdir is provided for dist.staging', async t => {
+test('should throw if not a subdir is provided for dist.stageDir', async t => {
   const tasks = getMock(
     new Config({
       increment: 'patch',
       'non-interactive': true,
+      github: {
+        release: false
+      },
       dist: {
         repo: 'foo',
         stageDir: '..'
