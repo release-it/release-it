@@ -5,7 +5,7 @@ const path = require('path');
 const { EOL } = require('os');
 const { readFile, readJSON } = require('./util/index');
 const { config } = require('../lib/config');
-const { run, runTemplateCommand, pushd, popd, copy, isSubDir, bump } = require('../lib/shell');
+const { run, runTemplateCommand, pushd, popd, copy, bump } = require('../lib/shell');
 
 const dir = 'test/resources';
 const cwd = process.cwd();

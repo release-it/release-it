@@ -28,7 +28,7 @@ Test.prototype.shouldBailOut = function(promise, expected, expectedStdErr) {
       const result = expectedStdErr.test(stderr);
       this.ok(result);
       if (!result) {
-        console.error(err);
+        console.error(err); // eslint-disable-line no-console
       }
     }
   );
