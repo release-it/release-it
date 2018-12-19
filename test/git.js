@@ -8,6 +8,7 @@ const { readFile, readJSON } = require('./util/index');
 const { run, copy } = require('../lib/shell');
 const {
   isGitRepo,
+  isInGitRootDir,
   hasUpstream,
   getBranchName,
   tagExists,
@@ -15,6 +16,7 @@ const {
   isWorkingDirClean,
   clone,
   stage,
+  status,
   reset,
   commit,
   tag,
@@ -31,6 +33,17 @@ test('isGitRepo', async t => {
   const tmp = '..';
   shell.pushd('-q', tmp);
   t.notOk(await isGitRepo());
+  t.notOk(await isGitRepo());
+  shell.popd('-q');
+  t.end();
+});
+
+test('isInGitRootDir', async t => {
+  shell.mkdir(tmp);
+  shell.pushd('-q', tmp);
+  t.notOk(await isInGitRootDir());
+  await run('git init');
+  t.ok(await isInGitRootDir());
   shell.popd('-q');
   t.end();
 });
@@ -134,6 +147,72 @@ test('clone + stage + commit + tag + push', async t => {
   t.ok(status.includes('nothing to commit'));
   shell.popd('-q');
   shell.rm('-rf', [tmpOrigin, tmp]);
+  t.end();
+});
+
+test('push', async t => {
+  const tmpOrigin = 'test/resources/bare.git';
+  await run(`git init --bare ${tmpOrigin}`);
+  await clone(tmpOrigin, tmp);
+  await copy('package.json', {}, tmp);
+  shell.pushd('-q', tmp);
+  await stage('package.json');
+  await commit({ message: 'Add package.json' });
+  const { verbose } = config.options;
+  config.options.verbose = true;
+
+  {
+    mockStdIo.start();
+    await push();
+    const { stdout } = mockStdIo.end();
+    t.equal(stdout.trim(), `$ git push --follow-tags`);
+  }
+
+  {
+    mockStdIo.start();
+    await push({ pushRepo: 'origin', hasUpstreamBranch: true });
+    const { stdout } = mockStdIo.end();
+    t.equal(stdout.trim(), `$ git push --follow-tags  origin`);
+  }
+
+  {
+    mockStdIo.start();
+    try {
+      await push({ pushRepo: 'https://host/repo.git', hasUpstreamBranch: true });
+    } catch (err) {
+      console.log(err); // eslint-disable-line no-console
+    }
+    const { stdout } = mockStdIo.end();
+    t.ok(stdout.includes('$ git push --follow-tags  https://host/repo.git'));
+  }
+
+  {
+    mockStdIo.start();
+    await push({ pushRepo: 'origin', hasUpstreamBranch: false });
+    const { stdout } = mockStdIo.end();
+    t.ok(stdout.includes('$ git push --follow-tags   -u origin master'));
+    t.ok(stdout.includes("Branch 'master' set up to track remote branch 'master' from 'origin'"));
+  }
+
+  shell.popd('-q');
+  shell.rm('-rf', [tmpOrigin, tmp]);
+  config.options.verbose = verbose;
+  t.end();
+});
+
+test('status', async t => {
+  shell.mkdir(tmp);
+  shell.pushd('-q', tmp);
+  await run('git init');
+  await run('echo line >> file1');
+  await run('git add file1');
+  await run('git commit -am "Add file1"');
+  await run('echo line >> file1');
+  await run('echo line >> file2');
+  await run('git add file2');
+  t.equal(await status(), 'M file1\nA  file2');
+  shell.popd('-q');
+  shell.rm('-rf', tmp);
   t.end();
 });
 
