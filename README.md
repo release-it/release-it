@@ -429,7 +429,9 @@ With this example:
 
 ## Metrics
 
-Use `--disable-metrics` to disable sending some anonymous statistical data.
+Use `--disable-metrics` to opt-out of sending some anonymous statistical data to Google Analytics.
+For details, refer to [lib/metrics.js](lib/metrics.js).
+Please consider to not opt-out: more data means more more support for future development.
 
 ## Troubleshooting & debugging
 
