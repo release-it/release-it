@@ -5,6 +5,8 @@ const defaultConfig = require('../conf/release-it.json');
 const localConfig = require('../.release-it.json');
 const pkg = require('../package.json');
 
+const getConfig = (config, cli = '') => new Config(config, `${cli} --no.config`);
+
 test('config', t => {
   const config = new Config();
   t.deepEqual(config.cliArguments, {});
@@ -21,7 +23,7 @@ test('config', t => {
 });
 
 test('config.parseArgs', t => {
-  const config = new Config({}, '1.0.0 --git.commitMessage="release ${version}" -V');
+  const config = getConfig({}, '1.0.0 --git.commitMessage="release ${version}" -V');
   const { cliArguments } = config;
   t.equal(cliArguments.verbose, true);
   t.equal(cliArguments.increment, '1.0.0');
@@ -30,19 +32,19 @@ test('config.parseArgs', t => {
 });
 
 test('config.parseArgs (--increment)', t => {
-  const config = new Config({}, '--increment=1.0.0');
+  const config = getConfig({}, '--increment=1.0.0');
   t.equal(config.cliArguments.increment, '1.0.0');
   t.end();
 });
 
 test('config.parseArgs (-i)', t => {
-  const config = new Config({}, '-i 1.0.0');
+  const config = getConfig({}, '-i 1.0.0');
   t.equal(config.cliArguments.increment, '1.0.0');
   t.end();
 });
 
 test('config.mergeOptions', t => {
-  const config = new Config({}, '1.0.0 -eV --github.release');
+  const config = getConfig({}, '1.0.0 -eV --github.release');
   const { options } = config;
   t.equal(config.isVerbose, true);
   t.equal(config.isDryRun, false);
@@ -55,7 +57,7 @@ test('config.mergeOptions', t => {
 });
 
 test('config.assignOptions', t => {
-  const config = new Config({}, '1.0.0 -eV --github.release');
+  const config = getConfig({}, '1.0.0 -eV --github.release');
   const options = {
     verbose: false,
     increment: 'major',
@@ -71,13 +73,13 @@ test('config.assignOptions', t => {
 });
 
 test('config.mergeOptions (override -n)', t => {
-  const config = new Config({}, '--no-n');
+  const config = getConfig({}, '--no-n');
   t.equal(config.isInteractive, true);
   t.end();
 });
 
 test('config (override npm.publish)', t => {
-  const config = new Config({}, '--no-npm.publish');
+  const config = getConfig({}, '--no-npm.publish');
   t.equal(config.options.npm.publish, false);
   t.end();
 });
@@ -90,7 +92,7 @@ test('config.config', t => {
 });
 
 test('config.preRelease (shorthand)', t => {
-  const config = new Config({}, 'major --preRelease=beta');
+  const config = getConfig({}, 'major --preRelease=beta');
   const { options } = config;
   t.equal(options.increment, 'major');
   t.equal(options.preReleaseId, 'beta');
@@ -100,7 +102,7 @@ test('config.preRelease (shorthand)', t => {
 });
 
 test('config.preRelease (shorthand w/o npm.tag)', t => {
-  const config = new Config({}, '--preRelease');
+  const config = getConfig({}, '--preRelease');
   const { options } = config;
   t.equal(options.preRelease, true);
   t.equal(options.preReleaseId, null);
@@ -109,7 +111,7 @@ test('config.preRelease (shorthand w/o npm.tag)', t => {
 });
 
 test('config.preRelease (shorthand w/ npm.tag)', t => {
-  const config = new Config({}, '--preRelease --npm.tag=alpha');
+  const config = getConfig({}, '--preRelease --npm.tag=alpha');
   const { options } = config;
   t.equal(options.preRelease, true);
   t.equal(options.preReleaseId, null);
@@ -118,7 +120,7 @@ test('config.preRelease (shorthand w/ npm.tag)', t => {
 });
 
 test('config.preRelease (shorthand w/o increment)', t => {
-  const config = new Config({}, '--preRelease=alpha');
+  const config = getConfig({}, '--preRelease=alpha');
   const { options } = config;
   t.equal(options.increment, null);
   t.equal(options.preReleaseId, 'alpha');
@@ -128,7 +130,7 @@ test('config.preRelease (shorthand w/o increment)', t => {
 });
 
 test('config.preRelease (override npm.tag)', t => {
-  const config = new Config({}, 'minor --preRelease=rc --npm.tag=next');
+  const config = getConfig({}, 'minor --preRelease=rc --npm.tag=next');
   const { options } = config;
   t.equal(options.increment, 'minor');
   t.equal(options.preReleaseId, 'rc');
