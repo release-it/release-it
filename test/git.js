@@ -224,9 +224,9 @@ test('reset', async t => {
   await run('git add file1');
   await run('git commit -am "Add file1"');
   await run('echo line >> file1');
-  t.equal(await readFile('file1'), `line${EOL}line${EOL}`);
+  t.ok(/^line\s*line\s*$/.test(await readFile('file1')));
   await reset('file1');
-  t.equal(await readFile('file1'), `line${EOL}`);
+  t.ok(/^line\s*$/.test(await readFile('file1')));
   mockStdIo.start();
   await reset(['file2, file3']);
   const { stdout } = mockStdIo.end();
