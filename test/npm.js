@@ -1,7 +1,8 @@
 const test = require('tape');
 const proxyquire = require('proxyquire');
-const { Config } = require('../lib/config');
-const { getPackageUrl, getTag } = require('../lib/npm');
+const mockStdIo = require('mock-stdio');
+const { Config, config } = require('../lib/config');
+const { getPackageUrl, getTag, publish } = require('../lib/npm');
 
 const getMock = config =>
   proxyquire('../lib/npm', {
@@ -33,5 +34,29 @@ test('getTag (pre-release continuation)', t => {
 test('getTag (pre-release w/ different tag)', t => {
   const npm = getMock(new Config({}, '--preRelease=beta --npm.tag=rc'));
   t.equal(npm.getTag(), 'rc');
+  t.end();
+});
+
+test('publish', async t => {
+  const { verbose, 'dry-run': dryRun } = config.options;
+  config.options.verbose = true;
+  config.options['dry-run'] = true;
+
+  {
+    mockStdIo.start();
+    await publish({ publishPath: '.', tag: 'latest' });
+    const { stdout } = mockStdIo.end();
+    t.ok(stdout.includes('npm publish . --tag latest'));
+  }
+
+  {
+    mockStdIo.start();
+    await publish({ publishPath: '.', tag: 'beta', access: 'public' }, '@scoped/pkg');
+    const { stdout } = mockStdIo.end();
+    t.ok(stdout.includes('npm publish . --tag beta --access public'));
+  }
+
+  config.options.verbose = verbose;
+  config.options['dry-run'] = dryRun;
   t.end();
 });
