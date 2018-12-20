@@ -1,11 +1,12 @@
 const { EOL } = require('os');
 const test = require('tape');
-const shell = require('shelljs');
+const sinon = require('sinon');
+const sh = require('shelljs');
 const semver = require('semver');
 const mockStdIo = require('mock-stdio');
 const { config } = require('../lib/config');
 const { readFile, readJSON } = require('./util/index');
-const { run, copy } = require('../lib/shell');
+const shell = require('../lib/shell');
 const {
   isGitRepo,
   isInGitRootDir,
@@ -28,202 +29,207 @@ const {
 
 const tmp = 'test/resources/tmp';
 
+const initBare = async (barePath, clonePath) => {
+  sh.exec(`git init --bare ${barePath}`);
+  await clone(barePath, clonePath);
+  sh.cp('package.json', clonePath);
+  sh.pushd('-q', clonePath);
+  await stage('package.json');
+  await commit({ message: 'Add package.json' });
+};
+
 test('isGitRepo', async t => {
   t.ok(await isGitRepo());
   const tmp = '..';
-  shell.pushd('-q', tmp);
+  sh.pushd('-q', tmp);
   t.notOk(await isGitRepo());
-  t.notOk(await isGitRepo());
-  shell.popd('-q');
+  sh.popd('-q');
   t.end();
 });
 
 test('isInGitRootDir', async t => {
-  shell.mkdir(tmp);
-  shell.pushd('-q', tmp);
+  sh.mkdir(tmp);
+  sh.pushd('-q', tmp);
   t.notOk(await isInGitRootDir());
-  await run('git init');
+  sh.exec('git init');
   t.ok(await isInGitRootDir());
-  shell.popd('-q');
+  sh.popd('-q');
+  sh.rm('-rf', tmp);
   t.end();
 });
 
 test('hasUpstream', async t => {
-  shell.mkdir(tmp);
-  shell.pushd('-q', tmp);
-  await run('git init');
-  await run('!touch file1');
-  await run('git add file1');
-  await run('git commit -am "Add file1"');
+  sh.mkdir(tmp);
+  sh.pushd('-q', tmp);
+  sh.exec('git init');
+  sh.touch('file1');
+  sh.exec('git add file1');
+  sh.exec('git commit -am "Add file1"');
   t.notOk(await hasUpstream());
-  shell.popd('-q');
-  shell.rm('-rf', tmp);
+  sh.popd('-q');
+  sh.rm('-rf', tmp);
   t.end();
 });
 
 test('getBranchName', async t => {
-  shell.mkdir(tmp);
-  shell.pushd('-q', tmp);
-  await run('git init');
+  sh.mkdir(tmp);
+  sh.pushd('-q', tmp);
+  sh.exec('git init');
   t.equal(await getBranchName(), null);
-  await run('git checkout -b feat');
-  await run('!touch file1');
-  await run('git add file1');
-  await run('git commit -am "Add file1"');
+  sh.exec('git checkout -b feat');
+  sh.touch('file1');
+  sh.exec('git add file1');
+  sh.exec('git commit -am "Add file1"');
   t.equal(await getBranchName(), 'feat');
-  shell.popd('-q');
-  shell.rm('-rf', tmp);
+  sh.popd('-q');
+  sh.rm('-rf', tmp);
   t.end();
 });
 
 test('tagExists + isWorkingDirClean', async t => {
-  shell.mkdir(tmp);
-  shell.pushd('-q', tmp);
-  await run('git init');
+  sh.mkdir(tmp);
+  sh.pushd('-q', tmp);
+  sh.exec('git init');
   t.notOk(await tagExists('1.0.0'));
-  await run('!touch file1');
+  sh.touch('file1');
   t.notOk(await isWorkingDirClean());
-  await run('git add file1');
-  await run('git commit -am "Add file1"');
-  await run('git tag 1.0.0');
+  sh.exec('git add file1');
+  sh.exec('git commit -am "Add file1"');
+  sh.exec('git tag 1.0.0');
   t.ok(await tagExists('1.0.0'));
   t.ok(await isWorkingDirClean());
-  shell.popd('-q');
-  shell.rm('-rf', tmp);
+  sh.popd('-q');
+  sh.rm('-rf', tmp);
   t.end();
 });
 
 test('getRemoteUrl', async t => {
-  shell.mkdir(tmp);
-  shell.pushd('-q', tmp);
-  await run(`git init`);
+  sh.mkdir(tmp);
+  sh.pushd('-q', tmp);
+  sh.exec(`git init`);
   t.equal(await getRemoteUrl(), null);
   t.equal(await getRemoteUrl('git://github.com/webpro/release-it.git'), 'git://github.com/webpro/release-it.git');
   t.equal(await getRemoteUrl('git@github.com:webpro/release-it.git'), 'git@github.com:webpro/release-it.git');
   t.equal(await getRemoteUrl('https://github.com/webpro/release-it.git'), 'https://github.com/webpro/release-it.git');
-  await run(`git remote add origin foo`);
+  sh.exec(`git remote add origin foo`);
   t.equal(await getRemoteUrl(), 'foo');
   t.equal(await getRemoteUrl('origin'), 'foo');
-  await run(`git remote add another bar`);
+  sh.exec(`git remote add another bar`);
   t.equal(await getRemoteUrl('another'), 'bar');
-  shell.popd('-q');
-  shell.rm('-rf', tmp);
+  sh.popd('-q');
+  sh.rm('-rf', tmp);
   t.end();
 });
 
 test('clone + stage + commit + tag + push', async t => {
   const tmpOrigin = 'test/resources/bare.git';
-  await run(`git init --bare ${tmpOrigin}`);
-  await clone(tmpOrigin, tmp);
-  await copy('package.json', {}, tmp);
-  shell.pushd('-q', tmp);
-  await stage('package.json');
-  await commit({
-    message: 'Add package.json'
-  });
+  await initBare(tmpOrigin, tmp);
   const pkgBefore = await readJSON('package.json');
   const versionBefore = pkgBefore.version;
-  await run(`git tag ${versionBefore}`);
+  sh.exec(`git tag ${versionBefore}`);
   const actual_latestTagBefore = await getLatestTag();
   t.ok(await isGitRepo());
   t.equal(versionBefore, actual_latestTagBefore);
-  await run('echo line >> file1');
+  sh.exec('echo line >> file1');
   await stage('file1');
-  await commit({
-    message: 'Update file1'
-  });
-  await run('npm --no-git-tag-version version patch');
+  await commit({ message: 'Update file1' });
+  sh.exec('npm --no-git-tag-version version patch');
   await stage('package.json');
   const nextVersion = semver.inc(versionBefore, 'patch');
-  await commit({
-    message: `Release v${nextVersion}`
-  });
+  await commit({ message: `Release v${nextVersion}` });
   await tag({ name: `v${nextVersion}`, annotation: `Release v${nextVersion}` });
   const pkgAfter = await readJSON('package.json');
   const actual_latestTagAfter = await getLatestTag();
   t.equal(pkgAfter.version, actual_latestTagAfter);
   await push();
-  const status = await run('git status -uno');
+  const status = sh.exec('git status -uno');
   t.ok(status.includes('nothing to commit'));
-  shell.popd('-q');
-  shell.rm('-rf', [tmpOrigin, tmp]);
+  sh.popd('-q');
+  sh.rm('-rf', [tmpOrigin, tmp]);
   t.end();
 });
 
 test('push', async t => {
   const tmpOrigin = 'test/resources/bare.git';
-  await run(`git init --bare ${tmpOrigin}`);
-  await clone(tmpOrigin, tmp);
-  await copy('package.json', {}, tmp);
-  shell.pushd('-q', tmp);
-  await stage('package.json');
-  await commit({ message: 'Add package.json' });
-  const { verbose } = config.options;
-  config.options.verbose = true;
+  await initBare(tmpOrigin, tmp);
+  await push();
+  const actual = sh.exec('git ls-tree -r HEAD --name-only', { cwd: '../bare.git' });
+  t.equal(actual.trim(), 'package.json');
+  sh.popd('-q');
+  sh.rm('-rf', [tmpOrigin, tmp]);
+  t.end();
+});
 
-  {
-    mockStdIo.start();
-    await push();
-    const { stdout } = mockStdIo.end();
-    t.equal(stdout.trim(), `$ git push --follow-tags`);
-  }
+test('push (pushRepo)', async t => {
+  const tmpOrigin = 'test/resources/bare.git';
+  await initBare(tmpOrigin, tmp);
+  const spy = sinon.spy(shell, 'run');
+  await push({ pushRepo: 'origin', hasUpstreamBranch: true });
+  t.equal(spy.callCount, 1);
+  t.equal(spy.firstCall.args[0].trim(), 'git push --follow-tags  origin');
+  const actual = sh.exec('git ls-tree -r HEAD --name-only', { cwd: '../bare.git' });
+  t.equal(actual.trim(), 'package.json');
+  sh.popd('-q');
+  sh.rm('-rf', [tmpOrigin, tmp]);
+  spy.restore();
+  t.end();
+});
 
-  {
-    mockStdIo.start();
-    await push({ pushRepo: 'origin', hasUpstreamBranch: true });
-    const { stdout } = mockStdIo.end();
-    t.equal(stdout.trim(), `$ git push --follow-tags  origin`);
-  }
+test('push (pushRepo url)', async t => {
+  const tmpOrigin = 'test/resources/bare.git';
+  await initBare(tmpOrigin, tmp);
+  const stub = sinon.stub(shell, 'run');
+  await push({ pushRepo: 'https://host/repo.git', hasUpstreamBranch: true });
+  t.equal(stub.callCount, 1);
+  t.equal(stub.firstCall.args[0].trim(), 'git push --follow-tags  https://host/repo.git');
+  sh.popd('-q');
+  sh.rm('-rf', [tmpOrigin, tmp]);
+  stub.restore();
+  t.end();
+});
 
-  {
-    mockStdIo.start();
-    try {
-      await push({ pushRepo: 'https://host/repo.git', hasUpstreamBranch: true });
-    } catch (err) {
-      console.log(err); // eslint-disable-line no-console
-    }
-    const { stdout } = mockStdIo.end();
-    t.ok(stdout.includes('$ git push --follow-tags  https://host/repo.git'));
-  }
-
-  {
-    mockStdIo.start();
-    await push({ pushRepo: 'origin', hasUpstreamBranch: false });
-    const { stdout } = mockStdIo.end();
-    t.ok(stdout.includes('$ git push --follow-tags   -u origin master'));
-    t.ok(stdout.includes("Branch 'master' set up to track remote branch 'master' from 'origin'"));
-  }
-
-  shell.popd('-q');
-  shell.rm('-rf', [tmpOrigin, tmp]);
-  config.options.verbose = verbose;
+test('push (pushRepo not "origin")', async t => {
+  const tmpOrigin = 'test/resources/bare.git';
+  await initBare(tmpOrigin, tmp);
+  sh.exec(`git remote add upstream ${sh.exec('git remote get-url origin')}`);
+  const spy = sinon.spy(shell, 'run');
+  await push({ pushRepo: 'upstream', hasUpstreamBranch: false });
+  t.equal(spy.callCount, 2);
+  t.equal(spy.secondCall.args[0].trim(), 'git push --follow-tags   -u upstream master');
+  t.equal(await spy.firstCall.returnValue, 'master');
+  t.equal(await spy.secondCall.returnValue, "Branch 'master' set up to track remote branch 'master' from 'upstream'.");
+  const actual = sh.exec('git ls-tree -r HEAD --name-only', { cwd: '../bare.git' });
+  t.equal(actual.trim(), 'package.json');
+  sh.popd('-q');
+  sh.rm('-rf', [tmpOrigin, tmp]);
+  spy.restore();
   t.end();
 });
 
 test('status', async t => {
-  shell.mkdir(tmp);
-  shell.pushd('-q', tmp);
-  await run('git init');
-  await run('echo line >> file1');
-  await run('git add file1');
-  await run('git commit -am "Add file1"');
-  await run('echo line >> file1');
-  await run('echo line >> file2');
-  await run('git add file2');
+  sh.mkdir(tmp);
+  sh.pushd('-q', tmp);
+  sh.exec('git init');
+  sh.exec('echo line >> file1');
+  sh.exec('git add file1');
+  sh.exec('git commit -am "Add file1"');
+  sh.exec('echo line >> file1');
+  sh.exec('echo line >> file2');
+  sh.exec('git add file2');
   t.equal(await status(), 'M file1\nA  file2');
-  shell.popd('-q');
-  shell.rm('-rf', tmp);
+  sh.popd('-q');
+  sh.rm('-rf', tmp);
   t.end();
 });
 
 test('reset', async t => {
-  shell.mkdir(tmp);
-  shell.pushd('-q', tmp);
-  await run('git init');
-  await run('echo line >> file1');
-  await run('git add file1');
-  await run('git commit -am "Add file1"');
-  await run('echo line >> file1');
+  sh.mkdir(tmp);
+  sh.pushd('-q', tmp);
+  sh.exec('git init');
+  sh.exec('echo line >> file1');
+  sh.exec('git add file1');
+  sh.exec('git commit -am "Add file1"');
+  sh.exec('echo line >> file1');
   t.ok(/^line\s*line\s*$/.test(await readFile('file1')));
   await reset('file1');
   t.ok(/^line\s*$/.test(await readFile('file1')));
@@ -231,17 +237,17 @@ test('reset', async t => {
   await reset(['file2, file3']);
   const { stdout } = mockStdIo.end();
   t.ok(/Could not reset file2, file3/.test(stdout));
-  shell.popd('-q');
-  shell.rm('-rf', tmp);
+  sh.popd('-q');
+  sh.rm('-rf', tmp);
   t.end();
 });
 
 test('getChangelog', async t => {
-  shell.mkdir(tmp);
-  shell.pushd('-q', tmp);
-  await run('git init');
-  await run('echo line >> file && git add file && git commit -m "First commit"');
-  await run('echo line >> file && git add file && git commit -m "Second commit"');
+  sh.mkdir(tmp);
+  sh.pushd('-q', tmp);
+  sh.exec('git init');
+  sh.exec('echo line >> file && git add file && git commit -m "First commit"');
+  sh.exec('echo line >> file && git add file && git commit -m "Second commit"');
   await t.shouldReject(
     getChangelog({
       command: 'git log --invalid',
@@ -259,9 +265,9 @@ test('getChangelog', async t => {
   const pattern = /^\* Second commit \(\w{7}\)\n\* First commit \(\w{7}\)$/;
   t.ok(pattern.test(changelog));
 
-  await run('git tag 1.0.0');
-  await run('echo line C >> file && git add file && git commit -m "Third commit"');
-  await run('echo line D >> file && git add file && git commit -m "Fourth commit"');
+  sh.exec('git tag 1.0.0');
+  sh.exec('echo line C >> file && git add file && git commit -m "Third commit"');
+  sh.exec('echo line D >> file && git add file && git commit -m "Fourth commit"');
 
   const changelogSinceTag = await getChangelog({
     command: config.options.scripts.changelog,
@@ -271,8 +277,8 @@ test('getChangelog', async t => {
   const pattern1 = /^\* Fourth commit \(\w{7}\)\n\* Third commit \(\w{7}\)$/;
   t.ok(pattern1.test(changelogSinceTag));
 
-  shell.popd('-q');
-  shell.rm('-rf', tmp);
+  sh.popd('-q');
+  sh.rm('-rf', tmp);
   t.end();
 });
 

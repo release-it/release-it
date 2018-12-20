@@ -1,6 +1,6 @@
 const test = require('tape');
 const proxyquire = require('proxyquire');
-const shell = require('shelljs');
+const sh = require('shelljs');
 const mockStdIo = require('mock-stdio');
 const { run } = require('../lib/shell');
 const { parse, isValid, isPreRelease } = require('../lib/version');
@@ -152,8 +152,8 @@ test('parse (patch release after pre-release)', async t => {
 
 test('parse (recommended conventional bump)', async t => {
   const tmp = 'test/resources/tmp';
-  shell.mkdir(tmp);
-  shell.pushd('-q', tmp);
+  sh.mkdir(tmp);
+  sh.pushd('-q', tmp);
   await run('git init');
   await run('echo line >> file && git add file && git commit -m "fix(thing): repair that thing"');
   await run(`git tag 1.0.0`);
@@ -165,8 +165,8 @@ test('parse (recommended conventional bump)', async t => {
     version: '1.1.0'
   });
 
-  shell.popd('-q');
-  shell.rm('-rf', tmp);
+  sh.popd('-q');
+  sh.rm('-rf', tmp);
   t.end();
 });
 

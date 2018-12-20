@@ -1,5 +1,6 @@
 const test = require('tape');
-const shell = require('shelljs');
+const sinon = require('sinon');
+const sh = require('shelljs');
 const mockStdIo = require('mock-stdio');
 const path = require('path');
 const { EOL } = require('os');
@@ -16,29 +17,41 @@ test('run (shell.exec)', async t => {
 });
 
 test('run (shelljs command)', async t => {
-  mockStdIo.start();
-  await run('!echo foo');
-  const { stdout } = mockStdIo.end();
-  t.equal(stdout, 'foo\n');
+  const stub = sinon.spy(sh, 'pwd');
+  await run('!pwd foo');
+  t.equal(stub.callCount, 1);
+  t.equal(stub.firstCall.args[0], 'foo');
+  stub.restore();
   t.end();
 });
 
-test('run (dry run)', async t => {
+test('run (dry-run/read-only)', async t => {
   const { 'dry-run': dryRun } = config.options;
-  mockStdIo.start();
   config.options['dry-run'] = true;
-  const pwd = await run('!pwd');
-  const { stdout } = mockStdIo.end();
-  t.ok(/not executed in dry run/.test(stdout));
-  t.equal(pwd, undefined);
+  {
+    mockStdIo.start();
+    const actual = await run('!pwd', { isReadOnly: true });
+    const { stdout } = mockStdIo.end();
+    t.equal(actual, cwd);
+    t.ok(/\$ pwd/.test(stdout));
+    t.notOk(/not executed in dry run/.test(stdout));
+  }
+  {
+    mockStdIo.start();
+    const actual = await run('!pwd', { isReadOnly: false });
+    const { stdout } = mockStdIo.end();
+    t.equal(actual, undefined);
+    t.ok(/\$ pwd/.test(stdout));
+    t.ok(/not executed in dry run/.test(stdout));
+  }
   config.options['dry-run'] = dryRun;
   t.end();
 });
 
 test('run (verbose)', async t => {
   const { verbose } = config.options;
-  mockStdIo.start();
   config.options.verbose = true;
+  mockStdIo.start();
   const actual = await run('echo foo');
   const { stdout } = mockStdIo.end();
   t.equal(stdout, `$ echo foo\nfoo${EOL}`);
@@ -47,14 +60,9 @@ test('run (verbose)', async t => {
   t.end();
 });
 
-test.skip('run (read-only command)', async t => {
-  t.equal(await run('!pwd', { isReadOnly: true }), cwd);
-  t.end();
-});
-
 test('runTemplateCommand', async t => {
   const run = cmd => runTemplateCommand(cmd, { verbose: false });
-  t.notOk(await run(''));
+  t.equal(await run(''), undefined);
   t.equal(await run('!pwd'), cwd);
   t.equal(await run('echo ${git.pushRepo}'), 'origin');
   t.equal(await run('echo -*- ${github.tokenRef} -*-'), '-*- GITHUB_TOKEN -*-');
@@ -76,13 +84,13 @@ test('pushd + popd', async t => {
 });
 
 test('copy', async t => {
-  shell.pushd('-q', dir);
-  shell.mkdir('tmp');
+  sh.pushd('-q', dir);
+  sh.mkdir('tmp');
   await copy(['file*'], {}, 'tmp');
   t.equal(await readFile('file1'), await readFile('tmp/file1'));
   t.equal(await readFile('file2'), await readFile('tmp/file2'));
-  shell.rm('-rf', 'tmp');
-  shell.popd('-q');
+  sh.rm('-rf', 'tmp');
+  sh.popd('-q');
   t.end();
 });
 
@@ -90,8 +98,8 @@ test('bump', async t => {
   const target = path.resolve(dir);
   const manifestA = path.join(target, 'package.json');
   const manifestB = path.join(target, 'lockfile.json');
-  await copy('package.json', {}, target);
-  await copy('package.json', { rename: () => 'lockfile.json' }, target);
+  sh.cp('package.json', manifestA);
+  sh.cp('package.json', manifestB);
   await bump(manifestA, '1.0.0');
   const pkg = await readJSON(manifestA);
   t.equal(pkg.version, '1.0.0');
@@ -100,7 +108,7 @@ test('bump', async t => {
   const pkgB = await readJSON(manifestB);
   t.equal(pkgA.version, '2.0.0');
   t.equal(pkgB.version, '2.0.0');
-  await run(`!rm ${manifestA} ${manifestB}`);
+  sh.rm(manifestA, manifestB);
   t.end();
 });
 

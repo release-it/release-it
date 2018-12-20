@@ -1,7 +1,7 @@
 const test = require('tape');
 const sinon = require('sinon');
 const proxyquire = require('proxyquire');
-const shell = require('shelljs');
+const sh = require('shelljs');
 const repoPathParse = require('parse-repo');
 const GitHubApi = require('./mock/github');
 
@@ -13,7 +13,7 @@ const { release, uploadAssets } = proxyquire('../lib/github-client', {
 
 test('release + uploadAssets', async t => {
   const dir = 'test/resources';
-  shell.pushd('-q', dir);
+  sh.pushd('-q', dir);
 
   const remoteUrl = 'https://github.com/webpro/release-it-test';
   const asset = 'file1';
@@ -54,7 +54,7 @@ test('release + uploadAssets', async t => {
     headers: { 'user-agent': 'webpro/release-it' }
   });
 
-  shell.popd('-q');
+  sh.popd('-q');
   GitHubApiStub.resetHistory();
   t.end();
 });

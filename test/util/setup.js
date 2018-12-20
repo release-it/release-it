@@ -1,5 +1,12 @@
+const test = require('tape');
 const { Test } = require('tape');
+const sh = require('shelljs');
 const mockStdIo = require('mock-stdio');
+
+const isSilent = sh.config.silent;
+sh.config.silent = true;
+test.onFinish(() => (sh.config.silent = isSilent));
+test.onFailure(() => sh.rm('-rf', 'test/resources/tmp'));
 
 const noop = () => {};
 

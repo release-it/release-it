@@ -1,9 +1,8 @@
 const test = require('tape');
 const proxyquire = require('proxyquire');
-const mockStdIo = require('mock-stdio');
-const semver = require('semver');
-const { Config, config } = require('../lib/config');
-const { run } = require('../lib/shell');
+const sinon = require('sinon');
+const { Config } = require('../lib/config');
+const shell = require('../lib/shell');
 const { getPackageUrl, getTag, publish } = require('../lib/npm');
 
 const getMock = config =>
@@ -40,30 +39,19 @@ test('getTag (pre-release w/ different tag)', t => {
 });
 
 test('publish', async t => {
-  const npmMajor = semver.major(await run(`npm --version`));
-  if (npmMajor < 6) {
-    return t.end();
-  }
+  const stub = sinon.stub(shell, 'run').resolves();
+  await publish({ name: 'pkg', publishPath: '.', tag: 'latest' });
+  t.equal(stub.callCount, 1);
+  t.equal(stub.firstCall.args[0].trim(), 'npm publish . --tag latest');
+  stub.restore();
+  t.end();
+});
 
-  const { verbose, 'dry-run': dryRun } = config.options;
-  config.options.verbose = true;
-  config.options['dry-run'] = true;
-
-  {
-    mockStdIo.start();
-    await publish({ publishPath: '.', tag: 'latest' });
-    const { stdout } = mockStdIo.end();
-    t.ok(stdout.includes('npm publish . --tag latest'));
-  }
-
-  {
-    mockStdIo.start();
-    await publish({ publishPath: '.', tag: 'beta', access: 'public' }, '@scoped/pkg');
-    const { stdout } = mockStdIo.end();
-    t.ok(stdout.includes('npm publish . --tag beta --access public'));
-  }
-
-  config.options.verbose = verbose;
-  config.options['dry-run'] = dryRun;
+test('publish (scoped)', async t => {
+  const stub = sinon.stub(shell, 'run').resolves();
+  await publish({ name: '@scoped/pkg', publishPath: '.', tag: 'beta', access: 'public' });
+  t.equal(stub.callCount, 1);
+  t.equal(stub.firstCall.args[0].trim(), 'npm publish . --tag beta --access public');
+  stub.restore();
   t.end();
 });
