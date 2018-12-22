@@ -1,20 +1,11 @@
 const { EOL } = require('os');
 const test = require('tape');
 const { format, truncateLines } = require('../lib/util');
-const { config } = require('../lib/config');
 
 test('format', t => {
   t.equal(format('release v${version}', { version: '1.0.0' }), 'release v1.0.0');
   t.equal(format('release v${version} (${name})', { version: '1.0.0', name: 'foo' }), 'release v1.0.0 (foo)');
   t.equal(format('release v${version} (${name})', { version: '1.0.0', name: 'foo' }), 'release v1.0.0 (foo)');
-  t.end();
-});
-
-test('format (global config)', t => {
-  config.setOption('foo', 'bar');
-  config.setOption('bar', '$bar');
-  t.equal(format('bar ${foo}'), 'bar bar');
-  t.equal(format('bar --foo="${foo}" --bar=${bar}'), 'bar --foo="bar" --bar=$bar');
   t.end();
 });
 

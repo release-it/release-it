@@ -6,7 +6,7 @@ const mockStdIo = require('mock-stdio');
 const isSilent = sh.config.silent;
 sh.config.silent = true;
 test.onFinish(() => (sh.config.silent = isSilent));
-test.onFailure(() => sh.rm('-rf', 'test/resources/tmp'));
+test.onFailure(() => sh.rm('-rf', 'test/resources/tmp', 'test/resources/bare.git'));
 
 const noop = () => {};
 

@@ -1,16 +1,19 @@
 const test = require('tape');
-const proxyquire = require('proxyquire');
 const sinon = require('sinon');
-
-const got = sinon.stub().returns(Promise.resolve({}));
-
-const { trackEvent } = proxyquire('../lib/metrics', {
-  got
-});
+const Metrics = require('../lib/metrics');
 
 test('metrics', async t => {
-  await trackEvent('test');
-  t.assert(got.calledWithMatch(/google-analytics.com\/collect/, sinon.match.object));
-  got.resetHistory();
+  const stub = sinon.stub().resolves();
+  const metrics = new Metrics({ request: stub });
+  await metrics.trackEvent('test');
+  t.assert(stub.calledWithMatch(/google-analytics.com\/collect/, sinon.match.object));
+  t.end();
+});
+
+test('metrics (disabled)', async t => {
+  const stub = sinon.stub().resolves();
+  const metrics = new Metrics({ isEnabled: false, request: stub });
+  await metrics.trackEvent('test');
+  t.assert(stub.notCalled);
   t.end();
 });

@@ -1,7 +1,6 @@
 const test = require('tape');
 const sh = require('shelljs');
-const proxyquire = require('proxyquire');
-const { Config } = require('../lib/config');
+const runTasks = require('../lib/tasks');
 const {
   GitRepoError,
   GitRemoteUrlError,
@@ -12,32 +11,37 @@ const {
   DistRepoStageDirError
 } = require('../lib/errors');
 
-const getMock = () =>
-  proxyquire('../lib/tasks', {
-    './config': {
-      config: new Config({}, '--no-config --non-interactive --no-git.requireUpstream')
-    }
-  });
-
 const tmp = 'test/resources/tmp';
+const tmpBare = 'test/resources/bare.git';
+
+const tasks = options => {
+  return runTasks(
+    Object.assign(
+      {
+        config: false,
+        'non-interactive': true,
+        'disable-metrics': true
+      },
+      options
+    )
+  );
+};
 
 const prepare = () => {
-  sh.mkdir(tmp);
+  sh.exec(`git init --bare ${tmpBare}`);
+  sh.exec(`git clone ${tmpBare} ${tmp}`);
   sh.pushd('-q', tmp);
-  sh.exec('git init');
-  sh.exec('git remote add origin foo');
   sh.touch('file1');
   sh.exec('git add file1');
-  sh.exec('git commit -am "Add file1"');
+  sh.exec('git commit -m "Add file1"');
 };
 
 const cleanup = () => {
   sh.popd('-q');
-  sh.rm('-rf', tmp);
+  sh.rm('-rf', [tmp, tmpBare]);
 };
 
 test('should throw when not a Git repository', async t => {
-  const tasks = getMock();
   sh.pushd('-q', '..');
   await t.shouldBailOut(tasks(), GitRepoError, /Not a git repository/);
   sh.popd('-q');
@@ -45,7 +49,6 @@ test('should throw when not a Git repository', async t => {
 });
 
 test('should throw if there is no remote Git url', async t => {
-  const tasks = getMock();
   prepare();
   sh.exec('git remote remove origin');
   await t.shouldBailOut(tasks(), GitRemoteUrlError, /Could not get remote Git url/);
@@ -54,7 +57,6 @@ test('should throw if there is no remote Git url', async t => {
 });
 
 test('should throw if working dir is not clean', async t => {
-  const tasks = getMock();
   prepare();
   sh.exec('rm file1');
   await t.shouldBailOut(tasks(), GitCleanWorkingDirError, /Working dir must be clean/);
@@ -63,23 +65,14 @@ test('should throw if working dir is not clean', async t => {
 });
 
 test('should throw if no upstream is configured', async t => {
-  const tasks = getMock();
   prepare();
-  await t.shouldBailOut(
-    tasks({
-      git: {
-        requireUpstream: true
-      }
-    }),
-    GitUpstreamError,
-    /No upstream configured for current branch/
-  );
+  sh.exec('git checkout -b foo');
+  await t.shouldBailOut(tasks(), GitUpstreamError, /No upstream configured for current branch/);
   cleanup();
   t.end();
 });
 
 test('should throw if no GitHub token environment variable is set', async t => {
-  const tasks = getMock();
   prepare();
   await t.shouldBailOut(
     tasks({
@@ -96,7 +89,6 @@ test('should throw if no GitHub token environment variable is set', async t => {
 });
 
 test('should throw if invalid increment value is provided', async t => {
-  const tasks = getMock();
   prepare();
   await t.shouldBailOut(
     tasks({
@@ -110,7 +102,6 @@ test('should throw if invalid increment value is provided', async t => {
 });
 
 test('should throw if not a subdir is provided for dist.stageDir', async t => {
-  const tasks = getMock();
   prepare();
   await t.shouldBailOut(
     tasks({
