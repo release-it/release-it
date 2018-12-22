@@ -195,7 +195,7 @@ test('push (pushRepo not "origin")', async t => {
   const spy = sinon.spy(shell, 'run');
   await push({ pushRepo: 'upstream', hasUpstreamBranch: false });
   t.equal(spy.callCount, 2);
-  t.equal(spy.secondCall.args[0].trim(), 'git push --follow-tags   -u upstream master');
+  t.equal(spy.secondCall.args[0].trim(), 'git push --follow-tags  -u upstream master');
   t.equal(await spy.firstCall.returnValue, 'master');
   t.equal(await spy.secondCall.returnValue, "Branch 'master' set up to track remote branch 'master' from 'upstream'.");
   const actual = sh.exec('git ls-tree -r HEAD --name-only', { cwd: '../bare.git' });
