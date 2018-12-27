@@ -2,6 +2,7 @@
   "increment": null,
   "preReleaseId": null,
   "pkgFiles": ["package.json"],
+  "use": "git.tag",
   "scripts": {
     "beforeStart": null,
     "beforeBump": null,
