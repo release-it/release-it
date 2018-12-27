@@ -2,6 +2,7 @@ const test = require('tape');
 const sh = require('shelljs');
 const mockStdIo = require('mock-stdio');
 const Version = require('../lib/version');
+const { gitAdd } = require('./util/index');
 
 test('isValidVersion', t => {
   const v = new Version();
@@ -175,10 +176,10 @@ test('bump (recommended conventional)', async t => {
   sh.mkdir(tmp);
   sh.pushd('-q', tmp);
   sh.exec('git init');
-  sh.exec('echo line >> file && git add file && git commit -m "fix(thing): repair that thing"');
+  gitAdd('line', 'file', 'fix(thing): repair that thing');
   sh.exec(`git tag 1.0.0`);
-  sh.exec('echo line >> file && git add file && git commit -m "feat(foo): extend the foo"');
-  sh.exec('echo line >> file && git add file && git commit -m "feat(bar): more bar"');
+  gitAdd('line', 'file', 'feat(foo): extend the foo');
+  gitAdd('line', 'file', 'feat(bar): more bar');
 
   const v = new Version();
   v.setLatestVersion({ gitTag: '1.0.0' });

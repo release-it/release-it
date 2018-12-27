@@ -3,7 +3,7 @@ const sinon = require('sinon');
 const sh = require('shelljs');
 const semver = require('semver');
 const mockStdIo = require('mock-stdio');
-const { readFile, readJSON } = require('./util/index');
+const { readFile, readJSON, gitAdd } = require('./util/index');
 const Shell = require('../lib/shell');
 const Git = require('../lib/git');
 
@@ -12,12 +12,6 @@ const tmpBare = 'test/resources/bare.git';
 
 const shell = new Shell();
 const gitClient = new Git();
-
-const add = (content, file, message) => {
-  sh.echo(content).toEnd(file);
-  sh.exec(`git add ${file}`);
-  sh.exec(`git commit -m "${message}"`);
-};
 
 test('isGitRepo', async t => {
   t.ok(await gitClient.isGitRepo());
@@ -43,7 +37,7 @@ test('hasUpstream', async t => {
   sh.mkdir(tmp);
   sh.pushd('-q', tmp);
   sh.exec('git init');
-  add('line', 'file', 'Add file');
+  gitAdd('line', 'file', 'Add file');
   t.notOk(await gitClient.hasUpstreamBranch());
   sh.popd('-q');
   sh.rm('-rf', tmp);
@@ -56,7 +50,7 @@ test('getBranchName', async t => {
   sh.exec('git init');
   t.equal(await gitClient.getBranchName(), null);
   sh.exec('git checkout -b feat');
-  add('line', 'file', 'Add file');
+  gitAdd('line', 'file', 'Add file');
   t.equal(await gitClient.getBranchName(), 'feat');
   sh.popd('-q');
   sh.rm('-rf', tmp);
@@ -70,7 +64,7 @@ test('tagExists + isWorkingDirClean', async t => {
   t.notOk(await gitClient.tagExists('1.0.0'));
   sh.touch('file');
   t.notOk(await gitClient.isWorkingDirClean());
-  add('line', 'file', 'Add file');
+  gitAdd('line', 'file', 'Add file');
   sh.exec('git tag 1.0.0');
   t.ok(await gitClient.tagExists('1.0.0'));
   t.ok(await gitClient.isWorkingDirClean());
@@ -123,7 +117,7 @@ test('clone + stage + commit + tag + push', async t => {
     t.equal(version, latestTag);
   }
   {
-    add('line', 'file', 'Add file');
+    gitAdd('line', 'file', 'Add file');
     sh.exec('npm --no-git-tag-version version patch');
     await gitClient.stage('package.json');
     const nextVersion = semver.inc(version, 'patch');
@@ -147,7 +141,7 @@ test('push', async t => {
   sh.pushd('-q', tmp);
   const gitClient = new Git({ shell });
   await gitClient.init();
-  add('line', 'file', 'Add file');
+  gitAdd('line', 'file', 'Add file');
   const spy = sinon.spy(shell, 'run');
   await gitClient.push();
   t.equal(spy.lastCall.args[0].trim(), 'git push --follow-tags  origin');
@@ -165,7 +159,7 @@ test('push (pushRepo url)', async t => {
   sh.pushd('-q', tmp);
   const gitClient = new Git({ pushRepo: 'https://host/repo.git', shell });
   await gitClient.init();
-  add('line', 'file', 'Add file');
+  gitAdd('line', 'file', 'Add file');
   const spy = sinon.spy(shell, 'run');
   try {
     await gitClient.push();
@@ -187,7 +181,7 @@ test('push (pushRepo not "origin")', async t => {
   sh.exec(`git remote add upstream ${sh.exec('git remote get-url origin')}`);
   {
     const gitClient = new Git({ pushRepo: 'upstream', shell });
-    add('line', 'file', 'Add file');
+    gitAdd('line', 'file', 'Add file');
     const spy = sinon.spy(shell, 'run');
     await gitClient.push();
     t.equal(spy.lastCall.args[0].trim(), 'git push --follow-tags  upstream');
@@ -195,7 +189,7 @@ test('push (pushRepo not "origin")', async t => {
     t.equal(actual.trim(), 'file');
     {
       sh.exec(`git checkout -b foo`);
-      add('line', 'file', 'Add file');
+      gitAdd('line', 'file', 'Add file');
       await gitClient.push();
       t.equal(spy.lastCall.args[0].trim(), 'git push --follow-tags  -u upstream foo');
       t.equal(await spy.lastCall.returnValue, "Branch 'foo' set up to track remote branch 'foo' from 'upstream'.");
@@ -211,9 +205,9 @@ test('status', async t => {
   sh.mkdir(tmp);
   sh.pushd('-q', tmp);
   sh.exec('git init');
-  add('line', 'file1', 'Add file');
-  sh.echo('line').toEnd('file1');
-  sh.echo('line').toEnd('file2');
+  gitAdd('line', 'file1', 'Add file');
+  sh.ShellString('line').toEnd('file1');
+  sh.ShellString('line').toEnd('file2');
   sh.exec('git add file2');
   t.equal(await gitClient.status(), 'M file1\nA  file2');
   sh.popd('-q');
@@ -225,8 +219,8 @@ test('reset', async t => {
   sh.mkdir(tmp);
   sh.pushd('-q', tmp);
   sh.exec('git init');
-  add('line', 'file', 'Add file');
-  sh.echo('line').toEnd('file');
+  gitAdd('line', 'file', 'Add file');
+  sh.ShellString('line').toEnd('file');
   t.ok(/^line\s*line\s*$/.test(await readFile('file')));
   await gitClient.reset('file');
   t.ok(/^line\s*$/.test(await readFile('file')));
@@ -243,8 +237,8 @@ test('getChangelog', async t => {
   sh.mkdir(tmp);
   sh.pushd('-q', tmp);
   sh.exec('git init');
-  add('line', 'file', 'First commit');
-  add('line', 'file', 'Second commit');
+  gitAdd('line', 'file', 'First commit');
+  gitAdd('line', 'file', 'Second commit');
 
   await t.shouldReject(gitClient.getChangelog('git log --invalid'), /Could not create changelog/);
 
@@ -255,8 +249,8 @@ test('getChangelog', async t => {
 
   {
     sh.exec('git tag 1.0.0');
-    add('line', 'file', 'Third commit');
-    add('line', 'file', 'Fourth commit');
+    gitAdd('line', 'file', 'Third commit');
+    gitAdd('line', 'file', 'Fourth commit');
     const changelog = await gitClient.getChangelog('git log --pretty=format:"* %s (%h)" [REV_RANGE]');
     t.ok(/^\* Fourth commit \(\w{7}\)\n\* Third commit \(\w{7}\)$/.test(changelog));
   }
