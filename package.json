@@ -79,7 +79,7 @@
   "devDependencies": {
     "eslint": "5.10.0",
     "eslint-config-prettier": "3.3.0",
-    "eslint-plugin-prettier": "3.0.0",
+    "eslint-plugin-prettier": "3.0.1",
     "markdown-toc": "1.2.0",
     "mock-stdio": "1.0.3",
     "nyc": "13.1.0",
