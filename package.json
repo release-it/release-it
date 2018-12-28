@@ -58,7 +58,7 @@
     "conventional-changelog": "3.0.5",
     "conventional-recommended-bump": "4.0.4",
     "cpy": "7.0.1",
-    "debug": "4.1.0",
+    "debug": "4.1.1",
     "globby": "8.0.1",
     "got": "8.3.2",
     "inquirer": "6.2.1",
@@ -77,9 +77,9 @@
     "yargs-parser": "11.1.1"
   },
   "devDependencies": {
-    "eslint": "5.10.0",
+    "eslint": "5.11.1",
     "eslint-config-prettier": "3.3.0",
-    "eslint-plugin-prettier": "3.0.0",
+    "eslint-plugin-prettier": "3.0.1",
     "markdown-toc": "1.2.0",
     "mock-stdio": "1.0.3",
     "nyc": "13.1.0",
