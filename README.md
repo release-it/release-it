@@ -184,6 +184,16 @@ If an option is set to `false`, the related prompt will not be shown at all in i
 
 </details>
 
+## Latest version
+
+By default, release-it uses the latest Git tag to determine which version should be released.
+For projects that don't have a Git tag (yet), or if the Git tag isn't a valid semver, it falls back to the version
+found in `package.json`. As a last resort, `0.0.0` will be used as the latest version.
+
+To explicitly use the `version` from `package.json` as latest version, set `"use": "pkg.version"` (or `--use=pkg.version`).
+In case the repo itself should not be tagged, make sure to set `git.tag` to `false`.
+This is also useful for [monorepos](#monorepos).
+
 ## Git
 
 ### SSH keys & Git remotes
@@ -352,9 +362,9 @@ For [distribution repositories](#distribution-repository), two additional hooks 
 ## Monorepos
 
 From a monorepo package subdirectory, release-it detects `package.json` is not in the same directory as the Git root.
-Then it will take the latest version from this `package.json` rather than the latest Git tag.
+Then it will take the [latest version](#latest-version) from this `package.json` rather than the latest Git tag.
 
-In this case, `git.tag` should be set to `false`. For example, from `./packages/some-pkg`:
+To not tag the monorepo itself, set `git.tag` to `false`. For example, from `./packages/some-pkg`:
 
 ```
 release-it --git.commitMessage='Release ${name} v${version}' --no-git.tag
