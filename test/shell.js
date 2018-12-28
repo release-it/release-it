@@ -110,11 +110,17 @@ test('bump', async t => {
 });
 
 test('bump (file not found)', async t => {
-  await t.shouldReject(shell.bump('foo.json'), /no such file/i);
+  mockStdIo.start();
+  await shell.bump('foo.json');
+  const { stdout } = mockStdIo.end();
+  t.ok(stdout.includes('Could not bump foo.json'));
   t.end();
 });
 
 test('bump (invalid)', async t => {
-  await t.shouldReject(shell.bump('test/resources/file1'), /unexpected token/i);
+  mockStdIo.start();
+  await shell.bump('test/resources/file1');
+  const { stdout } = mockStdIo.end();
+  t.ok(stdout.includes('Could not bump test/resources/file1'));
   t.end();
 });
