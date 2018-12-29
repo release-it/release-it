@@ -83,7 +83,7 @@ test('pushd + popd', async t => {
 test('copy', async t => {
   sh.pushd('-q', dir);
   sh.mkdir('tmp');
-  await shell.copy(['file*'], {}, 'tmp');
+  await shell.copy(['file*'], 'tmp');
   t.equal(await readFile('file1'), await readFile('tmp/file1'));
   t.equal(await readFile('file2'), await readFile('tmp/file2'));
   sh.rm('-rf', 'tmp');
