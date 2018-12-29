@@ -30,7 +30,7 @@ test('run (dry-run/read-only)', async t => {
   const shell = new Shell({ isDryRun: true });
   {
     mockStdIo.start();
-    const actual = await shell.run('!pwd', { isReadOnly: true });
+    const actual = await shell.run('!pwd');
     const { stdout } = mockStdIo.end();
     t.equal(actual, cwd);
     t.ok(/\$ pwd/.test(stdout));
@@ -38,7 +38,7 @@ test('run (dry-run/read-only)', async t => {
   }
   {
     mockStdIo.start();
-    const actual = await shell.run('!pwd', { isReadOnly: false });
+    const actual = await shell.run('!pwd', Shell.writes);
     const { stdout } = mockStdIo.end();
     t.equal(actual, undefined);
     t.ok(/\$ pwd/.test(stdout));
