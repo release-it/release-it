@@ -124,3 +124,13 @@ test('bump (invalid)', async t => {
   t.ok(stdout.includes('Could not bump test/resources/file1'));
   t.end();
 });
+
+test('bump (none)', async t => {
+  mockStdIo.start();
+  await shell.bump(false);
+  await shell.bump(null);
+  await shell.bump([]);
+  const { stdout } = mockStdIo.end();
+  t.notOk(stdout.includes('Could not bump'));
+  t.end();
+});
