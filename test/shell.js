@@ -3,11 +3,11 @@ const sinon = require('sinon');
 const sh = require('shelljs');
 const mockStdIo = require('mock-stdio');
 const path = require('path');
+const uuid = require('uuid/v4');
 const { EOL } = require('os');
 const { readFile, readJSON } = require('./util/index');
 const Shell = require('../lib/shell');
 
-const dir = 'test/resources';
 const cwd = process.cwd();
 
 const shell = new Shell();
@@ -67,6 +67,8 @@ test('runTemplateCommand', async t => {
 });
 
 test('pushd + popd', async t => {
+  sh.dirs('-cq');
+  const dir = 'test/resources';
   const outputPush = await shell.pushd(dir);
   const [to, from] = outputPush.split(',');
   const diff = to
@@ -81,18 +83,18 @@ test('pushd + popd', async t => {
 });
 
 test('copy', async t => {
-  sh.pushd('-q', dir);
-  sh.mkdir('tmp');
-  await shell.copy(['file*'], 'tmp');
-  t.equal(await readFile('file1'), await readFile('tmp/file1'));
-  t.equal(await readFile('file2'), await readFile('tmp/file2'));
-  sh.rm('-rf', 'tmp');
-  sh.popd('-q');
+  const source = path.resolve(cwd, 'test/resources');
+  const target = path.resolve(cwd, `tmp/${uuid()}`);
+  sh.mkdir('-p', target);
+  await shell.copy(['file*'], target, { cwd: source });
+  t.equal(await readFile(`${source}/file1`), await readFile(`${target}/file1`));
+  t.equal(await readFile(`${source}/file2`), await readFile(`${target}/file2`));
   t.end();
 });
 
 test('bump', async t => {
-  const target = path.resolve(dir);
+  const target = path.resolve(cwd, `tmp/${uuid()}`);
+  sh.mkdir('-p', target);
   const manifestA = path.join(target, 'package.json');
   const manifestB = path.join(target, 'lockfile.json');
   sh.cp('package.json', manifestA);
@@ -105,7 +107,6 @@ test('bump', async t => {
   const pkgB = await readJSON(manifestB);
   t.equal(pkgA.version, '2.0.0');
   t.equal(pkgB.version, '2.0.0');
-  sh.rm(manifestA, manifestB);
   t.end();
 });
 

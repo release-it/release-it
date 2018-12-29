@@ -1,7 +1,9 @@
+const path = require('path');
 const test = require('tape');
 const sh = require('shelljs');
 const mockStdIo = require('mock-stdio');
-const { gitAdd, readJSON } = require('./util/index');
+const { gitAdd, readFile, readJSON } = require('./util/index');
+const uuid = require('uuid/v4');
 const runTasks = require('../lib/tasks');
 const {
   GitRepoError,
@@ -13,8 +15,7 @@ const {
   DistRepoStageDirError
 } = require('../lib/errors');
 
-const tmp = 'test/resources/tmp';
-const tmpBare = 'test/resources/bare.git';
+const cwd = process.cwd();
 
 const tasks = options => {
   return runTasks(
@@ -30,15 +31,18 @@ const tasks = options => {
 };
 
 const prepare = () => {
-  sh.exec(`git init --bare ${tmpBare}`);
-  sh.exec(`git clone ${tmpBare} ${tmp}`);
-  sh.pushd('-q', tmp);
+  const bare = path.resolve(cwd, 'tmp', uuid());
+  const target = path.resolve(cwd, 'tmp', uuid());
+  sh.pushd('-q', `${cwd}/tmp`);
+  sh.exec(`git init --bare ${bare}`);
+  sh.exec(`git clone ${bare} ${target}`);
+  sh.pushd('-q', target);
   gitAdd('line', 'file', 'Add file');
+  return { bare, target };
 };
 
 const cleanup = () => {
-  sh.popd('-q');
-  sh.rm('-rf', [tmp, tmpBare]);
+  sh.pushd('-q', cwd);
 };
 
 test('should throw when not a Git repository', async t => {
@@ -120,7 +124,7 @@ test('should throw if not a subdir is provided for dist.stageDir', async t => {
 test('should run tasks without throwing errors', async t => {
   prepare();
   mockStdIo.start();
-  await tasks({
+  const { name, latestVersion, version } = await tasks({
     increment: 'patch',
     pkgFiles: null,
     manifest: false,
@@ -129,7 +133,7 @@ test('should run tasks without throwing errors', async t => {
     }
   });
   const { stdout } = mockStdIo.end();
-  t.ok(stdout.includes('release tmp (0.0.0...0.0.1)'));
+  t.ok(stdout.includes(`release ${name} (${latestVersion}...${version})`));
   t.ok(/Done \(in [0-9]+s\.\)/.test(stdout));
   cleanup();
   t.end();
@@ -160,7 +164,7 @@ test('should run tasks with minimal config and without any warnings/errors', asy
   t.end();
 });
 
-test('should use version from package.json (w/o git tag)', async t => {
+test('should use pkg.version if no git tag', async t => {
   prepare();
   gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
   mockStdIo.start();
@@ -183,7 +187,7 @@ test('should use version from package.json (w/o git tag)', async t => {
   t.end();
 });
 
-test('should use version from package.json (in sub dir) w/o tagging repo', async t => {
+test('should use pkg.version (in sub dir) w/o tagging repo', async t => {
   prepare();
   gitAdd('{"name":"root-package","version":"1.0.0"}', 'package.json', 'Add package.json');
   sh.exec('git tag 1.0.0');
@@ -220,15 +224,14 @@ test('should run tasks without package.json', async t => {
   prepare();
   sh.exec('git tag 1.0.0');
   mockStdIo.start();
-  await tasks({
+  const { name } = await tasks({
     increment: 'major',
-    manifest: false,
     npm: {
       publish: false
     }
   });
   const { stdout } = mockStdIo.end();
-  t.ok(stdout.includes('release tmp (1.0.0...2.0.0)'));
+  t.ok(stdout.includes(`release ${name} (1.0.0...2.0.0)`));
   t.ok(stdout.includes('Could not bump package.json'));
   t.ok(stdout.includes('Could not stage package.json'));
   t.ok(/Done \(in [0-9]+s\.\)/.test(stdout));

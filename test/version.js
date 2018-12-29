@@ -1,6 +1,7 @@
 const test = require('tape');
 const sh = require('shelljs');
 const mockStdIo = require('mock-stdio');
+const uuid = require('uuid/v4');
 const Version = require('../lib/version');
 const { gitAdd } = require('./util/index');
 
@@ -172,7 +173,7 @@ test('bump (patch release after pre-release)', async t => {
 });
 
 test('bump (recommended conventional)', async t => {
-  const tmp = 'test/resources/tmp';
+  const tmp = `tmp/${uuid()}`;
   sh.mkdir(tmp);
   sh.pushd('-q', tmp);
   sh.exec('git init');
@@ -187,7 +188,6 @@ test('bump (recommended conventional)', async t => {
   t.equal(v.version, '1.1.0');
 
   sh.popd('-q');
-  sh.rm('-rf', tmp);
   t.end();
 });
 

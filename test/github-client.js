@@ -1,3 +1,4 @@
+const path = require('path');
 const test = require('tape');
 const sinon = require('sinon');
 const proxyquire = require('proxyquire');
@@ -22,9 +23,6 @@ test('validate', async t => {
 });
 
 test('release + uploadAssets', async t => {
-  const dir = 'test/resources';
-  sh.pushd('-q', dir);
-
   const remoteUrl = 'https://github.com/webpro/release-it-test';
   const asset = 'file1';
   const version = '2.0.1';
@@ -33,7 +31,7 @@ test('release + uploadAssets', async t => {
   const github = new GitHub({
     remoteUrl,
     tagName,
-    assets: asset
+    assets: path.resolve('test/resources', asset)
   });
 
   const releaseResult = await github.release({
@@ -57,7 +55,6 @@ test('release + uploadAssets', async t => {
     headers: { 'user-agent': 'webpro/release-it' }
   });
 
-  sh.popd('-q');
   GitHubApiStub.resetHistory();
   t.end();
 });
