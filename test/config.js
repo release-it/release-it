@@ -88,7 +88,7 @@ test('config.preRelease (shorthand w/ npm.tag)', t => {
 test('config.preRelease (shorthand w/o increment)', t => {
   const config = new Config({ preRelease: 'alpha' });
   const { options } = config;
-  t.equal(options.increment, null);
+  t.notOk(options.increment);
   t.equal(options.preRelease, true);
   t.equal(options.preReleaseId, 'alpha');
   t.equal(options.npm.tag, 'alpha');
