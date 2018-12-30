@@ -38,9 +38,6 @@ const parseCliArguments = args => {
     }
   });
   options.increment = options._[0] || options.i;
-  if (!options.increment && options.nonInteractive && !options.preRelease) {
-    options.increment = 'patch';
-  }
   return options;
 };
 

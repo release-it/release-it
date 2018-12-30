@@ -104,3 +104,15 @@ test('config.preRelease (override npm.tag)', t => {
   t.equal(options.npm.tag, 'next');
   t.end();
 });
+
+test('config default increment (non-interactive)', t => {
+  const config = new Config({ 'non-interactive': true });
+  t.equal(config.options.increment, 'patch');
+  t.end();
+});
+
+test('config default increment (interactive)', t => {
+  const config = new Config({ 'non-interactive': false });
+  t.equal(config.options.increment, undefined);
+  t.end();
+});

@@ -1,5 +1,4 @@
 {
-  "increment": null,
   "preReleaseId": null,
   "pkgFiles": ["package.json"],
   "use": "git.tag",
