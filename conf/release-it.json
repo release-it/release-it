@@ -61,7 +61,8 @@
       "push": true
     },
     "github": {
-      "release": false
+      "release": false,
+      "assets": null
     },
     "npm": {
       "publish": false
