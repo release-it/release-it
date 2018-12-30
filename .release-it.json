@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "beforeStart": "npm test"
+  },
   "git": {
     "requireUpstream": false
   },
