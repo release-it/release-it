@@ -1,9 +1,15 @@
 const path = require('path');
+const { EOL } = require('os');
 const test = require('tape');
 const sh = require('shelljs');
+const proxyquire = require('proxyquire');
 const mockStdIo = require('mock-stdio');
 const { gitAdd, readFile, readJSON } = require('./util/index');
 const uuid = require('uuid/v4');
+const GitHubApi = require('@octokit/rest');
+const githubRequestMock = require('./mock/github.request');
+const shell = require('../lib/shell');
+const sinon = require('sinon');
 const runTasks = require('../lib/tasks');
 const {
   GitRepoError,
@@ -17,18 +23,30 @@ const {
 
 const cwd = process.cwd();
 
-const tasks = options => {
-  return runTasks(
-    Object.assign(
-      {
-        config: false,
-        'non-interactive': true,
-        'disable-metrics': true
-      },
-      options
-    )
-  );
+const githubRequestStub = sinon.stub().callsFake(githubRequestMock);
+const githubApi = new GitHubApi();
+githubApi.hook.wrap('request', githubRequestStub);
+const GithubApiStub = sinon.stub().returns(githubApi);
+
+const publishStub = sinon.stub().resolves();
+
+class shellStub extends shell {
+  run(command) {
+    if (command.startsWith('npm publish')) {
+      this.log.exec(command);
+      return publishStub(...arguments);
+    }
+    return super.run(...arguments);
+  }
+}
+
+const testConfig = {
+  config: false,
+  'non-interactive': true,
+  'disable-metrics': true
 };
+
+const tasks = options => runTasks(Object.assign({}, testConfig, options));
 
 const prepare = () => {
   const bare = path.resolve(cwd, 'tmp', uuid());
@@ -43,6 +61,8 @@ const prepare = () => {
 
 const cleanup = () => {
   sh.pushd('-q', cwd);
+  githubRequestStub.resetHistory();
+  publishStub.resetHistory();
 };
 
 test('should throw when not a Git repository', async t => {
@@ -241,4 +261,126 @@ test('should run tasks without package.json', async t => {
   }
   cleanup();
   t.end();
+});
+
+test('#', st => {
+  const runTasks = proxyquire('../lib/tasks', {
+    '@octokit/rest': Object.assign(GithubApiStub, { '@global': true }),
+    './shell': Object.assign(shellStub, { '@global': true })
+  });
+
+  const tasks = options => runTasks(Object.assign({}, testConfig, options));
+
+  st.test('should release all the things (basic)', async t => {
+    const { bare, target } = prepare();
+    const repoName = path.basename(bare);
+    const pkgName = path.basename(target);
+    sh.exec('git tag 1.0.0');
+    gitAdd('line', 'file', 'More file');
+    mockStdIo.start();
+    await tasks({
+      github: {
+        release: true
+      },
+      npm: {
+        name: pkgName,
+        publish: true
+      }
+    });
+    const { stdout } = mockStdIo.end();
+
+    const githubReleaseArg = githubRequestStub.firstCall.lastArg;
+    t.equal(githubRequestStub.callCount, 1);
+    t.equal(githubReleaseArg.url, '/repos/:owner/:repo/releases');
+    t.equal(githubReleaseArg.owner, null);
+    t.equal(githubReleaseArg.repo, repoName);
+    t.equal(githubReleaseArg.tag_name, '1.0.1');
+    t.equal(githubReleaseArg.name, 'Release 1.0.1');
+    t.ok(githubReleaseArg.body.startsWith('* More file'));
+    t.equal(githubReleaseArg.prerelease, false);
+    t.equal(githubReleaseArg.draft, false);
+
+    t.equal(publishStub.firstCall.args[0].trim(), 'npm publish . --tag latest');
+
+    t.ok(stdout.includes(`release ${pkgName} (1.0.0...1.0.1)`));
+    t.ok(stdout.includes(`https://github.com/null/${repoName}/releases/tag/1.0.1`));
+    t.ok(stdout.includes(`https://www.npmjs.com/package/${pkgName}`));
+
+    cleanup();
+    t.end();
+  });
+
+  st.test('should release all the things (pre-release, assets, dist repo)', async t => {
+    const { bare, target } = prepare();
+    const repoName = path.basename(bare);
+    const pkgName = path.basename(target);
+    const owner = null;
+    {
+      // Prepare fake dist repo
+      sh.exec('git checkout -b dist');
+      gitAdd('dist-line', 'dist-file', 'Add dist file');
+      sh.exec('git push -u origin dist');
+    }
+    sh.exec('git checkout -b master');
+    sh.exec('git tag 1.0.0');
+    gitAdd('line', 'file', 'More file');
+    sh.exec('git push --follow-tags');
+    mockStdIo.start();
+    await tasks({
+      increment: 'minor',
+      preRelease: 'alpha',
+      github: {
+        release: true,
+        assets: ['file']
+      },
+      npm: {
+        name: pkgName
+      },
+      dist: {
+        repo: `${bare}#dist`,
+        scripts: {
+          beforeStage: `echo "${EOL}release-line" >> dist-file`
+        },
+        npm: {
+          publish: true
+        }
+      }
+    });
+    const { stdout } = mockStdIo.end();
+
+    t.equal(githubRequestStub.callCount, 2);
+
+    const githubReleaseArg = githubRequestStub.firstCall.lastArg;
+    t.equal(githubReleaseArg.url, '/repos/:owner/:repo/releases');
+    t.equal(githubReleaseArg.owner, owner);
+    t.equal(githubReleaseArg.repo, repoName);
+    t.equal(githubReleaseArg.tag_name, '1.1.0-alpha.0');
+    t.equal(githubReleaseArg.name, 'Release 1.1.0-alpha.0');
+    t.ok(githubReleaseArg.body.startsWith('* More file'));
+    t.equal(githubReleaseArg.prerelease, true);
+    t.equal(githubReleaseArg.draft, false);
+
+    const githubAssetsArg = githubRequestStub.secondCall.lastArg;
+    const { id } = githubRequestStub.firstCall.returnValue.data;
+    t.ok(githubAssetsArg.url.endsWith(`/repos/${owner}/${repoName}/releases/${id}/assets{?name,label}`));
+    t.equal(githubAssetsArg.name, 'file');
+
+    t.equal(publishStub.callCount, 1);
+    t.equal(publishStub.firstCall.args[0].trim(), 'npm publish . --tag alpha');
+
+    sh.exec('git checkout dist');
+    sh.exec('git pull');
+    const distFile = await readFile('dist-file');
+    t.equal(distFile.trim(), `dist-line${EOL}release-line`);
+
+    const [, sourceOutput, distOutput] = stdout.split('🚀');
+    t.ok(sourceOutput.includes(`release ${pkgName} (1.0.0...1.1.0-alpha.0)`));
+    t.ok(sourceOutput.includes(`https://github.com/${owner}/${repoName}/releases/tag/1.1.0-alpha.0`));
+    t.ok(distOutput.includes(`release the distribution repo for ${pkgName}`));
+    t.ok(distOutput.includes(`https://www.npmjs.com/package/${pkgName}`));
+    t.ok(/Done \(in [0-9]+s\.\)/.test(distOutput));
+
+    cleanup();
+    t.end();
+  });
 });
