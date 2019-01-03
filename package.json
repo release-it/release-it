@@ -38,7 +38,7 @@
     "lint": "eslint lib test",
     "format": "prettier --write \"{lib,test}/**/*.js\"",
     "test": "tape -r babel-register -r ./test/util/setup test/*.js",
-    "coverage": "nyc --reporter=lcov npm test",
+    "coverage": "nyc --reporter=lcov --reporter=html npm test",
     "readme": "markdown-toc README.md -i --no-firsth1 --maxdepth=1 --bullets=-",
     "release": "./bin/release-it.js"
   },
