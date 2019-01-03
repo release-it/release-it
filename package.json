@@ -48,7 +48,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@octokit/rest": "16.3.0",
+    "@octokit/rest": "16.3.2",
     "@webpro/is-subdir": "1.0.0",
     "async-retry": "1.2.3",
     "babel-preset-env": "1.7.0",
@@ -87,7 +87,7 @@
     "prettier": "1.15.3",
     "proxyquire": "2.1.0",
     "sinon": "7.2.2",
-    "tape": "4.9.1"
+    "tape": "4.9.2"
   },
   "engines": {
     "node": ">=6"
