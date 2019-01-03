@@ -59,6 +59,7 @@
     "conventional-recommended-bump": "4.0.4",
     "cpy": "7.0.1",
     "debug": "4.1.1",
+    "deprecated-obj": "1.0.0",
     "globby": "8.0.1",
     "got": "8.3.2",
     "inquirer": "6.2.1",
