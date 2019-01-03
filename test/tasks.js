@@ -318,7 +318,7 @@ test('#', st => {
     {
       // Prepare fake dist repo
       sh.exec('git checkout -b dist');
-      gitAdd('dist-line', 'dist-file', 'Add dist file');
+      gitAdd(`dist-line${EOL}`, 'dist-file', 'Add dist file');
       sh.exec('git push -u origin dist');
     }
     sh.exec('git checkout -b master');
@@ -339,7 +339,7 @@ test('#', st => {
       dist: {
         repo: `${bare}#dist`,
         scripts: {
-          beforeStage: `echo "${EOL}release-line" >> dist-file`
+          beforeStage: `echo release-line >> dist-file`
         },
         npm: {
           publish: true
