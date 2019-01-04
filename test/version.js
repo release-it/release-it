@@ -23,7 +23,7 @@ test('setLatestVersion', t => {
   const v = new Version();
   v.setLatestVersion({ gitTag: '1.2.0' });
   t.equal(v.latestVersion, '1.2.0');
-  v.setLatestVersion({ gitTag: '1.2.1', pkgVersion: '1.2.2' });
+  v.setLatestVersion({ gitTag: 'v1.2.1', pkgVersion: '1.2.2' });
   t.equal(v.latestVersion, '1.2.1');
   v.setLatestVersion({ use: 'pkg.version', pkgVersion: '1.2.3' });
   t.equal(v.latestVersion, '1.2.3');

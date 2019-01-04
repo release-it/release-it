@@ -119,7 +119,7 @@ test('clone + stage + commit + tag + push', async t => {
     await gitClient.stage('package.json');
     await gitClient.commit({ message: `Release v1.2.4` });
     await gitClient.tag({ name: 'v1.2.4', annotation: 'Release v1.2.4' });
-    t.equal(await gitClient.getLatestTag(), '1.2.4');
+    t.equal(await gitClient.getLatestTag(), 'v1.2.4');
     await gitClient.push();
     const status = sh.exec('git status -uno');
     t.ok(status.includes('nothing to commit'));

@@ -322,13 +322,16 @@ test('#', st => {
       sh.exec('git push -u origin dist');
     }
     sh.exec('git checkout -b master');
-    sh.exec('git tag 1.0.0');
+    sh.exec('git tag v1.0.0');
     gitAdd('line', 'file', 'More file');
     sh.exec('git push --follow-tags');
     mockStdIo.start();
     await tasks({
       increment: 'minor',
       preRelease: 'alpha',
+      git: {
+        tagName: 'v${version}'
+      },
       github: {
         release: true,
         releaseNotes: 'echo "Notes for ${name} (v${version}): ${changelog}"',
@@ -355,7 +358,7 @@ test('#', st => {
     t.equal(githubReleaseArg.url, '/repos/:owner/:repo/releases');
     t.equal(githubReleaseArg.owner, owner);
     t.equal(githubReleaseArg.repo, repoName);
-    t.equal(githubReleaseArg.tag_name, '1.1.0-alpha.0');
+    t.equal(githubReleaseArg.tag_name, 'v1.1.0-alpha.0');
     t.equal(githubReleaseArg.name, 'Release 1.1.0-alpha.0');
     t.ok(RegExp(`Notes for ${pkgName} \\(v1.1.0-alpha.0\\): \\* More file`).test(githubReleaseArg.body));
     t.equal(githubReleaseArg.prerelease, true);
@@ -369,6 +372,11 @@ test('#', st => {
     t.equal(publishStub.callCount, 1);
     t.equal(publishStub.firstCall.args[0].trim(), 'npm publish . --tag alpha');
 
+    {
+      const { stdout } = sh.exec('git describe --tags --abbrev=0');
+      t.equal(stdout.trim(), 'v1.1.0-alpha.0');
+    }
+
     sh.exec('git checkout dist');
     sh.exec('git pull');
     const distFile = await readFile('dist-file');
@@ -376,7 +384,7 @@ test('#', st => {
 
     const [, sourceOutput, distOutput] = stdout.split('🚀');
     t.ok(sourceOutput.includes(`release ${pkgName} (1.0.0...1.1.0-alpha.0)`));
-    t.ok(sourceOutput.includes(`https://github.com/${owner}/${repoName}/releases/tag/1.1.0-alpha.0`));
+    t.ok(sourceOutput.includes(`https://github.com/${owner}/${repoName}/releases/tag/v1.1.0-alpha.0`));
     t.ok(distOutput.includes(`release the distribution repo for ${pkgName}`));
     t.ok(distOutput.includes(`https://www.npmjs.com/package/${pkgName}`));
     t.ok(/Done \(in [0-9]+s\.\)/.test(distOutput));
