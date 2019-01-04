@@ -222,33 +222,6 @@ test('reset', async t => {
   t.end();
 });
 
-test('getChangelog', async t => {
-  prepare();
-  sh.exec('git init');
-  gitAdd('line', 'file', 'First commit');
-  gitAdd('line', 'file', 'Second commit');
-  await t.shouldReject(gitClient.getChangelog('git log --invalid'), /Could not create changelog/);
-  {
-    const changelog = await gitClient.getChangelog('git log --pretty=format:"* %s (%h)"');
-    t.ok(/^\* Second commit \(\w{7}\)\n\* First commit \(\w{7}\)$/.test(changelog));
-  }
-  {
-    sh.exec('git tag 1.0.0');
-    gitAdd('line', 'file', 'Third commit');
-    gitAdd('line', 'file', 'Fourth commit');
-    const changelog = await gitClient.getChangelog('git log --pretty=format:"* %s (%h)" [REV_RANGE]');
-    t.ok(/^\* Fourth commit \(\w{7}\)\n\* Third commit \(\w{7}\)$/.test(changelog));
-  }
-  cleanup();
-  t.end();
-});
-
-test('getChangelog (custom)', async t => {
-  const changelog = await gitClient.getChangelog('echo ${name}');
-  t.equal(changelog, 'release-it');
-  t.end();
-});
-
 test('isSameRepo', async t => {
   const gitClient = new Git();
   await gitClient.init();

@@ -32,6 +32,7 @@ test('release + uploadAssets', async t => {
 
   const github = new GitHub({
     release: true,
+    releaseNotes: 'echo Custom notes',
     remoteUrl,
     tagName,
     assets: path.resolve('test/resources', asset)
@@ -59,6 +60,7 @@ test('release + uploadAssets', async t => {
   t.equal(githubRequestStub.firstCall.lastArg.repo, 'release-it-test');
   t.equal(githubRequestStub.firstCall.lastArg.tag_name, 'v2.0.1');
   t.equal(githubRequestStub.firstCall.lastArg.name, 'Release 2.0.1');
+  t.equal(githubRequestStub.firstCall.lastArg.body, 'Custom notes');
   t.equal(githubRequestStub.secondCall.lastArg.name, 'file1');
 
   t.equal(uploadResult.name, asset);
@@ -76,13 +78,16 @@ test('release (enterprise)', async t => {
   });
 
   await github.release({
-    version: '1'
+    version: '1',
+    changelog: 'My default changelog'
   });
 
   t.equal(GithubApiStub.callCount, 1);
   t.equal(GithubApiStub.firstCall.args[0].url, 'https://github.my-GHE-enabled-company.com/api/v3');
+  t.equal(githubRequestStub.firstCall.lastArg.body, 'My default changelog');
 
   GithubApiStub.resetHistory();
+  githubRequestStub.resetHistory();
   t.end();
 });
 

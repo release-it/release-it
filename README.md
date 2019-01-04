@@ -236,10 +236,24 @@ Do not put the actual token in the release-it configuration. It will be read fro
 
 Obviously, release-it uses this feature extensively: [release-it's releases page](https://github.com/webpro/release-it/releases).
 
+### Release notes
+
+By default, the output of `scripts.changelog` is used for the GitHub release notes. This is the printed `Changelog: ...` when release-it boots.
+Override this with the `github.releaseNotes` option. This script will run just before the actual GitHub release itself.
+Make sure it outputs to `stdout`. An example:
+
+```
+{
+  "github": {
+    "release": true,
+    "releaseNotes": "generate-release-notes.sh ${latestVersion} ${version}"
+  }
+}
+```
+
 ### Release assets
 
-To upload binary release assets with a GitHub release (such as compiled executables,
-minified scripts, documentation), provide one or more glob patterns for the `github.assets` option. After the release, the assets are available to download from the GitHub release page. Example:
+To upload binary release assets with a GitHub release (such as compiled executables, minified scripts, documentation), provide one or more glob patterns for the `github.assets` option. After the release, the assets are available to download from the GitHub release page. Example:
 
 ```json
 {
@@ -386,14 +400,14 @@ Please find the [list of available conventions](https://github.com/conventional-
 
 ### Generating a custom changelog
 
-With release-it, you can use tools like [conventional-changelog-cli](https://www.npmjs.com/package/conventional-changelog-cli) to generate the changelog for the GitHub release. Make sure that the command defined in the `scripts.changelog` option outputs the changelog to `stdout`. In the next example, `scripts.afterBump` is also used, to update the `CHANGELOG.md` file.
+With release-it, you can use tools like [conventional-changelog-cli](https://www.npmjs.com/package/conventional-changelog-cli) to generate the changelog. Make sure the command defined in `scripts.changelog` outputs the changelog to `stdout`. In the next example, `scripts.beforeStage` is also used, to update the `CHANGELOG.md` file (and include this change in the release commit).
 
 ```json
 {
   "increment": "conventional:angular",
   "scripts": {
     "changelog": "conventional-changelog -p angular | tail -n +3",
-    "afterBump": "conventional-changelog -p angular -i CHANGELOG.md -s"
+    "beforeStage": "conventional-changelog -p angular -i CHANGELOG.md -s"
   }
 }
 ```

@@ -331,6 +331,7 @@ test('#', st => {
       preRelease: 'alpha',
       github: {
         release: true,
+        releaseNotes: 'echo "Notes for ${name} (v${version}): ${changelog}"',
         assets: ['file']
       },
       npm: {
@@ -356,7 +357,7 @@ test('#', st => {
     t.equal(githubReleaseArg.repo, repoName);
     t.equal(githubReleaseArg.tag_name, '1.1.0-alpha.0');
     t.equal(githubReleaseArg.name, 'Release 1.1.0-alpha.0');
-    t.ok(githubReleaseArg.body.startsWith('* More file'));
+    t.ok(RegExp(`Notes for ${pkgName} \\(v1.1.0-alpha.0\\): \\* More file`).test(githubReleaseArg.body));
     t.equal(githubReleaseArg.prerelease, true);
     t.equal(githubReleaseArg.draft, false);
 
