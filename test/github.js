@@ -10,7 +10,7 @@ const githubApi = new GitHubApi();
 githubApi.hook.wrap('request', githubRequestStub);
 const GithubApiStub = sinon.stub().returns(githubApi);
 
-const GitHub = proxyquire('../lib/github-client', {
+const GitHub = proxyquire('../lib/github', {
   '@octokit/rest': GithubApiStub
 });
 
