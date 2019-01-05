@@ -16,7 +16,7 @@ test('getChangelog', async t => {
   sh.exec('git init');
   gitAdd('line', 'file', 'First commit');
   gitAdd('line', 'file', 'Second commit');
-  await t.shouldReject(changelogs.create('git log --invalid'), /Could not create changelog/);
+  await t.shouldReject(changelogs.create('git log --invalid'), /--invalid/);
   {
     const changelog = await changelogs.create('git log --pretty=format:"* %s (%h)"');
     t.ok(/^\* Second commit \(\w{7}\)\n\* First commit \(\w{7}\)$/.test(changelog));
