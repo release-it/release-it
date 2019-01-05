@@ -489,6 +489,7 @@ releaseIt(options).then(output => {
 - [infor-design/enterprise](https://github.com/infor-design/enterprise)
 - [tsqllint/tsqllint](https://github.com/tsqllint/tsqllint)
 - [segmentio/typewriter](https://github.com/segmentio/typewriter)
+- [gql-dal/greldal](https://github.com/gql-dal/greldal)
 - [Repositories that depend on release-it](https://github.com/webpro/release-it/network/dependents)
 - GitHub search for [projects with .release-it.json](https://github.com/search?o=desc&q=in%3Apath+.release-it.json&s=indexed&type=Code)
 
