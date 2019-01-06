@@ -35,6 +35,7 @@ Want to help out, or hack on release-it? Great! Please read [CONTRIBUTING.md](CO
 - [Interactive vs. non-interactive mode](#interactive-vs-non-interactive-mode)
 - [Git](#git)
 - [GitHub Releases](#github-releases)
+- [GitLab Releases](#gitlab-releases)
 - [Publishing to npm](#publishing-to-npm)
 - [Managing pre-releases](#managing-pre-releases)
 - [Scripts](#scripts)
@@ -263,6 +264,22 @@ To upload binary release assets with a GitHub release (such as compiled executab
   }
 }
 ```
+
+## GitLab Releases
+
+[GitLab releases](https://docs.gitlab.com/ee/workflow/releases.html#releases) work just like GitHub releases:
+
+- Configure `gitlab.release: true`.
+- Obtain a [personal access token](https://gitlab.com/profile/personal_access_tokens) (release-it only needs the "api" scope).
+- Make sure the token is available as an environment variable. Example:
+
+```bash
+export GITLAB_TOKEN="f941e0..."
+```
+
+The output of `scripts.changelog` (or `gitlab.releaseNotes` if set) will be attached to the latest tag.
+
+Note: release-it doesn't support release assets for GitLab yet, in anticipation of GitLab 11.7, which introduces [Releases](https://docs.gitlab.com/ee/user/project/releases.html).
 
 ## Publishing to npm
 
