@@ -16,7 +16,7 @@ const {
   GitRemoteUrlError,
   GitCleanWorkingDirError,
   GitUpstreamError,
-  GithubTokenError,
+  GitHubTokenError,
   InvalidVersionError,
   DistRepoStageDirError
 } = require('../lib/errors');
@@ -26,7 +26,7 @@ const cwd = process.cwd();
 const githubRequestStub = sinon.stub().callsFake(githubRequestMock);
 const githubApi = new GitHubApi();
 githubApi.hook.wrap('request', githubRequestStub);
-const GithubApiStub = sinon.stub().returns(githubApi);
+const GitHubApiStub = sinon.stub().returns(githubApi);
 
 const publishStub = sinon.stub().resolves();
 
@@ -105,7 +105,7 @@ test('should throw if no GitHub token environment variable is set', async t => {
         tokenRef: 'GITHUB_FOO'
       }
     }),
-    GithubTokenError,
+    GitHubTokenError,
     /Environment variable "GITHUB_FOO" is required for GitHub releases/
   );
   cleanup();
@@ -265,7 +265,7 @@ test('should run tasks without package.json', async t => {
 
 test('#', st => {
   const runTasks = proxyquire('../lib/tasks', {
-    '@octokit/rest': Object.assign(GithubApiStub, { '@global': true }),
+    '@octokit/rest': Object.assign(GitHubApiStub, { '@global': true }),
     './shell': Object.assign(shellStub, { '@global': true })
   });
 

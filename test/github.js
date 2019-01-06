@@ -8,13 +8,13 @@ const githubRequestMock = require('./mock/github.request');
 const githubRequestStub = sinon.stub().callsFake(githubRequestMock);
 const githubApi = new GitHubApi();
 githubApi.hook.wrap('request', githubRequestStub);
-const GithubApiStub = sinon.stub().returns(githubApi);
+const GitHubApiStub = sinon.stub().returns(githubApi);
 
 const GitHub = proxyquire('../lib/github', {
-  '@octokit/rest': GithubApiStub
+  '@octokit/rest': GitHubApiStub
 });
 
-test('validate', async t => {
+test('github validate', async t => {
   const tokenRef = 'MY_GITHUB_TOKEN';
   const github = new GitHub({ release: true, tokenRef, remoteUrl: '' });
   delete process.env[tokenRef];
@@ -24,7 +24,7 @@ test('validate', async t => {
   t.end();
 });
 
-test('release + uploadAssets', async t => {
+test('github release + uploadAssets', async t => {
   const remoteUrl = 'https://github.com/webpro/release-it-test';
   const asset = 'file1';
   const version = '2.0.1';
@@ -47,8 +47,8 @@ test('release + uploadAssets', async t => {
 
   const [uploadResult] = await github.uploadAssets();
 
-  t.equal(GithubApiStub.callCount, 1);
-  t.deepEqual(GithubApiStub.firstCall.args[0], {
+  t.equal(GitHubApiStub.callCount, 1);
+  t.deepEqual(GitHubApiStub.firstCall.args[0], {
     version: '3.0.0',
     url: 'https://api.github.com',
     timeout: 0,
@@ -67,12 +67,12 @@ test('release + uploadAssets', async t => {
   t.equal(uploadResult.state, 'uploaded');
   t.equal(uploadResult.browser_download_url, `${remoteUrl}/releases/download/v${version}/${asset}`);
 
-  GithubApiStub.resetHistory();
+  GitHubApiStub.resetHistory();
   githubRequestStub.resetHistory();
   t.end();
 });
 
-test('release (enterprise)', async t => {
+test('github release (enterprise)', async t => {
   const github = new GitHub({
     remoteUrl: 'https://github.my-GHE-enabled-company.com/user/repo'
   });
@@ -82,16 +82,16 @@ test('release (enterprise)', async t => {
     changelog: 'My default changelog'
   });
 
-  t.equal(GithubApiStub.callCount, 1);
-  t.equal(GithubApiStub.firstCall.args[0].url, 'https://github.my-GHE-enabled-company.com/api/v3');
+  t.equal(GitHubApiStub.callCount, 1);
+  t.equal(GitHubApiStub.firstCall.args[0].url, 'https://github.my-GHE-enabled-company.com/api/v3');
   t.equal(githubRequestStub.firstCall.lastArg.body, 'My default changelog');
 
-  GithubApiStub.resetHistory();
+  GitHubApiStub.resetHistory();
   githubRequestStub.resetHistory();
   t.end();
 });
 
-test('release (override host)', async t => {
+test('github release (override host)', async t => {
   const github = new GitHub({
     remoteUrl: 'https://github.my-GHE-enabled-company.com/user/repo',
     host: 'my-custom-host.org'
@@ -101,9 +101,9 @@ test('release (override host)', async t => {
     version: '1'
   });
 
-  t.equal(GithubApiStub.callCount, 1);
-  t.equal(GithubApiStub.firstCall.args[0].url, 'https://my-custom-host.org/api/v3');
+  t.equal(GitHubApiStub.callCount, 1);
+  t.equal(GitHubApiStub.firstCall.args[0].url, 'https://my-custom-host.org/api/v3');
 
-  GithubApiStub.resetHistory();
+  GitHubApiStub.resetHistory();
   t.end();
 });
