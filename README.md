@@ -13,6 +13,7 @@ CLI release tool for Git repos and npm packages.
 - [Publish to npm](#publishing-to-npm)
 - [Create release at GitHub](#github-releases)
 - [Upload assets to GitHub release](#release-assets)
+- [Create release at GitLab](#gitlab-releases)
 - [Manage pre-releases](#managing-pre-releases)
 - Support [Conventional Changelog](#custom-or-conventional-changelog) workflows
 - Support [monorepo](#monorepos) workflows
@@ -33,6 +34,7 @@ Want to help out, or hack on release-it? Great! Please read [CONTRIBUTING.md](CO
 - [Usage](#usage)
 - [Configuration](#configuration)
 - [Interactive vs. non-interactive mode](#interactive-vs-non-interactive-mode)
+- [Latest version](#latest-version)
 - [Git](#git)
 - [GitHub Releases](#github-releases)
 - [GitLab Releases](#gitlab-releases)
@@ -45,7 +47,7 @@ Want to help out, or hack on release-it? Great! Please read [CONTRIBUTING.md](CO
 - [Metrics](#metrics)
 - [Troubleshooting & debugging](#troubleshooting--debugging)
 - [Using release-it programmatically](#using-release-it-programmatically)
-- [Examples](#examples)
+- [Example projects using release-it](#example-projects-using-release-it)
 - [Resources](#resources)
 - [Credits](#credits)
 
@@ -201,7 +203,7 @@ This is also useful for [monorepos](#monorepos).
 
 SSH keys and Git remotes are assumed to be configured correctly. If a manual `git push` from the command line works, release-it should be able to do the same.
 
-The following GitHub help pages might be useful: [SSH](https://help.github.com/articles/connecting-to-github-with-ssh/) and [Managing Remotes](https://help.github.com/categories/managing-remotes/).
+The following help pages might be useful: [SSH](https://help.github.com/articles/connecting-to-github-with-ssh/) and [Managing Remotes](https://help.github.com/categories/managing-remotes/) (GitHub), [SSH keys](https://confluence.atlassian.com/bitbucket/ssh-keys-935365775.html) (Bitbucket), [SSH keys](https://gitlab.com/help/ssh/README.md) (GitLab).
 
 ### Remote repository
 
@@ -226,7 +228,7 @@ By default, untracked files are not added to the release commit. Use `git.addUnt
 The "Releases" tab on GitHub projects links to a page to store the changelog. To add [GitHub releases](https://help.github.com/articles/creating-releases/) in your release-it flow:
 
 - Configure `github.release: true`.
-- Obtain a [GitHub access token](https://github.com/settings/tokens) (release-it only needs "repo" access; no "admin" or other scopes).
+- Obtain a [personal access token](https://github.com/settings/tokens) (release-it only needs "repo" access; no "admin" or other scopes).
 - Make sure the token is available as an environment variable. Example:
 
 ```bash
