@@ -173,13 +173,14 @@ On a Continuous Integration (CI) environment, the non-interactive mode is activa
 <details>
   <summary><strong>An overview of the tasks</strong> (click to expand)</summary>
 
-| Task           | Option           | Default | Prompt           | Default |
-| :------------- | :--------------- | :-----: | :--------------- | :-----: |
-| Git commit     | `git.commit`     | `true`  | `prompt.commit`  |   `Y`   |
-| Git tag        | `git.tag`        | `true`  | `prompt.tag`     |   `Y`   |
-| Git push       | `git.push`       | `true`  | `prompt.push`    |   `Y`   |
-| GitHub release | `github.release` | `false` | `prompt.release` |   `Y`   |
-| npm publish    | `npm.publish`    | `true`  | `prompt.publish` |   `Y`   |
+| Task           | Option           | Default | Prompt             | Default |
+| :------------- | :--------------- | :-----: | :----------------- | :-----: |
+| Git commit     | `git.commit`     | `true`  | `prompt.commit`    |   `Y`   |
+| Git tag        | `git.tag`        | `true`  | `prompt.tag`       |   `Y`   |
+| Git push       | `git.push`       | `true`  | `prompt.push`      |   `Y`   |
+| GitHub release | `github.release` | `false` | `prompt.ghRelease` |   `Y`   |
+| GitLab release | `gitlab.release` | `false` | `prompt.glRelease` |   `Y`   |
+| npm publish    | `npm.publish`    | `true`  | `prompt.publish`   |   `Y`   |
 
 The **Option/Default** columns represent default options in **non-interactive/CI** mode. The **Prompt/Default** columns represent the prompts and their default answers in **interactive** mode. You can still change the answer to either `Y` or `N` as the questions show up (or cancel the process with `Ctrl-c`).
 

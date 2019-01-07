@@ -82,14 +82,14 @@
     "commit": true,
     "tag": true,
     "push": true,
-    "release": true,
+    "ghRelease": true,
     "glRelease": true,
     "publish": true,
     "dist": {
       "commit": true,
       "tag": false,
       "push": true,
-      "release": false,
+      "ghRelease": false,
       "glRelease": false,
       "publish": false
     }
