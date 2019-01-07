@@ -64,3 +64,21 @@ test('publish (scoped)', async t => {
   t.equal(run.firstCall.args[0].trim(), 'npm publish . --tag beta --access public');
   t.end();
 });
+
+test('publish (private)', async t => {
+  const run = sinon.stub().resolves();
+  const shell = { run };
+  const warn = sinon.spy();
+  const log = { warn };
+  const npmClient = new npm({
+    name: 'pkg',
+    private: true,
+    log,
+    shell
+  });
+  await npmClient.publish();
+  t.equal(run.callCount, 0);
+  t.equal(warn.callCount, 1);
+  t.ok(warn.firstCall.args[0].includes('package is private'));
+  t.end();
+});
