@@ -7,6 +7,7 @@ const uuid = require('uuid/v4');
 const { readFile, gitAdd } = require('./util/index');
 const Shell = require('../lib/shell');
 const Git = require('../lib/git');
+const GitDist = require('../lib/git-dist');
 
 const shell = new Shell();
 const gitClient = new Git();
@@ -103,7 +104,8 @@ test('clone + stage + commit + tag + push', async t => {
   const bare = `../${uuid()}`;
   sh.exec(`git init --bare ${bare}`);
   const gitClient = new Git();
-  await gitClient.clone(bare, '.');
+  const gitDistClient = new GitDist();
+  await gitDistClient.clone(bare, '.');
   await gitClient.init();
   const version = '1.2.3';
   gitAdd(`{"version":"${version}"}`, 'package.json', 'Add package.json');
