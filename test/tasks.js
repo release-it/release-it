@@ -3,7 +3,8 @@ const { EOL } = require('os');
 const test = require('tape');
 const sh = require('shelljs');
 const proxyquire = require('proxyquire');
-const mockStdIo = require('mock-stdio');
+const Log = require('../lib/log');
+const Spinner = require('../lib/spinner');
 const { gitAdd, readFile, readJSON } = require('./util/index');
 const uuid = require('uuid/v4');
 const GitHubApi = require('@octokit/rest');
@@ -22,13 +23,20 @@ const {
 } = require('../lib/errors');
 
 const cwd = process.cwd();
+const noop = Promise.resolve();
 
-const githubRequestStub = sinon.stub().callsFake(githubRequestMock);
+const sandbox = sinon.createSandbox();
+
+const githubRequestStub = sandbox.stub().callsFake(githubRequestMock);
 const githubApi = new GitHubApi();
 githubApi.hook.wrap('request', githubRequestStub);
-const GitHubApiStub = sinon.stub().returns(githubApi);
+const GitHubApiStub = sandbox.stub().returns(githubApi);
 
-const publishStub = sinon.stub().resolves();
+const publishStub = sandbox.stub().resolves();
+const log = sandbox.createStubInstance(Log);
+const spinner = sandbox.createStubInstance(Spinner);
+spinner.show.callsFake(({ enabled = true, task }) => (enabled ? task() : noop));
+const stubs = { log, spinner };
 
 class shellStub extends shell {
   run(command) {
@@ -46,7 +54,7 @@ const testConfig = {
   'disable-metrics': true
 };
 
-const tasks = options => runTasks(Object.assign({}, testConfig, options));
+const tasks = (options, ...args) => runTasks(Object.assign({}, testConfig, options), ...args);
 
 const prepare = () => {
   const bare = path.resolve(cwd, 'tmp', uuid());
@@ -61,8 +69,7 @@ const prepare = () => {
 
 const cleanup = () => {
   sh.pushd('-q', cwd);
-  githubRequestStub.resetHistory();
-  publishStub.resetHistory();
+  sandbox.resetHistory();
 };
 
 test('should throw when not a Git repository', async t => {
@@ -143,18 +150,12 @@ test('should throw if not a subdir is provided for dist.stageDir', async t => {
 
 test('should run tasks without throwing errors', async t => {
   prepare();
-  mockStdIo.start();
-  const { name, latestVersion, version } = await tasks({
-    increment: 'patch',
-    pkgFiles: null,
-    manifest: false,
-    npm: {
-      publish: false
-    }
-  });
-  const { stdout } = mockStdIo.end();
-  t.ok(stdout.includes(`release ${name} (${latestVersion}...${version})`));
-  t.ok(/Done \(in [0-9]+s\.\)/.test(stdout));
+  const { name, latestVersion, version } = await tasks(
+    { increment: 'patch', pkgFiles: null, manifest: false, npm: { publish: false } },
+    stubs
+  );
+  t.ok(log.log.firstCall.args[0].includes(`release ${name} (${latestVersion}...${version})`));
+  t.ok(/Done \(in [0-9]+s\.\)/.test(log.log.lastCall.args[0]));
   cleanup();
   t.end();
 });
@@ -164,16 +165,9 @@ test('should run tasks with minimal config and without any warnings/errors', asy
   gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
   sh.exec('git tag 1.2.3');
   gitAdd('line', 'file', 'More file');
-  mockStdIo.start();
-  await tasks({
-    increment: 'patch',
-    npm: {
-      publish: false
-    }
-  });
-  const { stdout } = mockStdIo.end();
-  t.ok(stdout.includes('release my-package (1.2.3...1.2.4)'));
-  t.ok(/Done \(in [0-9]+s\.\)/.test(stdout));
+  await tasks({ increment: 'patch', npm: { publish: false } }, stubs);
+  t.ok(log.log.firstCall.args[0].includes('release my-package (1.2.3...1.2.4)'));
+  t.ok(/Done \(in [0-9]+s\.\)/.test(log.log.lastCall.args[0]));
   const pkg = await readJSON('package.json');
   t.equal(pkg.version, '1.2.4');
   {
@@ -187,16 +181,9 @@ test('should run tasks with minimal config and without any warnings/errors', asy
 test('should use pkg.version if no git tag', async t => {
   prepare();
   gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
-  mockStdIo.start();
-  await tasks({
-    increment: 'minor',
-    npm: {
-      publish: false
-    }
-  });
-  const { stdout } = mockStdIo.end();
-  t.ok(stdout.includes('release my-package (1.2.3...1.3.0)'));
-  t.ok(/Done \(in [0-9]+s\.\)/.test(stdout));
+  await tasks({ increment: 'minor', npm: { publish: false } }, stubs);
+  t.ok(log.log.firstCall.args[0].includes('release my-package (1.2.3...1.3.0)'));
+  t.ok(/Done \(in [0-9]+s\.\)/.test(log.log.lastCall.args[0]));
   const pkg = await readJSON('package.json');
   t.equal(pkg.version, '1.3.0');
   {
@@ -214,19 +201,9 @@ test('should use pkg.version (in sub dir) w/o tagging repo', async t => {
   sh.mkdir('my-package');
   sh.pushd('-q', 'my-package');
   gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
-  mockStdIo.start();
-  await tasks({
-    increment: 'minor',
-    git: {
-      tag: false
-    },
-    npm: {
-      publish: false
-    }
-  });
-  const { stdout } = mockStdIo.end();
-  t.ok(stdout.includes('release my-package (1.2.3...1.3.0)'));
-  t.ok(/Done \(in [0-9]+s\.\)/.test(stdout));
+  await tasks({ increment: 'minor', git: { tag: false }, npm: { publish: false } }, stubs);
+  t.ok(log.log.firstCall.args[0].endsWith('release my-package (1.2.3...1.3.0)'));
+  t.ok(/Done \(in [0-9]+s\.\)/.test(log.log.lastCall.args[0]));
   const pkg = await readJSON('package.json');
   t.equal(pkg.version, '1.3.0');
   sh.popd('-q');
@@ -243,18 +220,11 @@ test('should use pkg.version (in sub dir) w/o tagging repo', async t => {
 test('should run tasks without package.json', async t => {
   prepare();
   sh.exec('git tag 1.0.0');
-  mockStdIo.start();
-  const { name } = await tasks({
-    increment: 'major',
-    npm: {
-      publish: false
-    }
-  });
-  const { stdout } = mockStdIo.end();
-  t.ok(stdout.includes(`release ${name} (1.0.0...2.0.0)`));
-  t.ok(stdout.includes('Could not bump package.json'));
-  t.ok(stdout.includes('Could not stage package.json'));
-  t.ok(/Done \(in [0-9]+s\.\)/.test(stdout));
+  const { name } = await tasks({ increment: 'major', npm: { publish: false } }, stubs);
+  t.ok(log.log.firstCall.args[0].includes(`release ${name} (1.0.0...2.0.0)`));
+  t.ok(/Done \(in [0-9]+s\.\)/.test(log.log.lastCall.args[0]));
+  t.equal(log.warn.secondCall.args[0], 'Could not bump package.json');
+  t.equal(log.warn.thirdCall.args[0], 'Could not stage package.json');
   {
     const { stdout } = sh.exec('git describe --tags --abbrev=0');
     t.equal(stdout.trim(), '2.0.0');
@@ -269,7 +239,7 @@ test('#', st => {
     './shell': Object.assign(shellStub, { '@global': true })
   });
 
-  const tasks = options => runTasks(Object.assign({}, testConfig, options));
+  const tasks = (options, ...args) => runTasks(Object.assign({}, testConfig, options), ...args);
 
   st.test('should release all the things (basic)', async t => {
     const { bare, target } = prepare();
@@ -277,18 +247,7 @@ test('#', st => {
     const pkgName = path.basename(target);
     sh.exec('git tag 1.0.0');
     gitAdd('line', 'file', 'More file');
-    mockStdIo.start();
-    await tasks({
-      github: {
-        release: true
-      },
-      npm: {
-        name: pkgName,
-        publish: true
-      }
-    });
-    const { stdout } = mockStdIo.end();
-
+    await tasks({ github: { release: true }, npm: { name: pkgName, publish: true } }, stubs);
     const githubReleaseArg = githubRequestStub.firstCall.lastArg;
     t.equal(githubRequestStub.callCount, 1);
     t.equal(githubReleaseArg.url, '/repos/:owner/:repo/releases');
@@ -302,9 +261,9 @@ test('#', st => {
 
     t.equal(publishStub.firstCall.args[0].trim(), 'npm publish . --tag latest');
 
-    t.ok(stdout.includes(`release ${pkgName} (1.0.0...1.0.1)`));
-    t.ok(stdout.includes(`https://github.com/null/${repoName}/releases/tag/1.0.1`));
-    t.ok(stdout.includes(`https://www.npmjs.com/package/${pkgName}`));
+    t.ok(log.log.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
+    t.ok(log.log.secondCall.args[0].endsWith(`https://github.com/null/${repoName}/releases/tag/1.0.1`));
+    t.ok(log.log.thirdCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
 
     cleanup();
     t.end();
@@ -325,32 +284,25 @@ test('#', st => {
     sh.exec('git tag v1.0.0');
     gitAdd('line', 'file', 'More file');
     sh.exec('git push --follow-tags');
-    mockStdIo.start();
-    await tasks({
-      increment: 'minor',
-      preRelease: 'alpha',
-      git: {
-        tagName: 'v${version}'
-      },
-      github: {
-        release: true,
-        releaseNotes: 'echo "Notes for ${name} (v${version}): ${changelog}"',
-        assets: ['file']
-      },
-      npm: {
-        name: pkgName
-      },
-      dist: {
-        repo: `${bare}#dist`,
-        scripts: {
-          beforeStage: `echo release-line >> dist-file`
+    await tasks(
+      {
+        increment: 'minor',
+        preRelease: 'alpha',
+        git: { tagName: 'v${version}' },
+        github: {
+          release: true,
+          releaseNotes: 'echo "Notes for ${name} (v${version}): ${changelog}"',
+          assets: ['file']
         },
-        npm: {
-          publish: true
+        npm: { name: pkgName },
+        dist: {
+          repo: `${bare}#dist`,
+          scripts: { beforeStage: `echo release-line >> dist-file` },
+          npm: { publish: true }
         }
-      }
-    });
-    const { stdout } = mockStdIo.end();
+      },
+      stubs
+    );
 
     t.equal(githubRequestStub.callCount, 2);
 
@@ -382,12 +334,11 @@ test('#', st => {
     const distFile = await readFile('dist-file');
     t.equal(distFile.trim(), `dist-line${EOL}release-line`);
 
-    const [, sourceOutput, distOutput] = stdout.split('🚀');
-    t.ok(sourceOutput.includes(`release ${pkgName} (1.0.0...1.1.0-alpha.0)`));
-    t.ok(sourceOutput.includes(`https://github.com/${owner}/${repoName}/releases/tag/v1.1.0-alpha.0`));
-    t.ok(distOutput.includes(`release the distribution repo for ${pkgName}`));
-    t.ok(distOutput.includes(`https://www.npmjs.com/package/${pkgName}`));
-    t.ok(/Done \(in [0-9]+s\.\)/.test(distOutput));
+    t.ok(log.log.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.1.0-alpha.0)`));
+    t.ok(log.log.secondCall.args[0].endsWith(`https://github.com/${owner}/${repoName}/releases/tag/v1.1.0-alpha.0`));
+    t.ok(log.log.thirdCall.args[0].endsWith(`release the distribution repo for ${pkgName}`));
+    t.ok(log.log.args[3][0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
+    t.ok(/Done \(in [0-9]+s\.\)/.test(log.log.lastCall.args[0]));
 
     cleanup();
     t.end();

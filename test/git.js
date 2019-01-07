@@ -2,15 +2,18 @@ const path = require('path');
 const test = require('tape');
 const sinon = require('sinon');
 const sh = require('shelljs');
-const mockStdIo = require('mock-stdio');
 const uuid = require('uuid/v4');
 const { readFile, gitAdd } = require('./util/index');
 const Shell = require('../lib/shell');
+const Log = require('../lib/log');
 const Git = require('../lib/git');
 const GitDist = require('../lib/git-dist');
 
+const sandbox = sinon.createSandbox();
+const log = sandbox.createStubInstance(Log);
+
 const shell = new Shell();
-const gitClient = new Git();
+const gitClient = new Git({ log });
 
 const cwd = path.resolve(process.cwd());
 
@@ -22,6 +25,7 @@ const prepare = () => {
 
 const cleanup = () => {
   sh.pushd('-q', cwd);
+  sandbox.resetHistory();
 };
 
 test('isGitRepo', async t => {
@@ -216,10 +220,8 @@ test('reset', async t => {
   t.ok(/^line\s*line\s*$/.test(await readFile('file')));
   await gitClient.reset('file');
   t.ok(/^line\s*$/.test(await readFile('file')));
-  mockStdIo.start();
   await gitClient.reset(['file2, file3']);
-  const { stdout } = mockStdIo.end();
-  t.ok(/Could not reset file2, file3/.test(stdout));
+  t.equal(log.warn.firstCall.args[0], 'Could not reset file2, file3');
   cleanup();
   t.end();
 });

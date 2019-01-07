@@ -1,9 +1,13 @@
 const test = require('tape');
 const sh = require('shelljs');
-const mockStdIo = require('mock-stdio');
+const sinon = require('sinon');
 const uuid = require('uuid/v4');
 const Version = require('../lib/version');
+const Log = require('../lib/log');
 const { gitAdd } = require('./util/index');
+
+const sandbox = sinon.createSandbox();
+const log = sandbox.createStubInstance(Log);
 
 test('isValidVersion', t => {
   const v = new Version();
@@ -38,32 +42,31 @@ test('setLatestVersion (not root dir)', t => {
 });
 
 test('setLatestVersion (invalid tag/fallback)', t => {
-  const v = new Version();
-  mockStdIo.start();
+  const v = new Version({ log });
   v.setLatestVersion({ gitTag: 'a.b.c', pkgVersion: '0.0.1' });
-  const { stdout } = mockStdIo.end();
-  t.ok(/Latest Git tag \(a\.b\.c\) is not a valid semver version/.test(stdout));
+  t.equal(log.warn.firstCall.args[0], 'Latest Git tag (a.b.c) is not a valid semver version.');
   t.equal(v.latestVersion, '0.0.1');
+  sandbox.resetHistory();
   t.end();
 });
 
 test('setLatestVersion (invalid package version)', t => {
-  const v = new Version();
-  mockStdIo.start();
+  const v = new Version({ log });
   v.setLatestVersion({ use: 'pkg.version', pkgVersion: '1.2' });
-  const { stdout } = mockStdIo.end();
-  t.ok(/The version in package.json \(1\.2\) is not a valid semver version/.test(stdout));
+  t.equal(log.warn.firstCall.args[0], 'The version in package.json (1.2) is not a valid semver version.');
+  sandbox.resetHistory();
   t.end();
 });
 
 test('setLatestVersion (invalid git tag and package version)', t => {
-  const v = new Version();
-  mockStdIo.start();
+  const v = new Version({ log });
   v.setLatestVersion({ gitTag: '1', pkgVersion: '2' });
-  const { stdout } = mockStdIo.end();
-  t.ok(
-    /Could not find valid latest Git tag or version in package.json. Using "0\.0\.0" as latest version/.test(stdout)
+  t.equal(log.warn.firstCall.args[0], 'Latest Git tag (1) is not a valid semver version.');
+  t.equal(
+    log.warn.secondCall.args[0],
+    'Could not find valid latest Git tag or version in package.json. Using "0.0.0" as latest version.'
   );
+  sandbox.resetHistory();
   t.end();
 });
 
@@ -221,10 +224,9 @@ test('bump (recommended conventional w/ pre-release continuation)', async t => {
 });
 
 test('parse (coerce)', async t => {
-  const v = new Version();
-  mockStdIo.start();
+  const v = new Version({ log });
   v.bump({ increment: '2' });
-  const { stdout } = mockStdIo.end();
-  t.ok(/Coerced invalid semver version "2" into "2.0.0"/.test(stdout));
+  t.equal(log.warn.firstCall.args[0], 'Coerced invalid semver version "2" into "2.0.0".');
+  sandbox.resetHistory();
   t.end();
 });
