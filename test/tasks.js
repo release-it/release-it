@@ -1,6 +1,6 @@
 const path = require('path');
 const { EOL } = require('os');
-const test = require('tape');
+const test = require('ava');
 const sh = require('shelljs');
 const proxyquire = require('proxyquire');
 const Log = require('../lib/log');
@@ -17,7 +17,7 @@ const {
   GitRemoteUrlError,
   GitCleanWorkingDirError,
   GitUpstreamError,
-  GitHubTokenError,
+  TokenError,
   InvalidVersionError,
   DistRepoStageDirError
 } = require('../lib/errors');
@@ -56,7 +56,7 @@ const testConfig = {
 
 const tasks = (options, ...args) => runTasks(Object.assign({}, testConfig, options), ...args);
 
-const prepare = () => {
+test.serial.beforeEach(t => {
   const bare = path.resolve(cwd, 'tmp', uuid());
   const target = path.resolve(cwd, 'tmp', uuid());
   sh.pushd('-q', `${cwd}/tmp`);
@@ -64,176 +64,134 @@ const prepare = () => {
   sh.exec(`git clone ${bare} ${target}`);
   sh.pushd('-q', target);
   gitAdd('line', 'file', 'Add file');
-  return { bare, target };
-};
+  t.context = { bare, target };
+});
 
-const cleanup = () => {
+test.serial.afterEach(() => {
   sh.pushd('-q', cwd);
   sandbox.resetHistory();
-};
+});
 
-test('should throw when not a Git repository', async t => {
-  sh.pushd('-q', '..');
-  await t.shouldBailOut(tasks(), GitRepoError, /Not a git repository/);
+test.serial('should throw when not a Git repository', async t => {
+  sh.pushd('-q', '../../..');
+  const expected = { instanceOf: GitRepoError, message: /Not a git repository/ };
+  await t.throwsAsync(tasks(null, stubs), expected);
   sh.popd('-q');
-  t.end();
 });
 
-test('should throw if there is no remote Git url', async t => {
-  prepare();
+test.serial('should throw if there is no remote Git url', async t => {
   sh.exec('git remote remove origin');
-  await t.shouldBailOut(tasks(), GitRemoteUrlError, /Could not get remote Git url/);
-  cleanup();
-  t.end();
+  const expected = { instanceOf: GitRemoteUrlError, message: /Could not get remote Git url/ };
+  await t.throwsAsync(tasks(null, stubs), expected);
 });
 
-test('should throw if working dir is not clean', async t => {
-  prepare();
+test.serial('should throw if working dir is not clean', async t => {
   sh.exec('rm file');
-  await t.shouldBailOut(tasks(), GitCleanWorkingDirError, /Working dir must be clean/);
-  cleanup();
-  t.end();
+  const expected = { instanceOf: GitCleanWorkingDirError, message: /Working dir must be clean/ };
+  await t.throwsAsync(tasks(null, stubs), expected);
 });
 
-test('should throw if no upstream is configured', async t => {
-  prepare();
+test.serial('should throw if no upstream is configured', async t => {
   sh.exec('git checkout -b foo');
-  await t.shouldBailOut(tasks(), GitUpstreamError, /No upstream configured for current branch/);
-  cleanup();
-  t.end();
+  const expected = { instanceOf: GitUpstreamError, message: /No upstream configured for current branch/ };
+  await t.throwsAsync(tasks(null, stubs), expected);
 });
 
-test('should throw if no GitHub token environment variable is set', async t => {
-  prepare();
-  await t.shouldBailOut(
-    tasks({
-      github: {
-        release: true,
-        tokenRef: 'GITHUB_FOO'
-      }
-    }),
-    GitHubTokenError,
-    /Environment variable "GITHUB_FOO" is required for GitHub releases/
-  );
-  cleanup();
-  t.end();
+test.serial('should throw if no GitHub token environment variable is set', async t => {
+  const config = { github: { release: true, tokenRef: 'GITHUB_FOO' } };
+  const expected = {
+    instanceOf: TokenError,
+    message: /Environment variable "GITHUB_FOO" is required for GitHub releases/
+  };
+  await t.throwsAsync(tasks(config, stubs), expected);
 });
 
-test('should throw if invalid increment value is provided', async t => {
-  prepare();
-  await t.shouldBailOut(
-    tasks({
-      increment: 'mini'
-    }),
-    InvalidVersionError,
-    /invalid version was provided/
-  );
-  cleanup();
-  t.end();
+test.serial('should throw if invalid increment value is provided', async t => {
+  const config = { increment: 'mini' };
+  const expected = { instanceOf: InvalidVersionError, message: /invalid version was provided/ };
+  await t.throwsAsync(tasks(config, stubs), expected);
 });
 
-test('should throw if not a subdir is provided for dist.stageDir', async t => {
-  prepare();
-  await t.shouldBailOut(
-    tasks({
-      dist: {
-        repo: 'foo',
-        stageDir: '..'
-      }
-    }),
-    DistRepoStageDirError,
-    /`dist.stageDir` \(".."\) must resolve to a sub directory/
-  );
-  cleanup();
-  t.end();
+test.serial('should throw if not a subdir is provided for dist.stageDir', async t => {
+  const config = { dist: { repo: 'foo', stageDir: '..' } };
+  const expected = {
+    instanceOf: DistRepoStageDirError,
+    message: /`dist.stageDir` \(".."\) must resolve to a sub directory/
+  };
+  await t.throwsAsync(tasks(config, stubs), expected);
 });
 
-test('should run tasks without throwing errors', async t => {
-  prepare();
+test.serial('should run tasks without throwing errors', async t => {
   const { name, latestVersion, version } = await tasks(
     { increment: 'patch', pkgFiles: null, manifest: false, npm: { publish: false } },
     stubs
   );
-  t.ok(log.log.firstCall.args[0].includes(`release ${name} (${latestVersion}...${version})`));
-  t.ok(/Done \(in [0-9]+s\.\)/.test(log.log.lastCall.args[0]));
-  cleanup();
-  t.end();
+  t.true(log.log.firstCall.args[0].includes(`release ${name} (${latestVersion}...${version})`));
+  t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
 });
 
-test('should run tasks with minimal config and without any warnings/errors', async t => {
-  prepare();
+test.serial('should run tasks with minimal config and without any warnings/errors', async t => {
   gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
   sh.exec('git tag 1.2.3');
   gitAdd('line', 'file', 'More file');
   await tasks({ increment: 'patch', npm: { publish: false } }, stubs);
-  t.ok(log.log.firstCall.args[0].includes('release my-package (1.2.3...1.2.4)'));
-  t.ok(/Done \(in [0-9]+s\.\)/.test(log.log.lastCall.args[0]));
+  t.true(log.log.firstCall.args[0].includes('release my-package (1.2.3...1.2.4)'));
+  t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
   const pkg = await readJSON('package.json');
-  t.equal(pkg.version, '1.2.4');
+  t.is(pkg.version, '1.2.4');
   {
     const { stdout } = sh.exec('git describe --tags --abbrev=0');
-    t.equal(stdout.trim(), '1.2.4');
+    t.is(stdout.trim(), '1.2.4');
   }
-  cleanup();
-  t.end();
 });
 
-test('should use pkg.version if no git tag', async t => {
-  prepare();
+test.serial('should use pkg.version if no git tag', async t => {
   gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
   await tasks({ increment: 'minor', npm: { publish: false } }, stubs);
-  t.ok(log.log.firstCall.args[0].includes('release my-package (1.2.3...1.3.0)'));
-  t.ok(/Done \(in [0-9]+s\.\)/.test(log.log.lastCall.args[0]));
+  t.true(log.log.firstCall.args[0].includes('release my-package (1.2.3...1.3.0)'));
+  t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
   const pkg = await readJSON('package.json');
-  t.equal(pkg.version, '1.3.0');
+  t.is(pkg.version, '1.3.0');
   {
     const { stdout } = sh.exec('git describe --tags --abbrev=0');
-    t.equal(stdout.trim(), '1.3.0');
+    t.is(stdout.trim(), '1.3.0');
   }
-  cleanup();
-  t.end();
 });
 
-test('should use pkg.version (in sub dir) w/o tagging repo', async t => {
-  prepare();
+test.serial('should use pkg.version (in sub dir) w/o tagging repo', async t => {
   gitAdd('{"name":"root-package","version":"1.0.0"}', 'package.json', 'Add package.json');
   sh.exec('git tag 1.0.0');
   sh.mkdir('my-package');
   sh.pushd('-q', 'my-package');
   gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
   await tasks({ increment: 'minor', git: { tag: false }, npm: { publish: false } }, stubs);
-  t.ok(log.log.firstCall.args[0].endsWith('release my-package (1.2.3...1.3.0)'));
-  t.ok(/Done \(in [0-9]+s\.\)/.test(log.log.lastCall.args[0]));
+  t.true(log.log.firstCall.args[0].endsWith('release my-package (1.2.3...1.3.0)'));
+  t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
   const pkg = await readJSON('package.json');
-  t.equal(pkg.version, '1.3.0');
+  t.is(pkg.version, '1.3.0');
   sh.popd('-q');
   {
     const { stdout } = sh.exec('git describe --tags --abbrev=0');
-    t.equal(stdout.trim(), '1.0.0');
+    t.is(stdout.trim(), '1.0.0');
     const pkg = await readJSON('package.json');
-    t.equal(pkg.version, '1.0.0');
+    t.is(pkg.version, '1.0.0');
   }
-  cleanup();
-  t.end();
 });
 
-test('should run tasks without package.json', async t => {
-  prepare();
+test.serial('should run tasks without package.json', async t => {
   sh.exec('git tag 1.0.0');
   const { name } = await tasks({ increment: 'major', npm: { publish: false } }, stubs);
-  t.ok(log.log.firstCall.args[0].includes(`release ${name} (1.0.0...2.0.0)`));
-  t.ok(/Done \(in [0-9]+s\.\)/.test(log.log.lastCall.args[0]));
-  t.equal(log.warn.secondCall.args[0], 'Could not bump package.json');
-  t.equal(log.warn.thirdCall.args[0], 'Could not stage package.json');
+  t.true(log.log.firstCall.args[0].includes(`release ${name} (1.0.0...2.0.0)`));
+  t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
+  t.is(log.warn.secondCall.args[0], 'Could not bump package.json');
+  t.is(log.warn.thirdCall.args[0], 'Could not stage package.json');
   {
     const { stdout } = sh.exec('git describe --tags --abbrev=0');
-    t.equal(stdout.trim(), '2.0.0');
+    t.is(stdout.trim(), '2.0.0');
   }
-  cleanup();
-  t.end();
 });
 
-test('#', st => {
+{
   const runTasks = proxyquire('../lib/tasks', {
     '@octokit/rest': Object.assign(GitHubApiStub, { '@global': true }),
     './shell': Object.assign(shellStub, { '@global': true })
@@ -241,36 +199,33 @@ test('#', st => {
 
   const tasks = (options, ...args) => runTasks(Object.assign({}, testConfig, options), ...args);
 
-  st.test('should release all the things (basic)', async t => {
-    const { bare, target } = prepare();
+  test.serial('should release all the things (basic)', async t => {
+    const { bare, target } = t.context;
     const repoName = path.basename(bare);
     const pkgName = path.basename(target);
     sh.exec('git tag 1.0.0');
     gitAdd('line', 'file', 'More file');
     await tasks({ github: { release: true }, npm: { name: pkgName, publish: true } }, stubs);
     const githubReleaseArg = githubRequestStub.firstCall.lastArg;
-    t.equal(githubRequestStub.callCount, 1);
-    t.equal(githubReleaseArg.url, '/repos/:owner/:repo/releases');
-    t.equal(githubReleaseArg.owner, null);
-    t.equal(githubReleaseArg.repo, repoName);
-    t.equal(githubReleaseArg.tag_name, '1.0.1');
-    t.equal(githubReleaseArg.name, 'Release 1.0.1');
-    t.ok(githubReleaseArg.body.startsWith('* More file'));
-    t.equal(githubReleaseArg.prerelease, false);
-    t.equal(githubReleaseArg.draft, false);
+    t.is(githubRequestStub.callCount, 1);
+    t.is(githubReleaseArg.url, '/repos/:owner/:repo/releases');
+    t.is(githubReleaseArg.owner, null);
+    t.is(githubReleaseArg.repo, repoName);
+    t.is(githubReleaseArg.tag_name, '1.0.1');
+    t.is(githubReleaseArg.name, 'Release 1.0.1');
+    t.true(githubReleaseArg.body.startsWith('* More file'));
+    t.is(githubReleaseArg.prerelease, false);
+    t.is(githubReleaseArg.draft, false);
 
-    t.equal(publishStub.firstCall.args[0].trim(), 'npm publish . --tag latest');
+    t.is(publishStub.firstCall.args[0].trim(), 'npm publish . --tag latest');
 
-    t.ok(log.log.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
-    t.ok(log.log.secondCall.args[0].endsWith(`https://github.com/null/${repoName}/releases/tag/1.0.1`));
-    t.ok(log.log.thirdCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
-
-    cleanup();
-    t.end();
+    t.true(log.log.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
+    t.true(log.log.secondCall.args[0].endsWith(`https://github.com/null/${repoName}/releases/tag/1.0.1`));
+    t.true(log.log.thirdCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
   });
 
-  st.test('should release all the things (pre-release, assets, dist repo)', async t => {
-    const { bare, target } = prepare();
+  test.serial('should release all the things (pre-release, assets, dist repo)', async t => {
+    const { bare, target } = t.context;
     const repoName = path.basename(bare);
     const pkgName = path.basename(target);
     const owner = null;
@@ -304,43 +259,40 @@ test('#', st => {
       stubs
     );
 
-    t.equal(githubRequestStub.callCount, 2);
+    t.is(githubRequestStub.callCount, 2);
 
     const githubReleaseArg = githubRequestStub.firstCall.lastArg;
-    t.equal(githubReleaseArg.url, '/repos/:owner/:repo/releases');
-    t.equal(githubReleaseArg.owner, owner);
-    t.equal(githubReleaseArg.repo, repoName);
-    t.equal(githubReleaseArg.tag_name, 'v1.1.0-alpha.0');
-    t.equal(githubReleaseArg.name, 'Release 1.1.0-alpha.0');
-    t.ok(RegExp(`Notes for ${pkgName} \\(v1.1.0-alpha.0\\): \\* More file`).test(githubReleaseArg.body));
-    t.equal(githubReleaseArg.prerelease, true);
-    t.equal(githubReleaseArg.draft, false);
+    t.is(githubReleaseArg.url, '/repos/:owner/:repo/releases');
+    t.is(githubReleaseArg.owner, owner);
+    t.is(githubReleaseArg.repo, repoName);
+    t.is(githubReleaseArg.tag_name, 'v1.1.0-alpha.0');
+    t.is(githubReleaseArg.name, 'Release 1.1.0-alpha.0');
+    t.regex(githubReleaseArg.body, RegExp(`Notes for ${pkgName} \\(v1.1.0-alpha.0\\): \\* More file`));
+    t.is(githubReleaseArg.prerelease, true);
+    t.is(githubReleaseArg.draft, false);
 
     const githubAssetsArg = githubRequestStub.secondCall.lastArg;
     const { id } = githubRequestStub.firstCall.returnValue.data;
-    t.ok(githubAssetsArg.url.endsWith(`/repos/${owner}/${repoName}/releases/${id}/assets{?name,label}`));
-    t.equal(githubAssetsArg.name, 'file');
+    t.true(githubAssetsArg.url.endsWith(`/repos/${owner}/${repoName}/releases/${id}/assets{?name,label}`));
+    t.is(githubAssetsArg.name, 'file');
 
-    t.equal(publishStub.callCount, 1);
-    t.equal(publishStub.firstCall.args[0].trim(), 'npm publish . --tag alpha');
+    t.is(publishStub.callCount, 1);
+    t.is(publishStub.firstCall.args[0].trim(), 'npm publish . --tag alpha');
 
     {
       const { stdout } = sh.exec('git describe --tags --abbrev=0');
-      t.equal(stdout.trim(), 'v1.1.0-alpha.0');
+      t.is(stdout.trim(), 'v1.1.0-alpha.0');
     }
 
     sh.exec('git checkout dist');
     sh.exec('git pull');
     const distFile = await readFile('dist-file');
-    t.equal(distFile.trim(), `dist-line${EOL}release-line`);
+    t.is(distFile.trim(), `dist-line${EOL}release-line`);
 
-    t.ok(log.log.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.1.0-alpha.0)`));
-    t.ok(log.log.secondCall.args[0].endsWith(`https://github.com/${owner}/${repoName}/releases/tag/v1.1.0-alpha.0`));
-    t.ok(log.log.thirdCall.args[0].endsWith(`release the distribution repo for ${pkgName}`));
-    t.ok(log.log.args[3][0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
-    t.ok(/Done \(in [0-9]+s\.\)/.test(log.log.lastCall.args[0]));
-
-    cleanup();
-    t.end();
+    t.true(log.log.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.1.0-alpha.0)`));
+    t.true(log.log.secondCall.args[0].endsWith(`https://github.com/${owner}/${repoName}/releases/tag/v1.1.0-alpha.0`));
+    t.true(log.log.thirdCall.args[0].endsWith(`release the distribution repo for ${pkgName}`));
+    t.true(log.log.args[3][0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
+    t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
   });
-});
+}

@@ -1,18 +1,24 @@
 const path = require('path');
-const test = require('tape');
+const test = require('ava');
 const sinon = require('sinon');
 const proxyquire = require('proxyquire');
 const GitHubApi = require('@octokit/rest');
+const GitHub = require('../lib/github');
 const githubRequestMock = require('./mock/github.request');
 const { GitHubClientError } = require('../lib/errors');
+const HttpError = require('@octokit/request/lib/http-error');
 
-const githubRequestStub = sinon.stub().callsFake(githubRequestMock);
-const githubApi = new GitHubApi();
-githubApi.hook.wrap('request', githubRequestStub);
-const GitHubApiStub = sinon.stub().returns(githubApi);
-
-const GitHub = proxyquire('../lib/github', {
-  '@octokit/rest': GitHubApiStub
+test.beforeEach(t => {
+  const gitHubApi = new GitHubApi();
+  const GitHubApiStub = sinon.stub().returns(gitHubApi);
+  const githubRequestStub = sinon.stub().callsFake(githubRequestMock);
+  gitHubApi.hook.wrap('request', githubRequestStub);
+  t.context.gitHubApi = gitHubApi;
+  t.context.githubRequestStub = githubRequestStub;
+  t.context.GitHubApiStub = GitHubApiStub;
+  t.context.GitHub = proxyquire('../lib/github', {
+    '@octokit/rest': GitHubApiStub
+  });
 });
 
 test('github validate', async t => {
@@ -21,11 +27,12 @@ test('github validate', async t => {
   delete process.env[tokenRef];
   t.throws(() => github.validate(), /Environment variable "MY_GITHUB_TOKEN" is required for GitHub releases/);
   process.env[tokenRef] = '123';
-  t.doesNotThrow(() => github.validate());
-  t.end();
+  t.notThrows(() => github.validate());
 });
 
 test('github release + uploadAssets', async t => {
+  const { GitHub, GitHubApiStub, githubRequestStub } = t.context;
+
   const remoteUrl = 'https://github.com/webpro/release-it-test';
   const asset = 'file1';
   const version = '2.0.1';
@@ -43,12 +50,12 @@ test('github release + uploadAssets', async t => {
     version
   });
 
-  t.equal(releaseResult.tag_name, 'v' + version);
-  t.equal(releaseResult.name, 'Release ' + version);
+  t.is(releaseResult.tag_name, 'v' + version);
+  t.is(releaseResult.name, 'Release ' + version);
 
   const [uploadResult] = await github.uploadAssets();
 
-  t.equal(GitHubApiStub.callCount, 1);
+  t.is(GitHubApiStub.callCount, 1);
   t.deepEqual(GitHubApiStub.firstCall.args[0], {
     version: '3.0.0',
     url: 'https://api.github.com',
@@ -56,24 +63,22 @@ test('github release + uploadAssets', async t => {
     headers: { 'user-agent': 'webpro/release-it' }
   });
 
-  t.equal(githubRequestStub.callCount, 2);
-  t.equal(githubRequestStub.firstCall.lastArg.owner, 'webpro');
-  t.equal(githubRequestStub.firstCall.lastArg.repo, 'release-it-test');
-  t.equal(githubRequestStub.firstCall.lastArg.tag_name, 'v2.0.1');
-  t.equal(githubRequestStub.firstCall.lastArg.name, 'Release 2.0.1');
-  t.equal(githubRequestStub.firstCall.lastArg.body, 'Custom notes');
-  t.equal(githubRequestStub.secondCall.lastArg.name, 'file1');
+  t.is(githubRequestStub.callCount, 2);
+  t.is(githubRequestStub.firstCall.lastArg.owner, 'webpro');
+  t.is(githubRequestStub.firstCall.lastArg.repo, 'release-it-test');
+  t.is(githubRequestStub.firstCall.lastArg.tag_name, 'v2.0.1');
+  t.is(githubRequestStub.firstCall.lastArg.name, 'Release 2.0.1');
+  t.is(githubRequestStub.firstCall.lastArg.body, 'Custom notes');
+  t.is(githubRequestStub.secondCall.lastArg.name, 'file1');
 
-  t.equal(uploadResult.name, asset);
-  t.equal(uploadResult.state, 'uploaded');
-  t.equal(uploadResult.browser_download_url, `${remoteUrl}/releases/download/v${version}/${asset}`);
-
-  GitHubApiStub.resetHistory();
-  githubRequestStub.resetHistory();
-  t.end();
+  t.is(uploadResult.name, asset);
+  t.is(uploadResult.state, 'uploaded');
+  t.is(uploadResult.browser_download_url, `${remoteUrl}/releases/download/v${version}/${asset}`);
 });
 
 test('github release (enterprise)', async t => {
+  const { GitHub, GitHubApiStub, githubRequestStub } = t.context;
+
   const github = new GitHub({
     remoteUrl: 'https://github.my-GHE-enabled-company.com/user/repo'
   });
@@ -83,16 +88,14 @@ test('github release (enterprise)', async t => {
     changelog: 'My default changelog'
   });
 
-  t.equal(GitHubApiStub.callCount, 1);
-  t.equal(GitHubApiStub.firstCall.args[0].url, 'https://github.my-GHE-enabled-company.com/api/v3');
-  t.equal(githubRequestStub.firstCall.lastArg.body, 'My default changelog');
-
-  GitHubApiStub.resetHistory();
-  githubRequestStub.resetHistory();
-  t.end();
+  t.is(GitHubApiStub.callCount, 1);
+  t.is(GitHubApiStub.firstCall.args[0].url, 'https://github.my-GHE-enabled-company.com/api/v3');
+  t.is(githubRequestStub.firstCall.lastArg.body, 'My default changelog');
 });
 
 test('github release (override host)', async t => {
+  const { GitHub, GitHubApiStub } = t.context;
+
   const github = new GitHub({
     remoteUrl: 'https://github.my-GHE-enabled-company.com/user/repo',
     host: 'my-custom-host.org'
@@ -102,37 +105,26 @@ test('github release (override host)', async t => {
     version: '1'
   });
 
-  t.equal(GitHubApiStub.callCount, 1);
-  t.equal(GitHubApiStub.firstCall.args[0].url, 'https://my-custom-host.org/api/v3');
+  t.is(GitHubApiStub.callCount, 1);
+  t.is(GitHubApiStub.firstCall.args[0].url, 'https://my-custom-host.org/api/v3');
+});
 
-  GitHubApiStub.resetHistory();
-  t.end();
+test('github client non-retry error', async t => {
+  const { GitHub, gitHubApi } = t.context;
+  const stub = sinon.stub(gitHubApi.repos, 'createRelease');
+  stub.throws(new HttpError('Not found', 404));
+  const github = new GitHub({ release: true, remoteUrl: '' });
+  await t.throwsAsync(github.release({}), { instanceOf: GitHubClientError, message: '404 (Not found)' });
+  t.is(stub.callCount, 1);
+  stub.restore();
 });
 
 test('github client error', async t => {
-  const stub = sinon.stub(githubApi.repos, 'createRelease');
-  const githubErr = new Error('Not found');
-  githubErr.status = 404;
-  stub.throws(githubErr);
-
-  const remoteUrl = 'https://github.com/webpro/release-it-test';
-  const version = '2.0.1';
-  const tagName = 'v${version}';
-
-  const github = new GitHub({
-    release: true,
-    remoteUrl,
-    tagName
-  });
-
-  try {
-    await github.release({ version });
-  } catch (err) {
-    t.ok(err instanceof GitHubClientError);
-    t.equal(err.message, '404 (Not found)');
-  }
-
-  GitHubApiStub.resetHistory();
-  githubRequestStub.resetHistory();
-  t.end();
+  const { GitHub, gitHubApi } = t.context;
+  const stub = sinon.stub(gitHubApi.repos, 'createRelease');
+  stub.throws(new HttpError('Request failed', 500));
+  const github = new GitHub({ release: true, remoteUrl: '', retryMinTimeout: 0 });
+  await t.throwsAsync(github.release({}), { instanceOf: GitHubClientError, message: '500 (Request failed)' });
+  t.is(stub.callCount, 3);
+  stub.restore();
 });

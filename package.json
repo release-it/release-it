@@ -37,7 +37,7 @@
   "scripts": {
     "lint": "eslint lib test",
     "format": "prettier --write \"{lib,test}/**/*.js\"",
-    "test": "tape -r babel-register -r ./test/util/setup test/*.js",
+    "test": "ava --verbose --require babel-register --require ./test/util/setup.js test/*.js",
     "coverage": "nyc --reporter=lcov --reporter=html npm test",
     "readme": "markdown-toc README.md -i --no-firsth1 --maxdepth=1 --bullets=-",
     "release": "./bin/release-it.js"
@@ -78,6 +78,8 @@
     "yargs-parser": "11.1.1"
   },
   "devDependencies": {
+    "@octokit/request": "2.2.1",
+    "ava": "1.0.1",
     "eslint": "5.11.1",
     "eslint-config-prettier": "3.3.0",
     "eslint-plugin-prettier": "3.0.1",
@@ -86,8 +88,7 @@
     "nyc": "13.1.0",
     "prettier": "1.15.3",
     "proxyquire": "2.1.0",
-    "sinon": "7.2.2",
-    "tape": "4.9.2"
+    "sinon": "7.2.2"
   },
   "engines": {
     "node": ">=6"
