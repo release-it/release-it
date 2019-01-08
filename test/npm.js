@@ -2,36 +2,36 @@ const test = require('ava');
 const sinon = require('sinon');
 const npm = require('../lib/npm');
 
-test('getPackageUrl', t => {
+test('should return npm package url', t => {
   const npmClient = new npm({ name: 'my-cool-package' });
   t.is(npmClient.getPackageUrl(), 'https://www.npmjs.com/package/my-cool-package');
 });
 
-test('getTag', t => {
+test('should return tag', t => {
   const npmClient = new npm();
   const tag = npmClient.getTag();
   t.is(tag, 'latest');
 });
 
-test('getTag (pre-release)', t => {
+test('should return tag for pre-release', t => {
   const npmClient = new npm();
   const tag = npmClient.getTag({ isPreRelease: true, tag: 'beta' });
   t.is(tag, 'beta');
 });
 
-test('getTag (pre-release continuation)', t => {
+test('should return tag for pre-release continuation', t => {
   const npmClient = new npm();
   const tag = npmClient.getTag({ isPreRelease: true, version: '1.0.2-alpha.3' });
   t.is(tag, 'alpha');
 });
 
-test('getTag (pre-release discontinuation)', t => {
+test('should return tag for pre-release discontinuation', t => {
   const npmClient = new npm();
   const tag = npmClient.getTag({ version: '1.0.2-alpha.3' });
   t.is(tag, 'latest');
 });
 
-test('publish', async t => {
+test('should publish', async t => {
   const run = sinon.stub().resolves();
   const npmClient = new npm({
     name: 'pkg',
@@ -44,7 +44,7 @@ test('publish', async t => {
   t.is(run.firstCall.args[0].trim(), 'npm publish . --tag latest');
 });
 
-test('publish (scoped)', async t => {
+test('should publish scoped package', async t => {
   const run = sinon.stub().resolves();
   const npmClient = new npm({
     name: '@scoped/pkg',
@@ -58,7 +58,7 @@ test('publish (scoped)', async t => {
   t.is(run.firstCall.args[0].trim(), 'npm publish . --tag beta --access public');
 });
 
-test('publish (private)', async t => {
+test('should not publish private package', async t => {
   const run = sinon.stub().resolves();
   const shell = { run };
   const warn = sinon.spy();
@@ -73,4 +73,38 @@ test('publish (private)', async t => {
   t.is(run.callCount, 0);
   t.is(warn.callCount, 1);
   t.true(warn.firstCall.args[0].includes('package is private'));
+});
+
+test('should handle and publish with OTP', async t => {
+  const run = sinon.stub();
+  const warn = sinon.spy();
+  const log = { warn };
+
+  run.onFirstCall().rejects(new Error('Initial error with one-time pass.'));
+  run.onSecondCall().rejects(new Error('The provided one-time pass is incorrect.'));
+  run.onThirdCall().resolves();
+
+  const npmClient = new npm({
+    name: 'pkg',
+    shell: {
+      run
+    },
+    log
+  });
+
+  await npmClient.publish({
+    otpCallback: () =>
+      npmClient.publish({
+        otp: '123',
+        otpCallback: () => npmClient.publish({ otp: '123456' })
+      })
+  });
+
+  t.is(run.callCount, 3);
+  t.is(run.firstCall.args[0].trim(), 'npm publish . --tag latest');
+  t.is(run.secondCall.args[0].trim(), 'npm publish . --tag latest  --otp 123');
+  t.is(run.thirdCall.args[0].trim(), 'npm publish . --tag latest  --otp 123456');
+
+  t.is(warn.callCount, 1);
+  t.is(warn.firstCall.args[0], 'The provided OTP is incorrect or has expired.');
 });

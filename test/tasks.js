@@ -3,13 +3,14 @@ const { EOL } = require('os');
 const test = require('ava');
 const sh = require('shelljs');
 const proxyquire = require('proxyquire');
+const _ = require('lodash');
 const Log = require('../lib/log');
 const Spinner = require('../lib/spinner');
 const { gitAdd, readFile, readJSON } = require('./util/index');
 const uuid = require('uuid/v4');
 const GitHubApi = require('@octokit/rest');
 const githubRequestMock = require('./mock/github.request');
-const shell = require('../lib/shell');
+const Shell = require('../lib/shell');
 const sinon = require('sinon');
 const runTasks = require('../lib/tasks');
 const {
@@ -32,13 +33,15 @@ const githubApi = new GitHubApi();
 githubApi.hook.wrap('request', githubRequestStub);
 const GitHubApiStub = sandbox.stub().returns(githubApi);
 
+const gotStub = sinon.stub().resolves({});
+
 const publishStub = sandbox.stub().resolves();
 const log = sandbox.createStubInstance(Log);
 const spinner = sandbox.createStubInstance(Spinner);
 spinner.show.callsFake(({ enabled = true, task }) => (enabled ? task() : noop));
 const stubs = { log, spinner };
 
-class shellStub extends shell {
+class ShellStub extends Shell {
   run(command) {
     if (command.startsWith('npm publish')) {
       this.log.exec(command);
@@ -194,7 +197,8 @@ test.serial('should run tasks without package.json', async t => {
 {
   const runTasks = proxyquire('../lib/tasks', {
     '@octokit/rest': Object.assign(GitHubApiStub, { '@global': true }),
-    './shell': Object.assign(shellStub, { '@global': true })
+    got: Object.assign(gotStub, { '@global': true }),
+    './shell': Object.assign(ShellStub, { '@global': true })
   });
 
   const tasks = (options, ...args) => runTasks(Object.assign({}, testConfig, options), ...args);
@@ -224,7 +228,7 @@ test.serial('should run tasks without package.json', async t => {
     t.true(log.log.thirdCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
   });
 
-  test.serial('should release all the things (pre-release, assets, dist repo)', async t => {
+  test.serial('should release all the things (pre-release, github, gitlab, dist repo)', async t => {
     const { bare, target } = t.context;
     const repoName = path.basename(bare);
     const pkgName = path.basename(target);
@@ -235,7 +239,7 @@ test.serial('should run tasks without package.json', async t => {
       gitAdd(`dist-line${EOL}`, 'dist-file', 'Add dist file');
       sh.exec('git push -u origin dist');
     }
-    sh.exec('git checkout -b master');
+    sh.exec('git checkout master');
     sh.exec('git tag v1.0.0');
     gitAdd('line', 'file', 'More file');
     sh.exec('git push --follow-tags');
@@ -248,6 +252,10 @@ test.serial('should run tasks without package.json', async t => {
           release: true,
           releaseNotes: 'echo "Notes for ${name} (v${version}): ${changelog}"',
           assets: ['file']
+        },
+        gitlab: {
+          release: true,
+          releaseNotes: 'echo "Notes for ${name}: ${changelog}"'
         },
         npm: { name: pkgName },
         dist: {
@@ -276,6 +284,9 @@ test.serial('should run tasks without package.json', async t => {
     t.true(githubAssetsArg.url.endsWith(`/repos/${owner}/${repoName}/releases/${id}/assets{?name,label}`));
     t.is(githubAssetsArg.name, 'file');
 
+    t.true(gotStub.firstCall.args[0].endsWith(`/api/v4/projects/${repoName}/repository/tags/v1.1.0-alpha.0/release`));
+    t.regex(gotStub.firstCall.args[1].body.description, RegExp(`Notes for ${pkgName}: \\* More file`));
+
     t.is(publishStub.callCount, 1);
     t.is(publishStub.firstCall.args[0].trim(), 'npm publish . --tag alpha');
 
@@ -291,8 +302,55 @@ test.serial('should run tasks without package.json', async t => {
 
     t.true(log.log.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.1.0-alpha.0)`));
     t.true(log.log.secondCall.args[0].endsWith(`https://github.com/${owner}/${repoName}/releases/tag/v1.1.0-alpha.0`));
-    t.true(log.log.thirdCall.args[0].endsWith(`release the distribution repo for ${pkgName}`));
-    t.true(log.log.args[3][0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
+    t.true(log.log.thirdCall.args[0].endsWith(`https://localhost/${repoName}/tags/v1.1.0-alpha.0`));
+    t.true(log.log.args[3][0].endsWith(`release the distribution repo for ${pkgName}`));
+    t.true(log.log.args[4][0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
     t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
+  });
+
+  test.serial('should run all scripts', async t => {
+    const spy = sinon.spy(ShellStub.prototype, 'run');
+
+    const { bare } = t.context;
+    sh.exec('git checkout -b dist');
+    gitAdd(`dist-line`, 'dist-file', 'Add dist file');
+    sh.exec('git push -u origin dist');
+    sh.exec('git checkout master');
+
+    await tasks(
+      {
+        increment: 'patch',
+        pkgFiles: null,
+        manifest: false,
+        scripts: {
+          beforeStart: 'echo beforeStart',
+          beforeBump: 'echo beforeBump',
+          afterBump: 'echo afterBump',
+          beforeStage: 'echo beforeStage',
+          afterRelease: 'echo afterRelease'
+        },
+        dist: {
+          repo: `${bare}#dist`,
+          scripts: {
+            beforeStage: 'echo dist beforeStage',
+            afterRelease: 'echo dist afterRelease'
+          }
+        }
+      },
+      stubs
+    );
+
+    const args = _.flatten(spy.args);
+    const occurrences = (haystack, needle) => _.filter(haystack, item => item === needle).length;
+
+    t.is(occurrences(args, 'echo beforeStart'), 1);
+    t.is(occurrences(args, 'echo beforeBump'), 1);
+    t.is(occurrences(args, 'echo afterBump'), 1);
+    t.is(occurrences(args, 'echo beforeStage'), 1);
+    t.is(occurrences(args, 'echo afterRelease'), 1);
+    t.is(occurrences(args, 'echo dist beforeStage'), 1);
+    t.is(occurrences(args, 'echo dist afterRelease'), 1);
+
+    spy.restore();
   });
 }

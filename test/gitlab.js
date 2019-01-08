@@ -1,6 +1,7 @@
 const test = require('ava');
 const sinon = require('sinon');
 const proxyquire = require('proxyquire');
+const Log = require('../lib/log');
 
 const response = {
   body: {
@@ -16,7 +17,7 @@ test.beforeEach(t => {
   });
 });
 
-test('validate', async t => {
+test('should validate token', async t => {
   const { GitLab } = t.context;
   const tokenRef = 'MY_GITHUB_TOKEN';
   const gitlab = new GitLab({ release: true, tokenRef, remoteUrl: '' });
@@ -26,7 +27,7 @@ test('validate', async t => {
   t.notThrows(() => gitlab.validate());
 });
 
-test('gitlab release', async t => {
+test('should release', async t => {
   const { GitLab, gotStub } = t.context;
 
   const remoteUrl = 'https://gitlab.com/webpro/release-it-test';
@@ -57,7 +58,7 @@ test('gitlab release', async t => {
   });
 });
 
-test('gitlab release (self-managed)', async t => {
+test('should release to self-managed host', async t => {
   const { GitLab, gotStub } = t.context;
 
   const gitlab = new GitLab({
@@ -78,9 +79,30 @@ test('gitlab release (self-managed)', async t => {
   });
 });
 
-test('http error', async t => {
+test('should handle (http) error', async t => {
   const { GitLab, gotStub } = t.context;
   gotStub.throws(new Error('Not found'));
   const gitlab = new GitLab({ release: true, remoteUrl: '', retryMinTimeout: 0 });
-  await t.throwsAsync(gitlab.release({}), { instanceOf: Error, message: 'Not found' });
+  await t.throwsAsync(gitlab.release(), { instanceOf: Error, message: 'Not found' });
+});
+
+test('should not make requests in dry run', async t => {
+  const { GitLab, gotStub } = t.context;
+  const log = sinon.createStubInstance(Log);
+
+  const gitlab = new GitLab({
+    remoteUrl: 'https://example.org/owner/repo',
+    tagName: 'v${version}',
+    isDryRun: true,
+    log
+  });
+
+  await gitlab.release({
+    version: '1'
+  });
+
+  t.is(gotStub.callCount, 0);
+  t.is(log.dry.callCount, 1);
+  t.is(gitlab.getReleaseUrl(), 'https://example.org/owner/repo/tags/v1');
+  t.is(gitlab.isReleased, true);
 });

@@ -5,7 +5,7 @@ const defaultConfig = require('../conf/release-it.json');
 const localConfig = require('../.release-it.json');
 const pkg = require('../package.json');
 
-test('config', t => {
+test('should contain default values', t => {
   const config = new Config();
   t.deepEqual(config.constructorConfig, {});
   t.deepEqual(config.localConfig, localConfig);
@@ -19,7 +19,7 @@ test('config', t => {
   });
 });
 
-test('config.mergeOptions', t => {
+test('should merge provided options', t => {
   const config = new Config({
     increment: '1.0.0',
     debug: true,
@@ -36,23 +36,25 @@ test('config.mergeOptions', t => {
   t.is(options.github.release, true);
 });
 
-test('config.mergeOptions (override -n)', t => {
+test('should override --non-interactive', t => {
   const config = new Config({ 'non-interactive': false });
   t.is(config.isInteractive, true);
 });
 
-test('config (override npm.publish)', t => {
+test('should override --no-npm.publish', t => {
   const config = new Config({ npm: { publish: false } });
   t.is(config.options.npm.publish, false);
 });
 
-test('config.config', t => {
-  t.throws(() => {
-    new Config({ config: 'nofile' });
-  }, /File not found.+nofile/);
+test('should throw if provided config file is not found', t => {
+  t.throws(() => new Config({ config: 'nofile' }), /File not found.+nofile/);
 });
 
-test('config.preRelease (shorthand)', t => {
+test('should throw if provided config file is invalid', t => {
+  t.throws(() => new Config({ config: '.npmrc' }), /Invalid/);
+});
+
+test('should expand pre-release shortcut', t => {
   const config = new Config({ increment: 'major', preRelease: 'beta' });
   const { options } = config;
   t.is(options.increment, 'major');
@@ -61,7 +63,7 @@ test('config.preRelease (shorthand)', t => {
   t.is(options.npm.tag, 'beta');
 });
 
-test('config.preRelease (shorthand w/o npm.tag)', t => {
+test('should expand pre-release shortcut (excluding npm.tag)', t => {
   const config = new Config({ preRelease: true });
   const { options } = config;
   t.is(options.preRelease, true);
@@ -69,7 +71,7 @@ test('config.preRelease (shorthand w/o npm.tag)', t => {
   t.is(options.npm.tag, 'latest');
 });
 
-test('config.preRelease (shorthand w/ npm.tag)', t => {
+test('should expand pre-release shortcut (including npm.tag)', t => {
   const config = new Config({ preRelease: true, npm: { tag: 'alpha' } });
   const { options } = config;
   t.is(options.preRelease, true);
@@ -77,7 +79,7 @@ test('config.preRelease (shorthand w/ npm.tag)', t => {
   t.is(options.npm.tag, 'alpha');
 });
 
-test('config.preRelease (shorthand w/o increment)', t => {
+test('should expand pre-release shortcut (without increment)', t => {
   const config = new Config({ preRelease: 'alpha' });
   const { options } = config;
   t.is(options.increment, undefined);
@@ -86,7 +88,7 @@ test('config.preRelease (shorthand w/o increment)', t => {
   t.is(options.npm.tag, 'alpha');
 });
 
-test('config.preRelease (override npm.tag)', t => {
+test('should expand pre-release shortcut (including increment and npm.tag)', t => {
   const config = new Config({ increment: 'minor', preRelease: 'rc', npm: { tag: 'next' } });
   const { options } = config;
   t.is(options.increment, 'minor');
@@ -95,12 +97,12 @@ test('config.preRelease (override npm.tag)', t => {
   t.is(options.npm.tag, 'next');
 });
 
-test('config default increment (non-interactive)', t => {
+test('should set default increment (for non-interactive mode)', t => {
   const config = new Config({ 'non-interactive': true });
   t.is(config.options.increment, 'patch');
 });
 
-test('config default increment (interactive)', t => {
+test('should not set default increment (for interactive mode)', t => {
   const config = new Config({ 'non-interactive': false });
   t.is(config.options.increment, undefined);
 });

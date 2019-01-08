@@ -28,7 +28,7 @@ test.afterEach(() => {
   sandbox.resetHistory();
 });
 
-test.serial('isGitRepo', async t => {
+test.serial('should detect Git repo', async t => {
   t.true(await gitClient.isGitRepo());
   const tmp = '../../..';
   sh.pushd('-q', tmp);
@@ -36,19 +36,19 @@ test.serial('isGitRepo', async t => {
   sh.popd('-q');
 });
 
-test.serial('isInGitRootDir', async t => {
+test.serial('should detect if in Git root directory', async t => {
   t.false(await gitClient.isInGitRootDir());
   sh.exec('git init');
   t.true(await gitClient.isInGitRootDir());
 });
 
-test.serial('hasUpstream', async t => {
+test.serial('should return whether repo has upstream branch', async t => {
   sh.exec('git init');
   gitAdd('line', 'file', 'Add file');
   t.false(await gitClient.hasUpstreamBranch());
 });
 
-test.serial('getBranchName', async t => {
+test.serial('should return branch name', async t => {
   sh.exec('git init');
   t.is(await gitClient.getBranchName(), null);
   sh.exec('git checkout -b feat');
@@ -56,7 +56,7 @@ test.serial('getBranchName', async t => {
   t.is(await gitClient.getBranchName(), 'feat');
 });
 
-test.serial('tagExists + isWorkingDirClean', async t => {
+test.serial('should return whether tag exists and if working dir is clean', async t => {
   sh.exec('git init');
   t.false(await gitClient.tagExists('1.0.0'));
   sh.touch('file');
@@ -67,7 +67,7 @@ test.serial('tagExists + isWorkingDirClean', async t => {
   t.true(await gitClient.isWorkingDirClean());
 });
 
-test.serial('getRemoteUrl', async t => {
+test.serial('should return the remote url', async t => {
   sh.exec(`git init`);
   {
     const gitClient = new Git({ pushRepo: 'origin' });
@@ -87,7 +87,7 @@ test.serial('getRemoteUrl', async t => {
   }
 });
 
-test.serial('clone + stage + commit + tag + push', async t => {
+test.serial('should clone, stage, commit, tag and push', async t => {
   const bare = `../${uuid()}`;
   sh.exec(`git init --bare ${bare}`);
   const gitClient = new Git();
@@ -115,7 +115,7 @@ test.serial('clone + stage + commit + tag + push', async t => {
   }
 });
 
-test.serial('push', async t => {
+test.serial('should push to origin', async t => {
   const bare = `../${uuid()}`;
   sh.exec(`git init --bare ${bare}`);
   sh.exec(`git clone ${bare} .`);
@@ -130,7 +130,7 @@ test.serial('push', async t => {
   spy.restore();
 });
 
-test.serial('push (pushRepo url)', async t => {
+test.serial('should push to repo url', async t => {
   const bare = `../${uuid()}`;
   sh.exec(`git init --bare ${bare}`);
   sh.exec(`git clone ${bare} .`);
@@ -146,7 +146,7 @@ test.serial('push (pushRepo url)', async t => {
   spy.restore();
 });
 
-test.serial('push (pushRepo not "origin")', async t => {
+test.serial('should push to remote name (not "origin")', async t => {
   const bare = `../${uuid()}`;
   sh.exec(`git init --bare ${bare}`);
   sh.exec(`git clone ${bare} .`);
@@ -172,7 +172,7 @@ test.serial('push (pushRepo not "origin")', async t => {
   }
 });
 
-test.serial('status', async t => {
+test.serial('should return repo status', async t => {
   sh.exec('git init');
   gitAdd('line', 'file1', 'Add file');
   sh.ShellString('line').toEnd('file1');
@@ -181,7 +181,7 @@ test.serial('status', async t => {
   t.is(await gitClient.status(), 'M file1\nA  file2');
 });
 
-test.serial('reset', async t => {
+test.serial('should reset files', async t => {
   sh.exec('git init');
   gitAdd('line', 'file', 'Add file');
   sh.ShellString('line').toEnd('file');
@@ -192,7 +192,7 @@ test.serial('reset', async t => {
   t.regex(log.warn.firstCall.args[0], /Could not reset file2, file3/);
 });
 
-test.serial('isSameRepo', async t => {
+test.serial('should check whether two repos are the same (based on host, owner, project)', async t => {
   const gitClient = new Git();
   await gitClient.init();
   const otherClient = new Git();
