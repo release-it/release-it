@@ -43,7 +43,8 @@
     "assets": null,
     "host": null,
     "timeout": 0,
-    "proxy": null
+    "proxy": null,
+    "retryMinTimeout": 1000
   },
   "gitlab": {
     "release": false,
