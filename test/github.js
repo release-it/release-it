@@ -4,6 +4,7 @@ const sinon = require('sinon');
 const proxyquire = require('proxyquire');
 const GitHubApi = require('@octokit/rest');
 const githubRequestMock = require('./mock/github.request');
+const { GitHubClientError } = require('../lib/errors');
 
 const githubRequestStub = sinon.stub().callsFake(githubRequestMock);
 const githubApi = new GitHubApi();
@@ -105,5 +106,33 @@ test('github release (override host)', async t => {
   t.equal(GitHubApiStub.firstCall.args[0].url, 'https://my-custom-host.org/api/v3');
 
   GitHubApiStub.resetHistory();
+  t.end();
+});
+
+test('github client error', async t => {
+  const stub = sinon.stub(githubApi.repos, 'createRelease');
+  const githubErr = new Error('Not found');
+  githubErr.status = 404;
+  stub.throws(githubErr);
+
+  const remoteUrl = 'https://github.com/webpro/release-it-test';
+  const version = '2.0.1';
+  const tagName = 'v${version}';
+
+  const github = new GitHub({
+    release: true,
+    remoteUrl,
+    tagName
+  });
+
+  try {
+    await github.release({ version });
+  } catch (err) {
+    t.ok(err instanceof GitHubClientError);
+    t.equal(err.message, '404 (Not found)');
+  }
+
+  GitHubApiStub.resetHistory();
+  githubRequestStub.resetHistory();
   t.end();
 });

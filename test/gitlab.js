@@ -76,3 +76,27 @@ test('gitlab release (self-managed)', async t => {
   gotStub.resetHistory();
   t.end();
 });
+
+test('http error', async t => {
+  gotStub.throws(new Error('Not found'));
+
+  const remoteUrl = 'https://gitlab.com/webpro/release-it-test';
+  const version = '2.0.1';
+  const tagName = 'v${version}';
+
+  const gitlab = new GitLab({
+    release: true,
+    remoteUrl,
+    tagName
+  });
+
+  try {
+    await gitlab.release({ version });
+  } catch (err) {
+    t.ok(err instanceof Error);
+    t.equal(err.message, 'Not found');
+  }
+
+  gotStub.resetHistory();
+  t.end();
+});
