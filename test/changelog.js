@@ -9,7 +9,7 @@ const cwd = path.resolve(process.cwd());
 
 const changelogs = new Changelog();
 
-test.serial.only('getChangelog', async t => {
+test.serial('getChangelog', async t => {
   const tmp = path.join(cwd, 'tmp', uuid());
   sh.mkdir('-p', tmp);
   sh.pushd('-q', tmp);
