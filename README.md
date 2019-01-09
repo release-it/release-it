@@ -8,14 +8,12 @@ CLI release tool for Git repos and npm packages.
 
 - Execute test & build commands
 - Bump version (in e.g. `package.json`)
-- Generate changelog
 - Git commit, tag, push
-- [Publish to npm](#publishing-to-npm)
-- [Create release at GitHub](#github-releases)
-- [Upload assets to GitHub release](#release-assets)
+- [Create release at GitHub](#github-releases) (and [upload assets](#release-assets))
 - [Create release at GitLab](#gitlab-releases)
+- [Generate changelog](#changelogs)
+- [Publish to npm](#publishing-to-npm)
 - [Manage pre-releases](#managing-pre-releases)
-- Support [Conventional Changelog](#custom-or-conventional-changelog) workflows
 - Support [monorepo](#monorepos) workflows
 
 [![Build Status](https://travis-ci.org/webpro/release-it.svg?branch=master)](https://travis-ci.org/webpro/release-it)
@@ -38,11 +36,11 @@ hack on release-it? Great! Please read [CONTRIBUTING.md](CONTRIBUTING.md) on how
 - [Git](#git)
 - [GitHub Releases](#github-releases)
 - [GitLab Releases](#gitlab-releases)
+- [Changelogs](#changelogs)
 - [Publishing to npm](#publishing-to-npm)
 - [Managing pre-releases](#managing-pre-releases)
 - [Scripts](#scripts)
 - [Monorepos](#monorepos)
-- [Custom or Conventional Changelog](#custom-or-conventional-changelog)
 - [Distribution repository](#distribution-repository)
 - [Metrics](#metrics)
 - [Troubleshooting & debugging](#troubleshooting--debugging)
@@ -305,6 +303,66 @@ The output of `scripts.changelog` (or `gitlab.releaseNotes` if set) will be atta
 Note: release-it doesn't support release assets for GitLab yet, in anticipation of GitLab 11.7, which introduces
 [Releases](https://docs.gitlab.com/ee/user/project/releases.html).
 
+## Changelogs
+
+By default, release-it generates a changelog, to show and help select a version for the new release. Additionally, this
+changelog serves as the release notes for the GitHub or GitLab release.
+
+The [default command](conf/release-it.json) is based on `git log ...`. This setting (`scripts.changelog`) can be
+overridden, or specifically with `github.releaseNotes` or `gitlab.releaseNotes` for the release notes only. Make sure
+the command outputs the changelog to `stdout`.
+
+Some projects keep their changelog in e.g. `CHANGELOG.md` or `history.md`. In this case, the recommended configuration
+is to use a command that does this in `scripts.beforeStage`. See below for examples and workflows.
+
+### Auto-changelog
+
+A tool like [auto-changelog](https://github.com/CookPete/auto-changelog) is a great companion to release-it:
+
+```json
+{
+  "scripts": {
+    "beforeStage": "auto-changelog"
+  }
+}
+```
+
+This way, `CHANGELOG.md` is updated with each release and gets included in the release commit.
+
+### Conventional Changelog
+
+#### Recommended Bump
+
+If your project follows conventions, such as the
+[Angular commit guidelines](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#commits), the special
+`conventional:angular` increment shorthand can be used to get the recommended bump based on the commit messages:
+
+```json
+{
+  "increment": "conventional:angular"
+}
+```
+
+Please find the
+[list of available conventions](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages)
+(`angular`, `ember`, etc).
+
+#### Generating a custom changelog
+
+Use [conventional-changelog-cli](https://www.npmjs.com/package/conventional-changelog-cli) to generate the changelog. In
+the next example, `scripts.beforeStage` is also used, to update the `CHANGELOG.md` file (and include this change in the
+release commit).
+
+```json
+{
+  "increment": "conventional:angular",
+  "scripts": {
+    "changelog": "conventional-changelog -p angular | tail -n +3",
+    "beforeStage": "conventional-changelog -p angular -i CHANGELOG.md -s"
+  }
+}
+```
+
 ## Publishing to npm
 
 No configuration is needed to publish the package to npm, as `npm.publish` is `true` by default. If a manual
@@ -434,34 +492,6 @@ To not tag the monorepo itself, set `git.tag` to `false`. For example, from `./p
 
 ```
 release-it --git.commitMessage='Release ${name} v${version}' --no-git.tag
-```
-
-## Custom or Conventional Changelog
-
-### Recommended Bump
-
-If your project follows conventions, such as the [Angular commit guidelines](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#commits), the special `conventional:angular` increment shorthand can be used to get the recommended bump based on the commit messages:
-
-```json
-{
-  "increment": "conventional:angular"
-}
-```
-
-Please find the [list of available conventions](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages) (`angular`, `ember`, etc).
-
-### Generating a custom changelog
-
-With release-it, you can use tools like [conventional-changelog-cli](https://www.npmjs.com/package/conventional-changelog-cli) to generate the changelog. Make sure the command defined in `scripts.changelog` outputs the changelog to `stdout`. In the next example, `scripts.beforeStage` is also used, to update the `CHANGELOG.md` file (and include this change in the release commit).
-
-```json
-{
-  "increment": "conventional:angular",
-  "scripts": {
-    "changelog": "conventional-changelog -p angular | tail -n +3",
-    "beforeStage": "conventional-changelog -p angular -i CHANGELOG.md -s"
-  }
-}
 ```
 
 ## Distribution repository
