@@ -17,7 +17,7 @@ test.beforeEach(t => {
   });
 });
 
-test('should validate token', async t => {
+test('should validate token', t => {
   const { GitLab } = t.context;
   const tokenRef = 'MY_GITHUB_TOKEN';
   const gitlab = new GitLab({ release: true, tokenRef, remoteUrl: '' });

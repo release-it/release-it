@@ -201,7 +201,7 @@ test('bump (recommended conventional w/ pre-release continuation)', async t => {
   t.is(v.version, '1.0.0-canary.2');
 });
 
-test('parse (coerce)', async t => {
+test('parse (coerce)', t => {
   const log = sinon.createStubInstance(Log);
   const v = new Version({ log });
   v.bump({ increment: '2' });

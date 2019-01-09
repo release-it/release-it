@@ -22,7 +22,7 @@ test.beforeEach(t => {
   });
 });
 
-test('should validate token', async t => {
+test('should validate token', t => {
   const tokenRef = 'MY_GITHUB_TOKEN';
   const github = new GitHub({ release: true, tokenRef, remoteUrl: '' });
   delete process.env[tokenRef];
