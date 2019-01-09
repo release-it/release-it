@@ -35,7 +35,7 @@ const GitHubApiStub = sandbox.stub().returns(githubApi);
 
 const gotStub = sinon.stub().resolves({});
 
-const publishStub = sandbox.stub().resolves();
+const npmStub = sandbox.stub().resolves();
 const log = sandbox.createStubInstance(Log);
 const spinner = sandbox.createStubInstance(Spinner);
 spinner.show.callsFake(({ enabled = true, task }) => (enabled ? task() : noop));
@@ -43,9 +43,9 @@ const stubs = { log, spinner };
 
 class ShellStub extends Shell {
   run(command) {
-    if (command.startsWith('npm publish')) {
+    if (/^npm /.test(command)) {
       this.log.exec(command);
-      return publishStub(...arguments);
+      return npmStub(...arguments);
     }
     return super.run(...arguments);
   }
@@ -73,6 +73,7 @@ test.serial.beforeEach(t => {
 test.serial.afterEach(() => {
   sh.pushd('-q', cwd);
   sandbox.resetHistory();
+  npmStub.resetHistory();
 });
 
 test.serial('should throw when not a Git repository', async t => {
@@ -221,7 +222,10 @@ test.serial('should run tasks without package.json', async t => {
     t.is(githubReleaseArg.prerelease, false);
     t.is(githubReleaseArg.draft, false);
 
-    t.is(publishStub.firstCall.args[0].trim(), 'npm publish . --tag latest');
+    t.is(npmStub.callCount, 3);
+    t.is(npmStub.firstCall.args[0], 'npm ping');
+    t.is(npmStub.secondCall.args[0].trim(), 'npm whoami');
+    t.is(npmStub.thirdCall.args[0].trim(), 'npm publish . --tag latest');
 
     t.true(log.log.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
     t.true(log.log.secondCall.args[0].endsWith(`https://github.com/null/${repoName}/releases/tag/1.0.1`));
@@ -287,8 +291,8 @@ test.serial('should run tasks without package.json', async t => {
     t.true(gotStub.firstCall.args[0].endsWith(`/api/v4/projects/${repoName}/repository/tags/v1.1.0-alpha.0/release`));
     t.regex(gotStub.firstCall.args[1].body.description, RegExp(`Notes for ${pkgName}: \\* More file`));
 
-    t.is(publishStub.callCount, 1);
-    t.is(publishStub.firstCall.args[0].trim(), 'npm publish . --tag alpha');
+    t.is(npmStub.callCount, 1);
+    t.is(npmStub.firstCall.args[0].trim(), 'npm publish . --tag alpha');
 
     {
       const { stdout } = sh.exec('git describe --tags --abbrev=0');
