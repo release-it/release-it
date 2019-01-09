@@ -9,6 +9,7 @@
   },
   "extends": [
     "eslint:recommended",
+    "plugin:ava/recommended",
     "prettier"
   ],
   "plugins": [
