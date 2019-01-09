@@ -230,6 +230,14 @@ In case extra arguments should be provided to Git, these options are available:
 For example, use `"git.commitArgs": "-S"` to sign commits (also see
 [#35](https://github.com/webpro/release-it/issues/350)).
 
+### Skip Git steps
+
+To skip the Git steps (commit, tag, push) entirely (e.g. to only `npm publish`), use the shorthand:
+
+```
+release-it --no-git
+```
+
 ### Untracked files
 
 By default, untracked files are not added to the release commit. Use `git.addUntrackedFiles: true` to override this
@@ -393,6 +401,19 @@ In case two-factor authentication (2FA) is enabled for the package, release-it w
 The OTP can be provided from the command line (`--npm.otp=123456`). However, providing the OTP without a prompt
 basically defeats the purpose of 2FA (also, the OTP expires after a short period).
 
+### Monorepos
+
+From a monorepo package subdirectory, release-it detects `package.json` is not in the same directory as the Git root.
+Then it will take the [latest version](#latest-version) from this `package.json` rather than the latest Git tag.
+
+To not tag the monorepo itself, set `git.tag` to `false`. For example, from `./packages/some-pkg`:
+
+```
+release-it --git.commitMessage='Release ${name} v${version}' --no-git.tag
+```
+
+If needed, the [Git steps can be skipped](#skip-git-steps) entirely.
+
 ## Managing pre-releases
 
 With release-it, it's easy to create pre-releases: a version of your software that you want to make available, while
@@ -482,17 +503,6 @@ For [distribution repositories](#distribution-repository), two additional hooks 
 
 - `dist.scripts.beforeStage`
 - `dist.scripts.afterRelease`
-
-## Monorepos
-
-From a monorepo package subdirectory, release-it detects `package.json` is not in the same directory as the Git root.
-Then it will take the [latest version](#latest-version) from this `package.json` rather than the latest Git tag.
-
-To not tag the monorepo itself, set `git.tag` to `false`. For example, from `./packages/some-pkg`:
-
-```
-release-it --git.commitMessage='Release ${name} v${version}' --no-git.tag
-```
 
 ## Distribution repository
 

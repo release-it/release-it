@@ -54,6 +54,15 @@ test('should throw if provided config file is invalid', t => {
   t.throws(() => new Config({ config: '.npmrc' }), /Invalid/);
 });
 
+test('should expand no-git shortcut', t => {
+  const config = new Config({ increment: 'major', git: false });
+  const { options } = config;
+  t.is(options.git.commit, false);
+  t.is(options.git.tag, false);
+  t.is(options.git.push, false);
+  t.is(options.git.tagName, defaultConfig.git.tagName);
+});
+
 test('should expand pre-release shortcut', t => {
   const config = new Config({ increment: 'major', preRelease: 'beta' });
   const { options } = config;
