@@ -22,9 +22,9 @@ CLI release tool for Git repos and npm packages.
 [![npm version](https://badge.fury.io/js/release-it.svg)](https://badge.fury.io/js/release-it)
 [![Greenkeeper badge](https://badges.greenkeeper.io/webpro/release-it.svg)](https://greenkeeper.io/)
 
-_See [CHANGELOG.md](CHANGELOG.md) for major updates and breaking changes.
-Refer to the [releases](https://github.com/webpro/release-it/releases) section for a detailed version history.
-Want to help out, or hack on release-it? Great! Please read [CONTRIBUTING.md](CONTRIBUTING.md) on how to participate._
+_See [CHANGELOG.md](CHANGELOG.md) for major updates and breaking changes. Refer to the
+[releases](https://github.com/webpro/release-it/releases) section for a detailed version history. Want to help out, or
+hack on release-it? Great! Please read [CONTRIBUTING.md](CONTRIBUTING.md) on how to participate._
 
 <details>
   <summary><strong>Table of Contents</strong> (click to expand)</summary>
@@ -105,8 +105,8 @@ release-it minor
 release-it 0.8.3
 ```
 
-For versions like `1.0.0-beta.2` and npm tags, see [manage pre-releases](#managing-pre-releases).
-For a "dry run", to show the interactivity and the commands it _would_ execute:
+For versions like `1.0.0-beta.2` and npm tags, see [manage pre-releases](#managing-pre-releases). For a "dry run", to
+show the interactivity and the commands it _would_ execute:
 
 ```bash
 release-it --dry-run
@@ -114,7 +114,8 @@ release-it --dry-run
 
 ## Configuration
 
-Out of the box, release-it has sane defaults, and [plenty of options](conf/release-it.json) to configure it. Put the options to override in `.release-it.json` in the project root. Example:
+Out of the box, release-it has sane defaults, and [plenty of options](conf/release-it.json) to configure it. Put the
+options to override in `.release-it.json` in the project root. Example:
 
 ```json
 {
@@ -145,7 +146,8 @@ Or in a `release-it` property in `package.json`:
 
 Notes:
 
-- Only the settings to override need to be in `.release-it.json` (or `package.json`). Everything else will fall back to the [default configuration](conf/release-it.json).
+- Only the settings to override need to be in `.release-it.json` (or `package.json`). Everything else will fall back to
+  the [default configuration](conf/release-it.json).
 - You can use `--config` if you want to use another path for `.release-it.json`.
 
 Any option can also be set on the command-line, and will have highest priority. Example:
@@ -166,7 +168,8 @@ By default, release-it is **interactive** and allows you to confirm each task be
 
 <img src="./assets/release-it-interactive.gif?raw=true" height="290">
 
-By using the `-n` option (i.e. **non-interactive**), the process is fully automated without prompts. The configured tasks will be executed as demonstrated in the first animation above.
+By using the `-n` option (i.e. **non-interactive**), the process is fully automated without prompts. The configured
+tasks will be executed as demonstrated in the first animation above.
 
 On a Continuous Integration (CI) environment, the non-interactive mode is activated automatically.
 
@@ -182,33 +185,41 @@ On a Continuous Integration (CI) environment, the non-interactive mode is activa
 | GitLab release | `gitlab.release` | `false` | `prompt.glRelease` |   `Y`   |
 | npm publish    | `npm.publish`    | `true`  | `prompt.publish`   |   `Y`   |
 
-The **Option/Default** columns represent default options in **non-interactive/CI** mode. The **Prompt/Default** columns represent the prompts and their default answers in **interactive** mode. You can still change the answer to either `Y` or `N` as the questions show up (or cancel the process with `Ctrl-c`).
+The **Option/Default** columns represent default options in **non-interactive/CI** mode. The **Prompt/Default** columns
+represent the prompts and their default answers in **interactive** mode. You can still change the answer to either `Y`
+or `N` as the questions show up (or cancel the process with `Ctrl-c`).
 
-If an option is set to `false`, the related prompt will not be shown at all in interactive mode (regardless of its default answer).
+If an option is set to `false`, the related prompt will not be shown at all in interactive mode (regardless of its
+default answer).
 
 </details>
 
 ## Latest version
 
-By default, release-it uses the latest Git tag to determine which version should be released.
-For projects that don't have a Git tag (yet), or if the Git tag isn't a valid semver, it falls back to the version
-found in `package.json`. As a last resort, `0.0.0` will be used as the latest version.
+By default, release-it uses the latest Git tag to determine which version should be released. For projects that don't
+have a Git tag (yet), or if the Git tag isn't a valid semver, it falls back to the version found in `package.json`. As a
+last resort, `0.0.0` will be used as the latest version.
 
-To explicitly use the `version` from `package.json` as latest version, set `"use": "pkg.version"` (or `--use=pkg.version`).
-In case the repo itself should not be tagged, make sure to set `git.tag` to `false`.
-This is also useful for [monorepos](#monorepos).
+To explicitly use the `version` from `package.json` as latest version, set `"use": "pkg.version"` (or
+`--use=pkg.version`). In case the repo itself should not be tagged, make sure to set `git.tag` to `false`. This is also
+useful for [monorepos](#monorepos).
 
 ## Git
 
 ### SSH keys & Git remotes
 
-SSH keys and Git remotes are assumed to be configured correctly. If a manual `git push` from the command line works, release-it should be able to do the same.
+SSH keys and Git remotes are assumed to be configured correctly. If a manual `git push` from the command line works,
+release-it should be able to do the same.
 
-The following help pages might be useful: [SSH](https://help.github.com/articles/connecting-to-github-with-ssh/) and [Managing Remotes](https://help.github.com/categories/managing-remotes/) (GitHub), [SSH keys](https://confluence.atlassian.com/bitbucket/ssh-keys-935365775.html) (Bitbucket), [SSH keys](https://gitlab.com/help/ssh/README.md) (GitLab).
+The following help pages might be useful: [SSH](https://help.github.com/articles/connecting-to-github-with-ssh/) and
+[Managing Remotes](https://help.github.com/categories/managing-remotes/) (GitHub),
+[SSH keys](https://confluence.atlassian.com/bitbucket/ssh-keys-935365775.html) (Bitbucket),
+[SSH keys](https://gitlab.com/help/ssh/README.md) (GitLab).
 
 ### Remote repository
 
-By default, `release-it` uses `origin` as the remote name to push to. Use `git.pushRepo` to override this with a different remote name (or a different git url).
+By default, `release-it` uses `origin` as the remote name to push to. Use `git.pushRepo` to override this with a
+different remote name (or a different git url).
 
 ### Extra arguments
 
@@ -218,33 +229,39 @@ In case extra arguments should be provided to Git, these options are available:
 - `git.tagArgs`
 - `git.pushArgs`
 
-For example, use `"git.commitArgs": "-S"` to sign commits (also see [#35](https://github.com/webpro/release-it/issues/350)).
+For example, use `"git.commitArgs": "-S"` to sign commits (also see
+[#35](https://github.com/webpro/release-it/issues/350)).
 
 ### Untracked files
 
-By default, untracked files are not added to the release commit. Use `git.addUntrackedFiles: true` to override this behavior.
+By default, untracked files are not added to the release commit. Use `git.addUntrackedFiles: true` to override this
+behavior.
 
 ## GitHub Releases
 
-The "Releases" tab on GitHub projects links to a page to store the changelog. To add [GitHub releases](https://help.github.com/articles/creating-releases/) in your release-it flow:
+The "Releases" tab on GitHub projects links to a page to store the changelog. To add
+[GitHub releases](https://help.github.com/articles/creating-releases/) in your release-it flow:
 
 - Configure `github.release: true`.
-- Obtain a [personal access token](https://github.com/settings/tokens) (release-it only needs "repo" access; no "admin" or other scopes).
+- Obtain a [personal access token](https://github.com/settings/tokens) (release-it only needs "repo" access; no "admin"
+  or other scopes).
 - Make sure the token is available as an environment variable. Example:
 
 ```bash
 export GITHUB_TOKEN="f941e0..."
 ```
 
-Do not put the actual token in the release-it configuration. It will be read from the `GITHUB_TOKEN` environment variable. You can change this variable name by setting the `github.tokenRef` option to something else.
+Do not put the actual token in the release-it configuration. It will be read from the `GITHUB_TOKEN` environment
+variable. You can change this variable name by setting the `github.tokenRef` option to something else.
 
-Obviously, release-it uses this feature extensively: [release-it's releases page](https://github.com/webpro/release-it/releases).
+Obviously, release-it uses this feature extensively:
+[release-it's releases page](https://github.com/webpro/release-it/releases).
 
 ### Release notes
 
-By default, the output of `scripts.changelog` is used for the GitHub release notes. This is the printed `Changelog: ...` when release-it boots.
-Override this with the `github.releaseNotes` option. This script will run just before the actual GitHub release itself.
-Make sure it outputs to `stdout`. An example:
+By default, the output of `scripts.changelog` is used for the GitHub release notes. This is the printed `Changelog: ...`
+when release-it boots. Override this with the `github.releaseNotes` option. This script will run just before the actual
+GitHub release itself. Make sure it outputs to `stdout`. An example:
 
 ```
 {
@@ -257,7 +274,9 @@ Make sure it outputs to `stdout`. An example:
 
 ### Release assets
 
-To upload binary release assets with a GitHub release (such as compiled executables, minified scripts, documentation), provide one or more glob patterns for the `github.assets` option. After the release, the assets are available to download from the GitHub release page. Example:
+To upload binary release assets with a GitHub release (such as compiled executables, minified scripts, documentation),
+provide one or more glob patterns for the `github.assets` option. After the release, the assets are available to
+download from the GitHub release page. Example:
 
 ```json
 {
@@ -273,7 +292,8 @@ To upload binary release assets with a GitHub release (such as compiled executab
 [GitLab releases](https://docs.gitlab.com/ee/workflow/releases.html#releases) work just like GitHub releases:
 
 - Configure `gitlab.release: true`.
-- Obtain a [personal access token](https://gitlab.com/profile/personal_access_tokens) (release-it only needs the "api" scope).
+- Obtain a [personal access token](https://gitlab.com/profile/personal_access_tokens) (release-it only needs the "api"
+  scope).
 - Make sure the token is available as an environment variable. Example:
 
 ```bash
@@ -282,17 +302,23 @@ export GITLAB_TOKEN="f941e0..."
 
 The output of `scripts.changelog` (or `gitlab.releaseNotes` if set) will be attached to the latest tag.
 
-Note: release-it doesn't support release assets for GitLab yet, in anticipation of GitLab 11.7, which introduces [Releases](https://docs.gitlab.com/ee/user/project/releases.html).
+Note: release-it doesn't support release assets for GitLab yet, in anticipation of GitLab 11.7, which introduces
+[Releases](https://docs.gitlab.com/ee/user/project/releases.html).
 
 ## Publishing to npm
 
-No configuration is needed to publish the package to npm, as `npm.publish` is `true` by default. If a manual `npm publish` from the command line works, release-it delegating to `npm-publish` should behave the same. The `"private": true` setting in package.json will be respected, and `release-it` will skip this step.
+No configuration is needed to publish the package to npm, as `npm.publish` is `true` by default. If a manual
+`npm publish` from the command line works, release-it delegating to `npm-publish` should behave the same. The
+`"private": true` setting in package.json will be respected, and `release-it` will skip this step.
 
-Getting an `ENEEDAUTH` error while a manual `npm publish` works? Please see [#95](https://github.com/webpro/release-it/issues/95#issuecomment-344919384).
+Getting an `ENEEDAUTH` error while a manual `npm publish` works? Please see
+[#95](https://github.com/webpro/release-it/issues/95#issuecomment-344919384).
 
 ### Public scoped packages
 
-Set `npm.access` to `"public"` to [publish scoped packages](https://docs.npmjs.com/misc/scope#publishing-scoped-packages), or make sure this is in `package.json`:
+Set `npm.access` to `"public"` to
+[publish scoped packages](https://docs.npmjs.com/misc/scope#publishing-scoped-packages), or make sure this is in
+`package.json`:
 
 ```json
 {
@@ -306,13 +332,17 @@ Set `npm.access` to `"public"` to [publish scoped packages](https://docs.npmjs.c
 
 In case two-factor authentication (2FA) is enabled for the package, release-it will ask for the one-time password (OTP).
 
-The OTP can be provided from the command line (`--npm.otp=123456`). However, providing the OTP without a prompt basically defeats the purpose of 2FA (also, the OTP expires after a short period).
+The OTP can be provided from the command line (`--npm.otp=123456`). However, providing the OTP without a prompt
+basically defeats the purpose of 2FA (also, the OTP expires after a short period).
 
 ## Managing pre-releases
 
-With release-it, it's easy to create pre-releases: a version of your software that you want to make available, while it's not in the stable semver range yet. Often "alpha", "beta", and "rc" (release candidate) are used as identifier for pre-releases.
+With release-it, it's easy to create pre-releases: a version of your software that you want to make available, while
+it's not in the stable semver range yet. Often "alpha", "beta", and "rc" (release candidate) are used as identifier for
+pre-releases.
 
-An example. The `awesome-pkg` is at version 1.3.0, and work is done for a new major update. To publish the latest beta of the new major version:
+An example. The `awesome-pkg` is at version 1.3.0, and work is done for a new major update. To publish the latest beta
+of the new major version:
 
 ```
 release-it major --preRelease=beta
@@ -378,7 +408,9 @@ All commands can use configuration variables (like template strings). Some examp
 }
 ```
 
-The variables can be found in the [default configuration](https://github.com/webpro/release-it/blob/master/conf/release-it.json). Additionally, the following variables are exposed:
+The variables can be found in the
+[default configuration](https://github.com/webpro/release-it/blob/master/conf/release-it.json). Additionally, the
+following variables are exposed:
 
 ```
 version
@@ -434,7 +466,11 @@ With release-it, you can use tools like [conventional-changelog-cli](https://www
 
 ## Distribution repository
 
-Some projects use a distribution repository. Generated files (such as compiled assets or documentation) can be distributed to a separate repository. Or to a separate branch, such as a `gh-pages` (also see [Using GitHub Pages, the easy way](https://medium.com/@webprolific/using-github-pages-the-easy-way-bb7acc46f45b)). Some examples include [shim repositories](https://github.com/components) and a separate [packaged Angular.js repository](https://github.com/angular/bower-angular) for distribution on npm and Bower.
+Some projects use a distribution repository. Generated files (such as compiled assets or documentation) can be
+distributed to a separate repository. Or to a separate branch, such as a `gh-pages` (also see
+[Using GitHub Pages, the easy way](https://medium.com/@webprolific/using-github-pages-the-easy-way-bb7acc46f45b)). Some
+examples include [shim repositories](https://github.com/components) and a separate
+[packaged Angular.js repository](https://github.com/angular/bower-angular) for distribution on npm and Bower.
 
 To use this feature, set the `dist.repo` option to a git endpoint.
 
@@ -473,9 +509,9 @@ With this example:
 
 ## Metrics
 
-Use `--disable-metrics` to opt-out of sending some anonymous statistical data to Google Analytics.
-For details, refer to [lib/metrics.js](lib/metrics.js).
-Please consider to not opt-out: more data means more more support for future development.
+Use `--disable-metrics` to opt-out of sending some anonymous statistical data to Google Analytics. For details, refer to
+[lib/metrics.js](lib/metrics.js). Please consider to not opt-out: more data means more more support for future
+development.
 
 ## Troubleshooting & debugging
 
@@ -510,7 +546,8 @@ releaseIt(options).then(output => {
 - [tsqllint/tsqllint](https://github.com/tsqllint/tsqllint)
 - [segmentio/typewriter](https://github.com/segmentio/typewriter)
 - [Repositories that depend on release-it](https://github.com/webpro/release-it/network/dependents)
-- GitHub search for [projects with .release-it.json](https://github.com/search?o=desc&q=in%3Apath+.release-it.json&s=indexed&type=Code)
+- GitHub search for
+  [projects with .release-it.json](https://github.com/search?o=desc&q=in%3Apath+.release-it.json&s=indexed&type=Code)
 
 ## Resources
 
@@ -519,7 +556,8 @@ releaseIt(options).then(output => {
 - [npm Blog: Publishing what you mean to publish](https://blog.npmjs.org/post/165769683050/publishing-what-you-mean-to-publish)
 - [npm Documentation: package.json](https://docs.npmjs.com/files/package.json)
 - [Prereleases and npm](https://medium.com/@mbostock/prereleases-and-npm-e778fc5e2420)
-- [Glob Primer (node-glob)](https://github.com/isaacs/node-glob#glob-primer) (release-it uses [globby](https://github.com/sindresorhus/globby#readme))
+- [Glob Primer (node-glob)](https://github.com/isaacs/node-glob#glob-primer) (release-it uses
+  [globby](https://github.com/sindresorhus/globby#readme))
 
 ## Credits
 
