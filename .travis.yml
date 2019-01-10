@@ -11,6 +11,4 @@ node_js:
 before_script:
   - git config --global user.name "webpro"
   - git config --global user.email "lars@webpro.nl"
-cache:
-  directories:
-    - "node_modules"
+cache: npm
