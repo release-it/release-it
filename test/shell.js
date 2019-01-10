@@ -32,14 +32,15 @@ test('run (dry-run/read-only)', async t => {
   {
     const actual = await shell.run('!pwd');
     t.is(actual, cwd);
+    t.is(log.exec.callCount, 1);
     t.is(log.exec.firstCall.args[0], 'pwd');
-    t.is(log.dry.callCount, 0);
+    t.not(log.exec.firstCall.lastArg, false);
   }
   {
     const actual = await shell.run('!pwd', Shell.writes);
-    t.is(log.exec.secondCall.args[0], 'pwd');
-    t.is(log.dry.callCount, 1);
     t.is(actual, undefined);
+    t.is(log.exec.callCount, 2);
+    t.is(log.exec.secondCall.lastArg, 'pwd');
   }
 });
 

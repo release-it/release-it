@@ -110,6 +110,15 @@ show the interactivity and the commands it _would_ execute:
 release-it --dry-run
 ```
 
+Note: read-only commands are still executed (`$ ...`), while the rest is not (`! ...`):
+
+```
+$ git rev-parse --git-dir
+.git
+! git add package.json
+! git commit --message="Release 0.8.3"
+```
+
 ## Configuration
 
 Out of the box, release-it has sane defaults, and [plenty of options](conf/release-it.json) to configure it. Put the

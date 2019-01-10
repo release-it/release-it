@@ -102,7 +102,7 @@ test('should not make requests in dry run', async t => {
   });
 
   t.is(gotStub.callCount, 0);
-  t.is(log.dry.callCount, 1);
+  t.is(log.exec.callCount, 1);
   t.is(gitlab.getReleaseUrl(), 'https://example.org/owner/repo/tags/v1');
   t.is(gitlab.isReleased, true);
 });

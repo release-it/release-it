@@ -160,13 +160,13 @@ test('should not call octokit client in dry run', async t => {
 
   t.is(GitHubApiStub.callCount, 0);
   t.is(githubRequestStub.callCount, 0);
-  t.is(log.dry.callCount, 1);
+  t.is(log.exec.callCount, 1);
   t.is(github.getReleaseUrl(), 'https://example.org/owner/repo/releases/tag/v1');
   t.is(github.isReleased, true);
 
   await github.uploadAssets();
 
-  t.is(log.dry.callCount, 2);
+  t.is(log.exec.callCount, 2);
   t.is(GitHubApiStub.callCount, 0);
   t.is(githubRequestStub.callCount, 0);
   t.is(spy.callCount, 0);
