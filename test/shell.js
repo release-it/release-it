@@ -46,11 +46,9 @@ test('run (dry-run/read-only)', async t => {
 test('run (verbose)', async t => {
   const log = sinon.createStubInstance(Log);
   const shell = new Shell({ isVerbose: true, log });
-  mockStdIo.start();
   const actual = await shell.run('echo foo');
-  const { stdout } = mockStdIo.end();
   t.is(log.exec.firstCall.args[0], 'echo foo');
-  t.is(stdout, `foo${EOL}`);
+  t.is(log.verbose.firstCall.args[0], 'foo');
   t.is(actual, 'foo');
 });
 
