@@ -19,6 +19,7 @@ CLI release tool for Git repos and npm packages.
 [![Build Status](https://travis-ci.org/webpro/release-it.svg?branch=master)](https://travis-ci.org/webpro/release-it)
 [![npm version](https://badge.fury.io/js/release-it.svg)](https://badge.fury.io/js/release-it)
 [![Greenkeeper badge](https://badges.greenkeeper.io/webpro/release-it.svg)](https://greenkeeper.io/)
+[![codecov](https://codecov.io/gh/webpro/release-it/branch/master/graph/badge.svg)](https://codecov.io/gh/webpro/release-it)
 
 _See [CHANGELOG.md](CHANGELOG.md) for major updates and breaking changes. Refer to the
 [releases](https://github.com/webpro/release-it/releases) section for a detailed version history. Want to help out, or
@@ -40,7 +41,6 @@ hack on release-it? Great! Please read [CONTRIBUTING.md](CONTRIBUTING.md) on how
 - [Publishing to npm](#publishing-to-npm)
 - [Managing pre-releases](#managing-pre-releases)
 - [Scripts](#scripts)
-- [Monorepos](#monorepos)
 - [Distribution repository](#distribution-repository)
 - [Metrics](#metrics)
 - [Troubleshooting & debugging](#troubleshooting--debugging)
