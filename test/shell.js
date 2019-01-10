@@ -1,10 +1,8 @@
 const test = require('ava');
 const sinon = require('sinon');
 const sh = require('shelljs');
-const mockStdIo = require('mock-stdio');
 const path = require('path');
 const uuid = require('uuid/v4');
-const { EOL } = require('os');
 const { readFile, readJSON } = require('./util/index');
 const Shell = require('../lib/shell');
 const Log = require('../lib/log');

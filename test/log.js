@@ -1,16 +1,13 @@
-const { EOL } = require('os');
 const test = require('ava');
-const sinon = require('sinon');
 const mockStdIo = require('mock-stdio');
 const Log = require('../lib/log');
-const Config = require('../lib/config');
 
 test('should write to stdout', t => {
   const log = new Log();
   mockStdIo.start();
   log.log('foo');
   const { stdout, stderr } = mockStdIo.end();
-  t.is(stdout, `foo${EOL}`);
+  t.is(stdout.trim(), 'foo');
   t.is(stderr, '');
 });
 
@@ -19,8 +16,8 @@ test('should write to stderr', t => {
   mockStdIo.start();
   log.error('foo');
   const { stdout, stderr } = mockStdIo.end();
-  t.is(stdout, '');
-  t.true(stderr.endsWith(`foo${EOL}`));
+  t.is(stdout.trim(), '');
+  t.true(stderr.trim().endsWith('foo'));
 });
 
 test('should print warning', t => {
@@ -28,7 +25,7 @@ test('should print warning', t => {
   mockStdIo.start();
   log.warn('foo');
   const { stdout } = mockStdIo.end();
-  t.true(stdout.endsWith(`foo${EOL}`));
+  t.true(stdout.trim().endsWith('foo'));
 });
 
 test('should print verbose', t => {
@@ -36,7 +33,7 @@ test('should print verbose', t => {
   mockStdIo.start();
   log.verbose('foo');
   const { stdout } = mockStdIo.end();
-  t.is(stdout, `foo${EOL}`);
+  t.is(stdout.trim(), 'foo');
 });
 
 test('should not print verbose by default', t => {
@@ -44,7 +41,7 @@ test('should not print verbose by default', t => {
   mockStdIo.start();
   log.verbose('foo');
   const { stdout } = mockStdIo.end();
-  t.is(stdout, '');
+  t.is(stdout.trim(), '');
 });
 
 test('should not print command execution by default', t => {
@@ -52,7 +49,7 @@ test('should not print command execution by default', t => {
   mockStdIo.start();
   log.exec('foo');
   const { stdout } = mockStdIo.end();
-  t.is(stdout, '');
+  t.is(stdout.trim(), '');
 });
 
 test('should print command execution (verbose)', t => {
@@ -60,7 +57,7 @@ test('should print command execution (verbose)', t => {
   mockStdIo.start();
   log.exec('foo');
   const { stdout } = mockStdIo.end();
-  t.is(stdout, `! foo${EOL}`);
+  t.is(stdout.trim(), '! foo');
 });
 
 test('should print command execution (dry run)', t => {
@@ -68,7 +65,7 @@ test('should print command execution (dry run)', t => {
   mockStdIo.start();
   log.exec('foo');
   const { stdout } = mockStdIo.end();
-  t.is(stdout, `! foo${EOL}`);
+  t.is(stdout.trim(), '! foo');
 });
 
 test('should print command execution (read-only)', t => {
@@ -76,7 +73,7 @@ test('should print command execution (read-only)', t => {
   mockStdIo.start();
   log.exec('foo', 'bar', true);
   const { stdout } = mockStdIo.end();
-  t.is(stdout, `! foo bar${EOL}`);
+  t.is(stdout.trim(), '! foo bar');
 });
 
 test('should print command execution (write)', t => {
@@ -84,5 +81,5 @@ test('should print command execution (write)', t => {
   mockStdIo.start();
   log.exec('foo', '--arg n', false);
   const { stdout } = mockStdIo.end();
-  t.is(stdout, `$ foo --arg n${EOL}`);
+  t.is(stdout.trim(), '$ foo --arg n');
 });
