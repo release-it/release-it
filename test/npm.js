@@ -31,6 +31,44 @@ test('should return tag for pre-release discontinuation', t => {
   t.is(tag, 'latest');
 });
 
+test('should not throw if validation passes', async t => {
+  const run = sinon.stub().resolves();
+  const npmClient = new npm({
+    name: 'pkg',
+    shell: {
+      run
+    }
+  });
+  await t.notThrowsAsync(npmClient.validate());
+});
+
+test('should invalidate if npm is down', async t => {
+  const run = sinon.stub();
+  run.withArgs('npm ping').rejects();
+  const npmClient = new npm({
+    name: 'pkg',
+    publish: true,
+    shell: {
+      run
+    }
+  });
+  await t.throwsAsync(npmClient.validate(), /Unable to reach npm registry/);
+});
+
+test('should invalidate if user is not authenticated', async t => {
+  const run = sinon.stub();
+  run.withArgs('npm ping').resolves();
+  run.withArgs('npm whoami').rejects();
+  const npmClient = new npm({
+    name: 'pkg',
+    publish: true,
+    shell: {
+      run
+    }
+  });
+  await t.throwsAsync(npmClient.validate(), /Not authenticated with npm/);
+});
+
 test('should publish', async t => {
   const run = sinon.stub().resolves();
   const npmClient = new npm({
