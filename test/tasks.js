@@ -78,7 +78,7 @@ test.serial.afterEach(() => {
 
 test.serial('should throw when not a Git repository', async t => {
   sh.pushd('-q', '../../..');
-  const expected = { instanceOf: GitRepoError, message: /not \(inside\) a git repository/ };
+  const expected = { instanceOf: GitRepoError, message: /not \(inside\) a Git repository/ };
   await t.throwsAsync(tasks(null, stubs), expected);
   sh.popd('-q');
 });
