@@ -12,8 +12,8 @@ CLI release tool for Git repos and npm packages.
 - [Create release at GitHub](#github-releases) (and [upload assets](#release-assets))
 - [Create release at GitLab](#gitlab-releases)
 - [Generate changelog](#changelogs)
-- [Publish to npm](#publishing-to-npm)
-- [Manage pre-releases](#managing-pre-releases)
+- [Publish to npm](#publish-to-npm)
+- [Manage pre-releases](#manage-pre-releases)
 - Support [monorepo](#monorepos) workflows
 
 [![Build Status](https://travis-ci.org/webpro/release-it.svg?branch=master)](https://travis-ci.org/webpro/release-it)
@@ -30,6 +30,7 @@ hack on release-it? Great! Please read [CONTRIBUTING.md](CONTRIBUTING.md) on how
 
 <!-- toc -->
 
+- [Installation](#installation)
 - [Usage](#usage)
 - [Configuration](#configuration)
 - [Interactive vs. non-interactive mode](#interactive-vs-non-interactive-mode)
@@ -38,13 +39,13 @@ hack on release-it? Great! Please read [CONTRIBUTING.md](CONTRIBUTING.md) on how
 - [GitHub Releases](#github-releases)
 - [GitLab Releases](#gitlab-releases)
 - [Changelogs](#changelogs)
-- [Publishing to npm](#publishing-to-npm)
-- [Managing pre-releases](#managing-pre-releases)
+- [Publish to npm](#publish-to-npm)
+- [Manage pre-releases](#manage-pre-releases)
 - [Scripts](#scripts)
 - [Distribution repository](#distribution-repository)
 - [Metrics](#metrics)
 - [Troubleshooting & debugging](#troubleshooting--debugging)
-- [Using release-it programmatically](#using-release-it-programmatically)
+- [Use release-it programmatically](#use-release-it-programmatically)
 - [Example projects using release-it](#example-projects-using-release-it)
 - [Resources](#resources)
 - [Credits](#credits)
@@ -364,7 +365,7 @@ Please find the
 [list of available conventions](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages)
 (`angular`, `ember`, etc).
 
-#### Generating a custom changelog
+#### Generate a custom changelog
 
 Use [conventional-changelog-cli](https://www.npmjs.com/package/conventional-changelog-cli) to generate the changelog. In
 the next example, `scripts.beforeStage` is also used, to update the `CHANGELOG.md` file (and include this change in the
@@ -380,19 +381,14 @@ release commit).
 }
 ```
 
-## Publishing to npm
+## Publish to npm
 
-No configuration is needed to publish the package to npm, as `npm.publish` is `true` by default. If a manual
-`npm publish` from the command line works, release-it delegating to `npm-publish` should behave the same. The
-`"private": true` setting in package.json will be respected, and `release-it` will skip this step.
-
-Getting an `ENEEDAUTH` error while a manual `npm publish` works? Please see
-[#95](https://github.com/webpro/release-it/issues/95#issuecomment-344919384).
+By default, `npm.publish` is `true` and publishing is delegated to `npm publish`.
 
 ### Public scoped packages
 
-Set `npm.access` to `"public"` to
-[publish scoped packages](https://docs.npmjs.com/misc/scope#publishing-scoped-packages), or make sure this is in
+A [scoped package](https://docs.npmjs.com/misc/scope) (e.g. `@user/package`) is either public or private. To
+[publish scoped packages](https://docs.npmjs.com/misc/scope#publishing-scoped-packages), make sure this is in
 `package.json`:
 
 ```json
@@ -402,6 +398,10 @@ Set `npm.access` to `"public"` to
   }
 }
 ```
+
+By default, `npm publish` will
+[publish a scoped package as private](https://docs.npmjs.com/creating-and-publishing-private-packages) (requires paid
+account).
 
 ### Two-factor authentication
 
@@ -423,7 +423,13 @@ release-it --git.commitMessage='Release ${name} v${version}' --no-git.tag
 
 If needed, the [Git steps can be skipped](#skip-git-steps) entirely.
 
-## Managing pre-releases
+### Misc.
+
+- The `"private": true` setting in package.json will be respected, and `release-it` will skip this step.
+- Getting an `ENEEDAUTH` error while a manual `npm publish` works? Please see
+  [#95](https://github.com/webpro/release-it/issues/95#issuecomment-344919384).
+
+## Manage pre-releases
 
 With release-it, it's easy to create pre-releases: a version of your software that you want to make available, while
 it's not in the stable semver range yet. Often "alpha", "beta", and "rc" (release candidate) are used as identifier for
@@ -521,40 +527,8 @@ distributed to a separate repository. Or to a separate branch, such as a `gh-pag
 examples include [shim repositories](https://github.com/components) and a separate
 [packaged Angular.js repository](https://github.com/angular/bower-angular) for distribution on npm and Bower.
 
-To use this feature, set the `dist.repo` option to a git endpoint.
-
-<details>
- <summary>An example configuration (click to expand)</summary>
-
-```json
-{
-  "scripts": {
-    "beforeStage": "npm run build"
-  },
-  "dist": {
-    "repo": "git@github.com:components/ember.git",
-    "stageDir": ".stage",
-    "baseDir": "dist",
-    "files": ["**/*"],
-    "github": {
-      "release": true
-    },
-    "npm": {
-      "publish": true
-    }
-  }
-}
-```
-
-With this example:
-
-- The `dist.repo` will be cloned to `.stage`.
-- From the root of source repo, `npm run build` is executed.
-- The generated files at `dist/**.*` will be copied to the `.stage` directory.
-- The result is pushed back to `dist.repo`.
-- A GitHub release is created, and the package is published to npm.
-
-</details>
+To use this feature, set the `dist.repo` option to a git endpoint. See the
+[distribution repository](docs/recipes/distribution-repo.md) recipe for an example configuration.
 
 ## Metrics
 
@@ -568,18 +542,10 @@ development.
 - Use `--debug` to output configuration and additional (error) logs.
 - Use `DEBUG=octokit:rest* release-it [...]` for debug logs with GitHub releases & assets.
 
-## Using release-it programmatically
+## Use release-it programmatically
 
-From Node.js scripts, release-it can also be used as a dependency:
-
-```js
-const releaseIt = require('release-it');
-
-releaseIt(options).then(output => {
-  console.log(output);
-  // { version, latestVersion, changelog }
-});
-```
+While mostly used as a CLI tool, release-it can be used as a dependency to ingrate in your own scripts. See
+[use release-it programmatically](docs/recipes/programmatic.md) for example code.
 
 ## Example projects using release-it
 

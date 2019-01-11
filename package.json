@@ -40,7 +40,7 @@
     "test": "ava --verbose --require babel-register --require ./test/util/setup.js test/*.js",
     "coverage": "nyc --reporter=lcov --reporter=html npm test",
     "codecov": "nyc --reporter=json npm test && codecov -f coverage/coverage-final.json",
-    "readme": "markdown-toc README.md -i --no-firsth1 --maxdepth=1 --bullets=-",
+    "readme": "markdown-toc README.md -i --maxdepth=2 --bullets=-",
     "release": "./bin/release-it.js"
   },
   "author": {
