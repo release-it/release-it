@@ -41,6 +41,31 @@ test('should create prompt', async t => {
   });
 });
 
+const prompts = [
+  ['commit', 'Commit (Release 1.0.0)?'],
+  ['tag', 'Tag (v1.0.0)?'],
+  ['push', 'Push?'],
+  ['ghRelease', 'Create a release on GitHub (Release 1.0.0)?'],
+  ['glRelease', 'Create a release on GitLab (Release 1.0.0)?'],
+  ['publish', 'Publish release-it@next to npm?'],
+  ['otp', 'Please enter OTP for npm:']
+];
+
+prompts.map(async ([prompt, message]) => {
+  test(`should create prompt and render template message (${prompt})`, async t => {
+    const config = new Config({ git: { tagName: 'v${version}' }, npm: { tag: 'next' } });
+    config.setRuntimeOptions({
+      version: '1.0.0'
+    });
+    const stub = sinon.stub().callsFake(yes);
+    const inquirer = t.context.getInquirer(stub);
+    const p = new Prompt({ config, inquirer });
+    await p.show({ prompt, task: noop });
+    t.is(stub.callCount, 1);
+    t.is(stub.firstCall.args[0][0].message, message);
+  });
+});
+
 test('should execute task after positive answer', async t => {
   const task = sinon.spy();
   const stub = sinon.stub().callsFake(yes);
