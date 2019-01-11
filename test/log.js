@@ -71,7 +71,7 @@ test('should print command execution (dry run)', t => {
 test('should print command execution (read-only)', t => {
   const log = new Log({ isDryRun: true });
   mockStdIo.start();
-  log.exec('foo', 'bar', true);
+  log.exec('foo', 'bar', false);
   const { stdout } = mockStdIo.end();
   t.is(stdout.trim(), '! foo bar');
 });
@@ -79,7 +79,7 @@ test('should print command execution (read-only)', t => {
 test('should print command execution (write)', t => {
   const log = new Log({ isDryRun: true });
   mockStdIo.start();
-  log.exec('foo', '--arg n', false);
+  log.exec('foo', '--arg n', true);
   const { stdout } = mockStdIo.end();
   t.is(stdout.trim(), '$ foo --arg n');
 });
