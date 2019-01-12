@@ -3,7 +3,6 @@ const sinon = require('sinon');
 const Prompt = require('../lib/prompt');
 const Config = require('../lib/config');
 
-const noop = () => {};
 const yes = ([options]) => Promise.resolve({ [options.name]: true });
 const no = ([options]) => Promise.resolve({ [options.name]: false });
 const increment = ([options]) => Promise.resolve({ [options.name]: 'minor' });
@@ -29,7 +28,7 @@ test('should create prompt', async t => {
   const stub = sinon.stub().callsFake(yes);
   const inquirer = t.context.getInquirer(stub);
   const prompt = new Prompt({ inquirer });
-  await prompt.show({ prompt: 'push', task: noop });
+  await prompt.show({ prompt: 'push' });
   t.is(stub.callCount, 1);
   t.deepEqual(stub.firstCall.args[0][0], {
     type: 'confirm',
@@ -60,7 +59,7 @@ prompts.map(async ([prompt, message]) => {
     const stub = sinon.stub().callsFake(yes);
     const inquirer = t.context.getInquirer(stub);
     const p = new Prompt({ config, inquirer });
-    await p.show({ prompt, task: noop });
+    await p.show({ prompt });
     t.is(stub.callCount, 1);
     t.is(stub.firstCall.args[0][0].message, message);
   });
