@@ -50,7 +50,6 @@
   "license": "MIT",
   "dependencies": {
     "@octokit/rest": "16.7.0",
-    "@webpro/is-subdir": "1.0.0",
     "async-retry": "1.2.3",
     "babel-preset-env": "1.7.0",
     "babel-register": "6.26.0",

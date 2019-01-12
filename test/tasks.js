@@ -19,8 +19,7 @@ const {
   GitCleanWorkingDirError,
   GitUpstreamError,
   TokenError,
-  InvalidVersionError,
-  DistRepoStageDirError
+  InvalidVersionError
 } = require('../lib/errors');
 
 const cwd = process.cwd();
@@ -112,15 +111,6 @@ test.serial('should throw if no GitHub token environment variable is set', async
 test.serial('should throw if invalid increment value is provided', async t => {
   const config = { increment: 'mini' };
   const expected = { instanceOf: InvalidVersionError, message: /invalid version was provided/ };
-  await t.throwsAsync(tasks(config, stubs), expected);
-});
-
-test.serial('should throw if not a subdir is provided for dist.stageDir', async t => {
-  const config = { dist: { repo: 'foo', stageDir: '..' } };
-  const expected = {
-    instanceOf: DistRepoStageDirError,
-    message: /`dist.stageDir` \(".."\) must resolve to a sub directory/
-  };
   await t.throwsAsync(tasks(config, stubs), expected);
 });
 
@@ -233,20 +223,13 @@ test.serial('should run tasks without package.json', async t => {
     t.true(log.log.thirdCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
   });
 
-  test.serial('should release all the things (pre-release, github, gitlab, dist repo)', async t => {
+  test.serial('should release all the things (pre-release, github, gitlab)', async t => {
     const { bare, target } = t.context;
     const repoName = path.basename(bare);
     const pkgName = path.basename(target);
     const owner = null;
     gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
     sh.exec('git tag v1.0.0');
-    {
-      // Prepare fake dist repo
-      sh.exec('git checkout -b dist');
-      gitAdd(`dist-line${EOL}`, 'dist-file', 'Add dist file');
-      sh.exec('git push -u origin dist');
-    }
-    sh.exec('git checkout master');
     gitAdd('line', 'file', 'More file');
     sh.exec('git push --follow-tags');
     await tasks(
@@ -263,12 +246,7 @@ test.serial('should run tasks without package.json', async t => {
           release: true,
           releaseNotes: 'echo "Notes for ${name}: ${changelog}"'
         },
-        npm: { name: pkgName, publish: false },
-        dist: {
-          repo: `${bare}#dist`,
-          scripts: { beforeStage: `echo release-line >> dist-file` },
-          npm: { publish: true }
-        }
+        npm: { name: pkgName }
       },
       stubs
     );
@@ -293,68 +271,32 @@ test.serial('should run tasks without package.json', async t => {
     t.true(gotStub.firstCall.args[0].endsWith(`/api/v4/projects/${repoName}/repository/tags/v1.1.0-alpha.0/release`));
     t.regex(gotStub.firstCall.args[1].body.description, RegExp(`Notes for ${pkgName}: \\* More file`));
 
-    t.is(npmStub.callCount, 1);
-    t.is(npmStub.firstCall.args[0].trim(), 'npm publish . --tag alpha');
+    t.is(npmStub.callCount, 3);
+    t.is(npmStub.lastCall.args[0].trim(), 'npm publish . --tag alpha');
 
     const { stdout } = sh.exec('git describe --tags --abbrev=0');
     t.is(stdout.trim(), 'v1.1.0-alpha.0');
 
-    sh.exec('git checkout dist');
-    sh.exec('git pull');
-    const distFile = await readFile('dist-file');
-    t.is(distFile.trim(), `dist-line${EOL}release-line`);
-
     t.true(log.log.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.1.0-alpha.0)`));
     t.true(log.log.secondCall.args[0].endsWith(`https://github.com/${owner}/${repoName}/releases/tag/v1.1.0-alpha.0`));
     t.true(log.log.thirdCall.args[0].endsWith(`https://localhost/${repoName}/tags/v1.1.0-alpha.0`));
-    t.true(log.log.args[3][0].endsWith(`release the distribution repo for ${pkgName}`));
-    t.true(log.log.args[4][0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
+    t.true(log.log.args[3][0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
     t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
   });
 
   test.serial('should run all scripts', async t => {
     const spy = sinon.spy(ShellStub.prototype, 'run');
-
-    const { bare } = t.context;
-    sh.exec('git checkout -b dist');
-    gitAdd(`dist-line`, 'dist-file', 'Add dist file');
-    sh.exec('git push -u origin dist');
-    sh.exec('git checkout master');
-
-    await tasks(
-      {
-        increment: 'patch',
-        pkgFiles: null,
-        manifest: false,
-        scripts: {
-          beforeStart: 'echo beforeStart',
-          beforeBump: 'echo beforeBump',
-          afterBump: 'echo afterBump',
-          beforeStage: 'echo beforeStage',
-          afterRelease: 'echo afterRelease'
-        },
-        dist: {
-          repo: `${bare}#dist`,
-          scripts: {
-            beforeStage: 'echo dist beforeStage',
-            afterRelease: 'echo dist afterRelease'
-          }
-        }
-      },
-      stubs
-    );
-
-    const args = _.flatten(spy.args);
-    const occurrences = (haystack, needle) => _.filter(haystack, item => item === needle).length;
-
-    t.is(occurrences(args, 'echo beforeStart'), 1);
-    t.is(occurrences(args, 'echo beforeBump'), 1);
-    t.is(occurrences(args, 'echo afterBump'), 1);
-    t.is(occurrences(args, 'echo beforeStage'), 1);
-    t.is(occurrences(args, 'echo afterRelease'), 1);
-    t.is(occurrences(args, 'echo dist beforeStage'), 1);
-    t.is(occurrences(args, 'echo dist afterRelease'), 1);
-
+    const scripts = {
+      beforeStart: 'echo beforeStart',
+      beforeBump: 'echo beforeBump',
+      afterBump: 'echo afterBump',
+      beforeStage: 'echo beforeStage',
+      afterRelease: 'echo afterRelease'
+    };
+    await tasks({ increment: 'patch', pkgFiles: null, manifest: false, scripts }, stubs);
+    const commands = _.flatten(spy.args);
+    const filtered = _.filter(commands, command => _.includes(scripts, command));
+    t.deepEqual(filtered, _.values(scripts));
     spy.restore();
   });
 }

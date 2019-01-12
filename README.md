@@ -514,11 +514,6 @@ name
 repo.remote, repo.protocol, repo.host, repo.owner, repo.repository, repo.project
 ```
 
-For [distribution repositories](#distribution-repository), two additional hooks are available:
-
-- `dist.scripts.beforeStage`
-- `dist.scripts.afterRelease`
-
 ## Distribution repository
 
 Some projects use a distribution repository. Generated files (such as compiled assets or documentation) can be
@@ -526,7 +521,7 @@ distributed to a separate repository. Or to a separate branch, such as a `gh-pag
 [shim repositories](https://github.com/components) and a separate
 [packaged Angular.js repository](https://github.com/angular/bower-angular) for distribution on npm and Bower.
 
-The `dist.repo` option is deprecated, but similar setups can still be achieved. Please see the
+The `dist.repo` option was removed in v10, but similar setups can still be achieved. Please see the
 [distribution repository](docs/recipes/distribution-repo.md) recipe for example configurations.
 
 ## Metrics

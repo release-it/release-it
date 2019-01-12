@@ -7,7 +7,6 @@ const { readFile, gitAdd } = require('./util/index');
 const Shell = require('../lib/shell');
 const Log = require('../lib/log');
 const Git = require('../lib/git');
-const GitDist = require('../lib/git-dist');
 
 const sandbox = sinon.createSandbox();
 const log = sandbox.createStubInstance(Log);
@@ -87,12 +86,11 @@ test.serial('should return the remote url', async t => {
   }
 });
 
-test.serial('should clone, stage, commit, tag and push', async t => {
+test.serial('should stage, commit, tag and push', async t => {
   const bare = `../${uuid()}`;
   sh.exec(`git init --bare ${bare}`);
+  sh.exec(`git clone ${bare} .`);
   const gitClient = new Git();
-  const gitDistClient = new GitDist();
-  await gitDistClient.clone(bare, '.');
   await gitClient.init();
   const version = '1.2.3';
   gitAdd(`{"version":"${version}"}`, 'package.json', 'Add package.json');
@@ -190,20 +188,4 @@ test.serial('should reset files', async t => {
   t.regex(await readFile('file'), /^line\s*$/);
   await gitClient.reset(['file2, file3']);
   t.regex(log.warn.firstCall.args[0], /Could not reset file2, file3/);
-});
-
-test.serial('should check whether two repos are the same (based on host, owner, project)', async t => {
-  const gitClient = new Git();
-  await gitClient.init();
-  const otherClient = new Git();
-  await otherClient.init();
-  t.true(gitClient.isSameRepo(otherClient));
-  {
-    const bare = `../${uuid()}`;
-    sh.exec(`git init --bare ${bare}`);
-    sh.exec(`git clone ${bare} .`);
-    const otherClient = new Git();
-    await otherClient.init();
-    t.false(gitClient.isSameRepo(otherClient));
-  }
 });
