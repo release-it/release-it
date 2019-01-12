@@ -1,0 +1,34 @@
+{
+  "dist": {
+    "repo": null,
+    "stageDir": ".stage",
+    "baseDir": "dist",
+    "files": ["**/*"],
+    "pkgFiles": null,
+    "scripts": {
+      "beforeStage": null,
+      "afterRelease": null
+    },
+    "git": {
+      "addUntrackedFiles": false,
+      "commit": true,
+      "tag": true,
+      "push": true
+    },
+    "github": {
+      "release": false,
+      "assets": null
+    },
+    "gitlab": {
+      "release": false
+    },
+    "npm": {
+      "publish": false
+    }
+  },
+  "prompt": {
+    "dist": {
+      "status": null
+    }
+  }
+}

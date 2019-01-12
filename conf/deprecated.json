@@ -42,9 +42,6 @@
       "push": "prompt.push",
       "release": "prompt.release",
       "publish": "prompt.publish"
-    },
-    "dist": {
-      "status": null
     }
   }
 }

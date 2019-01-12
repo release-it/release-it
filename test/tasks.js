@@ -187,8 +187,9 @@ test.serial('should run tasks without package.json', async t => {
   const { name } = await tasks({ increment: 'major', npm: { publish: false } }, stubs);
   t.true(log.log.firstCall.args[0].includes(`release ${name} (1.0.0...2.0.0)`));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-  t.is(log.warn.secondCall.args[0], 'Could not bump package.json');
-  t.is(log.warn.thirdCall.args[0], 'Could not stage package.json');
+  const warnings = _.flatten(log.warn.args);
+  t.true(warnings.includes('Could not bump package.json'));
+  t.true(warnings.includes('Could not stage package.json'));
   {
     const { stdout } = sh.exec('git describe --tags --abbrev=0');
     t.is(stdout.trim(), '2.0.0');

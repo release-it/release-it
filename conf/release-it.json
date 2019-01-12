@@ -51,47 +51,12 @@
     "releaseNotes": null,
     "tokenRef": "GITLAB_TOKEN"
   },
-  "dist": {
-    "repo": false,
-    "stageDir": ".stage",
-    "baseDir": "dist",
-    "files": ["**/*"],
-    "pkgFiles": null,
-    "scripts": {
-      "beforeStage": null,
-      "afterRelease": null
-    },
-    "git": {
-      "addUntrackedFiles": false,
-      "commit": true,
-      "tag": true,
-      "push": true
-    },
-    "github": {
-      "release": false,
-      "assets": null
-    },
-    "gitlab": {
-      "release": false
-    },
-    "npm": {
-      "publish": false
-    }
-  },
   "prompt": {
     "commit": true,
     "tag": true,
     "push": true,
     "ghRelease": true,
     "glRelease": true,
-    "publish": true,
-    "dist": {
-      "commit": true,
-      "tag": false,
-      "push": true,
-      "ghRelease": false,
-      "glRelease": false,
-      "publish": false
-    }
+    "publish": true
   }
 }
