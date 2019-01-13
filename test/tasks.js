@@ -73,7 +73,6 @@ test.serial.beforeEach(t => {
 test.serial.afterEach(() => {
   sh.pushd('-q', cwd);
   sandbox.resetHistory();
-  npmStub.resetHistory();
 });
 
 test.serial('should throw when not a Git repository', async t => {
@@ -209,6 +208,7 @@ test.serial('should run tasks without package.json', async t => {
     const { bare, target } = t.context;
     const repoName = path.basename(bare);
     const pkgName = path.basename(target);
+    gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
     sh.exec('git tag 1.0.0');
     gitAdd('line', 'file', 'More file');
     await tasks({ github: { release: true }, npm: { name: pkgName, publish: true } }, stubs);
@@ -238,6 +238,8 @@ test.serial('should run tasks without package.json', async t => {
     const repoName = path.basename(bare);
     const pkgName = path.basename(target);
     const owner = null;
+    gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
+    sh.exec('git tag v1.0.0');
     {
       // Prepare fake dist repo
       sh.exec('git checkout -b dist');
@@ -245,7 +247,6 @@ test.serial('should run tasks without package.json', async t => {
       sh.exec('git push -u origin dist');
     }
     sh.exec('git checkout master');
-    sh.exec('git tag v1.0.0');
     gitAdd('line', 'file', 'More file');
     sh.exec('git push --follow-tags');
     await tasks(
@@ -262,7 +263,7 @@ test.serial('should run tasks without package.json', async t => {
           release: true,
           releaseNotes: 'echo "Notes for ${name}: ${changelog}"'
         },
-        npm: { name: pkgName },
+        npm: { name: pkgName, publish: false },
         dist: {
           repo: `${bare}#dist`,
           scripts: { beforeStage: `echo release-line >> dist-file` },
@@ -295,10 +296,8 @@ test.serial('should run tasks without package.json', async t => {
     t.is(npmStub.callCount, 1);
     t.is(npmStub.firstCall.args[0].trim(), 'npm publish . --tag alpha');
 
-    {
-      const { stdout } = sh.exec('git describe --tags --abbrev=0');
-      t.is(stdout.trim(), 'v1.1.0-alpha.0');
-    }
+    const { stdout } = sh.exec('git describe --tags --abbrev=0');
+    t.is(stdout.trim(), 'v1.1.0-alpha.0');
 
     sh.exec('git checkout dist');
     sh.exec('git pull');
