@@ -213,10 +213,11 @@ test.serial('should run tasks without package.json', async t => {
     t.is(githubReleaseArg.prerelease, false);
     t.is(githubReleaseArg.draft, false);
 
-    t.is(npmStub.callCount, 3);
+    t.is(npmStub.callCount, 4);
     t.is(npmStub.firstCall.args[0], 'npm ping');
     t.is(npmStub.secondCall.args[0].trim(), 'npm whoami');
-    t.is(npmStub.thirdCall.args[0].trim(), 'npm publish . --tag latest');
+    t.is(npmStub.thirdCall.args[0].trim(), `npm show ${pkgName}@latest version`);
+    t.is(npmStub.args[3][0].trim(), 'npm publish . --tag latest');
 
     t.true(log.log.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
     t.true(log.log.secondCall.args[0].endsWith(`https://github.com/null/${repoName}/releases/tag/1.0.1`));
@@ -271,7 +272,7 @@ test.serial('should run tasks without package.json', async t => {
     t.true(gotStub.firstCall.args[0].endsWith(`/api/v4/projects/${repoName}/repository/tags/v1.1.0-alpha.0/release`));
     t.regex(gotStub.firstCall.args[1].body.description, RegExp(`Notes for ${pkgName}: \\* More file`));
 
-    t.is(npmStub.callCount, 3);
+    t.is(npmStub.callCount, 4);
     t.is(npmStub.lastCall.args[0].trim(), 'npm publish . --tag alpha');
 
     const { stdout } = sh.exec('git describe --tags --abbrev=0');

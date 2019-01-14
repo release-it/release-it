@@ -43,7 +43,7 @@ test('should not throw if validation passes', async t => {
 });
 
 test('should invalidate if npm is down', async t => {
-  const run = sinon.stub();
+  const run = sinon.stub().resolves();
   run.withArgs('npm ping').rejects();
   const npmClient = new npm({
     name: 'pkg',
@@ -56,8 +56,7 @@ test('should invalidate if npm is down', async t => {
 });
 
 test('should invalidate if user is not authenticated', async t => {
-  const run = sinon.stub();
-  run.withArgs('npm ping').resolves();
+  const run = sinon.stub().resolves();
   run.withArgs('npm whoami').rejects();
   const npmClient = new npm({
     name: 'pkg',
