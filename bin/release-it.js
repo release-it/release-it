@@ -2,16 +2,7 @@
 
 const updater = require('update-notifier');
 const pkg = require('../package.json');
-const semver = require('semver');
 const parseArgs = require('yargs-parser');
-
-if (semver.major(process.version) < 7) {
-  console.warn('Deprecation notice: release-it will no longer support Node v6 in the next major release.');
-  require('babel-register')({
-    only: /release-it\/lib/
-  });
-}
-
 const release = require('../lib');
 
 const aliases = {

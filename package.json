@@ -31,13 +31,12 @@
   "files": [
     "bin",
     "conf",
-    "lib",
-    ".babelrc"
+    "lib"
   ],
   "scripts": {
     "lint": "eslint lib test",
     "format": "prettier --write \"{lib,test}/**/*.js\"",
-    "test": "ava --verbose --require babel-register --require ./test/util/setup.js test/*.js",
+    "test": "ava --verbose --require ./test/util/setup.js test/*.js",
     "coverage": "nyc --reporter=lcov --reporter=html npm test",
     "codecov": "nyc --reporter=json npm test && codecov -f coverage/coverage-final.json",
     "readme": "markdown-toc README.md -i --maxdepth=2 --bullets=-",
@@ -51,8 +50,6 @@
   "dependencies": {
     "@octokit/rest": "16.7.0",
     "async-retry": "1.2.3",
-    "babel-preset-env": "1.7.0",
-    "babel-register": "6.26.0",
     "bump-file": "2.0.0",
     "chalk": "2.4.2",
     "conventional-changelog": "3.0.5",
@@ -61,7 +58,7 @@
     "debug": "4.1.1",
     "deprecated-obj": "1.0.0",
     "globby": "8.0.2",
-    "got": "8.3.2",
+    "got": "9.5.1",
     "inquirer": "6.2.1",
     "is-ci": "2.0.0",
     "lodash": "4.17.11",
@@ -93,11 +90,6 @@
     "sinon": "7.2.2"
   },
   "engines": {
-    "node": ">=6"
-  },
-  "greenkeeper": {
-    "ignore": [
-      "got"
-    ]
+    "node": ">=8"
   }
 }
