@@ -7,6 +7,8 @@ const { InvalidVersionError } = require('../lib/errors');
 const Log = require('../lib/log');
 const { gitAdd } = require('./util/index');
 
+const log = sinon.createStubInstance(Log);
+
 test('isValidVersion', t => {
   const v = new Version();
   t.is(v.isValid('1.0.0'), true);
@@ -20,7 +22,6 @@ test('isPreRelease', t => {
 });
 
 test('should throw if invalid increment value was provided', async t => {
-  const log = sinon.createStubInstance(Log);
   const v = new Version({ log });
   v.setLatestVersion({ gitTag: '1.0.0' });
   const expected = { instanceOf: InvalidVersionError, message: /invalid version was provided/ };
@@ -37,7 +38,7 @@ test('should throw if invalid increment value was provided', async t => {
 });
 
 test('setLatestVersion', t => {
-  const v = new Version();
+  const v = new Version({ log });
   v.setLatestVersion({ gitTag: '1.2.0' });
   t.is(v.latestVersion, '1.2.0');
   v.setLatestVersion({ gitTag: 'v1.2.1', pkgVersion: '1.2.2' });
@@ -64,6 +65,7 @@ test('setLatestVersion (invalid package version)', t => {
   const log = sinon.createStubInstance(Log);
   const v = new Version({ log });
   v.setLatestVersion({ use: 'pkg.version', pkgVersion: '1.2' });
+  t.is(log.warn.callCount, 3);
   t.is(log.warn.firstCall.args[0], 'The version in package.json (1.2) is not a valid semver version.');
   t.is(log.warn.secondCall.args[0], 'Latest Git tag (undefined) is not a valid semver version.');
   t.is(
@@ -76,11 +78,20 @@ test('setLatestVersion (invalid git tag and package version)', t => {
   const log = sinon.createStubInstance(Log);
   const v = new Version({ log });
   v.setLatestVersion({ gitTag: '1', pkgVersion: '2' });
+  t.is(log.warn.callCount, 2);
   t.is(log.warn.firstCall.args[0], 'Latest Git tag (1) is not a valid semver version.');
   t.is(
     log.warn.secondCall.args[0],
     'Could not find valid latest Git tag or version in package.json. Using "0.0.0" as latest version.'
   );
+});
+
+test('setLatestVersion (git tag and package version not matching)', t => {
+  const log = sinon.createStubInstance(Log);
+  const v = new Version({ log });
+  v.setLatestVersion({ gitTag: '1.0.0', pkgVersion: '1.0.1' });
+  t.is(log.warn.callCount, 1);
+  t.is(log.warn.firstCall.args[0], 'Latest Git tag (1.0.0) does not match package.json#version (1.0.1).');
 });
 
 test('bump', async t => {
