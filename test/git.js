@@ -90,10 +90,10 @@ test.serial('should stage, commit, tag and push', async t => {
   const bare = `../${uuid()}`;
   sh.exec(`git init --bare ${bare}`);
   sh.exec(`git clone ${bare} .`);
-  const gitClient = new Git();
-  await gitClient.init();
   const version = '1.2.3';
   gitAdd(`{"version":"${version}"}`, 'package.json', 'Add package.json');
+  const gitClient = new Git();
+  await gitClient.init();
   {
     sh.exec(`git tag ${version}`);
     const latestTag = await gitClient.getLatestTag();
@@ -117,9 +117,9 @@ test.serial('should push to origin', async t => {
   const bare = `../${uuid()}`;
   sh.exec(`git init --bare ${bare}`);
   sh.exec(`git clone ${bare} .`);
+  gitAdd('line', 'file', 'Add file');
   const gitClient = new Git({ shell });
   await gitClient.init();
-  gitAdd('line', 'file', 'Add file');
   const spy = sinon.spy(shell, 'run');
   await gitClient.push();
   t.is(spy.lastCall.args[0].trim(), 'git push --follow-tags  origin');
@@ -132,9 +132,9 @@ test.serial('should push to repo url', async t => {
   const bare = `../${uuid()}`;
   sh.exec(`git init --bare ${bare}`);
   sh.exec(`git clone ${bare} .`);
+  gitAdd('line', 'file', 'Add file');
   const gitClient = new Git({ pushRepo: 'https://host/repo.git', shell });
   await gitClient.init();
-  gitAdd('line', 'file', 'Add file');
   const spy = sinon.spy(shell, 'run');
   try {
     await gitClient.push();
@@ -148,26 +148,23 @@ test.serial('should push to remote name (not "origin")', async t => {
   const bare = `../${uuid()}`;
   sh.exec(`git init --bare ${bare}`);
   sh.exec(`git clone ${bare} .`);
-  const gitClient = new Git();
-  await gitClient.init();
+  gitAdd('line', 'file', 'Add file');
   sh.exec(`git remote add upstream ${sh.exec('git remote get-url origin')}`);
+  const gitClient = new Git({ pushRepo: 'upstream', shell });
+  await gitClient.init();
+  const spy = sinon.spy(shell, 'run');
+  await gitClient.push();
+  t.is(spy.lastCall.args[0].trim(), 'git push --follow-tags  upstream');
+  const actual = sh.exec('git ls-tree -r HEAD --name-only', { cwd: bare });
+  t.is(actual.trim(), 'file');
   {
-    const gitClient = new Git({ pushRepo: 'upstream', shell });
+    sh.exec(`git checkout -b foo`);
     gitAdd('line', 'file', 'Add file');
-    const spy = sinon.spy(shell, 'run');
     await gitClient.push();
-    t.is(spy.lastCall.args[0].trim(), 'git push --follow-tags  upstream');
-    const actual = sh.exec('git ls-tree -r HEAD --name-only', { cwd: bare });
-    t.is(actual.trim(), 'file');
-    {
-      sh.exec(`git checkout -b foo`);
-      gitAdd('line', 'file', 'Add file');
-      await gitClient.push();
-      t.is(spy.lastCall.args[0].trim(), 'git push --follow-tags  -u upstream foo');
-      t.is(await spy.lastCall.returnValue, "Branch 'foo' set up to track remote branch 'foo' from 'upstream'.");
-    }
-    spy.restore();
+    t.is(spy.lastCall.args[0].trim(), 'git push --follow-tags  -u upstream foo');
+    t.is(await spy.lastCall.returnValue, "Branch 'foo' set up to track remote branch 'foo' from 'upstream'.");
   }
+  spy.restore();
 });
 
 test.serial('should return repo status', async t => {
