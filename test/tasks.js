@@ -71,7 +71,7 @@ test.serial('should run tasks without throwing errors', async t => {
     { increment: 'patch', pkgFiles: null, manifest: false, npm: { publish: false } },
     stubs
   );
-  t.true(log.log.firstCall.args[0].includes(`release ${name} (${latestVersion}...${version})`));
+  t.true(log.obtrusive.firstCall.args[0].includes(`release ${name} (${latestVersion}...${version})`));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
 });
 
@@ -80,7 +80,7 @@ test.serial('should run tasks with minimal config and without any warnings/error
   sh.exec('git tag 1.2.3');
   gitAdd('line', 'file', 'More file');
   await tasks({ increment: 'patch', npm: { publish: false } }, stubs);
-  t.true(log.log.firstCall.args[0].includes('release my-package (1.2.3...1.2.4)'));
+  t.true(log.obtrusive.firstCall.args[0].includes('release my-package (1.2.3...1.2.4)'));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
   const pkg = await readJSON('package.json');
   t.is(pkg.version, '1.2.4');
@@ -93,7 +93,7 @@ test.serial('should run tasks with minimal config and without any warnings/error
 test.serial('should use pkg.version if no git tag', async t => {
   gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
   await tasks({ increment: 'minor', npm: { publish: false } }, stubs);
-  t.true(log.log.firstCall.args[0].includes('release my-package (1.2.3...1.3.0)'));
+  t.true(log.obtrusive.firstCall.args[0].includes('release my-package (1.2.3...1.3.0)'));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
   const pkg = await readJSON('package.json');
   t.is(pkg.version, '1.3.0');
@@ -110,7 +110,7 @@ test.serial('should use pkg.version (in sub dir) w/o tagging repo', async t => {
   sh.pushd('-q', 'my-package');
   gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
   await tasks({ increment: 'minor', git: { tag: false }, npm: { publish: false } }, stubs);
-  t.true(log.log.firstCall.args[0].endsWith('release my-package (1.2.3...1.3.0)'));
+  t.true(log.obtrusive.firstCall.args[0].endsWith('release my-package (1.2.3...1.3.0)'));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
   const pkg = await readJSON('package.json');
   t.is(pkg.version, '1.3.0');
@@ -126,7 +126,7 @@ test.serial('should use pkg.version (in sub dir) w/o tagging repo', async t => {
 test.serial('should run tasks without package.json', async t => {
   sh.exec('git tag 1.0.0');
   const { name } = await tasks({ increment: 'major', npm: { publish: false } }, stubs);
-  t.true(log.log.firstCall.args[0].includes(`release ${name} (1.0.0...2.0.0)`));
+  t.true(log.obtrusive.firstCall.args[0].includes(`release ${name} (1.0.0...2.0.0)`));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
   const warnings = _.flatten(log.warn.args);
   t.true(warnings.includes('Could not bump package.json'));
@@ -171,9 +171,9 @@ test.serial('should run tasks without package.json', async t => {
     t.is(npmStub.thirdCall.args[0].trim(), `npm show ${pkgName}@latest version`);
     t.is(npmStub.args[3][0].trim(), 'npm publish . --tag latest');
 
-    t.true(log.log.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
-    t.true(log.log.secondCall.args[0].endsWith(`https://github.com/null/${repoName}/releases/tag/1.0.1`));
-    t.true(log.log.thirdCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
+    t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
+    t.true(log.log.firstCall.args[0].endsWith(`https://github.com/null/${repoName}/releases/tag/1.0.1`));
+    t.true(log.log.secondCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
   });
 
   test.serial('should release all the things (pre-release, github, gitlab)', async t => {
@@ -232,10 +232,10 @@ test.serial('should run tasks without package.json', async t => {
     const { stdout } = sh.exec('git describe --tags --abbrev=0');
     t.is(stdout.trim(), 'v1.1.0-alpha.0');
 
-    t.true(log.log.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.1.0-alpha.0)`));
-    t.true(log.log.secondCall.args[0].endsWith(`https://github.com/${owner}/${repoName}/releases`));
-    t.true(log.log.thirdCall.args[0].endsWith(`https://localhost/${repoName}/tags/v1.1.0-alpha.0`));
-    t.true(log.log.args[3][0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
+    t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.1.0-alpha.0)`));
+    t.true(log.log.firstCall.args[0].endsWith(`https://github.com/${owner}/${repoName}/releases/tag/v1.1.0-alpha.0`));
+    t.true(log.log.secondCall.args[0].endsWith(`https://localhost/${repoName}/releases`));
+    t.true(log.log.thirdCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
     t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
   });
 
