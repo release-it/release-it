@@ -8,6 +8,7 @@
     "distribution",
     "git",
     "github",
+    "gitlab",
     "interactive",
     "npm",
     "publish",
@@ -18,7 +19,8 @@
     "shell",
     "tag",
     "tool",
-    "version"
+    "version",
+    "semver"
   ],
   "repository": {
     "type": "git",

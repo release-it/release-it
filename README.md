@@ -21,9 +21,13 @@ CLI release tool for Git repos and npm packages.
 [![Greenkeeper badge](https://badges.greenkeeper.io/webpro/release-it.svg)](https://greenkeeper.io/)
 [![codecov](https://codecov.io/gh/webpro/release-it/branch/master/graph/badge.svg)](https://codecov.io/gh/webpro/release-it)
 
-_See [CHANGELOG.md](CHANGELOG.md) for major updates and breaking changes. Refer to the
-[releases](https://github.com/webpro/release-it/releases) section for a detailed version history. Want to help out, or
-hack on release-it? Great! Please read [CONTRIBUTING.md](CONTRIBUTING.md) on how to participate._
+## Links
+
+- For **updates**, see [CHANGELOG.md](CHANGELOG.md) for major updates, and
+  [releases](https://github.com/webpro/release-it/releases) for a detailed version history.
+- To **contribute**, please read [CONTRIBUTING.md](CONTRIBUTING.md) to participate.
+- Please [open an issue](https://github.com/webpro/release-it/issues/new) if anything is missing or unclear in this
+  documentation.
 
 <details>
   <summary><strong>Table of Contents</strong> (click to expand)</summary>
@@ -104,8 +108,7 @@ release-it minor
 release-it 0.8.3
 ```
 
-For versions like `1.0.0-beta.2` and npm tags, see [manage pre-releases](#managing-pre-releases). For a "dry run", to
-show the interactivity and the commands it _would_ execute:
+For a "dry run", to show the interactivity and the commands it _would_ execute:
 
 ```bash
 release-it --dry-run
@@ -334,8 +337,9 @@ The [default command](conf/release-it.json) is based on `git log ...`. This sett
 overridden, or specifically with `github.releaseNotes` or `gitlab.releaseNotes` for the release notes only. Make sure
 the command outputs the changelog to `stdout`.
 
-Some projects keep their changelog in e.g. `CHANGELOG.md` or `history.md`. In this case, the recommended configuration
-is to use a command that does this in `scripts.beforeStage`. See below for examples and workflows.
+Some projects keep their changelog in e.g. `CHANGELOG.md` or `history.md`. To auto-update this file with the release,
+the recommended configuration is to use a command that does this in `scripts.beforeStage`. See below for examples and
+workflows.
 
 ### Auto-changelog
 
@@ -464,7 +468,7 @@ Consecutive beta releases (`2.0.0-beta.1` and so on):
 release-it --preRelease
 ```
 
-And when ready to release the next phase (e.g. release candidate):
+And when ready to release the next phase (e.g. release candidate, in this case `2.0.0-rc.0`):
 
 ```
 release-it --preRelease=rc
@@ -481,7 +485,7 @@ release-it major
 Notes:
 
 - Pre-releases can work together with [recommended bumps](#recommended-bump).
-- You can still override individual options (e.g. `release-it --preRelease=rc --npm.tag=next`).
+- You can still override individual options, e.g. `release-it --preRelease=rc --npm.tag=next`.
 - See [semver.org](http://semver.org) for more details about semantic versioning.
 
 ## Scripts
@@ -536,9 +540,10 @@ development.
 
 ## Troubleshooting & debugging
 
-- Use `--verbose` to output commands that release-it executes.
-- Use `--debug` to output configuration and additional (error) logs.
-- Use `DEBUG=octokit:rest* release-it [...]` for debug logs with GitHub releases & assets.
+- With `release-it --verbose`, release-it prints every command and its output.
+- Prepend `DEBUG=release=it:* release-it [...]` to print configuration and more error details.
+- Use `DEBUG=* release-it [...]` to include debug output for dependencies, such as
+  [@octokit/rest](https://github.com/octokit/rest.js).
 
 ## Use release-it programmatically
 
