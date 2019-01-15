@@ -10,7 +10,7 @@ CLI release tool for Git repos and npm packages.
 - Bump version (in e.g. `package.json`)
 - Git commit, tag, push
 - [Create release at GitHub](#github-releases) (and [upload assets](#release-assets))
-- [Create release at GitLab](#gitlab-releases)
+- [Create release at GitLab](#gitlab-releases) (and [upload assets](#release-assets))
 - [Generate changelog](#changelogs)
 - [Publish to npm](#publish-to-npm)
 - [Manage pre-releases](#manage-pre-releases)
@@ -318,8 +318,12 @@ export GITLAB_TOKEN="f941e0..."
 
 The output of `scripts.changelog` (or `gitlab.releaseNotes` if set) will be attached to the latest tag.
 
-Note: release-it doesn't support release assets for GitLab yet, in anticipation of GitLab 11.7, which introduces
-[Releases](https://docs.gitlab.com/ee/user/project/releases.html).
+GitLab 11.7 introduces [Releases](https://docs.gitlab.com/ce/user/project/releases.html) to create release entries (much
+like GitHub), including release assets. For GitLab 11.6 and lower, release-it will automatically fall back to
+[attach releases notes to a tag](https://docs.gitlab.com/ce/workflow/releases.html). In this case, assets will not get
+included.
+
+Uploading assets work just like [GitHub Release assets](#release-assets), e.g. `--gitlab.assets=*.dmg`.
 
 ## Changelogs
 

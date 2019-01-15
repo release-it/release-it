@@ -197,7 +197,8 @@ test.serial('should run tasks without package.json', async t => {
         },
         gitlab: {
           release: true,
-          releaseNotes: 'echo "Notes for ${name}: ${changelog}"'
+          releaseNotes: 'echo "Notes for ${name}: ${changelog}"',
+          assets: ['file']
         },
         npm: { name: pkgName }
       },
@@ -221,8 +222,9 @@ test.serial('should run tasks without package.json', async t => {
     t.true(githubAssetsArg.url.endsWith(`/repos/${owner}/${repoName}/releases/${id}/assets{?name,label}`));
     t.is(githubAssetsArg.name, 'file');
 
-    t.true(gotStub.firstCall.args[0].endsWith(`/api/v4/projects/${repoName}/repository/tags/v1.1.0-alpha.0/release`));
-    t.regex(gotStub.firstCall.args[1].body.description, RegExp(`Notes for ${pkgName}: \\* More file`));
+    t.true(gotStub.firstCall.args[0].endsWith(`/api/v4/projects/${repoName}/uploads`));
+    t.true(gotStub.secondCall.args[0].endsWith(`/api/v4/projects/${repoName}/releases`));
+    t.regex(gotStub.secondCall.args[1].body.description, RegExp(`Notes for ${pkgName}: \\* More file`));
 
     t.is(npmStub.callCount, 4);
     t.is(npmStub.lastCall.args[0].trim(), 'npm publish . --tag alpha');
@@ -231,7 +233,7 @@ test.serial('should run tasks without package.json', async t => {
     t.is(stdout.trim(), 'v1.1.0-alpha.0');
 
     t.true(log.log.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.1.0-alpha.0)`));
-    t.true(log.log.secondCall.args[0].endsWith(`https://github.com/${owner}/${repoName}/releases/tag/v1.1.0-alpha.0`));
+    t.true(log.log.secondCall.args[0].endsWith(`https://github.com/${owner}/${repoName}/releases`));
     t.true(log.log.thirdCall.args[0].endsWith(`https://localhost/${repoName}/tags/v1.1.0-alpha.0`));
     t.true(log.log.args[3][0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
     t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);

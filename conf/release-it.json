@@ -49,7 +49,9 @@
     "release": false,
     "releaseName": "Release ${version}",
     "releaseNotes": null,
-    "tokenRef": "GITLAB_TOKEN"
+    "tokenRef": "GITLAB_TOKEN",
+    "assets": null,
+    "origin": null
   },
   "prompt": {
     "commit": true,
