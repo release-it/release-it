@@ -4,6 +4,7 @@ const test = require('ava');
 const sh = require('shelljs');
 const proxyquire = require('proxyquire');
 const _ = require('lodash');
+const debug = require('debug');
 const Log = require('../lib/log');
 const Spinner = require('../lib/spinner');
 const { gitAdd, readFile, readJSON } = require('./util/index');
@@ -43,7 +44,7 @@ const stubs = { log, spinner };
 class ShellStub extends Shell {
   run(command) {
     if (/^npm /.test(command)) {
-      this.log.exec(command);
+      debug('release-it:npm')(...arguments);
       return npmStub(...arguments);
     }
     return super.run(...arguments);

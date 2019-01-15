@@ -8,7 +8,6 @@ const release = require('../lib');
 const aliases = {
   c: 'config',
   d: 'dry-run',
-  e: 'debug',
   h: 'help',
   i: 'increment',
   n: 'non-interactive',

@@ -22,7 +22,6 @@ test('should contain default values', t => {
 test('should merge provided options', t => {
   const config = new Config({
     increment: '1.0.0',
-    debug: true,
     verbose: true,
     github: {
       release: true
