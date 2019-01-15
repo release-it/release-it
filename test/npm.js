@@ -42,7 +42,7 @@ test('should not throw if validation passes', async t => {
   await t.notThrowsAsync(npmClient.validate());
 });
 
-test('should invalidate if npm is down', async t => {
+test('should throw if npm is down', async t => {
   const run = sinon.stub().resolves();
   run.withArgs('npm ping').rejects();
   const npmClient = new npm({
@@ -55,7 +55,7 @@ test('should invalidate if npm is down', async t => {
   await t.throwsAsync(npmClient.validate(), /Unable to reach npm registry/);
 });
 
-test('should invalidate if user is not authenticated', async t => {
+test('should throw if user is not authenticated', async t => {
   const run = sinon.stub().resolves();
   run.withArgs('npm whoami').rejects();
   const npmClient = new npm({

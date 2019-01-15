@@ -3,6 +3,7 @@ const sh = require('shelljs');
 const sinon = require('sinon');
 const uuid = require('uuid/v4');
 const Version = require('../lib/version');
+const { InvalidVersionError } = require('../lib/errors');
 const Log = require('../lib/log');
 const { gitAdd } = require('./util/index');
 
@@ -16,6 +17,23 @@ test('isPreRelease', t => {
   const v = new Version();
   t.is(v.isPreRelease('1.0.0-beta.0'), true);
   t.is(v.isPreRelease('1.0.0'), false);
+});
+
+test('should throw if invalid increment value was provided', async t => {
+  const log = sinon.createStubInstance(Log);
+  const v = new Version({ log });
+  v.setLatestVersion({ gitTag: '1.0.0' });
+  const expected = { instanceOf: InvalidVersionError, message: /invalid version was provided/ };
+  v.bump({ increment: null });
+  await t.throws(() => v.validate(), expected);
+  v.bump({ increment: 'foo' });
+  await t.throws(() => v.validate(), expected);
+  v.bump({ increment: 'patsj' });
+  await t.throws(() => v.validate(), expected);
+  v.bump({ increment: '1.1.0' });
+  await t.notThrows(() => v.validate());
+  v.bump({ increment: 'major' });
+  await t.notThrows(() => v.validate());
 });
 
 test('setLatestVersion', t => {

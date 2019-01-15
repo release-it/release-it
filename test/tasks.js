@@ -1,5 +1,4 @@
 const path = require('path');
-const { EOL } = require('os');
 const test = require('ava');
 const sh = require('shelljs');
 const proxyquire = require('proxyquire');
@@ -7,21 +6,13 @@ const _ = require('lodash');
 const debug = require('debug');
 const Log = require('../lib/log');
 const Spinner = require('../lib/spinner');
-const { gitAdd, readFile, readJSON } = require('./util/index');
+const { gitAdd, readJSON } = require('./util/index');
 const uuid = require('uuid/v4');
 const GitHubApi = require('@octokit/rest');
 const githubRequestMock = require('./mock/github.request');
 const Shell = require('../lib/shell');
 const sinon = require('sinon');
 const runTasks = require('../lib/tasks');
-const {
-  GitRepoError,
-  GitRemoteUrlError,
-  GitCleanWorkingDirError,
-  GitUpstreamError,
-  TokenError,
-  InvalidVersionError
-} = require('../lib/errors');
 
 const cwd = process.cwd();
 const noop = Promise.resolve();
@@ -73,46 +64,6 @@ test.serial.beforeEach(t => {
 test.serial.afterEach(() => {
   sh.pushd('-q', cwd);
   sandbox.resetHistory();
-});
-
-test.serial('should throw when not a Git repository', async t => {
-  sh.pushd('-q', '../../..');
-  const expected = { instanceOf: GitRepoError, message: /not \(inside\) a Git repository/ };
-  await t.throwsAsync(tasks(null, stubs), expected);
-  sh.popd('-q');
-});
-
-test.serial('should throw if there is no remote Git url', async t => {
-  sh.exec('git remote remove origin');
-  const expected = { instanceOf: GitRemoteUrlError, message: /Could not get remote Git url/ };
-  await t.throwsAsync(tasks(null, stubs), expected);
-});
-
-test.serial('should throw if working dir is not clean', async t => {
-  sh.exec('rm file');
-  const expected = { instanceOf: GitCleanWorkingDirError, message: /Working dir must be clean/ };
-  await t.throwsAsync(tasks(null, stubs), expected);
-});
-
-test.serial('should throw if no upstream is configured', async t => {
-  sh.exec('git checkout -b foo');
-  const expected = { instanceOf: GitUpstreamError, message: /No upstream configured for current branch/ };
-  await t.throwsAsync(tasks(null, stubs), expected);
-});
-
-test.serial('should throw if no GitHub token environment variable is set', async t => {
-  const config = { github: { release: true, tokenRef: 'GITHUB_FOO' } };
-  const expected = {
-    instanceOf: TokenError,
-    message: /Environment variable "GITHUB_FOO" is required for GitHub releases/
-  };
-  await t.throwsAsync(tasks(config, stubs), expected);
-});
-
-test.serial('should throw if invalid increment value is provided', async t => {
-  const config = { increment: 'mini' };
-  const expected = { instanceOf: InvalidVersionError, message: /invalid version was provided/ };
-  await t.throwsAsync(tasks(config, stubs), expected);
 });
 
 test.serial('should run tasks without throwing errors', async t => {
