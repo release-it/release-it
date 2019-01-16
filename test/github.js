@@ -5,14 +5,14 @@ const proxyquire = require('proxyquire');
 const GitHubApi = require('@octokit/rest');
 const GitHub = require('../lib/github');
 const Log = require('../lib/log');
-const githubRequestMock = require('./mock/github.request');
+const githubRequest = require('./stub/github.request');
 const { GitHubClientError } = require('../lib/errors');
 const HttpError = require('@octokit/request/lib/http-error');
 
 test.beforeEach(t => {
   const gitHubApi = new GitHubApi();
   const GitHubApiStub = sinon.stub().returns(gitHubApi);
-  const githubRequestStub = sinon.stub().callsFake(githubRequestMock);
+  const githubRequestStub = sinon.stub().callsFake(githubRequest);
   gitHubApi.hook.wrap('request', githubRequestStub);
   t.context.gitHubApi = gitHubApi;
   t.context.githubRequestStub = githubRequestStub;

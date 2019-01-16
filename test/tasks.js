@@ -9,7 +9,8 @@ const Spinner = require('../lib/spinner');
 const { gitAdd, readJSON } = require('./util/index');
 const uuid = require('uuid/v4');
 const GitHubApi = require('@octokit/rest');
-const githubRequestMock = require('./mock/github.request');
+const githubRequest = require('./stub/github.request');
+const got = require('./stub/got');
 const Shell = require('../lib/shell');
 const sinon = require('sinon');
 const runTasks = require('../lib/tasks');
@@ -19,12 +20,12 @@ const noop = Promise.resolve();
 
 const sandbox = sinon.createSandbox();
 
-const githubRequestStub = sandbox.stub().callsFake(githubRequestMock);
+const githubRequestStub = sandbox.stub().callsFake(githubRequest);
 const githubApi = new GitHubApi();
 githubApi.hook.wrap('request', githubRequestStub);
 const GitHubApiStub = sandbox.stub().returns(githubApi);
 
-const gotStub = sinon.stub().resolves({});
+const gotStub = got();
 
 const npmStub = sandbox.stub().resolves();
 const log = sandbox.createStubInstance(Log);
@@ -222,9 +223,9 @@ test.serial('should run tasks without package.json', async t => {
     t.true(githubAssetsArg.url.endsWith(`/repos/${owner}/${repoName}/releases/${id}/assets{?name,label}`));
     t.is(githubAssetsArg.name, 'file');
 
-    t.true(gotStub.firstCall.args[0].endsWith(`/api/v4/projects/${repoName}/uploads`));
-    t.true(gotStub.secondCall.args[0].endsWith(`/api/v4/projects/${repoName}/releases`));
-    t.regex(gotStub.secondCall.args[1].body.description, RegExp(`Notes for ${pkgName}: \\* More file`));
+    t.true(gotStub.post.firstCall.args[0].endsWith(`/projects/${repoName}/uploads`));
+    t.true(gotStub.post.secondCall.args[0].endsWith(`/projects/${repoName}/releases`));
+    t.regex(gotStub.post.secondCall.args[1].body.description, RegExp(`Notes for ${pkgName}: \\* More file`));
 
     t.is(npmStub.callCount, 4);
     t.is(npmStub.lastCall.args[0].trim(), 'npm publish . --tag alpha');
