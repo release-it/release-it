@@ -61,7 +61,7 @@
     "deprecated-obj": "1.0.0",
     "form-data": "2.3.3",
     "globby": "9.0.0",
-    "got": "9.5.1",
+    "got": "9.6.0",
     "inquirer": "6.2.1",
     "is-ci": "2.0.0",
     "lodash": "4.17.11",
