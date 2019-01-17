@@ -337,6 +337,9 @@ The [default command](conf/release-it.json) is based on `git log ...`. This sett
 overridden, or specifically with `github.releaseNotes` or `gitlab.releaseNotes` for the release notes only. Make sure
 the command outputs the changelog to `stdout`.
 
+Alternatively, a (Handlebars) template can be used to generate the changelog. See [auto-changelog](#auto-changelog)
+below for more details.
+
 Some projects keep their changelog in e.g. `CHANGELOG.md` or `history.md`. To auto-update this file with the release,
 the recommended configuration is to use a command that does this in `scripts.beforeStage`. See below for examples and
 workflows.
@@ -348,12 +351,19 @@ A tool like [auto-changelog](https://github.com/CookPete/auto-changelog) is a gr
 ```json
 {
   "scripts": {
-    "beforeStage": "auto-changelog"
+    "changelog": "npx auto-changelog --stdout --commit-limit false -u --template ./changelog.hbs",
+    "beforeStage": "npx auto-changelog"
   }
 }
 ```
 
-This way, `CHANGELOG.md` is updated with each release and gets included in the release commit.
+With this `scripts.changelog`, the changelog preview is based on the `changelog.hbs` template. This would be used for
+[GitHub](#github-releases) or [GitLab releases](#gitlab-releases) as well.
+
+Additionally, `scripts.beforeStage` will update the `CHANGELOG.md` with each release to get included with the release
+commit. Obviously this can be omitted if the project does not keep a `CHANGELOG.md` or similar.
+
+See the [auto-changelog recipe](docs/recipes/auto-changelog.md) for an example setup and template.
 
 ### Conventional Changelog
 
@@ -383,8 +393,8 @@ release commit).
 {
   "increment": "conventional:angular",
   "scripts": {
-    "changelog": "conventional-changelog -p angular | tail -n +3",
-    "beforeStage": "conventional-changelog -p angular -i CHANGELOG.md -s"
+    "changelog": "npx conventional-changelog -p angular | tail -n +3",
+    "beforeStage": "npx conventional-changelog -p angular -i CHANGELOG.md -s"
   }
 }
 ```
