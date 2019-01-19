@@ -113,6 +113,28 @@ test.serial('should stage, commit, tag and push', async t => {
   }
 });
 
+test.serial('should commit, tag and push with extra args', async t => {
+  const bare = `../${uuid()}`;
+  sh.exec(`git init --bare ${bare}`);
+  sh.exec(`git clone ${bare} .`);
+  gitAdd('line', 'file', 'Add file');
+  const options = {
+    commitArgs: '-S',
+    tagArgs: '-T foo',
+    pushArgs: '-U bar -V'
+  };
+  const gitClient = new Git(options, { shell });
+  const spy = sinon.stub(shell, 'run').resolves();
+  await gitClient.stage('package.json');
+  await gitClient.commit({ message: `Release v1.2.4` });
+  await gitClient.tag({ name: 'v1.2.4', annotation: 'Release v1.2.4' });
+  await gitClient.push();
+  t.true(spy.secondCall.args[0].includes(' -S'));
+  t.true(spy.thirdCall.args[0].includes(' -T foo'));
+  t.true(spy.lastCall.args[0].includes(' -U bar -V'));
+  spy.restore();
+});
+
 test.serial('should push to origin', async t => {
   const bare = `../${uuid()}`;
   sh.exec(`git init --bare ${bare}`);
