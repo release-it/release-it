@@ -243,16 +243,17 @@ test.serial('should run tasks without package.json', async t => {
   test.serial('should run all scripts', async t => {
     const spy = sinon.spy(ShellStub.prototype, 'run');
     const scripts = {
-      beforeStart: 'echo beforeStart',
-      beforeBump: 'echo beforeBump',
-      afterBump: 'echo afterBump',
-      beforeStage: 'echo beforeStage',
-      afterRelease: 'echo afterRelease'
+      beforeStart: 'echo beforeStart ${name}',
+      beforeBump: 'echo beforeBump ${name}',
+      afterBump: 'echo afterBump ${name}',
+      beforeStage: 'echo beforeStage ${name}',
+      afterRelease: 'echo afterRelease ${name}'
     };
-    await tasks({ increment: 'patch', pkgFiles: null, manifest: false, scripts }, stubs);
+    const { name } = await tasks({ increment: 'patch', pkgFiles: null, manifest: false, scripts }, stubs);
     const commands = _.flatten(spy.args);
-    const filtered = _.filter(commands, command => _.includes(scripts, command));
-    t.deepEqual(filtered, _.values(scripts));
+    const scriptsArray = _.map(scripts, script => script.replace('${name}', name));
+    const filtered = commands.filter(command => scriptsArray.includes(command));
+    t.deepEqual(filtered, scriptsArray);
     spy.restore();
   });
 }
