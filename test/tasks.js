@@ -321,17 +321,17 @@ test.serial('should run tasks without package.json', async t => {
     sh.exec('git push -u origin dist');
     sh.exec('git checkout master');
 
-    await tasks(
+    const { name } = await tasks(
       {
         increment: 'patch',
         pkgFiles: null,
         manifest: false,
         scripts: {
-          beforeStart: 'echo beforeStart',
-          beforeBump: 'echo beforeBump',
-          afterBump: 'echo afterBump',
-          beforeStage: 'echo beforeStage',
-          afterRelease: 'echo afterRelease'
+          beforeStart: 'echo beforeStart ${name}',
+          beforeBump: 'echo beforeBump ${name}',
+          afterBump: 'echo afterBump ${name}',
+          beforeStage: 'echo beforeStage ${name}',
+          afterRelease: 'echo afterRelease ${name}'
         },
         dist: {
           repo: `${bare}#dist`,
@@ -347,13 +347,13 @@ test.serial('should run tasks without package.json', async t => {
     const args = _.flatten(spy.args);
     const occurrences = (haystack, needle) => _.filter(haystack, item => item === needle).length;
 
-    t.is(occurrences(args, 'echo beforeStart'), 1);
-    t.is(occurrences(args, 'echo beforeBump'), 1);
-    t.is(occurrences(args, 'echo afterBump'), 1);
-    t.is(occurrences(args, 'echo beforeStage'), 1);
-    t.is(occurrences(args, 'echo afterRelease'), 1);
-    t.is(occurrences(args, 'echo dist beforeStage'), 1);
-    t.is(occurrences(args, 'echo dist afterRelease'), 1);
+    t.is(occurrences(args, `echo beforeStart ${name}`), 1);
+    t.is(occurrences(args, `echo beforeBump ${name}`), 1);
+    t.is(occurrences(args, `echo afterBump ${name}`), 1);
+    t.is(occurrences(args, `echo beforeStage ${name}`), 1);
+    t.is(occurrences(args, `echo afterRelease ${name}`), 1);
+    t.is(occurrences(args, `echo dist beforeStage`), 1);
+    t.is(occurrences(args, `echo dist afterRelease`), 1);
 
     spy.restore();
   });
