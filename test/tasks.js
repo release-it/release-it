@@ -151,6 +151,7 @@ test.serial('should run tasks without package.json', async t => {
     const { bare, target } = t.context;
     const repoName = path.basename(bare);
     const pkgName = path.basename(target);
+    const owner = 'tmp';
     gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
     sh.exec('git tag 1.0.0');
     gitAdd('line', 'file', 'More file');
@@ -158,7 +159,7 @@ test.serial('should run tasks without package.json', async t => {
     const githubReleaseArg = githubRequestStub.firstCall.lastArg;
     t.is(githubRequestStub.callCount, 1);
     t.is(githubReleaseArg.url, '/repos/:owner/:repo/releases');
-    t.is(githubReleaseArg.owner, null);
+    t.is(githubReleaseArg.owner, owner);
     t.is(githubReleaseArg.repo, repoName);
     t.is(githubReleaseArg.tag_name, '1.0.1');
     t.is(githubReleaseArg.name, 'Release 1.0.1');
@@ -173,15 +174,15 @@ test.serial('should run tasks without package.json', async t => {
     t.is(npmStub.args[3][0].trim(), 'npm publish . --tag latest');
 
     t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
-    t.true(log.log.firstCall.args[0].endsWith(`https://github.com/null/${repoName}/releases/tag/1.0.1`));
+    t.true(log.log.firstCall.args[0].endsWith(`https://github.com/${owner}/${repoName}/releases/tag/1.0.1`));
     t.true(log.log.secondCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
   });
 
   test.serial('should release all the things (pre-release, github, gitlab)', async t => {
     const { bare, target } = t.context;
     const repoName = path.basename(bare);
+    const owner = 'tmp';
     const pkgName = path.basename(target);
-    const owner = null;
     gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
     sh.exec('git tag v1.0.0');
     gitAdd('line', 'file', 'More file');
@@ -223,8 +224,8 @@ test.serial('should run tasks without package.json', async t => {
     t.true(githubAssetsArg.url.endsWith(`/repos/${owner}/${repoName}/releases/${id}/assets{?name,label}`));
     t.is(githubAssetsArg.name, 'file');
 
-    t.true(gotStub.post.firstCall.args[0].endsWith(`/projects/${repoName}/uploads`));
-    t.true(gotStub.post.secondCall.args[0].endsWith(`/projects/${repoName}/releases`));
+    t.true(gotStub.post.firstCall.args[0].endsWith(`/projects/${owner}%2F${repoName}/uploads`));
+    t.true(gotStub.post.secondCall.args[0].endsWith(`/projects/${owner}%2F${repoName}/releases`));
     t.regex(gotStub.post.secondCall.args[1].body.description, RegExp(`Notes for ${pkgName}: \\* More file`));
 
     t.is(npmStub.callCount, 4);
@@ -235,7 +236,7 @@ test.serial('should run tasks without package.json', async t => {
 
     t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.1.0-alpha.0)`));
     t.true(log.log.firstCall.args[0].endsWith(`https://github.com/${owner}/${repoName}/releases/tag/v1.1.0-alpha.0`));
-    t.true(log.log.secondCall.args[0].endsWith(`https://localhost/${repoName}/releases`));
+    t.true(log.log.secondCall.args[0].endsWith(`${repoName}/releases`));
     t.true(log.log.thirdCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
     t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
   });
@@ -244,17 +245,17 @@ test.serial('should run tasks without package.json', async t => {
     const { bare } = t.context;
     const spy = sinon.spy(ShellStub.prototype, 'run');
     const scripts = {
-      beforeStart: 'echo beforeStart ${name} ${repo.repository}',
+      beforeStart: 'echo beforeStart ${name} ${repo.remote}',
       beforeBump: 'echo beforeBump ${name}',
       afterBump: 'echo afterBump ${name}',
       beforeStage: 'echo beforeStage ${name}',
-      afterRelease: 'echo afterRelease ${name} ${repo.repository}'
+      afterRelease: 'echo afterRelease ${name} ${repo.remote}'
     };
     const { name } = await tasks({ increment: 'patch', pkgFiles: null, manifest: false, scripts }, stubs);
     const commands = _.flatten(spy.args);
     const scriptsArray = _.values(scripts)
       .map(script => script.replace('${name}', name))
-      .map(script => script.replace('${repo.repository}', path.basename(bare)));
+      .map(script => script.replace('${repo.remote}', bare));
     const filtered = commands.filter(command => scriptsArray.includes(command));
     t.deepEqual(filtered, scriptsArray);
     spy.restore();

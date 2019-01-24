@@ -103,6 +103,14 @@ test('should release to self-managed host', async t => {
   });
 });
 
+test('should release to sub-grouped repo', async t => {
+  const { GitLab, got } = t.context;
+  const gitlab = new GitLab({ remoteUrl: 'git@gitlab.com:group/sub-group/repo.git' });
+  await gitlab.release();
+  t.is(got.post.callCount, 1);
+  t.is(got.post.firstCall.args[0], '/projects/group%2Fsub-group%2Frepo/releases');
+});
+
 test('should handle (http) error', async t => {
   const { GitLab, got } = t.context;
   got.post.throws(new Error('Not found'));
