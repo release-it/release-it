@@ -75,8 +75,9 @@ test('should release and upload assets', async t => {
   t.deepEqual(GitHubApiStub.firstCall.args[0], {
     version: '3.0.0',
     baseUrl: 'https://api.github.com',
-    timeout: 0,
-    headers: { 'user-agent': 'webpro/release-it' }
+    auth: github.token,
+    userAgent: 'webpro/release-it',
+    request: { timeout: 0 }
   });
 
   t.is(githubRequestStub.callCount, 2);
