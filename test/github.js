@@ -74,7 +74,7 @@ test('should release and upload assets', async t => {
   t.is(GitHubApiStub.callCount, 1);
   t.deepEqual(GitHubApiStub.firstCall.args[0], {
     version: '3.0.0',
-    url: 'https://api.github.com',
+    baseUrl: 'https://api.github.com',
     timeout: 0,
     headers: { 'user-agent': 'webpro/release-it' }
   });
@@ -100,7 +100,7 @@ test('should release to enterprise host', async t => {
   });
 
   t.is(GitHubApiStub.callCount, 1);
-  t.is(GitHubApiStub.firstCall.args[0].url, 'https://github.my-GHE-enabled-company.com/api/v3');
+  t.is(GitHubApiStub.firstCall.args[0].baseUrl, 'https://github.my-GHE-enabled-company.com/api/v3');
   t.is(githubRequestStub.firstCall.lastArg.body, 'My default changelog');
 });
 
@@ -116,7 +116,7 @@ test('should release to alternative host and proxy', async t => {
   await github.release();
 
   t.is(GitHubApiStub.callCount, 1);
-  t.is(GitHubApiStub.firstCall.args[0].url, 'https://my-custom-host.org/api/v3');
+  t.is(GitHubApiStub.firstCall.args[0].baseUrl, 'https://my-custom-host.org/api/v3');
   t.is(GitHubApiStub.firstCall.args[0].proxy, 'http://proxy:8080');
 });
 
