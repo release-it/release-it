@@ -241,6 +241,21 @@ test.serial('should run tasks without package.json', async t => {
     t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
   });
 
+  test.serial('should publish pre-release without pre-id with different npm.tag', async t => {
+    const { target } = t.context;
+    const pkgName = path.basename(target);
+    gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
+    sh.exec('git tag v1.0.0');
+    await tasks({ increment: 'major', preRelease: true, npm: { name: pkgName, tag: 'next' } }, stubs);
+    t.is(npmStub.callCount, 4);
+    t.is(npmStub.lastCall.args[0].trim(), 'npm publish . --tag next');
+    const { stdout } = sh.exec('git describe --tags --abbrev=0');
+    t.is(stdout.trim(), '2.0.0-0');
+    t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...2.0.0-0)`));
+    t.true(log.log.firstCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
+    t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
+  });
+
   test.serial('should run all scripts', async t => {
     const { bare } = t.context;
     const spy = sinon.spy(ShellStub.prototype, 'run');
