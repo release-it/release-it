@@ -8,6 +8,7 @@ const Log = require('../lib/log');
 const githubRequest = require('./stub/github.request');
 const { GitHubClientError } = require('../lib/errors');
 const HttpError = require('@octokit/request/lib/http-error');
+const pkg = require('../package.json');
 
 test.beforeEach(t => {
   const gitHubApi = new GitHubApi();
@@ -73,10 +74,9 @@ test('should release and upload assets', async t => {
 
   t.is(GitHubApiStub.callCount, 1);
   t.deepEqual(GitHubApiStub.firstCall.args[0], {
-    version: '3.0.0',
     baseUrl: 'https://api.github.com',
-    auth: github.token,
-    userAgent: 'webpro/release-it',
+    auth: `token ${github.token}`,
+    userAgent: `release-it/${pkg.version}`,
     request: { timeout: 0 }
   });
 
