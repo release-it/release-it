@@ -133,7 +133,7 @@ test('should create prompt with increment list', async t => {
     ],
     pageSize: 9,
     transformer: false,
-    default: undefined
+    default: true
   });
   t.is(task.callCount, 1);
   t.is(task.firstCall.args[0], 'minor');

@@ -52,13 +52,5 @@
     "tokenRef": "GITLAB_TOKEN",
     "assets": null,
     "origin": null
-  },
-  "prompt": {
-    "commit": true,
-    "tag": true,
-    "push": true,
-    "ghRelease": true,
-    "glRelease": true,
-    "publish": true
   }
 }

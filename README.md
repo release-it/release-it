@@ -184,27 +184,6 @@ tasks will be executed as demonstrated in the first animation above.
 
 On a Continuous Integration (CI) environment, the non-interactive mode is activated automatically.
 
-<details>
-  <summary><strong>An overview of the tasks</strong> (click to expand)</summary>
-
-| Task           | Option           | Default | Prompt             | Default |
-| :------------- | :--------------- | :-----: | :----------------- | :-----: |
-| Git commit     | `git.commit`     | `true`  | `prompt.commit`    |   `Y`   |
-| Git tag        | `git.tag`        | `true`  | `prompt.tag`       |   `Y`   |
-| Git push       | `git.push`       | `true`  | `prompt.push`      |   `Y`   |
-| GitHub release | `github.release` | `false` | `prompt.ghRelease` |   `Y`   |
-| GitLab release | `gitlab.release` | `false` | `prompt.glRelease` |   `Y`   |
-| npm publish    | `npm.publish`    | `true`  | `prompt.publish`   |   `Y`   |
-
-The **Option/Default** columns represent default options in **non-interactive/CI** mode. The **Prompt/Default** columns
-represent the prompts and their default answers in **interactive** mode. You can still change the answer to either `Y`
-or `N` as the questions show up (or cancel the process with `Ctrl-c`).
-
-If an option is set to `false`, the related prompt will not be shown at all in interactive mode (regardless of its
-default answer).
-
-</details>
-
 ## Latest version
 
 By default, release-it uses the latest Git tag to determine which version should be released. For projects that don't
