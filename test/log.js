@@ -57,7 +57,7 @@ test('should print command execution (verbose)', t => {
   mockStdIo.start();
   log.exec('foo');
   const { stdout } = mockStdIo.end();
-  t.is(stdout.trim(), '! foo');
+  t.is(stdout.trim(), '$ foo');
 });
 
 test('should print command execution (dry run)', t => {
@@ -65,7 +65,7 @@ test('should print command execution (dry run)', t => {
   mockStdIo.start();
   log.exec('foo');
   const { stdout } = mockStdIo.end();
-  t.is(stdout.trim(), '! foo');
+  t.is(stdout.trim(), '$ foo');
 });
 
 test('should print command execution (read-only)', t => {
@@ -73,7 +73,7 @@ test('should print command execution (read-only)', t => {
   mockStdIo.start();
   log.exec('foo', 'bar', false);
   const { stdout } = mockStdIo.end();
-  t.is(stdout.trim(), '! foo bar');
+  t.is(stdout.trim(), '$ foo bar');
 });
 
 test('should print command execution (write)', t => {
@@ -81,5 +81,5 @@ test('should print command execution (write)', t => {
   mockStdIo.start();
   log.exec('foo', '--arg n', true);
   const { stdout } = mockStdIo.end();
-  t.is(stdout.trim(), '$ foo --arg n');
+  t.is(stdout.trim(), '! foo --arg n');
 });
