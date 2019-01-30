@@ -1,16 +1,13 @@
 {
-  "preReleaseId": null,
-  "pkgFiles": ["package.json"],
-  "use": "git.tag",
   "scripts": {
     "beforeStart": null,
     "beforeBump": null,
     "afterBump": null,
     "beforeStage": null,
-    "changelog": "git log --pretty=format:\"* %s (%h)\" [REV_RANGE]",
     "afterRelease": null
   },
   "git": {
+    "changelog": "git log --pretty=format:\"* %s (%h)\" ${latestTag}...HEAD",
     "requireCleanWorkingDir": true,
     "requireUpstream": true,
     "addUntrackedFiles": false,
@@ -28,8 +25,6 @@
   "npm": {
     "publish": true,
     "publishPath": ".",
-    "tag": "latest",
-    "private": false,
     "access": null,
     "otp": null
   },

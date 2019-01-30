@@ -1,53 +1,31 @@
-const path = require('path');
 const test = require('ava');
 const sinon = require('sinon');
 const sh = require('shelljs');
-const uuid = require('uuid/v4');
-const { readFile, gitAdd } = require('./util/index');
-const Shell = require('../lib/shell');
-const Log = require('../lib/log');
-const Git = require('../lib/git');
-
-const sandbox = sinon.createSandbox();
-const log = sandbox.createStubInstance(Log);
-
-const shell = new Shell();
-const gitClient = new Git({ log });
-
-const cwd = path.resolve(process.cwd());
+const { mkTmpDir, readFile, gitAdd } = require('./util/helpers');
+const { factory } = require('./util');
+const Git = require('../lib/plugin/git/git');
 
 test.beforeEach(() => {
-  const tmp = path.join(cwd, 'tmp', uuid());
-  sh.mkdir('-p', tmp);
+  const tmp = mkTmpDir();
   sh.pushd('-q', tmp);
-});
-
-test.afterEach(() => {
-  sh.pushd('-q', cwd);
-  sandbox.resetHistory();
 });
 
 test.serial('should detect Git repo', async t => {
-  t.true(await gitClient.isGitRepo());
-  const tmp = '../../..';
-  sh.pushd('-q', tmp);
+  const gitClient = factory(Git);
   t.false(await gitClient.isGitRepo());
-  sh.popd('-q');
-});
-
-test.serial('should detect if in Git root directory', async t => {
-  t.false(await gitClient.isInGitRootDir());
   sh.exec('git init');
-  t.true(await gitClient.isInGitRootDir());
+  t.true(await gitClient.isGitRepo());
 });
 
 test.serial('should return whether repo has upstream branch', async t => {
+  const gitClient = factory(Git);
   sh.exec('git init');
   gitAdd('line', 'file', 'Add file');
   t.false(await gitClient.hasUpstreamBranch());
 });
 
 test.serial('should return branch name', async t => {
+  const gitClient = factory(Git);
   sh.exec('git init');
   t.is(await gitClient.getBranchName(), null);
   sh.exec('git checkout -b feat');
@@ -56,6 +34,7 @@ test.serial('should return branch name', async t => {
 });
 
 test.serial('should return whether tag exists and if working dir is clean', async t => {
+  const gitClient = factory(Git);
   sh.exec('git init');
   t.false(await gitClient.tagExists('1.0.0'));
   sh.touch('file');
@@ -69,36 +48,38 @@ test.serial('should return whether tag exists and if working dir is clean', asyn
 test.serial('should return the remote url', async t => {
   sh.exec(`git init`);
   {
-    const gitClient = new Git({ pushRepo: 'origin' });
+    const options = { git: { pushRepo: 'origin' } };
+    const gitClient = factory(Git, { options });
     t.is(await gitClient.getRemoteUrl(), null);
     sh.exec(`git remote add origin foo`);
     t.is(await gitClient.getRemoteUrl(), 'foo');
   }
   {
-    const gitClient = new Git({ pushRepo: 'another' });
+    const options = { git: { pushRepo: 'another' } };
+    const gitClient = factory(Git, { options });
     t.is(await gitClient.getRemoteUrl(), null);
     sh.exec(`git remote add another bar`);
     t.is(await gitClient.getRemoteUrl(), 'bar');
   }
   {
-    const gitClient = new Git({ pushRepo: 'git://github.com/webpro/release-it.git' });
+    const options = { git: { pushRepo: 'git://github.com/webpro/release-it.git' } };
+    const gitClient = factory(Git, { options });
     t.is(await gitClient.getRemoteUrl(), 'git://github.com/webpro/release-it.git');
   }
 });
 
 test.serial('should stage, commit, tag and push', async t => {
-  const bare = `../${uuid()}`;
+  const bare = mkTmpDir();
   sh.exec(`git init --bare ${bare}`);
   sh.exec(`git clone ${bare} .`);
   const version = '1.2.3';
   gitAdd(`{"version":"${version}"}`, 'package.json', 'Add package.json');
-  const gitClient = new Git();
-  await gitClient.init();
+  const gitClient = factory(Git);
   {
     sh.exec(`git tag ${version}`);
-    const latestTag = await gitClient.getLatestTag();
+    const latestTagName = await gitClient.getLatestTagName();
     t.true(await gitClient.isGitRepo());
-    t.is(version, latestTag);
+    t.is(version, latestTagName);
   }
   {
     gitAdd('line', 'file', 'Add file');
@@ -106,7 +87,7 @@ test.serial('should stage, commit, tag and push', async t => {
     await gitClient.stage('package.json');
     await gitClient.commit({ message: `Release v1.2.4` });
     await gitClient.tag({ name: 'v1.2.4', annotation: 'Release v1.2.4' });
-    t.is(await gitClient.getLatestTag(), 'v1.2.4');
+    t.is(await gitClient.getLatestTagName(), 'v1.2.4');
     await gitClient.push();
     const status = sh.exec('git status -uno');
     t.true(status.includes('nothing to commit'));
@@ -114,17 +95,13 @@ test.serial('should stage, commit, tag and push', async t => {
 });
 
 test.serial('should commit, tag and push with extra args', async t => {
-  const bare = `../${uuid()}`;
+  const bare = mkTmpDir();
   sh.exec(`git init --bare ${bare}`);
   sh.exec(`git clone ${bare} .`);
   gitAdd('line', 'file', 'Add file');
-  const options = {
-    commitArgs: '-S',
-    tagArgs: '-T foo',
-    pushArgs: '-U bar -V'
-  };
-  const gitClient = new Git(options, { shell });
-  const spy = sinon.stub(shell, 'run').resolves();
+  const options = { git: { commitArgs: '-S', tagArgs: '-T foo', pushArgs: '-U bar -V' } };
+  const gitClient = factory(Git, { options });
+  const spy = sinon.stub(gitClient.shell, 'exec').resolves();
   await gitClient.stage('package.json');
   await gitClient.commit({ message: `Release v1.2.4` });
   await gitClient.tag({ name: 'v1.2.4', annotation: 'Release v1.2.4' });
@@ -136,13 +113,12 @@ test.serial('should commit, tag and push with extra args', async t => {
 });
 
 test.serial('should push to origin', async t => {
-  const bare = `../${uuid()}`;
+  const bare = mkTmpDir();
   sh.exec(`git init --bare ${bare}`);
   sh.exec(`git clone ${bare} .`);
   gitAdd('line', 'file', 'Add file');
-  const gitClient = new Git({ shell });
-  await gitClient.init();
-  const spy = sinon.spy(shell, 'run');
+  const gitClient = factory(Git);
+  const spy = sinon.spy(gitClient.shell, 'exec');
   await gitClient.push();
   t.is(spy.lastCall.args[0], 'git push --follow-tags  origin');
   const actual = sh.exec('git ls-tree -r HEAD --name-only', { cwd: bare });
@@ -151,13 +127,13 @@ test.serial('should push to origin', async t => {
 });
 
 test.serial('should push to repo url', async t => {
-  const bare = `../${uuid()}`;
+  const bare = mkTmpDir();
   sh.exec(`git init --bare ${bare}`);
   sh.exec(`git clone ${bare} .`);
   gitAdd('line', 'file', 'Add file');
-  const gitClient = new Git({ pushRepo: 'https://host/repo.git', shell });
-  await gitClient.init();
-  const spy = sinon.spy(shell, 'run');
+  const options = { git: { pushRepo: 'https://host/repo.git' } };
+  const gitClient = factory(Git, { options });
+  const spy = sinon.spy(gitClient.shell, 'exec');
   try {
     await gitClient.push();
   } catch (err) {
@@ -167,14 +143,14 @@ test.serial('should push to repo url', async t => {
 });
 
 test.serial('should push to remote name (not "origin")', async t => {
-  const bare = `../${uuid()}`;
+  const bare = mkTmpDir();
   sh.exec(`git init --bare ${bare}`);
   sh.exec(`git clone ${bare} .`);
   gitAdd('line', 'file', 'Add file');
   sh.exec(`git remote add upstream ${sh.exec('git remote get-url origin')}`);
-  const gitClient = new Git({ pushRepo: 'upstream', shell });
-  await gitClient.init();
-  const spy = sinon.spy(shell, 'run');
+  const options = { git: { pushRepo: 'upstream' } };
+  const gitClient = factory(Git, { options });
+  const spy = sinon.spy(gitClient.shell, 'exec');
   await gitClient.push();
   t.is(spy.lastCall.args[0], 'git push --follow-tags  upstream');
   const actual = sh.exec('git ls-tree -r HEAD --name-only', { cwd: bare });
@@ -190,6 +166,7 @@ test.serial('should push to remote name (not "origin")', async t => {
 });
 
 test.serial('should return repo status', async t => {
+  const gitClient = factory(Git);
   sh.exec('git init');
   gitAdd('line', 'file1', 'Add file');
   sh.ShellString('line').toEnd('file1');
@@ -199,6 +176,7 @@ test.serial('should return repo status', async t => {
 });
 
 test.serial('should reset files', async t => {
+  const gitClient = factory(Git);
   sh.exec('git init');
   gitAdd('line', 'file', 'Add file');
   sh.ShellString('line').toEnd('file');
@@ -206,5 +184,5 @@ test.serial('should reset files', async t => {
   await gitClient.reset('file');
   t.regex(await readFile('file'), /^line\s*$/);
   await gitClient.reset(['file2, file3']);
-  t.regex(log.warn.firstCall.args[0], /Could not reset file2, file3/);
+  t.regex(gitClient.log.warn.firstCall.args[0], /Could not reset file2, file3/);
 });

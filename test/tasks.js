@@ -3,19 +3,18 @@ const test = require('ava');
 const sh = require('shelljs');
 const proxyquire = require('proxyquire');
 const _ = require('lodash');
-const debug = require('debug');
 const Log = require('../lib/log');
 const Spinner = require('../lib/spinner');
-const { gitAdd, readJSON } = require('./util/index');
-const uuid = require('uuid/v4');
+const Config = require('../lib/config');
+const { mkTmpDir, gitAdd } = require('./util/helpers');
 const GitHubApi = require('@octokit/rest');
 const githubRequest = require('./stub/github.request');
 const got = require('./stub/got');
-const Shell = require('../lib/shell');
+const ShellStub = require('./stub/shell');
 const sinon = require('sinon');
 const runTasks = require('../lib/tasks');
+const Plugin = require('../lib/plugin');
 
-const cwd = process.cwd();
 const noop = Promise.resolve();
 
 const sandbox = sinon.createSandbox();
@@ -27,35 +26,35 @@ const GitHubApiStub = sandbox.stub().returns(githubApi);
 
 const gotStub = got();
 
-const npmStub = sandbox.stub().resolves();
-const log = sandbox.createStubInstance(Log);
-const spinner = sandbox.createStubInstance(Spinner);
-spinner.show.callsFake(({ enabled = true, task }) => (enabled ? task() : noop));
-const stubs = { log, spinner };
-
-class ShellStub extends Shell {
-  run(command) {
-    if (/^npm /.test(command)) {
-      debug('release-it:npm')(...arguments);
-      return npmStub(...arguments);
-    }
-    return super.run(...arguments);
-  }
-}
-
 const testConfig = {
   config: false,
+  manifest: false,
   'non-interactive': true,
   'disable-metrics': true
 };
 
-const tasks = (options, ...args) => runTasks(Object.assign({}, testConfig, options), ...args);
+const log = sandbox.createStubInstance(Log);
+const spinner = sandbox.createStubInstance(Spinner);
+spinner.show.callsFake(({ enabled = true, task }) => (enabled ? task() : noop));
+
+const getContainer = options => {
+  const config = new Config(Object.assign({}, testConfig, options));
+  const shell = new ShellStub({ container: { log, config } });
+  return {
+    log,
+    spinner,
+    config,
+    shell
+  };
+};
+
+const getNpmArgs = args => args.filter(args => args[0].startsWith('npm ')).map(args => args[0].trim());
 
 test.serial.beforeEach(t => {
-  const bare = path.resolve(cwd, 'tmp', uuid());
-  const target = path.resolve(cwd, 'tmp', uuid());
-  sh.pushd('-q', `${cwd}/tmp`);
-  sh.exec(`git init --bare ${bare}`);
+  const bare = mkTmpDir();
+  const target = mkTmpDir();
+  sh.pushd('-q', bare);
+  sh.exec(`git init --bare .`);
   sh.exec(`git clone ${bare} ${target}`);
   sh.pushd('-q', target);
   gitAdd('line', 'file', 'Add file');
@@ -63,45 +62,47 @@ test.serial.beforeEach(t => {
 });
 
 test.serial.afterEach(() => {
-  sh.pushd('-q', cwd);
   sandbox.resetHistory();
 });
 
 test.serial('should run tasks without throwing errors', async t => {
-  const { name, latestVersion, version } = await tasks(
-    { increment: 'patch', pkgFiles: null, manifest: false, npm: { publish: false } },
-    stubs
-  );
-  t.true(log.obtrusive.firstCall.args[0].includes(`release ${name} (${latestVersion}...${version})`));
+  sh.mv('.git', 'foo');
+  const { name, latestVersion } = await runTasks({}, getContainer());
+  t.true(log.obtrusive.firstCall.args[0].includes(`release ${name} (currently at ${latestVersion})`));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
+});
+
+test.serial('should run tasks without package.json', async t => {
+  sh.exec('git tag 1.0.0');
+  gitAdd('line', 'file', 'Add file');
+  const { name } = await runTasks({}, getContainer({ increment: 'major', git: { commit: false } }));
+  t.true(log.obtrusive.firstCall.args[0].includes(`release ${name} (currently at 1.0.0)`));
+  t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
+  t.is(log.warn.callCount, 0);
+  {
+    const { stdout } = sh.exec('git describe --tags --abbrev=0');
+    t.is(stdout.trim(), '2.0.0');
+  }
 });
 
 test.serial('should run tasks with minimal config and without any warnings/errors', async t => {
   gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
   sh.exec('git tag 1.2.3');
   gitAdd('line', 'file', 'More file');
-  await tasks({ increment: 'patch', npm: { publish: false } }, stubs);
-  t.true(log.obtrusive.firstCall.args[0].includes('release my-package (1.2.3...1.2.4)'));
+  await runTasks({}, getContainer({ increment: 'patch' }));
+  t.true(log.obtrusive.firstCall.args[0].includes('release my-package (currently at 1.2.3)'));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-  const pkg = await readJSON('package.json');
-  t.is(pkg.version, '1.2.4');
-  {
-    const { stdout } = sh.exec('git describe --tags --abbrev=0');
-    t.is(stdout.trim(), '1.2.4');
-  }
+  const { stdout } = sh.exec('git describe --tags --abbrev=0');
+  t.is(stdout.trim(), '1.2.4');
 });
 
-test.serial('should use pkg.version if no git tag', async t => {
+test.serial('should use pkg.version', async t => {
   gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
-  await tasks({ increment: 'minor', npm: { publish: false } }, stubs);
-  t.true(log.obtrusive.firstCall.args[0].includes('release my-package (1.2.3...1.3.0)'));
+  await runTasks({}, getContainer({ increment: 'minor' }));
+  t.true(log.obtrusive.firstCall.args[0].includes('release my-package (currently at 1.2.3)'));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-  const pkg = await readJSON('package.json');
-  t.is(pkg.version, '1.3.0');
-  {
-    const { stdout } = sh.exec('git describe --tags --abbrev=0');
-    t.is(stdout.trim(), '1.3.0');
-  }
+  const { stdout } = sh.exec('git describe --tags --abbrev=0');
+  t.is(stdout.trim(), '1.3.0');
 });
 
 test.serial('should use pkg.version (in sub dir) w/o tagging repo', async t => {
@@ -110,52 +111,48 @@ test.serial('should use pkg.version (in sub dir) w/o tagging repo', async t => {
   sh.mkdir('my-package');
   sh.pushd('-q', 'my-package');
   gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
-  await tasks({ increment: 'minor', git: { tag: false }, npm: { publish: false } }, stubs);
-  t.true(log.obtrusive.firstCall.args[0].endsWith('release my-package (1.2.3...1.3.0)'));
+  const container = getContainer({ increment: 'minor', git: { tag: false } });
+  const exec = sinon.spy(container.shell, 'exec');
+  await runTasks({}, container);
+  t.true(log.obtrusive.firstCall.args[0].endsWith('release my-package (currently at 1.2.3)'));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-  const pkg = await readJSON('package.json');
-  t.is(pkg.version, '1.3.0');
-  sh.popd('-q');
-  {
-    const { stdout } = sh.exec('git describe --tags --abbrev=0');
-    t.is(stdout.trim(), '1.0.0');
-    const pkg = await readJSON('package.json');
-    t.is(pkg.version, '1.0.0');
-  }
+  const { stdout } = sh.exec('git describe --tags --abbrev=0');
+  t.is(stdout.trim(), '1.0.0');
+  t.is(exec.args[3][0], 'npm version 1.3.0 --no-git-tag-version');
+  exec.restore();
 });
 
-test.serial('should run tasks without package.json', async t => {
-  sh.exec('git tag 1.0.0');
-  const { name } = await tasks({ increment: 'major', npm: { publish: false } }, stubs);
-  t.true(log.obtrusive.firstCall.args[0].includes(`release ${name} (1.0.0...2.0.0)`));
-  t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-  const warnings = _.flatten(log.warn.args);
-  t.true(warnings.includes('Could not bump package.json'));
-  t.true(warnings.includes('Could not stage package.json'));
-  {
-    const { stdout } = sh.exec('git describe --tags --abbrev=0');
-    t.is(stdout.trim(), '2.0.0');
-  }
-});
+const fooPlugin = sandbox.createStubInstance(Plugin);
+const FooPlugin = sandbox.stub().callsFake(() => fooPlugin);
+const barPlugin = sandbox.createStubInstance(Plugin);
+const BarPlugin = sandbox.stub().callsFake(() => barPlugin);
 
 {
   const runTasks = proxyquire('../lib/tasks', {
     '@octokit/rest': Object.assign(GitHubApiStub, { '@global': true }),
     got: Object.assign(gotStub, { '@global': true }),
-    './shell': Object.assign(ShellStub, { '@global': true })
+    'my-plugin': Object.assign(FooPlugin, { isEnabled: () => true, '@global': true, '@noCallThru': true }),
+    '/my/plugin': Object.assign(BarPlugin, { isEnabled: () => true, '@global': true, '@noCallThru': true })
   });
 
   const tasks = (options, ...args) => runTasks(Object.assign({}, testConfig, options), ...args);
+
+  const getNpmArgs = args => args.filter(args => args[0].startsWith('npm ')).map(args => args[0].trim());
 
   test.serial('should release all the things (basic)', async t => {
     const { bare, target } = t.context;
     const repoName = path.basename(bare);
     const pkgName = path.basename(target);
-    const owner = 'tmp';
+    const owner = path.basename(path.dirname(bare));
     gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
     sh.exec('git tag 1.0.0');
     gitAdd('line', 'file', 'More file');
-    await tasks({ github: { release: true }, npm: { name: pkgName, publish: true } }, stubs);
+
+    const container = getContainer({ github: { release: true }, npm: { name: pkgName } });
+    const exec = sinon.spy(container.shell, 'exec');
+
+    await tasks({}, container);
+
     const githubReleaseArg = githubRequestStub.firstCall.lastArg;
     t.is(githubRequestStub.callCount, 1);
     t.is(githubReleaseArg.url, '/repos/:owner/:repo/releases');
@@ -167,45 +164,52 @@ test.serial('should run tasks without package.json', async t => {
     t.is(githubReleaseArg.prerelease, false);
     t.is(githubReleaseArg.draft, false);
 
-    t.is(npmStub.callCount, 4);
-    t.is(npmStub.firstCall.args[0], 'npm ping');
-    t.is(npmStub.secondCall.args[0], 'npm whoami');
-    t.is(npmStub.thirdCall.args[0], `npm show ${pkgName}@latest version`);
-    t.is(npmStub.args[3][0], 'npm publish . --tag latest');
+    const npmArgs = getNpmArgs(container.shell.exec.args);
 
-    t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
+    t.deepEqual(npmArgs, [
+      'npm ping',
+      'npm whoami',
+      `npm show ${pkgName}@latest version`,
+      'npm version 1.0.1 --no-git-tag-version',
+      'npm publish . --tag latest'
+    ]);
+
+    t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (currently at 1.0.0)`));
     t.true(log.log.firstCall.args[0].endsWith(`https://github.com/${owner}/${repoName}/releases/tag/1.0.1`));
     t.true(log.log.secondCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
+
+    exec.restore();
   });
 
   test.serial('should release all the things (pre-release, github, gitlab)', async t => {
     const { bare, target } = t.context;
     const repoName = path.basename(bare);
-    const owner = 'tmp';
     const pkgName = path.basename(target);
+    const owner = path.basename(path.dirname(bare));
     gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
     sh.exec('git tag v1.0.0');
     gitAdd('line', 'file', 'More file');
     sh.exec('git push --follow-tags');
-    await tasks(
-      {
-        increment: 'minor',
-        preRelease: 'alpha',
-        git: { tagName: 'v${version}' },
-        github: {
-          release: true,
-          releaseNotes: 'echo "Notes for ${name} (v${version}): ${changelog}"',
-          assets: ['file']
-        },
-        gitlab: {
-          release: true,
-          releaseNotes: 'echo "Notes for ${name}: ${changelog}"',
-          assets: ['file']
-        },
-        npm: { name: pkgName }
+
+    const container = getContainer({
+      increment: 'minor',
+      preRelease: 'alpha',
+      git: { tagName: 'v${version}' },
+      github: {
+        release: true,
+        releaseNotes: 'echo "Notes for ${name} (v${version}): ${changelog}"',
+        assets: ['file']
       },
-      stubs
-    );
+      gitlab: {
+        release: true,
+        releaseNotes: 'echo "Notes for ${name}: ${changelog}"',
+        assets: ['file']
+      },
+      npm: { name: pkgName }
+    });
+    const exec = sinon.spy(container.shell, 'exec');
+
+    await tasks({}, container);
 
     t.is(githubRequestStub.callCount, 2);
 
@@ -228,17 +232,25 @@ test.serial('should run tasks without package.json', async t => {
     t.true(gotStub.post.secondCall.args[0].endsWith(`/projects/${owner}%2F${repoName}/releases`));
     t.regex(gotStub.post.secondCall.args[1].body.description, RegExp(`Notes for ${pkgName}: \\* More file`));
 
-    t.is(npmStub.callCount, 4);
-    t.is(npmStub.lastCall.args[0], 'npm publish . --tag alpha');
+    const npmArgs = getNpmArgs(container.shell.exec.args);
+    t.deepEqual(npmArgs, [
+      'npm ping',
+      'npm whoami',
+      `npm show ${pkgName}@latest version`,
+      'npm version 1.1.0-alpha.0 --no-git-tag-version',
+      'npm publish . --tag alpha'
+    ]);
 
     const { stdout } = sh.exec('git describe --tags --abbrev=0');
     t.is(stdout.trim(), 'v1.1.0-alpha.0');
 
-    t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.1.0-alpha.0)`));
+    t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (currently at 1.0.0)`));
     t.true(log.log.firstCall.args[0].endsWith(`https://github.com/${owner}/${repoName}/releases/tag/v1.1.0-alpha.0`));
     t.true(log.log.secondCall.args[0].endsWith(`${repoName}/releases`));
     t.true(log.log.thirdCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
     t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
+
+    exec.restore();
   });
 
   test.serial('should publish pre-release without pre-id with different npm.tag', async t => {
@@ -246,19 +258,32 @@ test.serial('should run tasks without package.json', async t => {
     const pkgName = path.basename(target);
     gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
     sh.exec('git tag v1.0.0');
-    await tasks({ increment: 'major', preRelease: true, npm: { name: pkgName, tag: 'next' } }, stubs);
-    t.is(npmStub.callCount, 4);
-    t.is(npmStub.lastCall.args[0], 'npm publish . --tag next');
+
+    const container = getContainer({ increment: 'major', preRelease: true, npm: { name: pkgName, tag: 'next' } });
+    const exec = sinon.spy(container.shell, 'exec');
+
+    await tasks({}, container);
+
+    const npmArgs = getNpmArgs(container.shell.exec.args);
+    t.deepEqual(npmArgs, [
+      'npm ping',
+      'npm whoami',
+      `npm show ${pkgName}@latest version`,
+      'npm version 2.0.0-0 --no-git-tag-version',
+      'npm publish . --tag next'
+    ]);
+
     const { stdout } = sh.exec('git describe --tags --abbrev=0');
     t.is(stdout.trim(), '2.0.0-0');
-    t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...2.0.0-0)`));
+    t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (currently at 1.0.0)`));
     t.true(log.log.firstCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
     t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
+
+    exec.restore();
   });
 
   test.serial('should run all scripts', async t => {
     const { bare } = t.context;
-    const spy = sinon.spy(ShellStub.prototype, 'run');
     const scripts = {
       beforeStart: 'echo beforeStart ${name} ${repo.project}',
       beforeBump: 'echo beforeBump ${name}',
@@ -266,14 +291,16 @@ test.serial('should run tasks without package.json', async t => {
       beforeStage: 'echo beforeStage ${name}',
       afterRelease: 'echo afterRelease ${name} ${repo.project}'
     };
-    const { name } = await tasks({ increment: 'patch', pkgFiles: null, manifest: false, scripts }, stubs);
-    const commands = _.flatten(spy.args);
+    const container = getContainer({ increment: 'patch', manifest: false, scripts });
+    const exec = sinon.spy(container.shell, '_exec');
+    const { name } = await tasks({}, container);
+    const commands = _.flatten(exec.args).filter(arg => typeof arg === 'string');
     const scriptsArray = _.values(scripts)
       .map(script => script.replace('${name}', name))
       .map(script => script.replace('${repo.project}', path.basename(bare)));
     const filtered = commands.filter(command => scriptsArray.includes(command));
     t.deepEqual(filtered, scriptsArray);
-    spy.restore();
+    exec.restore();
   });
 
   test.serial('should use pkg.publishConfig.registry', async t => {
@@ -290,10 +317,61 @@ test.serial('should run tasks without package.json', async t => {
       'package.json',
       'Add package.json'
     );
-    await tasks({ npm: { name: pkgName } }, stubs);
 
-    t.is(npmStub.firstCall.args[0], `npm ping --registry ${registry}`);
-    t.is(npmStub.secondCall.args[0], `npm whoami --registry ${registry}`);
-    t.true(log.log.firstCall.args[0].endsWith(`${registry}/package/${pkgName}`));
+    const container = getContainer();
+
+    const exec = sinon.spy(container.shell, 'exec');
+
+    await tasks({}, container);
+
+    const npmArgs = getNpmArgs(exec.args);
+    t.is(npmArgs[0], `npm ping --registry ${registry}`);
+    t.is(npmArgs[1], `npm whoami --registry ${registry}`);
+    t.true(container.log.log.firstCall.args[0].endsWith(`${registry}/package/${pkgName}`));
+
+    exec.restore();
+  });
+
+  test.serial('should instantiate plugins and execute all release-cycle methods', async t => {
+    const config = {
+      plugins: {
+        'my-plugin': {
+          name: 'foo'
+        },
+        '/my/plugin': [
+          'named-plugin',
+          {
+            name: 'bar'
+          }
+        ]
+      }
+    };
+    const container = getContainer(config);
+    await tasks({}, container);
+
+    t.deepEqual(FooPlugin.firstCall.args[0].namespace, 'my-plugin');
+    t.deepEqual(FooPlugin.firstCall.args[0].options, { name: 'foo' });
+    t.deepEqual(BarPlugin.firstCall.args[0].namespace, 'named-plugin');
+    t.deepEqual(BarPlugin.firstCall.args[0].options, { name: 'bar' });
+
+    [
+      'init',
+      'getName',
+      'getLatestVersion',
+      'getIncrementedVersion',
+      'beforeBump',
+      'bump',
+      'beforeRelease',
+      'release',
+      'afterRelease'
+    ].forEach(method => {
+      t.is(fooPlugin[method].callCount, 1);
+      t.is(barPlugin[method].callCount, 1);
+    });
+
+    t.deepEqual(fooPlugin.getIncrementedVersion.firstCall.args[0], { latestVersion: '0.0.0' });
+    t.deepEqual(barPlugin.getIncrementedVersion.firstCall.args[0], { latestVersion: '0.0.0' });
+    t.is(fooPlugin.bump.firstCall.args[0], '0.0.1');
+    t.is(barPlugin.bump.firstCall.args[0], '0.0.1');
   });
 }

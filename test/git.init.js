@@ -1,31 +1,23 @@
-const path = require('path');
 const test = require('ava');
 const sh = require('shelljs');
-const { gitAdd } = require('./util/index');
-const uuid = require('uuid/v4');
-const sinon = require('sinon');
-const Git = require('../lib/git');
+const { mkTmpDir, gitAdd } = require('./util/helpers');
+const { factory } = require('./util');
+const Shell = require('../lib/shell');
+const Log = require('../lib/log');
+const Git = require('../lib/plugin/git/git');
+const { git } = require('../conf/release-it.json');
 const { GitRepoError, GitRemoteUrlError, GitCleanWorkingDirError, GitUpstreamError } = require('../lib/errors');
 
-const cwd = process.cwd();
-
-const sandbox = sinon.createSandbox();
-
 test.serial.beforeEach(t => {
-  const bare = path.resolve(cwd, 'tmp', uuid());
-  const target = path.resolve(cwd, 'tmp', uuid());
-  sh.pushd('-q', `${cwd}/tmp`);
-  sh.exec(`git init --bare ${bare}`);
+  const bare = mkTmpDir();
+  const target = mkTmpDir();
+  sh.pushd('-q', bare);
+  sh.exec(`git init --bare .`);
   sh.exec(`git clone ${bare} ${target}`);
   sh.pushd('-q', target);
   gitAdd('line', 'file', 'Add file');
-  const gitClient = new Git();
+  const gitClient = factory(Git, { options: { git } });
   t.context = { gitClient, bare, target };
-});
-
-test.serial.afterEach(() => {
-  sh.pushd('-q', cwd);
-  sandbox.resetHistory();
 });
 
 test.serial('should throw when not a Git repository', async t => {
@@ -58,10 +50,13 @@ test.serial('should throw if no upstream is configured', async t => {
 });
 
 test.serial('should get the latest tag after fetch', async t => {
-  const { gitClient, bare, target } = t.context;
-  const other = path.resolve(cwd, 'tmp', uuid());
+  const log = new Log();
+  const shell = new Shell({ container: { log } });
+  const gitClient = factory(Git, { container: { shell } });
+  const { bare, target } = t.context;
+  const other = mkTmpDir();
   await gitClient.init();
-  t.is(gitClient.latestTag, null);
+  t.is(gitClient.getContext('latestTagName'), null);
   sh.exec('git push');
   sh.exec(`git clone ${bare} ${other}`);
   sh.pushd('-q', other);
@@ -69,5 +64,5 @@ test.serial('should get the latest tag after fetch', async t => {
   sh.exec('git push --tags');
   sh.pushd('-q', target);
   await gitClient.init();
-  t.is(gitClient.latestTag, '1.0.0');
+  t.is(gitClient.getContext('latestTagName'), '1.0.0');
 });

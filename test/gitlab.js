@@ -2,24 +2,29 @@ const path = require('path');
 const test = require('ava');
 const sinon = require('sinon');
 const proxyquire = require('proxyquire');
+const GitLab = require('../lib/plugin/gitlab/gitlab');
+const { factory, runTasks } = require('./util');
 const Log = require('../lib/log');
 const got = require('./stub/got');
 
+const tokenRef = 'GITLAB_TOKEN';
+const remoteUrl = 'https://gitlab.example.org/owner/repo';
+
 test.beforeEach(t => {
   t.context.got = got();
-  t.context.GitLab = proxyquire('../lib/gitlab', {
+  t.context.GitLab = proxyquire('../lib/plugin/gitlab/gitlab', {
     got: t.context.got
   });
 });
 
-test('should validate token', t => {
-  const { GitLab } = t.context;
-  const tokenRef = 'MY_GITHUB_TOKEN';
-  const gitlab = new GitLab({ release: true, tokenRef, remoteUrl: '' });
+test('should validate token', async t => {
+  const tokenRef = 'MY_GITLAB_TOKEN';
+  const options = { gitlab: { release: true, tokenRef } };
+  const gitlab = factory(GitLab, { options });
   delete process.env[tokenRef];
-  t.throws(() => gitlab.validate(), /Environment variable "MY_GITHUB_TOKEN" is required for GitLab releases/);
+  await t.throwsAsync(gitlab.init(), /Environment variable "MY_GITLAB_TOKEN" is required for GitLab releases/);
   process.env[tokenRef] = '123';
-  t.notThrows(() => gitlab.validate());
+  await t.notThrowsAsync(gitlab.init());
 });
 
 test('should upload assets and release', async t => {
@@ -31,34 +36,36 @@ test('should upload assets and release', async t => {
       markdown: '[file1](/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/file1)'
     })
   });
-  got.post.onSecondCall().resolves({ body: { tag_name: 'v2.0.1', description: '-', name: 'Release 2.0.1' } });
 
   const remoteUrl = 'https://gitlab.com/webpro/release-it-test';
   const asset = 'file1';
-  const version = '2.0.1';
   const tagName = 'v${version}';
 
-  const gitlab = new GitLab({
-    release: true,
-    releaseNotes: 'echo Custom notes',
-    remoteUrl,
-    tagName,
-    assets: path.resolve('test/resources', asset)
-  });
+  const options = {
+    git: {
+      tagName,
+      remoteUrl
+    },
+    gitlab: {
+      tokenRef,
+      release: true,
+      releaseName: 'Release ${version}',
+      releaseNotes: 'echo Custom notes',
+      assets: path.resolve('test/resources', asset)
+    }
+  };
 
-  await gitlab.uploadAssets();
+  const gitlab = factory(GitLab, { options });
+  sinon.stub(gitlab, 'getLatestVersion').resolves('2.0.0');
+
+  await runTasks(gitlab);
+
   t.is(
     gitlab.assets[0].url,
     'https://gitlab.com/webpro/release-it-test/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/file1'
   );
 
-  const releaseResult = await gitlab.release({
-    version
-  });
-
-  t.is(releaseResult.tag_name, 'v2.0.1');
-  t.is(releaseResult.description, '-');
-  t.is(gitlab.releaseUrl, 'https://gitlab.com/webpro/release-it-test/releases');
+  t.is(gitlab.getReleaseUrl(), 'https://gitlab.com/webpro/release-it-test/releases');
   t.is(gitlab.isReleased, true);
 
   t.is(got.post.callCount, 2);
@@ -84,29 +91,31 @@ test('should release to self-managed host', async t => {
   got.post.onFirstCall().resolves({});
   got.post.onSecondCall().resolves({});
 
-  const gitlab = new GitLab({
-    remoteUrl: 'https://gitlab.example.org/user/repo',
-    tagName: '${version}'
-  });
+  const options = {
+    git: { remoteUrl, tagName: '${version}' },
+    gitlab: { releaseName: 'Release ${version}', releaseNotes: 'echo', tokenRef }
+  };
+  const gitlab = factory(GitLab, { options });
+  sinon.stub(gitlab, 'getLatestVersion').resolves('1.0.0');
 
-  await gitlab.release({
-    version: '1',
-    changelog: 'My default changelog'
-  });
+  await runTasks(gitlab);
 
+  t.is(gitlab.origin, 'https://gitlab.example.org');
+  t.is(gitlab.baseUrl, 'https://gitlab.example.org/api/v4');
   t.is(got.post.callCount, 1);
-  t.is(got.post.firstCall.args[0], '/projects/user%2Frepo/releases');
+  t.is(got.post.firstCall.args[0], '/projects/owner%2Frepo/releases');
   t.deepEqual(got.post.firstCall.args[1].body, {
-    description: 'My default changelog',
-    name: 'Release 1',
-    tag_name: '1'
+    description: '-',
+    name: 'Release 1.0.1',
+    tag_name: '1.0.1'
   });
 });
 
 test('should release to sub-grouped repo', async t => {
   const { GitLab, got } = t.context;
-  const gitlab = new GitLab({ remoteUrl: 'git@gitlab.com:group/sub-group/repo.git' });
-  await gitlab.release();
+  const options = { gitlab: { tokenRef }, git: { remoteUrl: 'git@gitlab.com:group/sub-group/repo.git' } };
+  const gitlab = factory(GitLab, { options });
+  await runTasks(gitlab);
   t.is(got.post.callCount, 1);
   t.is(got.post.firstCall.args[0], '/projects/group%2Fsub-group%2Frepo/releases');
 });
@@ -114,28 +123,17 @@ test('should release to sub-grouped repo', async t => {
 test('should handle (http) error', async t => {
   const { GitLab, got } = t.context;
   got.post.throws(new Error('Not found'));
-  const gitlab = new GitLab({ release: true, remoteUrl: '', retryMinTimeout: 0 });
-  await t.throwsAsync(gitlab.release(), { instanceOf: Error, message: 'Not found' });
+  const options = { git: { remoteUrl: '' }, gitlab: { release: true, retryMinTimeout: 0 } };
+  const gitlab = factory(GitLab, { options });
+  await t.throwsAsync(gitlab.createRelease(), { instanceOf: Error, message: 'Not found' });
 });
 
 test('should not make requests in dry run', async t => {
   const { GitLab, got } = t.context;
   const log = sinon.createStubInstance(Log);
-
-  const gitlab = new GitLab({
-    remoteUrl: 'https://example.org/owner/repo',
-    tagName: 'v${version}',
-    isDryRun: true,
-    log
-  });
-
-  await gitlab.release({
-    version: '1'
-  });
-
+  const gitlab = factory(GitLab, { options: { gitlab: { tokenRef } }, global: { isDryRun: true }, container: { log } });
+  await runTasks(gitlab);
   t.is(got.post.callCount, 0);
-  t.is(log.exec.callCount, 1);
-  t.is(gitlab.getReleaseUrl(), 'https://example.org/owner/repo/releases');
   t.is(gitlab.isReleased, true);
 });
 
@@ -147,20 +145,16 @@ test('should use fallback tag release', async t => {
   got.post.onFirstCall().rejects(err);
   got.post.onSecondCall().resolves({});
 
-  const gitlab = new GitLab({
-    remoteUrl: 'https://example.org/owner/repo',
-    tagName: 'v${version}',
-    log
-  });
+  const options = { gitlab: { releaseName: 'R ${version}', tokenRef }, git: { remoteUrl, tagName: '${version}' } };
+  const gitlab = factory(GitLab, { options, container: { log } });
+  sinon.stub(gitlab, 'getLatestVersion').resolves('1.0.0');
 
-  await gitlab.release({
-    version: '1'
-  });
+  await runTasks(gitlab);
 
   t.is(got.post.callCount, 2);
   t.is(got.post.firstCall.args[0], '/projects/owner%2Frepo/releases');
-  t.is(got.post.secondCall.args[0], '/projects/owner%2Frepo/repository/tags/v1/release');
-  t.is(log.exec.callCount, 2);
-  t.is(gitlab.getReleaseUrl(), 'https://example.org/owner/repo/tags/v1');
+  t.is(got.post.secondCall.args[0], '/projects/owner%2Frepo/repository/tags/1.0.1/release');
+  t.is(log.exec.lastCall.args[0], 'gitlab releases#addReleaseNotesToTag "R 1.0.1" (1.0.1)');
+  t.is(gitlab.getReleaseUrl(), 'https://gitlab.example.org/owner/repo/tags/1.0.1');
   t.is(gitlab.isReleased, true);
 });

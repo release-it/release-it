@@ -186,13 +186,9 @@ On a Continuous Integration (CI) environment, the non-interactive mode is activa
 
 ## Latest version
 
-By default, release-it uses the latest Git tag to determine which version should be released. For projects that don't
-have a Git tag (yet), or if the Git tag isn't a valid semver, it falls back to the version found in `package.json`. As a
-last resort, `0.0.0` will be used as the latest version.
-
-To explicitly use the `version` from `package.json` as latest version, set `"use": "pkg.version"` (or
-`--use=pkg.version`). In case the repo itself should not be tagged, make sure to set `git.tag` to `false`. This is also
-useful for [monorepos](#monorepos).
+For Git repositories, release-it uses the latest tag to determine which version should be released. For npm packages
+with a `package.json`, its `version` will be used. In any case, as a last resort, `0.0.0` will be used as the latest
+version.
 
 ## Git
 
@@ -242,7 +238,7 @@ The "Releases" tab on GitHub projects links to a page to store the changelog. To
 
 - Configure `github.release: true`.
 - Obtain a [personal access token](https://github.com/settings/tokens) (release-it only needs "repo" access; no "admin"
-  or other scopes).
+  or other plugins).
 - Make sure the token is available as an environment variable. Example:
 
 ```bash
@@ -291,7 +287,7 @@ download from the GitHub release page. Example:
 
 - Configure `gitlab.release: true`.
 - Obtain a [personal access token](https://gitlab.com/profile/personal_access_tokens) (release-it only needs the "api"
-  scope).
+  plugin).
 - Make sure the token is available as an environment variable. Example:
 
 ```bash
@@ -349,43 +345,43 @@ See the [auto-changelog recipe](docs/recipes/auto-changelog.md) for an example s
 #### Recommended Bump
 
 If your project follows conventions, such as the
-[Angular commit guidelines](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#commits), the special
-`conventional:angular` increment shorthand can be used to get the recommended bump based on the commit messages:
+[Angular commit guidelines](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#commits), the
+`@release-it/conventional-changelog` plugin is useful.
 
-```json
-{
-  "increment": "conventional:angular"
-}
+```bash
+npm install @release-it/conventional-changelog --save-dev
 ```
 
-Please find the
-[list of available conventions](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages)
-(`angular`, `ember`, etc).
-
-#### Generate a custom changelog
-
-Use [conventional-changelog-cli](https://www.npmjs.com/package/conventional-changelog-cli) to generate the changelog. In
-the next example, `scripts.beforeStage` is also used, to update the `CHANGELOG.md` file (and include this change in the
-release commit).
+Use this plugin to get the recommended bump based on the commit messages, generate a conventional changelog, and update
+the `CHANGELOG.md` file:
 
 ```json
 {
-  "increment": "conventional:angular",
-  "scripts": {
-    "changelog": "npx conventional-changelog -p angular -u | tail -n +3",
-    "beforeStage": "npx conventional-changelog -p angular -i CHANGELOG.md -s"
+  "plugins": {
+    "release-it-conventional-changelog": {
+      "preset": "angular",
+      "infile": "CHANGELOG.md"
+    }
   }
 }
 ```
 
+- Omit the `infile` at will. If set, but the file does not exist yet, it's created with the full history.
+- Please find the
+  [list of available presets](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages)
+  (`angular`, `ember`, etc).
+- The options are sent verbatim to
+  [conventional-changelog](https://github.com/conventional-changelog/conventional-changelog/blob/master/packages/conventional-changelog/README.md).
+
 ## Publish to npm
 
-By default, `npm.publish` is `true` and publishing is delegated to `npm publish`.
+With a `package.json` is in the current directory, release-it will let `npm` bump the version in `package.json` (and
+`package-lock.json` if present), and publish to the npm registry.
 
 ### Public scoped packages
 
-A [scoped package](https://docs.npmjs.com/misc/scope) (e.g. `@user/package`) is either public or private. To
-[publish scoped packages](https://docs.npmjs.com/misc/scope#publishing-scoped-packages), make sure this is in
+A [scoped package](https://docs.npmjs.com/misc/plugin) (e.g. `@user/package`) is either public or private. To
+[publish scoped packages](https://docs.npmjs.com/misc/plugin#publishing-scoped-packages), make sure this is in
 `package.json`:
 
 ```json
@@ -409,10 +405,8 @@ basically defeats the purpose of 2FA (also, the OTP expires after a short period
 
 ### Monorepos
 
-From a monorepo package subdirectory, release-it detects `package.json` is not in the same directory as the Git root.
-Then it will take the [latest version](#latest-version) from this `package.json` rather than the latest Git tag.
-
-To not tag the monorepo itself, set `git.tag` to `false`. For example, from `./packages/some-pkg`:
+Monorepos do not require extra configuration, but release-it releases only one package at a time. To not tag the
+repository itself, set `git.tag` to `false`. For example, from `./packages/some-pkg`:
 
 ```
 release-it --git.commitMessage='Release ${name} v${version}' --no-git.tag

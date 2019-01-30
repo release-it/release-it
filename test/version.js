@@ -1,238 +1,121 @@
 const test = require('ava');
-const sh = require('shelljs');
 const sinon = require('sinon');
-const uuid = require('uuid/v4');
-const Version = require('../lib/version');
-const { InvalidVersionError } = require('../lib/errors');
-const Log = require('../lib/log');
-const { gitAdd } = require('./util/index');
-
-const log = sinon.createStubInstance(Log);
+const { factory, runTasks } = require('./util');
+const Version = require('../lib/plugin/version/Version');
 
 test('isValidVersion', t => {
-  const v = new Version();
+  const v = factory(Version);
   t.is(v.isValid('1.0.0'), true);
   t.is(v.isValid(1.0), false);
 });
 
 test('isPreRelease', t => {
-  const v = new Version();
+  const v = factory(Version);
   t.is(v.isPreRelease('1.0.0-beta.0'), true);
   t.is(v.isPreRelease('1.0.0'), false);
 });
 
-test('should throw if invalid increment value was provided', async t => {
-  const v = new Version({ log });
-  v.setLatestVersion({ gitTag: '1.0.0' });
-  const expected = { instanceOf: InvalidVersionError, message: /invalid version was provided/ };
-  v.bump({ increment: null });
-  await t.throws(() => v.validate(), expected);
-  v.bump({ increment: 'foo' });
-  await t.throws(() => v.validate(), expected);
-  v.bump({ increment: 'patsj' });
-  await t.throws(() => v.validate(), expected);
-  v.bump({ increment: '1.1.0' });
-  await t.notThrows(() => v.validate());
-  v.bump({ increment: 'major' });
-  await t.notThrows(() => v.validate());
+test('should increment latest version', t => {
+  const v = factory(Version);
+  const latestVersion = '1.0.0';
+  t.is(v.incrementVersion({ latestVersion, increment: null }), undefined);
+  t.is(v.incrementVersion({ latestVersion, increment: 'foo' }), undefined);
+  t.is(v.incrementVersion({ latestVersion, increment: 'patsj' }), undefined);
+  t.is(v.incrementVersion({ latestVersion, increment: 'a.b.c' }), undefined);
+  t.is(v.incrementVersion({ latestVersion, increment: '0.9.0' }), undefined);
+  t.is(v.incrementVersion({ latestVersion, increment: '1.1.0' }), '1.1.0');
+  t.is(v.incrementVersion({ latestVersion, increment: 'major' }), '2.0.0');
+  t.is(v.incrementVersion({ latestVersion, increment: '2.0.0-beta.1' }), '2.0.0-beta.1');
 });
 
-test('setLatestVersion', t => {
-  const v = new Version({ log });
-  v.setLatestVersion({ gitTag: '1.2.0' });
-  t.is(v.latestVersion, '1.2.0');
-  v.setLatestVersion({ gitTag: 'v1.2.1', pkgVersion: '1.2.2' });
-  t.is(v.latestVersion, '1.2.1');
-  v.setLatestVersion({ use: 'pkg.version', pkgVersion: '1.2.3' });
-  t.is(v.latestVersion, '1.2.3');
+test('should increment latest version (coerce)', t => {
+  const v = factory(Version);
+  t.is(v.incrementVersion({ increment: '1.2' }), '1.2.0');
+  t.is(v.incrementVersion({ increment: '1' }), '1.0.0');
+  t.is(v.incrementVersion({ increment: 'v1.2.0.0' }), '1.2.0');
 });
 
-test('setLatestVersion (not root dir)', t => {
-  const v = new Version();
-  v.setLatestVersion({ gitTag: '1.2.3', pkgVersion: '1.2.4', isRootDir: false });
-  t.is(v.latestVersion, '1.2.4');
+test('should increment version (pre-release continuation)', t => {
+  const v = factory(Version);
+  t.is(v.incrementVersion({ latestVersion: '1.2.3-alpha.0', increment: 'prepatch' }), '1.2.3-alpha.1');
 });
 
-test('setLatestVersion (invalid tag/fallback)', t => {
-  const log = sinon.createStubInstance(Log);
-  const v = new Version({ log });
-  v.setLatestVersion({ gitTag: 'a.b.c', pkgVersion: '0.0.1' });
-  t.is(log.warn.firstCall.args[0], 'Latest Git tag (a.b.c) is not a valid semver version.');
-  t.is(v.latestVersion, '0.0.1');
+test('should increment version (prepatch)', t => {
+  const v = factory(Version);
+  v.setContext({ preReleaseId: 'alpha' });
+  t.is(v.incrementVersion({ latestVersion: '1.2.3', increment: 'prepatch' }), '1.2.4-alpha.0');
 });
 
-test('setLatestVersion (invalid package version)', t => {
-  const log = sinon.createStubInstance(Log);
-  const v = new Version({ log });
-  v.setLatestVersion({ use: 'pkg.version', pkgVersion: '1.2' });
-  t.is(log.warn.callCount, 3);
-  t.is(log.warn.firstCall.args[0], 'The version in package.json (1.2) is not a valid semver version.');
-  t.is(log.warn.secondCall.args[0], 'Latest Git tag (undefined) is not a valid semver version.');
-  t.is(
-    log.warn.thirdCall.args[0],
-    'Could not find valid latest Git tag or version in package.json. Using "0.0.0" as latest version.'
-  );
+test('should increment version (normalized)', t => {
+  const v = factory(Version);
+  v.setContext({ preReleaseId: 'alpha', isPreRelease: true });
+  t.is(v.incrementVersion({ latestVersion: '1.2.3', increment: 'patch' }), '1.2.4-alpha.0');
 });
 
-test('setLatestVersion (invalid git tag and package version)', t => {
-  const log = sinon.createStubInstance(Log);
-  const v = new Version({ log });
-  v.setLatestVersion({ gitTag: '1', pkgVersion: '2' });
-  t.is(log.warn.callCount, 2);
-  t.is(log.warn.firstCall.args[0], 'Latest Git tag (1) is not a valid semver version.');
-  t.is(
-    log.warn.secondCall.args[0],
-    'Could not find valid latest Git tag or version in package.json. Using "0.0.0" as latest version.'
-  );
+test('should increment version (prerelease)', t => {
+  const v = factory(Version);
+  v.setContext({ preReleaseId: 'alpha' });
+  t.is(v.incrementVersion({ latestVersion: '1.2.3', increment: 'prerelease' }), '1.2.4-alpha.0');
 });
 
-test('setLatestVersion (git tag and package version not matching)', t => {
-  const log = sinon.createStubInstance(Log);
-  const v = new Version({ log });
-  v.setLatestVersion({ gitTag: '1.0.0', pkgVersion: '1.0.1' });
-  t.is(log.warn.callCount, 1);
-  t.is(log.warn.firstCall.args[0], 'Latest Git tag (1.0.0) does not match package.json#version (1.0.1).');
+test('should increment version (prerelease cont.)', t => {
+  const v = factory(Version);
+  t.is(v.incrementVersion({ latestVersion: '1.2.3-alpha.0', increment: 'prerelease' }), '1.2.3-alpha.1');
 });
 
-test('bump', async t => {
-  const v = new Version();
-  v.setLatestVersion({ gitTag: '2.2.0' });
-  await v.bump({ increment: 'patch' });
-  t.is(v.latestVersion, '2.2.0');
-  t.is(v.version, '2.2.1');
+test('should increment version (preReleaseId continuation)', t => {
+  const options = { preReleaseId: 'alpha' };
+  const v = factory(Version, { options });
+  t.is(v.incrementVersion({ latestVersion: '1.2.3-alpha.0', increment: 'prerelease' }), '1.2.3-alpha.1');
 });
 
-test('bump (to provided version)', async t => {
-  const v = new Version();
-  v.setLatestVersion({ gitTag: '1.0.0' });
-  await v.bump({ increment: '1.2.3' });
-  t.is(v.version, '1.2.3');
+test('should increment version (prepatch/preReleaseId continuation)', t => {
+  const options = { preReleaseId: 'alpha', isPreRelease: true };
+  const v = factory(Version, { options });
+  t.is(v.incrementVersion({ latestVersion: '1.2.3-alpha.0', increment: 'prerelease' }), '1.2.3-alpha.1');
 });
 
-test('bump (to lower version)', async t => {
-  const v = new Version();
-  v.setLatestVersion({ gitTag: '2.2.0' });
-  await v.bump({ increment: '0.8.0' });
-  t.is(v.version, undefined);
+test('should increment version (preReleaseId w/o preRelease)', t => {
+  const options = { preReleaseId: 'alpha' };
+  const v = factory(Version, { options });
+  t.is(v.incrementVersion({ latestVersion: '1.2.3-alpha.0', increment: 'patch' }), '1.2.3');
 });
 
-test('bump (null)', async t => {
-  const v = new Version();
-  v.setLatestVersion({ gitTag: '2.2.0' });
-  await v.bump({ increment: null });
-  t.is(v.version, undefined);
+test('should increment version (non-numeric prepatch continuation)', t => {
+  const v = factory(Version);
+  t.is(v.incrementVersion({ latestVersion: '1.2.3-alpha', increment: 'prerelease' }), '1.2.3-alpha.0');
 });
 
-test('bump (patch pre-release)', async t => {
-  const v = new Version({ preReleaseId: 'alpha' });
-  v.setLatestVersion({ gitTag: '0.2.0' });
-  await v.bump({ increment: 'prepatch', preRelease: true });
-  t.is(v.version, '0.2.1-alpha.0');
+test('should increment version (patch release after pre-release)', t => {
+  const v = factory(Version);
+  t.is(v.incrementVersion({ latestVersion: '1.2.3-alpha.1', increment: 'patch' }), '1.2.3');
 });
 
-test('bump (patch pre-release normalized)', async t => {
-  const v = new Version({ preReleaseId: 'alpha' });
-  v.setLatestVersion({ gitTag: '0.2.0' });
-  await v.bump({ increment: 'patch', preRelease: true });
-  t.is(v.version, '0.2.1-alpha.0');
+test('should set global (latest)version', async t => {
+  const v = factory(Version);
+  await runTasks(v);
+  const { latestVersion, version, isPreRelease, preReleaseId } = v.config.getContext();
+  t.is(latestVersion, '0.0.0');
+  t.is(version, '0.0.1');
+  t.is(isPreRelease, false);
+  t.is(preReleaseId, null);
 });
 
-test('bump (prerelease)', async t => {
-  const v = new Version({ preReleaseId: 'alpha' });
-  v.setLatestVersion({ gitTag: '0.2.1' });
-  await v.bump({ increment: 'prerelease', preRelease: true });
-  t.is(v.version, '0.2.2-alpha.0');
-});
-
-test('bump (prepatch continuation)', async t => {
-  const v = new Version();
-  v.setLatestVersion({ gitTag: '0.2.1-alpha.0' });
-  await v.bump({ increment: 'prerelease' });
-  t.is(v.version, '0.2.1-alpha.1');
-});
-
-test('bump (preReleaseId continuation)', async t => {
-  const v = new Version({ preReleaseId: 'alpha' });
-  v.setLatestVersion({ gitTag: '0.2.1-alpha.0' });
-  await v.bump({ increment: 'prerelease' });
-  t.is(v.version, '0.2.1-alpha.1');
-});
-
-test('bump (prepatch/preReleaseId continuation)', async t => {
-  const v = new Version({ preReleaseId: 'alpha' });
-  v.setLatestVersion({ gitTag: '0.2.1-alpha.0' });
-  await v.bump({ increment: 'prerelease', preRelease: true });
-  t.is(v.version, '0.2.1-alpha.1');
-});
-
-test('bump (preReleaseId w/o preRelease)', async t => {
-  const v = new Version({ preReleaseId: 'alpha' });
-  v.setLatestVersion({ gitTag: '0.2.1-alpha.0' });
-  await v.bump({ increment: 'patch' });
-  t.is(v.version, '0.2.1');
-});
-
-test('bump (non-numeric prepatch continuation)', async t => {
-  const v = new Version();
-  v.setLatestVersion({ gitTag: '0.2.1-alpha' });
-  await v.bump({ increment: 'prerelease' });
-  t.is(v.version, '0.2.1-alpha.0');
-});
-
-test('bump (patch release after pre-release)', async t => {
-  const v = new Version();
-  v.setLatestVersion({ gitTag: '0.2.1-alpha.1' });
-  await v.bump({ increment: 'patch' });
-  t.is(v.version, '0.2.1');
-});
-
-test('bump (recommended conventional)', async t => {
-  const tmp = `tmp/${uuid()}`;
-  sh.mkdir(tmp);
-  sh.pushd('-q', tmp);
-  sh.exec('git init');
-  gitAdd('line', 'file', 'fix(thing): repair that thing');
-  sh.exec(`git tag 1.0.0`);
-  gitAdd('line', 'file', 'feat(foo): extend the foo');
-  gitAdd('line', 'file', 'feat(bar): more bar');
-
-  const v = new Version();
-  v.setLatestVersion({ gitTag: '1.0.0' });
-  await v.bump({ increment: 'conventional:angular' });
-  t.is(v.version, '1.1.0');
-
-  sh.popd('-q');
-});
-
-const recommendations = {
-  isRecommendation: () => true,
-  getRecommendedType: () => Promise.resolve('minor')
-};
-
-test('bump (recommended conventional w/ pre-release)', async t => {
-  const v = new Version({ preReleaseId: 'canary', recommendations });
-  v.setLatestVersion({ gitTag: '1.0.0' });
-  await v.bump({ increment: 'conventional:angular', preRelease: true });
-  t.is(v.version, '1.1.0-canary.0');
-});
-
-test('bump (recommended conventional w/o preRelease)', async t => {
-  const v = new Version({ preReleaseId: 'canary', recommendations });
-  v.setLatestVersion({ gitTag: '1.0.0' });
-  await v.bump({ increment: 'conventional:angular' });
-  t.is(v.version, '1.1.0');
-});
-
-test('bump (recommended conventional w/ pre-release continuation)', async t => {
-  const v = new Version({ preReleaseId: 'canary', recommendations });
-  v.setLatestVersion({ gitTag: '1.0.0-canary.1' });
-  await v.bump({ increment: 'conventional:angular', preRelease: true });
-  t.is(v.version, '1.0.0-canary.2');
-});
-
-test('parse (coerce)', t => {
-  const log = sinon.createStubInstance(Log);
-  const v = new Version({ log });
-  v.bump({ increment: '2' });
-  t.is(log.warn.firstCall.args[0], 'Coerced invalid semver version "2" into "2.0.0".');
+test('should run tasks without errors', async t => {
+  const options = { version: { increment: 'minor' } };
+  const v = factory(Version, { options });
+  const getIncrementedVersion = sinon.spy(v, 'getIncrementedVersion');
+  const incrementVersion = sinon.spy(v, 'incrementVersion');
+  await runTasks(v);
+  t.is(getIncrementedVersion.callCount, 1);
+  t.deepEqual(getIncrementedVersion.firstCall.args[0], { latestVersion: '0.0.0' });
+  t.is(await incrementVersion.firstCall.returnValue, '0.1.0');
+  t.is(incrementVersion.callCount, 1);
+  t.deepEqual(incrementVersion.firstCall.args[0], { latestVersion: '0.0.0', increment: 'minor' });
+  t.is(incrementVersion.firstCall.returnValue, '0.1.0');
+  const { latestVersion, version, isPreRelease, preReleaseId } = v.config.getContext();
+  t.is(latestVersion, '0.0.0');
+  t.is(version, '0.1.0');
+  t.is(isPreRelease, false);
+  t.is(preReleaseId, null);
 });

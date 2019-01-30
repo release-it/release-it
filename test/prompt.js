@@ -2,11 +2,16 @@ const test = require('ava');
 const sinon = require('sinon');
 const Prompt = require('../lib/prompt');
 const Config = require('../lib/config');
+const { factory } = require('./util');
+const git = require('../lib/plugin/git/prompts');
+const github = require('../lib/plugin/github/prompts');
+const gitlab = require('../lib/plugin/gitlab/prompts');
+const npm = require('../lib/plugin/npm/prompts');
+
+const prompts = { git, github, gitlab, npm };
 
 const yes = ([options]) => Promise.resolve({ [options.name]: true });
 const no = ([options]) => Promise.resolve({ [options.name]: false });
-const increment = ([options]) => Promise.resolve({ [options.name]: 'minor' });
-const version = ([options]) => Promise.resolve({ [options.name]: '1.3.0' });
 
 test.beforeEach(t => {
   t.context.getInquirer = stub => ({
@@ -18,7 +23,8 @@ test('should not create prompt if disabled', async t => {
   const task = sinon.spy();
   const stub = sinon.stub().callsFake(yes);
   const inquirer = t.context.getInquirer(stub);
-  const prompt = new Prompt({ inquirer });
+  const prompt = factory(Prompt, { container: { inquirer } });
+  prompt.register(prompts.git);
   await prompt.show({ enabled: false, prompt: 'push', task });
   t.is(stub.callCount, 0);
   t.is(task.callCount, 0);
@@ -27,7 +33,8 @@ test('should not create prompt if disabled', async t => {
 test('should create prompt', async t => {
   const stub = sinon.stub().callsFake(yes);
   const inquirer = t.context.getInquirer(stub);
-  const prompt = new Prompt({ inquirer });
+  const prompt = factory(Prompt, { container: { inquirer } });
+  prompt.register(prompts.git);
   await prompt.show({ prompt: 'push' });
   t.is(stub.callCount, 1);
   t.deepEqual(stub.firstCall.args[0][0], {
@@ -40,26 +47,27 @@ test('should create prompt', async t => {
   });
 });
 
-const prompts = [
-  ['commit', 'Commit (Release 1.0.0)?'],
-  ['tag', 'Tag (v1.0.0)?'],
-  ['push', 'Push?'],
-  ['ghRelease', 'Create a release on GitHub (Release 1.0.0)?'],
-  ['glRelease', 'Create a release on GitLab (Release 1.0.0)?'],
-  ['publish', 'Publish release-it@next to npm?'],
-  ['otp', 'Please enter OTP for npm:']
-];
-
-prompts.map(async ([prompt, message]) => {
-  test(`should create prompt and render template message (${prompt})`, async t => {
-    const config = new Config({ git: { tagName: 'v${version}' }, npm: { tag: 'next' } });
-    config.setRuntimeOptions({
-      version: '1.0.0'
-    });
+[
+  ['git', 'commit', 'Commit (Release 1.0.0)?'],
+  ['git', 'tag', 'Tag (v1.0.0)?'],
+  ['git', 'push', 'Push?'],
+  ['github', 'release', 'Create a pre-release on GitHub (Release 1.0.0)?'],
+  ['gitlab', 'release', 'Create a release on GitLab (Release 1.0.0)?'],
+  ['npm', 'publish', 'Publish my-pkg@next to npm?'],
+  ['npm', 'otp', 'Please enter OTP for npm:']
+].map(async ([namespace, prompt, message]) => {
+  test(`should create prompt and render template message (${namespace}.${prompt})`, async t => {
     const stub = sinon.stub().callsFake(yes);
+    const config = new Config({
+      isPreRelease: true,
+      git: { tagName: 'v${version}' },
+      npm: { name: 'my-pkg', tag: 'next' }
+    });
+    config.setContext({ version: '1.0.0' });
     const inquirer = t.context.getInquirer(stub);
-    const p = new Prompt({ config, inquirer });
-    await p.show({ prompt });
+    const p = factory(Prompt, { container: { inquirer } });
+    p.register(prompts[namespace], namespace);
+    await p.show({ namespace, prompt, context: config.getContext() });
     t.is(stub.callCount, 1);
     t.is(stub.firstCall.args[0][0].message, message);
   });
@@ -69,7 +77,8 @@ test('should execute task after positive answer', async t => {
   const task = sinon.spy();
   const stub = sinon.stub().callsFake(yes);
   const inquirer = t.context.getInquirer(stub);
-  const prompt = new Prompt({ inquirer });
+  const prompt = factory(Prompt, { container: { inquirer } });
+  prompt.register(prompts.git);
   await prompt.show({ prompt: 'push', task });
   t.is(stub.callCount, 1);
   t.is(task.callCount, 1);
@@ -80,79 +89,9 @@ test('should not execute task after negative answer', async t => {
   const task = sinon.spy();
   const stub = sinon.stub().callsFake(no);
   const inquirer = t.context.getInquirer(stub);
-  const prompt = new Prompt({ inquirer });
+  const prompt = factory(Prompt, { container: { inquirer } });
+  prompt.register(prompts.git);
   await prompt.show({ prompt: 'push', task });
   t.is(stub.callCount, 1);
   t.is(task.callCount, 0);
-});
-
-test('should create prompt with increment list', async t => {
-  const config = new Config();
-  config.setRuntimeOptions({
-    latestVersion: '1.2.3'
-  });
-  const task = sinon.spy();
-  const stub = sinon.stub().callsFake(increment);
-  const inquirer = t.context.getInquirer(stub);
-  const prompt = new Prompt({ config, inquirer });
-  await prompt.show({ prompt: 'incrementList', task });
-  t.is(stub.callCount, 1);
-  t.deepEqual(stub.firstCall.args[0][0], {
-    type: 'list',
-    message: 'Select increment (next version):',
-    name: 'incrementList',
-    choices: [
-      {
-        name: 'patch (1.2.4)',
-        value: 'patch'
-      },
-      {
-        name: 'minor (1.3.0)',
-        value: 'minor'
-      },
-      {
-        name: 'major (2.0.0)',
-        value: 'major'
-      },
-      {
-        name: 'prepatch (1.2.4-0)',
-        value: 'prepatch'
-      },
-      {
-        name: 'preminor (1.3.0-0)',
-        value: 'preminor'
-      },
-      {
-        name: 'premajor (2.0.0-0)',
-        value: 'premajor'
-      },
-      {
-        name: 'Other, please specify...',
-        value: null
-      }
-    ],
-    pageSize: 9,
-    transformer: false,
-    default: true
-  });
-  t.is(task.callCount, 1);
-  t.is(task.firstCall.args[0], 'minor');
-});
-
-test('should create version input prompt', async t => {
-  const config = new Config();
-  config.setRuntimeOptions({
-    latestVersion: '1.2.3'
-  });
-  const task = sinon.spy();
-  const stub = sinon.stub().callsFake(version);
-  const inquirer = t.context.getInquirer(stub);
-  const prompt = new Prompt({ config, inquirer });
-  await prompt.show({ prompt: 'version', task });
-  t.is(stub.callCount, 1);
-  t.is(stub.firstCall.args[0][0].type, 'input');
-  t.is(stub.firstCall.args[0][0].name, 'version');
-  t.is(stub.firstCall.args[0][0].type, 'input');
-  t.is(task.callCount, 1);
-  t.is(task.firstCall.args[0], '1.3.0');
 });
