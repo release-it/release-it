@@ -66,7 +66,7 @@
     "inquirer": "6.2.1",
     "is-ci": "2.0.0",
     "lodash": "4.17.11",
-    "mime-types": "2.1.21",
+    "mime-types": "2.1.22",
     "ora": "3.0.0",
     "os-name": "3.0.0",
     "semver": "5.6.0",
