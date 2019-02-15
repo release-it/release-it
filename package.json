@@ -54,7 +54,7 @@
     "async-retry": "1.2.3",
     "bump-file": "2.0.0",
     "chalk": "2.4.2",
-    "conventional-changelog": "3.0.5",
+    "conventional-changelog": "3.0.6",
     "conventional-recommended-bump": "4.0.4",
     "cpy": "7.0.1",
     "debug": "4.1.1",
