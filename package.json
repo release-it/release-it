@@ -90,7 +90,7 @@
     "nyc": "13.1.0",
     "prettier": "1.16.1",
     "proxyquire": "2.1.0",
-    "sinon": "7.2.3"
+    "sinon": "7.2.4"
   },
   "engines": {
     "node": ">=8"
