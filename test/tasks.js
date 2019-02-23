@@ -169,7 +169,7 @@ test.serial('should run tasks without package.json', async t => {
 
     t.is(npmStub.callCount, 4);
     t.is(npmStub.firstCall.args[0], 'npm ping');
-    t.is(npmStub.secondCall.args[0].trim(), 'npm whoami');
+    t.is(npmStub.secondCall.args[0].trim(), 'npm whoami --registry https://www.npmjs.com');
     t.is(npmStub.thirdCall.args[0].trim(), `npm show ${pkgName}@latest version`);
     t.is(npmStub.args[3][0].trim(), 'npm publish . --tag latest');
 
