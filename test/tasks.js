@@ -169,9 +169,9 @@ test.serial('should run tasks without package.json', async t => {
 
     t.is(npmStub.callCount, 4);
     t.is(npmStub.firstCall.args[0], 'npm ping');
-    t.is(npmStub.secondCall.args[0].trim(), 'npm whoami --registry https://registry.npmjs.org');
-    t.is(npmStub.thirdCall.args[0].trim(), `npm show ${pkgName}@latest version`);
-    t.is(npmStub.args[3][0].trim(), 'npm publish . --tag latest');
+    t.is(npmStub.secondCall.args[0], 'npm whoami');
+    t.is(npmStub.thirdCall.args[0], `npm show ${pkgName}@latest version`);
+    t.is(npmStub.args[3][0], 'npm publish . --tag latest');
 
     t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
     t.true(log.log.firstCall.args[0].endsWith(`https://github.com/${owner}/${repoName}/releases/tag/1.0.1`));
@@ -229,7 +229,7 @@ test.serial('should run tasks without package.json', async t => {
     t.regex(gotStub.post.secondCall.args[1].body.description, RegExp(`Notes for ${pkgName}: \\* More file`));
 
     t.is(npmStub.callCount, 4);
-    t.is(npmStub.lastCall.args[0].trim(), 'npm publish . --tag alpha');
+    t.is(npmStub.lastCall.args[0], 'npm publish . --tag alpha');
 
     const { stdout } = sh.exec('git describe --tags --abbrev=0');
     t.is(stdout.trim(), 'v1.1.0-alpha.0');
@@ -248,7 +248,7 @@ test.serial('should run tasks without package.json', async t => {
     sh.exec('git tag v1.0.0');
     await tasks({ increment: 'major', preRelease: true, npm: { name: pkgName, tag: 'next' } }, stubs);
     t.is(npmStub.callCount, 4);
-    t.is(npmStub.lastCall.args[0].trim(), 'npm publish . --tag next');
+    t.is(npmStub.lastCall.args[0], 'npm publish . --tag next');
     const { stdout } = sh.exec('git describe --tags --abbrev=0');
     t.is(stdout.trim(), '2.0.0-0');
     t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...2.0.0-0)`));
@@ -292,7 +292,7 @@ test.serial('should run tasks without package.json', async t => {
     );
     await tasks({ npm: { name: pkgName } }, stubs);
 
-    t.is(npmStub.secondCall.args[0].trim(), `npm whoami --registry ${registry}`);
+    t.is(npmStub.secondCall.args[0], `npm whoami --registry ${registry}`);
     t.true(log.log.firstCall.args[0].endsWith(`${registry}/package/${pkgName}`));
   });
 }

@@ -83,7 +83,7 @@ test('should publish', async t => {
   });
   await npmClient.publish();
   t.is(run.callCount, 1);
-  t.is(run.firstCall.args[0].trim(), 'npm publish . --tag latest');
+  t.is(run.firstCall.args[0], 'npm publish . --tag latest');
 });
 
 test('should publish scoped package', async t => {
@@ -97,7 +97,7 @@ test('should publish scoped package', async t => {
   });
   await npmClient.publish({ tag: 'beta' });
   t.is(run.callCount, 1);
-  t.is(run.firstCall.args[0].trim(), 'npm publish . --tag beta --access public');
+  t.is(run.firstCall.args[0], 'npm publish . --tag beta --access public');
 });
 
 test('should not publish private package', async t => {
@@ -143,9 +143,9 @@ test('should handle and publish with OTP', async t => {
   });
 
   t.is(run.callCount, 3);
-  t.is(run.firstCall.args[0].trim(), 'npm publish . --tag latest');
-  t.is(run.secondCall.args[0].trim(), 'npm publish . --tag latest  --otp 123');
-  t.is(run.thirdCall.args[0].trim(), 'npm publish . --tag latest  --otp 123456');
+  t.is(run.firstCall.args[0], 'npm publish . --tag latest');
+  t.is(run.secondCall.args[0], 'npm publish . --tag latest  --otp 123');
+  t.is(run.thirdCall.args[0], 'npm publish . --tag latest  --otp 123456');
 
   t.is(warn.callCount, 1);
   t.is(warn.firstCall.args[0], 'The provided OTP is incorrect or has expired.');
