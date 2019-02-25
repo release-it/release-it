@@ -372,7 +372,7 @@ release commit).
 {
   "increment": "conventional:angular",
   "scripts": {
-    "changelog": "npx conventional-changelog -p angular | tail -n +3",
+    "changelog": "npx conventional-changelog -p angular -u | tail -n +3",
     "beforeStage": "npx conventional-changelog -p angular -i CHANGELOG.md -s"
   }
 }
