@@ -62,7 +62,7 @@ test('should throw if npm is down', async t => {
 
 test('should throw if user is not authenticated', async t => {
   const run = sinon.stub().resolves();
-  run.withArgs('npm whoami --registry https://www.npmjs.com').rejects();
+  run.withArgs('npm whoami').rejects();
   const npmClient = new npm({
     name: 'pkg',
     publish: true,
