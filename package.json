@@ -50,11 +50,11 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@octokit/rest": "16.13.3",
+    "@octokit/rest": "16.16.0",
     "async-retry": "1.2.3",
     "bump-file": "2.0.0",
     "chalk": "2.4.2",
-    "conventional-changelog": "3.0.5",
+    "conventional-changelog": "3.0.6",
     "conventional-recommended-bump": "4.0.4",
     "cpy": "7.0.1",
     "debug": "4.1.1",
@@ -63,11 +63,11 @@
     "git-url-parse": "11.1.2",
     "globby": "9.0.0",
     "got": "9.6.0",
-    "inquirer": "6.2.1",
+    "inquirer": "6.2.2",
     "is-ci": "2.0.0",
     "lodash": "4.17.11",
-    "mime-types": "2.1.21",
-    "ora": "3.0.0",
+    "mime-types": "2.1.22",
+    "ora": "3.1.0",
     "os-name": "3.0.0",
     "semver": "5.6.0",
     "shelljs": "0.8.3",
@@ -76,22 +76,22 @@
     "url-join": "4.0.0",
     "uuid": "3.3.2",
     "window-size": "1.1.1",
-    "yargs-parser": "11.1.1"
+    "yargs-parser": "13.0.0"
   },
   "devDependencies": {
     "@octokit/request": "2.3.0",
-    "ava": "1.2.0",
-    "codecov": "3.1.0",
-    "eslint": "5.12.1",
+    "ava": "1.2.1",
+    "codecov": "3.2.0",
+    "eslint": "5.14.1",
     "eslint-config-prettier": "4.0.0",
     "eslint-plugin-ava": "5.1.1",
     "eslint-plugin-prettier": "3.0.1",
     "markdown-toc": "1.2.0",
     "mock-stdio": "1.0.3",
-    "nyc": "13.1.0",
-    "prettier": "1.16.1",
+    "nyc": "13.3.0",
+    "prettier": "1.16.4",
     "proxyquire": "2.1.0",
-    "sinon": "7.2.3"
+    "sinon": "7.2.4"
   },
   "engines": {
     "node": ">=8"
