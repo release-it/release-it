@@ -169,7 +169,7 @@ test.serial('should run tasks without package.json', async t => {
 
     t.is(npmStub.callCount, 4);
     t.is(npmStub.firstCall.args[0], 'npm ping');
-    t.is(npmStub.secondCall.args[0].trim(), 'npm whoami');
+    t.is(npmStub.secondCall.args[0].trim(), 'npm whoami --registry https://www.npmjs.com');
     t.is(npmStub.thirdCall.args[0].trim(), `npm show ${pkgName}@latest version`);
     t.is(npmStub.args[3][0].trim(), 'npm publish . --tag latest');
 
@@ -274,5 +274,25 @@ test.serial('should run tasks without package.json', async t => {
     const filtered = commands.filter(command => scriptsArray.includes(command));
     t.deepEqual(filtered, scriptsArray);
     spy.restore();
+  });
+
+  test.serial('should use pkg.publishConfig.registry', async t => {
+    const { target } = t.context;
+    const pkgName = path.basename(target);
+    const registry = 'https://my-registry.com';
+
+    gitAdd(
+      JSON.stringify({
+        name: pkgName,
+        version: '1.2.3',
+        publishConfig: { registry }
+      }),
+      'package.json',
+      'Add package.json'
+    );
+    await tasks({ npm: { name: pkgName } }, stubs);
+
+    t.is(npmStub.secondCall.args[0].trim(), `npm whoami --registry ${registry}`);
+    t.true(log.log.firstCall.args[0].endsWith(`${registry}/package/${pkgName}`));
   });
 }

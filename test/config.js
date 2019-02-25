@@ -15,7 +15,8 @@ test('should contain default values', t => {
     version: pkg.version,
     name: pkg.name,
     private: pkg.private,
-    publish: true
+    publish: true,
+    publishConfig: pkg.publishConfig
   });
 });
 

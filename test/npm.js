@@ -7,6 +7,11 @@ test('should return npm package url', t => {
   t.is(npmClient.getPackageUrl(), 'https://www.npmjs.com/package/my-cool-package');
 });
 
+test('should return npm package url (custom registry)', t => {
+  const npmClient = new npm({ name: 'my-cool-package', publishConfig: { registry: 'https://my-registry.com/' } });
+  t.is(npmClient.getPackageUrl(), 'https://my-registry.com/package/my-cool-package');
+});
+
 test('should return tag', t => {
   const npmClient = new npm();
   const tag = npmClient.getTag();
@@ -57,7 +62,7 @@ test('should throw if npm is down', async t => {
 
 test('should throw if user is not authenticated', async t => {
   const run = sinon.stub().resolves();
-  run.withArgs('npm whoami').rejects();
+  run.withArgs('npm whoami --registry https://www.npmjs.com').rejects();
   const npmClient = new npm({
     name: 'pkg',
     publish: true,
