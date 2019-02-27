@@ -91,7 +91,7 @@
     "nyc": "13.3.0",
     "prettier": "1.16.4",
     "proxyquire": "2.1.0",
-    "sinon": "7.2.4"
+    "sinon": "7.2.5"
   },
   "engines": {
     "node": ">=8"
