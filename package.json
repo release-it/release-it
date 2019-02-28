@@ -79,7 +79,7 @@
     "yargs-parser": "13.0.0"
   },
   "devDependencies": {
-    "@octokit/request": "2.3.0",
+    "@octokit/request": "2.4.0",
     "ava": "1.2.1",
     "codecov": "3.2.0",
     "eslint": "5.14.1",
