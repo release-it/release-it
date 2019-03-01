@@ -59,6 +59,7 @@
     "cpy": "7.0.1",
     "debug": "4.1.1",
     "deprecated-obj": "1.0.0",
+    "dotenv": "6.2.0",
     "form-data": "2.3.3",
     "git-url-parse": "11.1.2",
     "globby": "9.0.0",

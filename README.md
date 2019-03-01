@@ -249,6 +249,12 @@ The "Releases" tab on GitHub projects links to a page to store the changelog. To
 export GITHUB_TOKEN="f941e0..."
 ```
 
+or inside an `.env` file (make sure to add this file to your `.gitignore`):
+
+```
+GITHUB_TOKEN="f941e0..."
+```
+
 Do not put the actual token in the release-it configuration. It will be read from the `GITHUB_TOKEN` environment
 variable. You can change this variable name by setting the `github.tokenRef` option to something else.
 
