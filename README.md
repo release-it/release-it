@@ -16,17 +16,17 @@ CLI release tool for Git repos and npm packages.
 - [Manage pre-releases](#manage-pre-releases)
 - Support [monorepo](#monorepos) workflows
 
-[![Build Status](https://travis-ci.org/webpro/release-it.svg?branch=master)](https://travis-ci.org/webpro/release-it)
+[![Build Status](https://travis-ci.org/release-it/release-it.svg?branch=master)](https://travis-ci.org/release-it/release-it)
 [![npm version](https://badge.fury.io/js/release-it.svg)](https://badge.fury.io/js/release-it)
-[![Greenkeeper badge](https://badges.greenkeeper.io/webpro/release-it.svg)](https://greenkeeper.io/)
-[![codecov](https://codecov.io/gh/webpro/release-it/branch/master/graph/badge.svg)](https://codecov.io/gh/webpro/release-it)
+[![Greenkeeper badge](https://badges.greenkeeper.io/release-it/release-it.svg)](https://greenkeeper.io/)
+[![codecov](https://codecov.io/gh/release-it/release-it/branch/master/graph/badge.svg)](https://codecov.io/gh/release-it/release-it)
 
 ## Links
 
 - For **updates**, see [CHANGELOG.md](CHANGELOG.md) for major updates, and
-  [releases](https://github.com/webpro/release-it/releases) for a detailed version history.
+  [releases](https://github.com/release-it/release-it/releases) for a detailed version history.
 - To **contribute**, please read [CONTRIBUTING.md](CONTRIBUTING.md) to participate.
-- Please [open an issue](https://github.com/webpro/release-it/issues/new) if anything is missing or unclear in this
+- Please [open an issue](https://github.com/release-it/release-it/issues/new) if anything is missing or unclear in this
   documentation.
 
 <details>

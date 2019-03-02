@@ -24,10 +24,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/webpro/release-it.git"
+    "url": "https://github.com/release-it/release-it.git"
   },
-  "homepage": "https://github.com/webpro/release-it#readme",
-  "bugs": "https://github.com/webpro/release-it/issues",
+  "homepage": "https://github.com/release-it/release-it#readme",
+  "bugs": "https://github.com/release-it/release-it/issues",
   "bin": "./bin/release-it.js",
   "main": "./lib/index.js",
   "files": [

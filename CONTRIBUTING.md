@@ -20,16 +20,16 @@ agree to abide by its terms.
 
 ## 🛎 Questions & Feature Requests
 
-Feel free to [open a ticket](https://github.com/webpro/release-it/issues/new) with your question. Feature requests are
-also welcome. Describe the feature, why you need it, and how it should work. Please provide as much detail and context
-as possible.
+Feel free to [open a ticket](https://github.com/release-it/release-it/issues/new) with your question. Feature requests
+are also welcome. Describe the feature, why you need it, and how it should work. Please provide as much detail and
+context as possible.
 
 ## 🐛 File a Bug
 
 In case you've encountered a bug, please make sure:
 
-- You are using the [latest version](https://github.com/webpro/release-it/releases).
-- You have read the [documentation](https://github.com/webpro/release-it/blob/master/README.md) first, and
+- You are using the [latest version](https://github.com/release-it/release-it/releases).
+- You have read the [documentation](https://github.com/release-it/release-it/blob/master/README.md) first, and
   double-checked your configuration.
 - You have acknowledged from [Troubleshooting & debugging](README.md#troubleshooting--debugging) the errors are likely a
   bug in this project, and not coming from e.g. your environment or custom scripts/commands.
@@ -52,7 +52,7 @@ Please keep the following in mind:
 - To match the existing code styling, use `npm run format` before committing code.
 - Make sure the tests pass (run `npm test`). Your changes probably deserve new tests as well.
 - Remember that this project is cross-platform compatible (macOS, Windows, Linux), and that it runs in different
-  versions of Node. On PR submission, [Travis CI](https://travis-ci.org/webpro/release-it) will run the tests in
+  versions of Node. On PR submission, [Travis CI](https://travis-ci.org/release-it/release-it) will run the tests in
   multiple supported platforms and Node.js versions.
 
 Unsure about whether you should open a pull request? Feel free to discuss it first in a ticket.
