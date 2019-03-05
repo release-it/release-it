@@ -292,6 +292,7 @@ test.serial('should run tasks without package.json', async t => {
     );
     await tasks({ npm: { name: pkgName } }, stubs);
 
+    t.is(npmStub.firstCall.args[0], `npm ping --registry ${registry}`);
     t.is(npmStub.secondCall.args[0], `npm whoami --registry ${registry}`);
     t.true(log.log.firstCall.args[0].endsWith(`${registry}/package/${pkgName}`));
   });

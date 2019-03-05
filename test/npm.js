@@ -48,14 +48,17 @@ test('should not throw if validation passes', async t => {
 });
 
 test('should throw if npm is down', async t => {
+  const registry = 'https://www.npmjs.com';
   const run = sinon.stub().resolves();
-  run.withArgs('npm ping').rejects();
+  run.withArgs(`npm ping --registry ${registry}`).rejects();
+
   const npmClient = new npm({
     name: 'pkg',
     publish: true,
     shell: {
       run
-    }
+    },
+    publishConfig: { registry }
   });
   await t.throwsAsync(npmClient.validate(), /Unable to reach npm registry/);
 });
