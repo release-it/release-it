@@ -160,6 +160,7 @@ Notes:
 - Only the settings to override need to be in `.release-it.json` (or `package.json`). Everything else will fall back to
   the [default configuration](conf/release-it.json).
 - You can use `--config` if you want to use another path for `.release-it.json`.
+- You can also use a regular JavaScript file, for example `.release-it.js`, as long as you point to it using `--config`. This can be useful if your configuration depends on something else, so you have all JavaScript power to use instead of a static JSON. Make sure you export the config with `module.exports`.
 
 Any option can also be set on the command-line, and will have highest priority. Example:
 
