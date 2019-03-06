@@ -124,7 +124,7 @@ test('should release to alternative host and proxy', async t => {
 test('should handle octokit client error (without retries)', async t => {
   const { GitHub, gitHubApi } = t.context;
   const stub = sinon.stub(gitHubApi.repos, 'createRelease');
-  stub.throws(new HttpError('Not found', 404));
+  stub.throws(new HttpError('Not found', 404, null, { url: '', headers: {} }));
   const github = new GitHub({ release: true, remoteUrl: '' });
   await t.throwsAsync(github.release(), { instanceOf: GitHubClientError, message: '404 (Not found)' });
   t.is(stub.callCount, 1);
@@ -134,7 +134,7 @@ test('should handle octokit client error (without retries)', async t => {
 test('should handle octokit client error (with retries)', async t => {
   const { GitHub, gitHubApi } = t.context;
   const stub = sinon.stub(gitHubApi.repos, 'createRelease');
-  stub.throws(new HttpError('Request failed', 500));
+  stub.throws(new HttpError('Request failed', 500, null, { url: '', headers: {} }));
   const github = new GitHub({ release: true, remoteUrl: '', retryMinTimeout: 0 });
   await t.throwsAsync(github.release(), { instanceOf: GitHubClientError, message: '500 (Request failed)' });
   t.is(stub.callCount, 3);
