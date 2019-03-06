@@ -378,6 +378,16 @@ release commit).
 }
 ```
 
+## Bumping `package-lock.json`
+
+By default, `release-it` does not care about `package-lock.json`. If you want its `version` field to be bumped as well, you should use the `pkgFiles` setting, as follows:
+
+```json
+{ 
+  "pkgFiles": ["package.json", "package-lock.json"]
+}
+```
+
 ## Publish to npm
 
 By default, `npm.publish` is `true` and publishing is delegated to `npm publish`.
