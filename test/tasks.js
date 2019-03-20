@@ -296,4 +296,50 @@ test.serial('should run tasks without package.json', async t => {
     t.is(npmStub.secondCall.args[0], `npm whoami --registry ${registry}`);
     t.true(log.log.firstCall.args[0].endsWith(`${registry}/package/${pkgName}`));
   });
+
+  test.serial('should skip ping', async t => {
+    const { target } = t.context;
+    const pkgName = path.basename(target);
+    const registry = 'https://my-registry.com';
+
+    gitAdd(
+      JSON.stringify({
+        name: pkgName,
+        version: '1.2.3',
+        publishConfig: { registry },
+        'release-it': {
+          skipPing: true
+        }
+      }),
+      'package.json',
+      'Add package.json'
+    );
+    await tasks({ npm: { name: pkgName } }, stubs);
+
+    t.is(npmStub.firstCall.args[0], `npm whoami --registry ${registry}`);
+    t.true(log.log.firstCall.args[0].endsWith(`${registry}/package/${pkgName}`));
+  });
+
+  test.serial('should skip whoiam', async t => {
+    const { target } = t.context;
+    const pkgName = path.basename(target);
+    const registry = 'https://my-registry.com';
+
+    gitAdd(
+      JSON.stringify({
+        name: pkgName,
+        version: '1.2.3',
+        publishConfig: { registry },
+        'release-it': {
+          skipWhoiam: true
+        }
+      }),
+      'package.json',
+      'Add package.json'
+    );
+    await tasks({ npm: { name: pkgName } }, stubs);
+
+    t.is(npmStub.firstCall.args[0], `npm ping --registry ${registry}`);
+    t.true(log.log.firstCall.args[0].endsWith(`${registry}/package/${pkgName}`));
+  });
 }
