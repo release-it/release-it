@@ -2,7 +2,7 @@ const path = require('path');
 const test = require('ava');
 const sinon = require('sinon');
 const proxyquire = require('proxyquire');
-const GitLab = require('../lib/plugin/gitlab/gitlab');
+const GitLab = require('../lib/plugin/gitlab/GitLab');
 const { factory, runTasks } = require('./util');
 const Log = require('../lib/log');
 const got = require('./stub/got');
@@ -12,7 +12,7 @@ const remoteUrl = 'https://gitlab.example.org/owner/repo';
 
 test.beforeEach(t => {
   t.context.got = got();
-  t.context.GitLab = proxyquire('../lib/plugin/gitlab/gitlab', {
+  t.context.GitLab = proxyquire('../lib/plugin/gitlab/GitLab', {
     got: t.context.got
   });
 });
@@ -93,7 +93,7 @@ test('should release to self-managed host', async t => {
 
   const options = {
     git: { remoteUrl, tagName: '${version}' },
-    gitlab: { releaseName: 'Release ${version}', releaseNotes: 'echo', tokenRef }
+    gitlab: { releaseName: 'Release ${version}', releaseNotes: 'echo readme', tokenRef }
   };
   const gitlab = factory(GitLab, { options });
   sinon.stub(gitlab, 'getLatestVersion').resolves('1.0.0');
@@ -105,7 +105,7 @@ test('should release to self-managed host', async t => {
   t.is(got.post.callCount, 1);
   t.is(got.post.firstCall.args[0], '/projects/owner%2Frepo/releases');
   t.deepEqual(got.post.firstCall.args[1].body, {
-    description: '-',
+    description: 'readme',
     name: 'Release 1.0.1',
     tag_name: '1.0.1'
   });

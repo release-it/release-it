@@ -66,16 +66,16 @@ test('should expand pre-release shortcut', t => {
 });
 
 test('should expand pre-release shortcut (preRelease boolean)', t => {
-  const config = new Config({ preRelease: true });
+  const config = new Config({ 'non-interactive': true, preRelease: true });
   t.deepEqual(config.options.version, {
-    increment: undefined,
+    increment: 'patch',
     isPreRelease: true,
     preReleaseId: undefined
   });
 });
 
 test('should expand pre-release shortcut (without increment)', t => {
-  const config = new Config({ preRelease: 'alpha' });
+  const config = new Config({ 'non-interactive': false, preRelease: 'alpha' });
   t.deepEqual(config.options.version, {
     increment: undefined,
     isPreRelease: true,

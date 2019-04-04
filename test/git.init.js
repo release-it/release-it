@@ -4,7 +4,7 @@ const { mkTmpDir, gitAdd } = require('./util/helpers');
 const { factory } = require('./util');
 const Shell = require('../lib/shell');
 const Log = require('../lib/log');
-const Git = require('../lib/plugin/git/git');
+const Git = require('../lib/plugin/git/Git');
 const { git } = require('../conf/release-it.json');
 const { GitRepoError, GitRemoteUrlError, GitCleanWorkingDirError, GitUpstreamError } = require('../lib/errors');
 

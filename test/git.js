@@ -3,7 +3,7 @@ const sinon = require('sinon');
 const sh = require('shelljs');
 const { mkTmpDir, readFile, gitAdd } = require('./util/helpers');
 const { factory } = require('./util');
-const Git = require('../lib/plugin/git/git');
+const Git = require('../lib/plugin/git/Git');
 
 test.beforeEach(() => {
   const tmp = mkTmpDir();
