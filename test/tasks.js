@@ -350,9 +350,9 @@ const BarPlugin = sandbox.stub().callsFake(() => barPlugin);
     await tasks({}, container);
 
     t.deepEqual(FooPlugin.firstCall.args[0].namespace, 'my-plugin');
-    t.deepEqual(FooPlugin.firstCall.args[0].options, { name: 'foo' });
+    t.deepEqual(FooPlugin.firstCall.args[0].options['my-plugin'], { name: 'foo' });
     t.deepEqual(BarPlugin.firstCall.args[0].namespace, 'named-plugin');
-    t.deepEqual(BarPlugin.firstCall.args[0].options, { name: 'bar' });
+    t.deepEqual(BarPlugin.firstCall.args[0].options['named-plugin'], { name: 'bar' });
 
     [
       'init',
