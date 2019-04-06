@@ -25,8 +25,7 @@ test('should return default tag', async t => {
 test('should resolve default tag for pre-release', async t => {
   const npmClient = factory(npm);
   const stub = sinon.stub(npmClient, 'getRegistryPreReleaseTags').resolves([]);
-  npmClient.bump('1.0.0-0');
-  const tag = await npmClient.resolveTag();
+  const tag = await npmClient.resolveTag('1.0.0-0');
   t.is(tag, 'next');
   stub.restore();
 });
@@ -34,17 +33,22 @@ test('should resolve default tag for pre-release', async t => {
 test('should guess tag from registry for pre-release', async t => {
   const npmClient = factory(npm);
   const stub = sinon.stub(npmClient, 'getRegistryPreReleaseTags').resolves(['alpha']);
-  npmClient.bump('1.0.0-0');
-  const tag = await npmClient.resolveTag();
+  const tag = await npmClient.resolveTag('1.0.0-0');
   t.is(tag, 'alpha');
   stub.restore();
 });
 
 test('should derive tag from pre-release version', async t => {
   const npmClient = factory(npm);
-  npmClient.bump('1.0.2-alpha.3');
-  const tag = await npmClient.resolveTag();
+  const tag = await npmClient.resolveTag('1.0.2-alpha.3');
   t.is(tag, 'alpha');
+});
+
+test('should use provided (default) tag even for pre-release', async t => {
+  const options = { npm: { tag: 'latest' } };
+  const npmClient = factory(npm, { options });
+  await npmClient.bump('1.0.0-next.0');
+  t.is(npmClient.getContext('tag'), 'latest');
 });
 
 test('should not throw when executing tasks', async t => {
