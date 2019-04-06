@@ -137,8 +137,6 @@ const BarPlugin = sandbox.stub().callsFake(() => barPlugin);
 
   const tasks = (options, ...args) => runTasks(Object.assign({}, testConfig, options), ...args);
 
-  const getNpmArgs = args => args.filter(args => args[0].startsWith('npm ')).map(args => args[0].trim());
-
   test.serial('should release all the things (basic)', async t => {
     const { bare, target } = t.context;
     const repoName = path.basename(bare);
