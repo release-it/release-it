@@ -1,6 +1,5 @@
 const test = require('ava');
 const sinon = require('sinon');
-const _ = require('lodash');
 const npm = require('../lib/plugin/npm/npm');
 const { factory, runTasks } = require('./util');
 
