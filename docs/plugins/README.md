@@ -70,8 +70,11 @@ Alternatively, here's a `foo` plugin as a local module:
 
 To create a plugin, extend the `Plugin` class, and implement one or more release-cycle methods. See the "interface"
 below (where none of the methods is required). Any of these methods can be `async`. If you're interested in writing a
-plugin, please take a look at [the `runTasks` test helper](), to see how a plugin is integrated in the release process.
-Also see the [base `Plugin` class]() where the plugin should be extended from.
+plugin, please take a look at
+[the `runTasks` test helper](https://github.com/release-it/release-it/blob/v11/test/util/index.js#L33-L54), to see how a
+plugin is integrated in the release process. Also see the
+[base `Plugin` class](https://github.com/release-it/release-it/blob/v11/lib/plugin/Plugin.js) where the plugin should be
+extended from.
 
 ## Interface
 
@@ -150,9 +153,9 @@ Implement `beforeRelease` to perform tasks that should happen after the bump, an
 
 ### `release`
 
-Implement `release` for the main flow of the plugin. This is where the "steps" should be declared (see `this.step` in
-[class API](#class-api)), resulting in prompts (interactive) or spinners (non-interactive) that will execute tasks for
-confirmed steps.
+Implement `release` for the main flow of the plugin. This is where the "steps" should be declared (see [step](#step) in
+class API), resulting in prompts (interactive) or spinners (non-interactive) that will execute tasks for confirmed
+steps.
 
 ### `afterRelease`
 
@@ -198,8 +201,8 @@ Use `this.log.[verbose|warn|error]` to log and inform the user about what's goin
 
 ### Examples
 
-- [my-version](../recipes/my-version.md) - reads and writes a local `./VERSION` file, and includes a prompt to let the
-  user confirm before publishing to a package registry.
+- [my-version](https://github.com/release-it/release-it/blob/v11/docs/recipes/my-version.md) - reads and writes a local
+  `./VERSION` file, and includes a prompt to let the user confirm before publishing to a package registry.
 - [@release-it/conventional-changelog](https://github.com/release-it/conventional-changelog) - uses
   `conventional-recommended-bump` in `getIncrementedVersion()` and `conventional-changelog` in `beforeRelease` to
   generate the changelog. Optionally updates `CHANGELOG.md`.
