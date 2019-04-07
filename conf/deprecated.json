@@ -1,10 +1,7 @@
 {
-  "prompt": {
-    "commit": null,
-    "tag": null,
-    "push": null,
-    "ghRelease": null,
-    "glRelease": null,
-    "publish": null
+  "pkgFiles": null,
+  "use": null,
+  "scripts": {
+    "changelog": "git.changelog"
   }
 }
