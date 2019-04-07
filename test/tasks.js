@@ -13,7 +13,7 @@ const got = require('./stub/got');
 const ShellStub = require('./stub/shell');
 const sinon = require('sinon');
 const runTasks = require('../lib/tasks');
-const Plugin = require('../lib/plugin');
+const Plugin = require('../lib/plugin/Plugin');
 
 const noop = Promise.resolve();
 
