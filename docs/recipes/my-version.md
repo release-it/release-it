@@ -1,17 +1,17 @@
-# Example plugin: release-it-version
+# Example plugin: my-version
 
 This example reads a `VERSION` file, bumps it, and publishes to a package repository. It is only enabled if the
 `./VERSION` actually exists.
 
 ```javascript
-const Plugin = require('release-it/Plugin');
+const { Plugin } = require('release-it');
 const fs = require('fs');
 const path = require('path');
 
 const prompts = {
   publish: {
     type: 'confirm',
-    message: context => `Publish version ${context.version} of ${context['release-it-version'].name}?`
+    message: context => `Publish version ${context.version} of ${context['my-version'].name}?`
   }
 };
 
@@ -63,7 +63,7 @@ To add this plugin to a project, use this configuration:
 ```json
 {
   "plugins": {
-    "release-it-version": {
+    "my-version": {
       "name": "my-pkg"
     }
   }

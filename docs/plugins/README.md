@@ -6,9 +6,9 @@ or executed from the shell, it can be integrated in the release-it process.
 
 Plugins allow additional and custom actions in the release process, such as:
 
-- Publish the package to a registry (this is language-agnostic, e.g. Ruby, Python, ...).
+- Publish the package to any registry (this is language-agnostic, e.g. Ruby, Python, ...).
 - Implement a different strategy to generate changelogs and/or release notes.
-- Post a message to a Slack channel.
+- Trigger web hooks (e.g. post a message to a Slack channel).
 - Use Node.js directly (instead of executing shell scripts configured in `scripts.*`).
 - Not yet possible: replace existing plugins. For instance, integrate with the npm registry using their
   [programmatic API](https://github.com/npm/libnpm) (as opposed to calling `npm publish` in a child process like
@@ -198,8 +198,11 @@ Use `this.log.[verbose|warn|error]` to log and inform the user about what's goin
 
 ### Examples
 
-- [release-it-version](../recipes/release-it-version.md) - reads and writes a local `./VERSION` file, and includes a
-  prompt to let the user confirm before publishing to a package registry.
-- [release-it-conventional-changelog]() - uses `conventional-recommended-bump` in `getIncrementedVersion()` and
-  `conventional-changelog` in `beforeRelease` to generate the changelog. Optionally updates `CHANGELOG.md`.
-- [npm]() - the internal release-it plugin to publish a package to npm.
+- [my-version](../recipes/my-version.md) - reads and writes a local `./VERSION` file, and includes a prompt to let the
+  user confirm before publishing to a package registry.
+- [@release-it/conventional-changelog](https://github.com/release-it/conventional-changelog) - uses
+  `conventional-recommended-bump` in `getIncrementedVersion()` and `conventional-changelog` in `beforeRelease` to
+  generate the changelog. Optionally updates `CHANGELOG.md`.
+- [@release-it/mercurial](https://github.com/release-it/mercurial) - use Mercurial
+- [npm](https://github.com/release-it/release-it/blob/v11/lib/plugin/npm/npm.js) - the internal release-it plugin to
+  publish a package to npm.

@@ -238,7 +238,7 @@ The "Releases" tab on GitHub projects links to a page to store the changelog. To
 
 - Configure `github.release: true`.
 - Obtain a [personal access token](https://github.com/settings/tokens) (release-it only needs "repo" access; no "admin"
-  or other plugins).
+  or other scopes).
 - Make sure the token is available as an environment variable. Example:
 
 ```bash
@@ -287,7 +287,7 @@ download from the GitHub release page. Example:
 
 - Configure `gitlab.release: true`.
 - Obtain a [personal access token](https://gitlab.com/profile/personal_access_tokens) (release-it only needs the "api"
-  plugin).
+  scope).
 - Make sure the token is available as an environment variable. Example:
 
 ```bash
@@ -358,7 +358,7 @@ the `CHANGELOG.md` file:
 ```json
 {
   "plugins": {
-    "release-it-conventional-changelog": {
+    "@release-it/conventional-changelog": {
       "preset": "angular",
       "infile": "CHANGELOG.md"
     }
@@ -375,7 +375,7 @@ the `CHANGELOG.md` file:
 
 ## Publish to npm
 
-With a `package.json` is in the current directory, release-it will let `npm` bump the version in `package.json` (and
+With a `package.json` in the current directory, release-it will let `npm` bump the version in `package.json` (and
 `package-lock.json` if present), and publish to the npm registry.
 
 ### Public scoped packages
