@@ -16,8 +16,6 @@ const readFile = file =>
     });
   });
 
-const readJSON = file => readFile(file).then(JSON.parse);
-
 const gitAdd = (content, file, message) => {
   sh.ShellString(content).toEnd(file);
   sh.exec(`git add ${file}`);
@@ -27,6 +25,5 @@ const gitAdd = (content, file, message) => {
 module.exports = {
   mkTmpDir,
   readFile,
-  readJSON,
   gitAdd
 };
