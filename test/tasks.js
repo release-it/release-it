@@ -85,6 +85,17 @@ test.serial('should run tasks without package.json', async t => {
   }
 });
 
+test.serial('should disable plugins', async t => {
+  gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
+  sh.exec('git tag 1.2.3');
+  gitAdd('line', 'file', 'Add file');
+  const container = getContainer({ increment: 'minor', git: false, npm: false });
+  const { latestVersion, version } = await runTasks({}, container);
+  t.is(latestVersion, '0.0.0');
+  t.is(version, '0.1.0');
+  t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
+});
+
 test.serial('should run tasks with minimal config and without any warnings/errors', async t => {
   gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
   sh.exec('git tag 1.2.3');
