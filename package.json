@@ -34,6 +34,7 @@
     "bin",
     "conf",
     "lib",
+    "test/stub",
     "test/util"
   ],
   "scripts": {
