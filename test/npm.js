@@ -1,6 +1,5 @@
 const test = require('ava');
 const sinon = require('sinon');
-const _ = require('lodash');
 const npm = require('../lib/npm');
 
 test('should return npm package url', t => {
@@ -67,7 +66,7 @@ test('should not throw if npm returns 404 for unsupported ping/whoami', async t 
   const pingError = "npm ERR! code E404\nnpm ERR! 404 Package '--ping' not found : ping";
   const whoamiError = "npm ERR! code E404\nnpm ERR! 404 Package '--whoami' not found : whoami";
   run.withArgs('npm ping').rejects(new Error(pingError));
-  run.withArgs('npm whoai').rejects(new Error(whoamiError));
+  run.withArgs('npm whoami').rejects(new Error(whoamiError));
 
   const npmClient = new npm({
     name: 'pkg',
@@ -75,9 +74,23 @@ test('should not throw if npm returns 404 for unsupported ping/whoami', async t 
     shell: { run },
     log: { warn: () => {} }
   });
-  await npmClient.validate();
-  t.is(run.callCount, 3);
-  t.deepEqual(_.flatten(run.args), ['npm ping', 'npm whoami', 'npm show pkg@latest version']);
+  await t.notThrowsAsync(npmClient.validate());
+});
+
+test('should not throw if npm returns 400 for unsupported ping/whoami', async t => {
+  const run = sinon.stub().resolves();
+  const pingError = 'npm ERR! code E400\nnpm ERR! 400 Bad Request - GET https://npm.example.org/-/ping?write=true';
+  const whoamiError = 'npm ERR! code E400\nnpm ERR! 400 Bad Request - GET https://npm.example.org/-/whoami';
+  run.withArgs('npm ping').rejects(new Error(pingError));
+  run.withArgs('npm whoami').rejects(new Error(whoamiError));
+
+  const npmClient = new npm({
+    name: 'pkg',
+    publish: true,
+    shell: { run },
+    log: { warn: () => {} }
+  });
+  await t.notThrowsAsync(npmClient.validate());
 });
 
 test('should throw if user is not authenticated', async t => {
