@@ -14,7 +14,7 @@ Example configuration in the release-it config:
 
 ```json
 "scripts": {
-  "beforeStage": "npx auto-changelog",
+  "beforeStage": "npx auto-changelog -p",
   "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template ./preview.hbs"
 }
 ```

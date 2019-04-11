@@ -334,7 +334,7 @@ A tool like [auto-changelog](https://github.com/CookPete/auto-changelog) is a gr
 {
   "scripts": {
     "changelog": "npx auto-changelog --stdout --commit-limit false -u --template ./changelog.hbs",
-    "beforeStage": "npx auto-changelog"
+    "beforeStage": "npx auto-changelog -p"
   }
 }
 ```
