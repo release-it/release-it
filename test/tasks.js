@@ -262,7 +262,6 @@ test.serial('should run tasks without package.json', async t => {
     const scripts = {
       beforeStart: 'echo beforeStart ${name} ${repo.project}',
       beforeBump: 'echo beforeBump ${name}',
-      afterBump: 'echo afterBump ${name}',
       beforeStage: 'echo beforeStage ${name}',
       afterRelease: 'echo afterRelease ${name} ${repo.project}'
     };

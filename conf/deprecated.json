@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "afterBump": null
+  },
   "prompt": {
     "commit": null,
     "tag": null,
