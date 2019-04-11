@@ -481,12 +481,13 @@ These script hooks can be used to execute commands (from the root directory of t
 - `scripts.beforeStage`
 - `scripts.afterRelease`
 
-All commands can use configuration variables (like template strings). Some examples:
+All commands can use configuration variables (like template strings). An array of commands can also be provided, they
+will run one after another. Some examples:
 
 ```json
 {
   "scripts": {
-    "beforeStart": "npm test",
+    "beforeStart": ["npm run lint", "npm test"],
     "afterBump": "tar -czvf foo-${version}.tar.gz",
     "afterRelease": "echo Successfully released ${name} v${version} to ${repo.repository}."
   }

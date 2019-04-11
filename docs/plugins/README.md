@@ -69,8 +69,8 @@ Alternatively, here's a `foo` plugin as a local module:
 ## Creating a plugin
 
 To create a plugin, extend the `Plugin` class, and implement one or more release-cycle methods. See the "interface"
-below (where none of the methods is required). Any of these methods can be `async`. If you're interested in writing a
-plugin, please take a look at
+below (where none of the methods is required). Any of these methods can be `async` (except for
+`getIncrementedVersionSync`). If you're interested in writing a plugin, please take a look at
 [the `runTasks` test helper](https://github.com/release-it/release-it/blob/v11/test/util/index.js#L33-L54), to see how a
 plugin is integrated in the release process. Also see the
 [base `Plugin` class](https://github.com/release-it/release-it/blob/v11/lib/plugin/Plugin.js) where the plugin should be
@@ -84,6 +84,7 @@ class Plugin {
   init() {}
   getName() {}
   getLatestVersion() {}
+  getIncrementedVersionSync() {}
   getIncrementedVersion() {}
   beforeBump() {}
   bump() {}
@@ -160,6 +161,27 @@ steps.
 ### `afterRelease`
 
 Implement `afterRelease` to provide details about a successful release, e.g. a link to the release page.
+
+## Getter methods
+
+### `getName`
+
+Provide the name of the package being released.
+
+### `getLatestVersion`
+
+Implement `getLatestVersion` and return the latest version prior to the current release, so release-it can determine the
+next version.
+
+### `getIncrementedVersionSync`
+
+Implement `getIncrementedVersionSync` to provide the next version (must be synchronous). This should normally not be
+implemented in a custom plugin, but left to the internal `version` plugin.
+
+### `getIncrementedVersion`
+
+Implement `getIncrementedVersion` to provide the next version (can be async). This should normally not be implemented in
+a custom plugin, but left to the internal `version` plugin.
 
 ## Class API
 
