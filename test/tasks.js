@@ -67,8 +67,8 @@ test.serial.afterEach(() => {
 
 test.serial('should run tasks without throwing errors', async t => {
   sh.mv('.git', 'foo');
-  const { name, latestVersion } = await runTasks({}, getContainer());
-  t.true(log.obtrusive.firstCall.args[0].includes(`release ${name} (currently at ${latestVersion})`));
+  const { name, latestVersion, version } = await runTasks({}, getContainer());
+  t.true(log.obtrusive.firstCall.args[0].includes(`release ${name} (${latestVersion}...${version})`));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
 });
 
@@ -76,7 +76,7 @@ test.serial('should run tasks without package.json', async t => {
   sh.exec('git tag 1.0.0');
   gitAdd('line', 'file', 'Add file');
   const { name } = await runTasks({}, getContainer({ increment: 'major', git: { commit: false } }));
-  t.true(log.obtrusive.firstCall.args[0].includes(`release ${name} (currently at 1.0.0)`));
+  t.true(log.obtrusive.firstCall.args[0].includes(`release ${name} (1.0.0...2.0.0)`));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
   t.is(log.warn.callCount, 0);
   {
@@ -101,7 +101,7 @@ test.serial('should run tasks with minimal config and without any warnings/error
   sh.exec('git tag 1.2.3');
   gitAdd('line', 'file', 'More file');
   await runTasks({}, getContainer({ increment: 'patch' }));
-  t.true(log.obtrusive.firstCall.args[0].includes('release my-package (currently at 1.2.3)'));
+  t.true(log.obtrusive.firstCall.args[0].includes('release my-package (1.2.3...1.2.4)'));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
   const { stdout } = sh.exec('git describe --tags --abbrev=0');
   t.is(stdout.trim(), '1.2.4');
@@ -110,7 +110,7 @@ test.serial('should run tasks with minimal config and without any warnings/error
 test.serial('should use pkg.version', async t => {
   gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
   await runTasks({}, getContainer({ increment: 'minor' }));
-  t.true(log.obtrusive.firstCall.args[0].includes('release my-package (currently at 1.2.3)'));
+  t.true(log.obtrusive.firstCall.args[0].includes('release my-package (1.2.3...1.3.0)'));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
   const { stdout } = sh.exec('git describe --tags --abbrev=0');
   t.is(stdout.trim(), '1.3.0');
@@ -125,7 +125,7 @@ test.serial('should use pkg.version (in sub dir) w/o tagging repo', async t => {
   const container = getContainer({ increment: 'minor', git: { tag: false } });
   const exec = sinon.spy(container.shell, 'exec');
   await runTasks({}, container);
-  t.true(log.obtrusive.firstCall.args[0].endsWith('release my-package (currently at 1.2.3)'));
+  t.true(log.obtrusive.firstCall.args[0].endsWith('release my-package (1.2.3...1.3.0)'));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
   const { stdout } = sh.exec('git describe --tags --abbrev=0');
   t.is(stdout.trim(), '1.0.0');
@@ -183,7 +183,7 @@ const BarPlugin = sandbox.stub().callsFake(() => barPlugin);
       'npm publish . --tag latest'
     ]);
 
-    t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (currently at 1.0.0)`));
+    t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
     t.true(log.log.firstCall.args[0].endsWith(`https://github.com/${owner}/${repoName}/releases/tag/1.0.1`));
     t.true(log.log.secondCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
 
@@ -253,7 +253,7 @@ const BarPlugin = sandbox.stub().callsFake(() => barPlugin);
     const { stdout } = sh.exec('git describe --tags --abbrev=0');
     t.is(stdout.trim(), 'v1.1.0-alpha.0');
 
-    t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (currently at 1.0.0)`));
+    t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.1.0-alpha.0)`));
     t.true(log.log.firstCall.args[0].endsWith(`https://github.com/${owner}/${repoName}/releases/tag/v1.1.0-alpha.0`));
     t.true(log.log.secondCall.args[0].endsWith(`${repoName}/releases`));
     t.true(log.log.thirdCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
@@ -284,7 +284,7 @@ const BarPlugin = sandbox.stub().callsFake(() => barPlugin);
 
     const { stdout } = sh.exec('git describe --tags --abbrev=0');
     t.is(stdout.trim(), '2.0.0-0');
-    t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (currently at 1.0.0)`));
+    t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...2.0.0-0)`));
     t.true(log.log.firstCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
     t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
 
@@ -367,7 +367,7 @@ const BarPlugin = sandbox.stub().callsFake(() => barPlugin);
       'init',
       'getName',
       'getLatestVersion',
-      'getIncrementedVersion',
+      'getIncrementedVersionSync',
       'beforeBump',
       'bump',
       'beforeRelease',
@@ -378,8 +378,8 @@ const BarPlugin = sandbox.stub().callsFake(() => barPlugin);
       t.is(barPlugin[method].callCount, 1);
     });
 
-    t.deepEqual(fooPlugin.getIncrementedVersion.firstCall.args[0], { latestVersion: '0.0.0' });
-    t.deepEqual(barPlugin.getIncrementedVersion.firstCall.args[0], { latestVersion: '0.0.0' });
+    t.deepEqual(fooPlugin.getIncrementedVersionSync.firstCall.args[0], { latestVersion: '0.0.0' });
+    t.deepEqual(barPlugin.getIncrementedVersionSync.firstCall.args[0], { latestVersion: '0.0.0' });
     t.is(fooPlugin.bump.firstCall.args[0], '0.0.1');
     t.is(barPlugin.bump.firstCall.args[0], '0.0.1');
   });
