@@ -50,12 +50,12 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@octokit/rest": "16.23.4",
+    "@octokit/rest": "16.25.0",
     "async-retry": "1.2.3",
     "bump-file": "2.0.0",
     "chalk": "2.4.2",
-    "conventional-changelog": "3.0.6",
-    "conventional-recommended-bump": "4.0.4",
+    "conventional-changelog": "3.1.3",
+    "conventional-recommended-bump": "4.1.1",
     "cpy": "7.2.0",
     "debug": "4.1.1",
     "deprecated-obj": "1.0.0",
@@ -63,10 +63,10 @@
     "git-url-parse": "11.1.2",
     "globby": "9.2.0",
     "got": "9.6.0",
-    "inquirer": "6.2.2",
+    "inquirer": "6.3.1",
     "is-ci": "2.0.0",
     "lodash": "4.17.11",
-    "mime-types": "2.1.22",
+    "mime-types": "2.1.23",
     "ora": "3.4.0",
     "os-name": "3.1.0",
     "semver": "6.0.0",
@@ -88,10 +88,10 @@
     "eslint-plugin-prettier": "3.0.1",
     "markdown-toc": "1.2.0",
     "mock-stdio": "1.0.3",
-    "nyc": "13.3.0",
-    "prettier": "1.16.4",
+    "nyc": "14.0.0",
+    "prettier": "1.17.0",
     "proxyquire": "2.1.0",
-    "sinon": "7.3.1"
+    "sinon": "7.3.2"
   },
   "engines": {
     "node": ">=8"
