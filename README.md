@@ -14,7 +14,8 @@ CLI release tool for Git repos and npm packages.
 - [Generate changelog](#changelogs)
 - [Publish to npm](#publish-to-npm)
 - [Manage pre-releases](#manage-pre-releases)
-- Support [monorepo](#monorepos) workflows
+- [Script Hooks](#scripts)
+- Extend with [plugins](#plugins)
 
 [![Build Status](https://travis-ci.org/release-it/release-it.svg?branch=master)](https://travis-ci.org/release-it/release-it)
 [![npm version](https://badge.fury.io/js/release-it.svg)](https://badge.fury.io/js/release-it)
@@ -46,6 +47,7 @@ CLI release tool for Git repos and npm packages.
 - [Publish to npm](#publish-to-npm)
 - [Manage pre-releases](#manage-pre-releases)
 - [Scripts](#scripts)
+- [Plugins](#plugins)
 - [Distribution repository](#distribution-repository)
 - [Metrics](#metrics)
 - [Troubleshooting & debugging](#troubleshooting--debugging)
@@ -186,9 +188,11 @@ On a Continuous Integration (CI) environment, the non-interactive mode is activa
 
 ## Latest version
 
-For Git repositories, release-it uses the latest tag to determine which version should be released. For npm packages
-with a `package.json`, its `version` will be used. In any case, as a last resort, `0.0.0` will be used as the latest
-version.
+For projects with a `package.json`, its `version` will be used. Otherwise, release-it uses the latest Git tag to
+determine which version should be released. In any case, as a last resort, `0.0.0` will be used as the latest version.
+
+Alternatively, a plugin can also be used to get the version from anywhere else. Also see
+[plugins](docs/plugins/README.md).
 
 ## Git
 
@@ -308,9 +312,9 @@ Uploading assets work just like [GitHub Release assets](#release-assets), e.g. `
 By default, release-it generates a changelog, to show and help select a version for the new release. Additionally, this
 changelog serves as the release notes for the GitHub or GitLab release.
 
-The [default command](conf/release-it.json) is based on `git log ...`. This setting (`scripts.changelog`) can be
-overridden, or specifically with `github.releaseNotes` or `gitlab.releaseNotes` for the release notes only. Make sure
-the command outputs the changelog to `stdout`.
+The [default command](conf/release-it.json) is based on `git log ...`. This setting (`git.changelog`) can be overridden,
+or specifically with `github.releaseNotes` or `gitlab.releaseNotes` for the release notes only. Make sure the command
+outputs the changelog to `stdout`.
 
 Alternatively, a (Handlebars) template can be used to generate the changelog. See [auto-changelog](#auto-changelog)
 below for more details.
@@ -325,24 +329,24 @@ A tool like [auto-changelog](https://github.com/CookPete/auto-changelog) is a gr
 
 ```json
 {
+  "git": {
+    "changelog": "npx auto-changelog --stdout --commit-limit false -u --template ./changelog.hbs"
+  },
   "scripts": {
-    "changelog": "npx auto-changelog --stdout --commit-limit false -u --template ./changelog.hbs",
     "beforeStage": "npx auto-changelog"
   }
 }
 ```
 
-With this `scripts.changelog`, the changelog preview is based on the `changelog.hbs` template. This would be used for
+With this `git.changelog`, the changelog preview is based on the `changelog.hbs` template file. This would be used for
 [GitHub](#github-releases) or [GitLab releases](#gitlab-releases) as well.
 
 Additionally, `scripts.beforeStage` will update the `CHANGELOG.md` with each release to get included with the release
-commit. Obviously this can be omitted if the project does not keep a `CHANGELOG.md` or similar.
+commit. This can be omitted if the project does not keep a `CHANGELOG.md` or similar.
 
 See the [auto-changelog recipe](docs/recipes/auto-changelog.md) for an example setup and template.
 
 ### Conventional Changelog
-
-#### Recommended Bump
 
 If your project follows conventions, such as the
 [Angular commit guidelines](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#commits), the
@@ -467,7 +471,7 @@ release-it major
 
 Notes:
 
-- Pre-releases can work together with [recommended bumps](#recommended-bump).
+- Pre-releases work in tandem with [recommended bumps](#recommended-bump).
 - You can still override individual options, e.g. `release-it --preRelease=rc --npm.tag=next`.
 - See [semver.org](http://semver.org) for more details about semantic versioning.
 
@@ -494,9 +498,8 @@ will run one after another. Some examples:
 }
 ```
 
-The variables can be found in the
-[default configuration](https://github.com/webpro/release-it/blob/master/conf/release-it.json). Additionally, the
-following variables are exposed:
+The variables can be found in the [default configuration](conf/release-it.json). Additionally, the following variables
+are exposed:
 
 ```
 version
@@ -505,6 +508,11 @@ changelog
 name
 repo.remote, repo.protocol, repo.host, repo.owner, repo.repository, repo.project
 ```
+
+## Plugins
+
+Since v11, release-it can be extended in many, many ways. Please head over to [plugins](docs/plugins/README.md) for more
+details.
 
 ## Distribution repository
 
@@ -519,8 +527,7 @@ The `dist.repo` option was removed in v10, but similar setups can still be achie
 ## Metrics
 
 Use `--disable-metrics` to opt-out of sending some anonymous statistical data to Google Analytics. For details, refer to
-[lib/metrics.js](lib/metrics.js). Please consider to not opt-out: more data means more more support for future
-development.
+[lib/metrics.js](lib/metrics.js). Please consider to not opt-out: more data means more support for future development.
 
 ## Troubleshooting & debugging
 

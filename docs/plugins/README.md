@@ -9,6 +9,7 @@ Plugins allow additional and custom actions in the release process, such as:
 - Publish the package to any registry (this is language-agnostic, e.g. Ruby, Python, ...).
 - Implement a different strategy to generate changelogs and/or release notes.
 - Trigger web hooks (e.g. post a message to a Slack channel).
+- Use a different VCS, such as Mercurial (example: [@release-it/mercurial](https://github.com/release-it/mercurial)).
 - Use Node.js directly (instead of executing shell scripts configured in `scripts.*`).
 - Not yet possible: replace existing plugins. For instance, integrate with the npm registry using their
   [programmatic API](https://github.com/npm/libnpm) (as opposed to calling `npm publish` in a child process like
