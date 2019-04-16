@@ -5,6 +5,16 @@ This document lists breaking changes for each major release.
 See the GitHub Releases page for detailed changelogs:
 [https://github.com/webpro/release-it/releases](https://github.com/webpro/release-it/releases)
 
+## v11
+
+- The custom `conventional-changelog` increment (e.g. `"increment": "conventional:angular"`) with additional script
+  configuration is replaced with a plugin. Please see
+  [conventional changelog](https://github.com/webpro/release-it#conventional-changelog) how to use this plugin.
+- The `pkgFiles` option has been removed. If there's a need to bump other files than what npm version bumps, it should
+  be (part of) a plugin.
+- The `preReleaseId` has been removed. This should be used from the command-line only (e.g. `--preRelease=next`).
+- The `use` option has been removed. Also see [latest version](https://github.com/webpro/release-it#latest-version).
+
 ## v10
 
 - Dropped support for Node v6
@@ -20,8 +30,8 @@ For this (backwards compatible) change, deprecation warnings are shown, and conf
 next major release (v10). See [deprecated.json](./conf/deprecated.json) for the changes, mainly:
 
 - All "command hooks" have been moved to `scripts.*`, and some have been renamed.
-- All `src.*` options have been moved to `git.*` (and `scripts.*`)
-- The `dist.repo` has been removed in v9.8.0
+- All `src.*` options have been moved to `git.*` (and `scripts.*`).
+- The `dist.repo` configuration and functionality has been removed.
 
 ## v8
 
