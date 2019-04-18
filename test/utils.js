@@ -8,6 +8,15 @@ test('format', t => {
   t.is(format('release v${version} (${name})', { version: '1.0.0', name: 'foo' }), 'release v1.0.0 (foo)');
 });
 
+test('format (%s)', t => {
+  t.is(
+    format('git log --pretty=format:"* %s (%h)" ${latestTag}...HEAD', { version: '1.0.0', latestTag: '2.0.0' }),
+    'git log --pretty=format:"* %s (%h)" 2.0.0...HEAD'
+  );
+  t.is(format('v%s', { version: '1.0.0' }), 'v1.0.0');
+  t.is(format('v%s ${version} %s', { version: '1.0.0' }), 'v1.0.0 1.0.0 1.0.0');
+});
+
 test('truncateLines', t => {
   const input = `1${EOL}2${EOL}3${EOL}4${EOL}5${EOL}6`;
   t.is(truncateLines(input), input);
