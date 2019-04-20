@@ -39,10 +39,11 @@
     "lint": "eslint lib test",
     "format": "prettier --write \"{lib,test}/**/*.js\"",
     "test": "ava --verbose --require ./test/util/setup.js test/*.js",
+    "integration-test": "ava --verbose --require ./test/util/setup.js test/it/*.js",
     "coverage": "nyc --reporter=lcov --reporter=html npm test",
     "codecov": "nyc --reporter=json npm test && codecov -f coverage/coverage-final.json",
     "readme": "markdown-toc README.md -i --maxdepth=2 --bullets=-",
-    "release": "./bin/release-it.js"
+    "release": "npm run integration-test && ./bin/release-it.js"
   },
   "author": {
     "email": "lars@webpro.nl",
