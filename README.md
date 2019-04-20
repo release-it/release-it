@@ -191,8 +191,9 @@ On a Continuous Integration (CI) environment, the non-interactive mode is activa
 For projects with a `package.json`, its `version` will be used. Otherwise, release-it uses the latest Git tag to
 determine which version should be released. In any case, as a last resort, `0.0.0` will be used as the latest version.
 
-Alternatively, a plugin can also be used to get the version from anywhere else. Also see
-[plugins](docs/plugins/README.md).
+Use `--no-npm` (or `"npm": false`) to ignore and skip bumping `package.json` (and skip `npm publish`).
+
+Alternatively, a plugin can be used to get the version from anywhere else. Also see [plugins](docs/plugins/README.md).
 
 ## Git
 

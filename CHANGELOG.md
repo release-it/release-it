@@ -10,10 +10,12 @@ See the GitHub Releases page for detailed changelogs:
 - The custom `conventional-changelog` increment (e.g. `"increment": "conventional:angular"`) with additional script
   configuration is replaced with a plugin. Please see
   [conventional changelog](https://github.com/webpro/release-it#conventional-changelog) how to use this plugin.
-- The `pkgFiles` option has been removed. If there's a need to bump other files than what npm version bumps, it should
+- The `pkgFiles` option has been removed. If there's a need to bump other files than what `npm version` bumps, it should
   be (part of) a plugin.
-- The `preReleaseId` has been removed. This should be used from the command-line only (e.g. `--preRelease=next`).
-- The `use` option has been removed. Also see [latest version](https://github.com/webpro/release-it#latest-version).
+- By default, the latest version was derived from the latest Git tag. From v11, if the repo has a `package.json` then
+  that `version` is used instead. The `use` option has been removed. Also see
+  [latest version](https://github.com/webpro/release-it#latest-version).
+- `scripts.changelog` has been moved to `git.changelog`
 
 ## v10
 
