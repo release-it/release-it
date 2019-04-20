@@ -6,10 +6,10 @@
     "beforeStart": null,
     "beforeBump": null,
     "beforeStage": null,
-    "changelog": "git log --pretty=format:\"* %s (%h)\" [REV_RANGE]",
     "afterRelease": null
   },
   "git": {
+    "changelog": "git log --pretty=format:\"* %s (%h)\" [REV_RANGE]",
     "requireCleanWorkingDir": true,
     "requireUpstream": true,
     "addUntrackedFiles": false,

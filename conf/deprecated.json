@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "afterBump": null
+    "afterBump": null,
+    "changelog": "git.changelog"
   },
   "prompt": {
     "commit": null,
