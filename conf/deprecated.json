@@ -1,7 +1,1 @@
-{
-  "pkgFiles": null,
-  "use": null,
-  "scripts": {
-    "changelog": "git.changelog"
-  }
-}
+{}
