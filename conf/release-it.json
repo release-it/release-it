@@ -1,6 +1,6 @@
 {
   "preReleaseId": null,
-  "pkgFiles": ["package.json"],
+  "pkgFiles": ["package.json", "package-lock.json"],
   "use": "git.tag",
   "scripts": {
     "beforeStart": null,

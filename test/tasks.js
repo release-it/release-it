@@ -78,13 +78,18 @@ test.serial('should run tasks without throwing errors', async t => {
 
 test.serial('should run tasks with minimal config and without any warnings/errors', async t => {
   gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
+  gitAdd('{"name":"my-package","version":"1.2.3"}', 'package-lock.json', 'Add package-lock.json');
   sh.exec('git tag 1.2.3');
   gitAdd('line', 'file', 'More file');
   await tasks({ increment: 'patch', npm: { publish: false } }, stubs);
   t.true(log.obtrusive.firstCall.args[0].includes('release my-package (1.2.3...1.2.4)'));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-  const pkg = await readJSON('package.json');
-  t.is(pkg.version, '1.2.4');
+  const verCheck = (pkg) => {
+    t.is(pkg.version, '1.2.4')
+  }
+  await Promise.all([
+    readJSON('package.json').then(verCheck), readJSON('package-lock.json').then(verCheck)
+  ]);
   {
     const { stdout } = sh.exec('git describe --tags --abbrev=0');
     t.is(stdout.trim(), '1.2.4');
@@ -131,7 +136,7 @@ test.serial('should run tasks without package.json', async t => {
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
   const warnings = _.flatten(log.warn.args);
   t.true(warnings.includes('Could not bump package.json'));
-  t.true(warnings.includes('Could not stage package.json'));
+  t.true(warnings.includes('Could not stage package.json package-lock.json'));
   {
     const { stdout } = sh.exec('git describe --tags --abbrev=0');
     t.is(stdout.trim(), '2.0.0');
