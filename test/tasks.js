@@ -291,6 +291,26 @@ const BarPlugin = sandbox.stub().callsFake(() => barPlugin);
     exec.restore();
   });
 
+  test.serial('should handle private package correctly, bump lockfile', async t => {
+    const { target } = t.context;
+    const pkgName = path.basename(target);
+    gitAdd(`{"name":"${pkgName}","version":"1.0.0","private":true}`, 'package.json', 'Add package.json');
+    gitAdd(`{"name":"${pkgName}","version":"1.0.0","private":true}`, 'package-lock.json', 'Add package-lock.json');
+
+    const container = getContainer({ npm: { name: pkgName, private: true } });
+    const exec = sinon.spy(container.shell, 'exec');
+
+    await tasks({}, container);
+
+    const npmArgs = getNpmArgs(container.shell.exec.args);
+    t.deepEqual(npmArgs, ['npm version 1.0.1 --no-git-tag-version']);
+    t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
+    t.is(log.warn.lastCall.args[0], 'Skip publish: package is private.');
+    t.regex(log.log.firstCall.args[0], /Done \(in [0-9]+s\.\)/);
+
+    exec.restore();
+  });
+
   test.serial('should run all scripts', async t => {
     const { bare } = t.context;
     const scripts = {
