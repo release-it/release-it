@@ -61,6 +61,7 @@
     "cpy": "7.2.0",
     "debug": "4.1.1",
     "deprecated-obj": "1.0.0",
+    "detect-repo-changelog": "1.0.1",
     "form-data": "2.3.3",
     "git-url-parse": "11.1.2",
     "globby": "9.2.0",
