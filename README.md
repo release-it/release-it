@@ -19,7 +19,6 @@ CLI release tool for Git repos and npm packages.
 
 [![Build Status](https://travis-ci.org/release-it/release-it.svg?branch=master)](https://travis-ci.org/release-it/release-it)
 [![npm version](https://badge.fury.io/js/release-it.svg)](https://badge.fury.io/js/release-it)
-[![Greenkeeper badge](https://badges.greenkeeper.io/release-it/release-it.svg)](https://greenkeeper.io/)
 [![codecov](https://codecov.io/gh/release-it/release-it/branch/master/graph/badge.svg)](https://codecov.io/gh/release-it/release-it)
 
 ## Links
