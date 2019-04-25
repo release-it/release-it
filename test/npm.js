@@ -50,6 +50,52 @@ test('should use provided (default) tag even for pre-release', async t => {
   t.is(npmClient.getContext('tag'), 'latest');
 });
 
+test('should warn when bumping to same version', async t => {
+  const npmClient = factory(npm);
+  const exec = sinon
+    .stub(npmClient.shell, 'exec')
+    .rejects('npm ERR! Version not changed, might want --allow-same-version');
+  await npmClient.bump('1.0.0-next.0');
+  t.is(npmClient.log.warn.firstCall.args[0], 'Did not update version in package.json etc. (already at 1.0.0-next.0).');
+  exec.restore();
+});
+
+test('should return first pre-release tag from package in registry when resolving tag without pre-id', async t => {
+  const npmClient = factory(npm);
+  const response = {
+    latest: '1.4.1',
+    alpha: '2.0.0-alpha.1',
+    beta: '2.0.0-beta.3'
+  };
+  const exec = sinon.stub(npmClient.shell, 'exec').resolves(JSON.stringify(response));
+  t.deepEqual(await npmClient.resolveTag('2.0.0-5'), 'alpha');
+  exec.restore();
+});
+
+test('should return default pre-release tag when resolving tag without pre-id', async t => {
+  const npmClient = factory(npm);
+  const response = {
+    latest: '1.4.1'
+  };
+  const exec = sinon.stub(npmClient.shell, 'exec').resolves(JSON.stringify(response));
+  t.deepEqual(await npmClient.resolveTag('2.0.0-0'), 'next');
+  exec.restore();
+});
+
+test('should handle erroneous output when resolving tag without pre-id', async t => {
+  const npmClient = factory(npm);
+  const exec = sinon.stub(npmClient.shell, 'exec').resolves('');
+  t.deepEqual(await npmClient.resolveTag('2.0.0-0'), 'next');
+  exec.restore();
+});
+
+test('should handle errored request when resolving tag without pre-id', async t => {
+  const npmClient = factory(npm);
+  const exec = sinon.stub(npmClient.shell, 'exec').rejects();
+  t.deepEqual(await npmClient.resolveTag('2.0.0-0'), 'next');
+  exec.restore();
+});
+
 test('should not throw when executing tasks', async t => {
   const npmClient = factory(npm);
   await t.notThrowsAsync(runTasks(npmClient));

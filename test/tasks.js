@@ -403,4 +403,15 @@ const BarPlugin = sandbox.stub().callsFake(() => barPlugin);
     t.is(fooPlugin.bump.firstCall.args[0], '0.0.1');
     t.is(barPlugin.bump.firstCall.args[0], '0.0.1');
   });
+
+  test.serial('should propagate errors', async t => {
+    const config = {
+      scripts: {
+        beforeStart: 'some-failing-command'
+      }
+    };
+    const container = getContainer(config);
+    await t.throwsAsync(tasks({}, container), /some-failing-command/);
+    t.is(log.error.callCount, 1);
+  });
 }
