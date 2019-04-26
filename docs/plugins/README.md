@@ -72,10 +72,10 @@ Alternatively, here's a `foo` plugin as a local module:
 To create a plugin, extend the `Plugin` class, and implement one or more release-cycle methods. See the "interface"
 below (where none of the methods is required). Any of these methods can be `async` (except for
 `getIncrementedVersionSync`). If you're interested in writing a plugin, please take a look at
-[the `runTasks` test helper](https://github.com/release-it/release-it/blob/v11/test/util/index.js#L33-L54), to see how a
-plugin is integrated in the release process. Also see the
-[base `Plugin` class](https://github.com/release-it/release-it/blob/v11/lib/plugin/Plugin.js) where the plugin should be
-extended from.
+[the `runTasks` test helper](https://github.com/release-it/release-it/blob/master/test/util/index.js#L33-L54), to see
+how a plugin is integrated in the release process. Also see the
+[base `Plugin` class](https://github.com/release-it/release-it/blob/master/lib/plugin/Plugin.js) where the plugin should
+be extended from.
 
 ## Interface
 
@@ -224,11 +224,11 @@ Use `this.log.[verbose|warn|error]` to log and inform the user about what's goin
 
 ### Examples
 
-- [my-version](https://github.com/release-it/release-it/blob/v11/docs/recipes/my-version.md) - reads and writes a local
-  `./VERSION` file, and includes a prompt to let the user confirm before publishing to a package registry.
+- [my-version](https://github.com/release-it/release-it/blob/master/docs/recipes/my-version.md) - reads and writes a
+  local `./VERSION` file, and includes a prompt to let the user confirm before publishing to a package registry.
 - [@release-it/conventional-changelog](https://github.com/release-it/conventional-changelog) - uses
   `conventional-recommended-bump` in `getIncrementedVersion()` and `conventional-changelog` in `beforeRelease` to
   generate the changelog. Optionally updates `CHANGELOG.md`.
 - [@release-it/mercurial](https://github.com/release-it/mercurial) - use Mercurial
-- [npm](https://github.com/release-it/release-it/blob/v11/lib/plugin/npm/npm.js) - the internal release-it plugin to
+- [npm](https://github.com/release-it/release-it/blob/master/lib/plugin/npm/npm.js) - the internal release-it plugin to
   publish a package to npm.

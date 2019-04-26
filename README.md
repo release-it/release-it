@@ -230,6 +230,8 @@ To skip the Git steps (commit, tag, push) entirely (e.g. to only `npm publish`),
 release-it --no-git
 ```
 
+Use e.g. `git.tag: false` or `--no-git.tag` to skip a single step.
+
 ### Untracked files
 
 By default, untracked files are not added to the release commit. Use `git.addUntrackedFiles: true` to override this
@@ -257,7 +259,7 @@ Obviously, release-it uses this feature extensively:
 
 ### Release notes
 
-By default, the output of `scripts.changelog` is used for the GitHub release notes. This is the printed `Changelog: ...`
+By default, the output of `git.changelog` is used for the GitHub release notes. This is the printed `Changelog: ...`
 when release-it boots. Override this with the `github.releaseNotes` option. This script will run just before the actual
 GitHub release itself. Make sure it outputs to `stdout`. An example:
 
@@ -298,7 +300,7 @@ download from the GitHub release page. Example:
 export GITLAB_TOKEN="f941e0..."
 ```
 
-The output of `scripts.changelog` (or `gitlab.releaseNotes` if set) will be attached to the latest tag.
+The output of `git.changelog` (or `gitlab.releaseNotes` if set) will be attached to the latest tag.
 
 GitLab 11.7 introduces [Releases](https://docs.gitlab.com/ce/user/project/releases.html) to create release entries (much
 like GitHub), including release assets. For GitLab 11.6 and lower, release-it will automatically fall back to
@@ -312,12 +314,12 @@ Uploading assets work just like [GitHub Release assets](#release-assets), e.g. `
 By default, release-it generates a changelog, to show and help select a version for the new release. Additionally, this
 changelog serves as the release notes for the GitHub or GitLab release.
 
-The [default command](conf/release-it.json) is based on `git log ...`. This setting (`git.changelog`) can be overridden,
-or specifically with `github.releaseNotes` or `gitlab.releaseNotes` for the release notes only. Make sure the command
-outputs the changelog to `stdout`.
+The [default command](conf/release-it.json) is based on `git log ...`. This setting (`git.changelog`) can be overridden.
+To customize the release notes for the GitHub or GitLab release, use `github.releaseNotes` or `gitlab.releaseNotes`.
+Make sure any of these commands output the changelog to `stdout`.
 
-Alternatively, a (Handlebars) template can be used to generate the changelog. See [auto-changelog](#auto-changelog)
-below for more details.
+Instead of executing a shell command, a (Handlebars) template can be used to generate the changelog. See
+[auto-changelog](#auto-changelog) below for more details.
 
 Some projects keep their changelog in e.g. `CHANGELOG.md` or `history.md`. To auto-update this file with the release,
 the recommended configuration is to use a command that does this in `scripts.beforeStage`. See below for examples and
@@ -409,14 +411,8 @@ basically defeats the purpose of 2FA (also, the OTP expires after a short period
 
 ### Monorepos
 
-Monorepos do not require extra configuration, but release-it releases only one package at a time. To not tag the
-repository itself, set `git.tag` to `false`. For example, from `./packages/some-pkg`:
-
-```
-release-it --git.commitMessage='Release ${name} v${version}' --no-git.tag
-```
-
-If needed, the [Git steps can be skipped](#skip-git-steps) entirely.
+Monorepos do not require extra configuration, but release-it handles only one package at a time. Also see how
+[Git steps can be skipped](#skip-git-steps) (e.g. if tagging the Git repo should be skipped).
 
 ### Misc.
 
