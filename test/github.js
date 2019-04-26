@@ -58,6 +58,10 @@ test('should release and upload assets', async t => {
     version
   });
 
+  const publishedResult = await github.maybePublishRelease({
+    draft: false
+  });
+
   t.is(github.isReleased, true);
   t.is(github.getReleaseUrl(), 'https://github.com/webpro/release-it-test/releases/tag/v2.0.1');
 
