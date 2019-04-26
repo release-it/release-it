@@ -121,6 +121,18 @@ test('should not throw if npm returns 404 for unsupported ping/whoami', async t 
   exec.restore();
 });
 
+test('should not throw if npm returns 400 for unsupported ping/whoami', async t => {
+  const npmClient = factory(npm);
+  const exec = sinon.stub(npmClient.shell, 'exec').resolves();
+  const pingError = 'npm ERR! code E400\nnpm ERR! 400 Bad Request - GET https://npm.example.org/-/ping?write=true';
+  const whoamiError = 'npm ERR! code E400\nnpm ERR! 400 Bad Request - GET https://npm.example.org/-/whoami';
+  exec.withArgs('npm ping').rejects(new Error(pingError));
+  exec.withArgs('npm whoami').rejects(new Error(whoamiError));
+  await runTasks(npmClient);
+  t.deepEqual(exec.lastCall.args[0].trim(), 'npm publish . --tag latest');
+  exec.restore();
+});
+
 test('should throw if user is not authenticated', async t => {
   const npmClient = factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();

@@ -69,11 +69,3 @@ test.serial('pushd + popd', async t => {
   const trail = popOutput.split(',');
   t.is(trail.length, 1);
 });
-
-test('copy', async t => {
-  const source = path.resolve(cwd, 'test/resources');
-  const target = mkTmpDir();
-  await shell.copy(['file*'], target, { cwd: source });
-  t.is(await readFile(`${source}/file1`), await readFile(`${target}/file1`));
-  t.is(await readFile(`${source}/file2`), await readFile(`${target}/file2`));
-});

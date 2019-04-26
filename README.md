@@ -23,9 +23,11 @@ CLI release tool for Git repos and npm packages.
 
 ## Links
 
+- **NEW**: [release-it will support plugins](https://github.com/release-it/release-it/issues/501) from the next major
+  release (v11), so virtually any functionality can be added to your release process.
 - For **updates**, see [CHANGELOG.md](CHANGELOG.md) for major updates, and
   [releases](https://github.com/release-it/release-it/releases) for a detailed version history.
-- To **contribute**, please read [CONTRIBUTING.md](CONTRIBUTING.md) to participate.
+- To **contribute**, please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
 - Please [open an issue](https://github.com/release-it/release-it/issues/new) if anything is missing or unclear in this
   documentation.
 
