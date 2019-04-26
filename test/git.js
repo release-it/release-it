@@ -160,7 +160,7 @@ test.serial('should push to remote name (not "origin")', async t => {
     gitAdd('line', 'file', 'Add file');
     await gitClient.push();
     t.is(spy.lastCall.args[0], 'git push --follow-tags  -u upstream foo');
-    t.is(await spy.lastCall.returnValue, "Branch 'foo' set up to track remote branch 'foo' from 'upstream'.");
+    t.regex(await spy.lastCall.returnValue, /Branch .?foo.? set up to track remote branch .?foo.? from .?upstream.?/);
   }
   spy.restore();
 });

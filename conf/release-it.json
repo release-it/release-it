@@ -2,7 +2,6 @@
   "scripts": {
     "beforeStart": null,
     "beforeBump": null,
-    "afterBump": null,
     "beforeStage": null,
     "afterRelease": null
   },
