@@ -1,8 +1,6 @@
 const test = require('ava');
 const sinon = require('sinon');
 const sh = require('shelljs');
-const path = require('path');
-const { mkTmpDir, readFile } = require('./util/helpers');
 const { factory } = require('./util');
 const Shell = require('../lib/shell');
 
@@ -53,19 +51,4 @@ test('exec (verbose)', async t => {
   t.is(shell.log.exec.firstCall.args[0], 'echo foo');
   t.is(shell.log.verbose.firstCall.args[0], 'foo');
   t.is(actual, 'foo');
-});
-
-test.serial('pushd + popd', async t => {
-  sh.dirs('-cq');
-  const dir = 'test/resources';
-  const outputPush = await shell.pushd(dir);
-  const [to, from] = outputPush.split(',');
-  const diff = to
-    .replace(from, '')
-    .replace(/^[/|\\\\]/, '')
-    .replace(/\\/g, '/');
-  t.is(diff, dir);
-  const popOutput = await shell.popd();
-  const trail = popOutput.split(',');
-  t.is(trail.length, 1);
 });
