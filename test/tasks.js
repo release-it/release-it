@@ -165,7 +165,7 @@ test.serial('should run tasks without package.json', async t => {
     t.is(githubReleaseArg.name, 'Release 1.0.1');
     t.true(githubReleaseArg.body.startsWith('* More file'));
     t.is(githubReleaseArg.prerelease, false);
-    t.is(githubReleaseArg.draft, false);
+    t.is(githubReleaseArg.draft, true);
 
     t.is(npmStub.callCount, 4);
     t.is(npmStub.firstCall.args[0], 'npm ping');
@@ -207,7 +207,7 @@ test.serial('should run tasks without package.json', async t => {
       stubs
     );
 
-    t.is(githubRequestStub.callCount, 2);
+    t.is(githubRequestStub.callCount, 3);
 
     const githubReleaseArg = githubRequestStub.firstCall.lastArg;
     t.is(githubReleaseArg.url, '/repos/:owner/:repo/releases');
@@ -247,7 +247,7 @@ test.serial('should run tasks without package.json', async t => {
     gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
     sh.exec('git tag v1.0.0');
     await tasks({ increment: 'major', preRelease: true, npm: { name: pkgName, tag: 'next' } }, stubs);
-    t.is(npmStub.callCount, 4);
+    t.is(npmStub.callCount, 12);
     t.is(npmStub.lastCall.args[0], 'npm publish . --tag next');
     const { stdout } = sh.exec('git describe --tags --abbrev=0');
     t.is(stdout.trim(), '2.0.0-0');
