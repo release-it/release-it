@@ -61,23 +61,19 @@ test('should release and upload assets', async t => {
   t.is(releaseResult.tag_name, 'v' + version);
   t.is(releaseResult.name, 'Release ' + version);
 
-  const github2 = new GitHub({
-    release: true,
-    releaseNotes: 'echo Custom notes',
-    remoteUrl,
-    tagName,
-    assets: path.resolve('test/resources', asset)
-  });
-
-  const publishedResult = await github2.maybePublishRelease({
-    draft: false
-  });
-
   t.is(github.isReleased, true);
   t.is(github.getReleaseUrl(), 'https://github.com/webpro/release-it-test/releases/tag/v2.0.1');
 
-  t.is(publishedResult.tag_name, 'v' + version);
-  t.is(publishedResult.name, 'Release ' + version);
+  t.is(releaseResult.tag_name, 'v' + version);
+  t.is(releaseResult.name, 'Release ' + version);
+  t.is(releaseResult.draft, true);
+
+  const publishedResult = await github.maybePublishRelease({
+    draft: false
+  });
+
+  t.is(publishedResult.draft, false);
+
   t.is(githubRequestStub.callCount, 2);
   t.is(githubRequestStub.firstCall.lastArg.owner, 'webpro');
   t.is(githubRequestStub.firstCall.lastArg.repo, 'release-it-test');
@@ -87,7 +83,7 @@ test('should release and upload assets', async t => {
 
   const [uploadResult] = await github.uploadAssets();
 
-  t.is(GitHubApiStub.callCount, 2);
+  t.is(GitHubApiStub.callCount, 1);
   t.deepEqual(GitHubApiStub.firstCall.args[0], {
     baseUrl: 'https://api.github.com',
     auth: `token ${github.token}`,
