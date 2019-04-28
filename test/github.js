@@ -68,6 +68,8 @@ test('should release and upload assets', async t => {
   t.is(releaseResult.name, 'Release ' + version);
   t.is(releaseResult.draft, true);
 
+  t.is(githubRequestStub.callCount, 1);
+
   const publishedResult = await github.maybePublishRelease({
     draft: false
   });
