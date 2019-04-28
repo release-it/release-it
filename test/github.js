@@ -54,7 +54,7 @@ test('should release and upload assets', async t => {
   t.is(attempt, undefined);
   t.is(githubRequestStub.callCount, 0);
 
-  const releaseResult = await github.release({
+  const releaseResult = await github.draftRelease({
     version
   });
 
@@ -106,7 +106,7 @@ test('should release to enterprise host', async t => {
     remoteUrl: 'https://github.my-GHE-enabled-company.com/user/repo'
   });
 
-  await github.release({
+  await github.draftRelease({
     version: '1',
     changelog: 'My default changelog'
   });
@@ -125,7 +125,7 @@ test('should release to alternative host and proxy', async t => {
     proxy: 'http://proxy:8080'
   });
 
-  await github.release();
+  await github.draftRelease();
 
   t.is(GitHubApiStub.callCount, 1);
   t.is(GitHubApiStub.firstCall.args[0].baseUrl, 'https://my-custom-host.org/api/v3');
@@ -137,7 +137,7 @@ test('should handle octokit client error (without retries)', async t => {
   const stub = sinon.stub(gitHubApi.repos, 'createRelease');
   stub.throws(new HttpError('Not found', 404, null, { url: '', headers: {} }));
   const github = new GitHub({ release: true, remoteUrl: '' });
-  await t.throwsAsync(github.release(), { instanceOf: GitHubClientError, message: '404 (Not found)' });
+  await t.throwsAsync(github.draftRelease(), { instanceOf: GitHubClientError, message: '404 (Not found)' });
   t.is(stub.callCount, 1);
   stub.restore();
 });
@@ -147,7 +147,7 @@ test('should handle octokit client error (with retries)', async t => {
   const stub = sinon.stub(gitHubApi.repos, 'createRelease');
   stub.throws(new HttpError('Request failed', 500, null, { url: '', headers: {} }));
   const github = new GitHub({ release: true, remoteUrl: '', retryMinTimeout: 0 });
-  await t.throwsAsync(github.release(), { instanceOf: GitHubClientError, message: '500 (Request failed)' });
+  await t.throwsAsync(github.draftRelease(), { instanceOf: GitHubClientError, message: '500 (Request failed)' });
   t.is(stub.callCount, 3);
   stub.restore();
 });
@@ -166,7 +166,7 @@ test('should not call octokit client in dry run', async t => {
 
   const spy = sinon.spy(github, 'uploadAsset');
 
-  await github.release({
+  await github.draftRelease({
     version: '1'
   });
 
