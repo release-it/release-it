@@ -55,7 +55,7 @@ test.serial.beforeEach(t => {
   const bare = path.resolve(cwd, 'tmp', uuid());
   const target = path.resolve(cwd, 'tmp', uuid());
   sh.pushd('-q', `${cwd}/tmp`);
-  sh.exec(`git init --mirror ${bare}`);
+  sh.exec(`git init --bare ${bare}`);
   sh.exec(`git clone ${bare} ${target}`);
   sh.pushd('-q', target);
   gitAdd('line', 'file', 'Add file');
