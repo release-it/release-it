@@ -55,7 +55,7 @@ test.serial.beforeEach(t => {
   const bare = path.resolve(cwd, 'tmp', uuid());
   const target = path.resolve(cwd, 'tmp', uuid());
   sh.pushd('-q', `${cwd}/tmp`);
-  sh.exec(`git init --bare ${bare}`);
+  sh.exec(`git init --mirror ${bare}`);
   sh.exec(`git clone ${bare} ${target}`);
   sh.pushd('-q', target);
   gitAdd('line', 'file', 'Add file');
@@ -217,7 +217,7 @@ test.serial('should run tasks without package.json', async t => {
     t.is(githubReleaseArg.name, 'Release 1.1.0-alpha.0');
     t.regex(githubReleaseArg.body, RegExp(`Notes for ${pkgName} \\(v1.1.0-alpha.0\\): \\* More file`));
     t.is(githubReleaseArg.prerelease, true);
-    t.is(githubReleaseArg.draft, false);
+    t.is(githubReleaseArg.draft, true);
 
     const githubAssetsArg = githubRequestStub.secondCall.lastArg;
     const { id } = githubRequestStub.firstCall.returnValue.data;
