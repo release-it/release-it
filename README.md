@@ -533,7 +533,7 @@ development.
 ## Troubleshooting & debugging
 
 - With `release-it --verbose`, release-it prints every command and its output.
-- Prepend `DEBUG=release=it:* release-it [...]` to print configuration and more error details.
+- Prepend `DEBUG=release-it:* release-it [...]` to print configuration and more error details.
 - Use `DEBUG=* release-it [...]` to include debug output for dependencies, such as
   [@octokit/rest](https://github.com/octokit/rest.js).
 
