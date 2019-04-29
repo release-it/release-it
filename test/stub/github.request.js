@@ -3,7 +3,7 @@ const releases = {};
 
 module.exports = (request, options) => {
   const { url } = options;
-  if (url === '/repos/:owner/:repo/releases') {
+  if (url === '/repos/:owner/:repo/releases' || url === '/repos/:owner/:repo/releases/:release_id') {
     const id = uuid();
     const { tag_name, name, body, prerelease, draft, owner, repo } = options;
     releases[id] = {
