@@ -163,7 +163,7 @@ const BarPlugin = sandbox.stub().callsFake(() => barPlugin);
     await tasks({}, container);
 
     const githubReleaseArg = githubRequestStub.firstCall.lastArg;
-    t.is(githubRequestStub.callCount, 1);
+    t.is(githubRequestStub.callCount, 2);
     t.is(githubReleaseArg.url, '/repos/:owner/:repo/releases');
     t.is(githubReleaseArg.owner, owner);
     t.is(githubReleaseArg.repo, repoName);
@@ -171,7 +171,7 @@ const BarPlugin = sandbox.stub().callsFake(() => barPlugin);
     t.is(githubReleaseArg.name, 'Release 1.0.1');
     t.true(githubReleaseArg.body.startsWith('* More file'));
     t.is(githubReleaseArg.prerelease, false);
-    t.is(githubReleaseArg.draft, false);
+    t.is(githubReleaseArg.draft, true);
 
     const npmArgs = getNpmArgs(container.shell.exec.args);
 
@@ -220,22 +220,30 @@ const BarPlugin = sandbox.stub().callsFake(() => barPlugin);
 
     await tasks({}, container);
 
-    t.is(githubRequestStub.callCount, 2);
+    t.is(githubRequestStub.callCount, 3);
 
-    const githubReleaseArg = githubRequestStub.firstCall.lastArg;
-    t.is(githubReleaseArg.url, '/repos/:owner/:repo/releases');
-    t.is(githubReleaseArg.owner, owner);
-    t.is(githubReleaseArg.repo, repoName);
-    t.is(githubReleaseArg.tag_name, 'v1.1.0-alpha.0');
-    t.is(githubReleaseArg.name, 'Release 1.1.0-alpha.0');
-    t.regex(githubReleaseArg.body, RegExp(`Notes for ${pkgName} \\(v1.1.0-alpha.0\\): \\* More file`));
-    t.is(githubReleaseArg.prerelease, true);
-    t.is(githubReleaseArg.draft, false);
-
+    const githubDraftArg = githubRequestStub.firstCall.lastArg;
     const githubAssetsArg = githubRequestStub.secondCall.lastArg;
+    const githubPublishArg = githubRequestStub.thirdCall.lastArg;
     const { id } = githubRequestStub.firstCall.returnValue.data;
+
+    t.is(githubDraftArg.url, '/repos/:owner/:repo/releases');
+    t.is(githubDraftArg.owner, owner);
+    t.is(githubDraftArg.repo, repoName);
+    t.is(githubDraftArg.tag_name, 'v1.1.0-alpha.0');
+    t.is(githubDraftArg.name, 'Release 1.1.0-alpha.0');
+    t.regex(githubDraftArg.body, RegExp(`Notes for ${pkgName} \\(v1.1.0-alpha.0\\): \\* More file`));
+    t.is(githubDraftArg.prerelease, true);
+    t.is(githubDraftArg.draft, true);
+
     t.true(githubAssetsArg.url.endsWith(`/repos/${owner}/${repoName}/releases/${id}/assets{?name,label}`));
     t.is(githubAssetsArg.name, 'file');
+
+    t.is(githubPublishArg.url, '/repos/:owner/:repo/releases/:release_id');
+    t.is(githubPublishArg.owner, owner);
+    t.is(githubPublishArg.repo, repoName);
+    t.is(githubPublishArg.draft, false);
+    t.is(githubPublishArg.release_id, id);
 
     t.true(gotStub.post.firstCall.args[0].endsWith(`/projects/${owner}%2F${repoName}/uploads`));
     t.true(gotStub.post.secondCall.args[0].endsWith(`/projects/${owner}%2F${repoName}/releases`));

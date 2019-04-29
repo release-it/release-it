@@ -3,13 +3,17 @@ const test = require('ava');
 const sinon = require('sinon');
 const proxyquire = require('proxyquire');
 const GitHubApi = require('@octokit/rest');
+const sh = require('shelljs');
 const GitHub = require('../lib/plugin/github/GitHub');
 const githubRequest = require('./stub/github.request');
 const { factory, runTasks } = require('./util');
+const { parseGitUrl } = require('../lib/util');
 const { GitHubClientError } = require('../lib/errors');
 const HttpError = require('@octokit/request/lib/http-error');
 const pkg = require('../package.json');
 
+const remoteUrl = sh.exec('git ls-remote --get-url');
+const { owner, project } = parseGitUrl(remoteUrl);
 const tokenRef = 'GITLAB_TOKEN';
 
 test.beforeEach(t => {
@@ -64,16 +68,27 @@ test('should release and upload assets', async t => {
   t.is(attempt, undefined);
   t.is(githubRequestStub.callCount, 0);
 
-  const releaseResult = await github.createRelease({ version });
-
-  t.is(github.isReleased, true);
-  t.is(github.getReleaseUrl(), 'https://github.com/release-it/release-it/releases/tag/v2.0.1');
+  const releaseResult = await github.draftRelease({ version });
 
   t.is(releaseResult.tag_name, 'v' + version);
   t.is(releaseResult.name, 'Release ' + version);
+
+  t.is(github.isReleased, true);
+  t.is(github.getReleaseUrl(), `https://github.com/${owner}/${project}/releases/tag/v2.0.1`);
+
+  t.is(releaseResult.tag_name, 'v' + version);
+  t.is(releaseResult.name, 'Release ' + version);
+  t.is(releaseResult.draft, true);
+
   t.is(githubRequestStub.callCount, 1);
-  t.is(githubRequestStub.firstCall.lastArg.owner, 'release-it');
-  t.is(githubRequestStub.firstCall.lastArg.repo, 'release-it');
+
+  const publishedResult = await github.publishRelease({ draft: false });
+
+  t.is(publishedResult.draft, false);
+
+  t.is(githubRequestStub.callCount, 2);
+  t.is(githubRequestStub.firstCall.lastArg.owner, owner);
+  t.is(githubRequestStub.firstCall.lastArg.repo, project);
   t.is(githubRequestStub.firstCall.lastArg.tag_name, 'v2.0.1');
   t.is(githubRequestStub.firstCall.lastArg.name, 'Release 2.0.1');
   t.is(githubRequestStub.firstCall.lastArg.body, 'Custom notes');
@@ -88,12 +103,12 @@ test('should release and upload assets', async t => {
     request: { timeout: undefined }
   });
 
-  t.is(githubRequestStub.callCount, 2);
-  t.is(githubRequestStub.secondCall.lastArg.name, 'file1');
+  t.is(githubRequestStub.callCount, 3);
+  t.is(githubRequestStub.thirdCall.lastArg.name, 'file1');
 
   t.is(upload.name, asset);
   t.is(upload.state, 'uploaded');
-  t.is(upload.browser_download_url, `https://github.com/release-it/release-it/releases/download/v${version}/${asset}`);
+  t.is(upload.browser_download_url, `https://github.com/${owner}/${project}/releases/download/v${version}/${asset}`);
 });
 
 test.serial('should release to enterprise host', async t => {
@@ -152,9 +167,10 @@ test('should not call octokit client in dry run', async t => {
   t.is(GitHubApiStub.callCount, 0);
   t.is(githubRequestStub.callCount, 0);
   t.is(spy.callCount, 0);
-  t.is(github.log.exec.args[2][0], 'octokit releases#createRelease "R 1.0.1" (v1.0.1)');
-  t.is(github.log.exec.lastCall.args[0], 'octokit releases#uploadAssets');
-  t.is(github.getReleaseUrl(), 'https://github.com/release-it/release-it/releases/tag/v1.0.1');
+  t.is(github.log.exec.args[2][0], 'octokit releases#draftRelease "R 1.0.1" (v1.0.1)');
+  t.is(github.log.exec.args[3][0], 'octokit releases#uploadAssets');
+  t.is(github.log.exec.lastCall.args[0], 'octokit releases#publishRelease (v1.0.1)');
+  t.is(github.getReleaseUrl(), `https://github.com/${owner}/${project}/releases/tag/v1.0.1`);
   t.is(github.isReleased, true);
 
   spy.restore();
