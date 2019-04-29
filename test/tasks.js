@@ -207,22 +207,30 @@ test.serial('should run tasks without package.json', async t => {
       stubs
     );
 
-    t.is(githubRequestStub.callCount, 5);
+    t.is(githubRequestStub.callCount, 3);
 
-    const githubReleaseArg = githubRequestStub.thirdCall.lastArg;
-    t.is(githubReleaseArg.url, '/repos/:owner/:repo/releases');
-    t.is(githubReleaseArg.owner, owner);
-    t.is(githubReleaseArg.repo, repoName);
-    t.is(githubReleaseArg.tag_name, 'v1.1.0-alpha.0');
-    t.is(githubReleaseArg.name, 'Release 1.1.0-alpha.0');
-    t.regex(githubReleaseArg.body, RegExp(`Notes for ${pkgName} \\(v1.1.0-alpha.0\\): \\* More file`));
-    t.is(githubReleaseArg.prerelease, true);
-    t.is(githubReleaseArg.draft, true);
-
+    const githubDraftArg = githubRequestStub.firstCall.lastArg;
     const githubAssetsArg = githubRequestStub.secondCall.lastArg;
+    const githubPublishArg = githubRequestStub.thirdCall.lastArg;
     const { id } = githubRequestStub.firstCall.returnValue.data;
+
+    t.is(githubDraftArg.url, '/repos/:owner/:repo/releases');
+    t.is(githubDraftArg.owner, owner);
+    t.is(githubDraftArg.repo, repoName);
+    t.is(githubDraftArg.tag_name, 'v1.1.0-alpha.0');
+    t.is(githubDraftArg.name, 'Release 1.1.0-alpha.0');
+    t.regex(githubDraftArg.body, RegExp(`Notes for ${pkgName} \\(v1.1.0-alpha.0\\): \\* More file`));
+    t.is(githubDraftArg.prerelease, true);
+    t.is(githubDraftArg.draft, true);
+
     t.true(githubAssetsArg.url.endsWith(`/repos/${owner}/${repoName}/releases/${id}/assets{?name,label}`));
     t.is(githubAssetsArg.name, 'file');
+
+    t.is(githubPublishArg.url, '/repos/:owner/:repo/releases/:release_id');
+    t.is(githubPublishArg.owner, owner);
+    t.is(githubPublishArg.repo, repoName);
+    t.is(githubPublishArg.draft, false);
+    t.is(githubPublishArg.release_id, id);
 
     t.true(gotStub.post.firstCall.args[0].endsWith(`/projects/${owner}%2F${repoName}/uploads`));
     t.true(gotStub.post.secondCall.args[0].endsWith(`/projects/${owner}%2F${repoName}/releases`));
@@ -247,11 +255,11 @@ test.serial('should run tasks without package.json', async t => {
     gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
     sh.exec('git tag v1.0.0');
     await tasks({ increment: 'major', preRelease: true, npm: { name: pkgName, tag: 'next' } }, stubs);
-    t.is(npmStub.callCount, 12);
+    t.is(npmStub.callCount, 4);
     t.is(npmStub.lastCall.args[0], 'npm publish . --tag next');
     const { stdout } = sh.exec('git describe --tags --abbrev=0');
     t.is(stdout.trim(), '2.0.0-0');
-    t.true(log.obtrusive.thirdCall.args[0].endsWith(`release ${pkgName} (1.0.0...2.0.0-0)`));
+    t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...2.0.0-0)`));
     t.true(log.log.firstCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
     t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
   });
