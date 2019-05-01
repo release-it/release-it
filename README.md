@@ -23,8 +23,8 @@ CLI release tool for Git repos and npm packages.
 
 ## Links
 
-- **NEW**: [release-it will support plugins](https://github.com/release-it/release-it/issues/501) from the next major
-  release (v11), so virtually any functionality can be added to your release process.
+- **NEW**: [release-it supports plugins](https://github.com/release-it/release-it/issues/501) (since v11), so virtually
+  any functionality can be added to your release process.
 - For **updates**, see [CHANGELOG.md](CHANGELOG.md) for major updates, and
   [releases](https://github.com/release-it/release-it/releases) for a detailed version history.
 - To **contribute**, please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
@@ -225,7 +225,7 @@ In case extra arguments should be provided to Git, these options are available:
 - `git.pushArgs`
 
 For example, use `"git.commitArgs": "-S"` to sign commits (also see
-[#35](https://github.com/webpro/release-it/issues/350)).
+[#35](https://github.com/release-it/release-it/issues/350)).
 
 ### Skip Git steps
 
@@ -260,7 +260,7 @@ Do not put the actual token in the release-it configuration. It will be read fro
 variable. You can change this variable name by setting the `github.tokenRef` option to something else.
 
 Obviously, release-it uses this feature extensively:
-[release-it's releases page](https://github.com/webpro/release-it/releases).
+[release-it's releases page](https://github.com/release-it/release-it/releases).
 
 ### Release notes
 
@@ -423,7 +423,7 @@ Monorepos do not require extra configuration, but release-it handles only one pa
 
 - The `"private": true` setting in package.json will be respected, and `release-it` will skip this step.
 - Getting an `ENEEDAUTH` error while a manual `npm publish` works? Please see
-  [#95](https://github.com/webpro/release-it/issues/95#issuecomment-344919384).
+  [#95](https://github.com/release-it/release-it/issues/95#issuecomment-344919384).
 
 ## Manage pre-releases
 
@@ -555,7 +555,7 @@ While mostly used as a CLI tool, release-it can be used as a dependency to ingra
 - [infor-design/enterprise](https://github.com/infor-design/enterprise)
 - [tsqllint/tsqllint](https://github.com/tsqllint/tsqllint)
 - [segmentio/typewriter](https://github.com/segmentio/typewriter)
-- [Repositories that depend on release-it](https://github.com/webpro/release-it/network/dependents)
+- [Repositories that depend on release-it](https://github.com/release-it/release-it/network/dependents)
 - GitHub search for
   [projects with .release-it.json](https://github.com/search?o=desc&q=in%3Apath+.release-it.json&s=indexed&type=Code)
 
