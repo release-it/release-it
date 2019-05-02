@@ -6,7 +6,7 @@ const Shell = require('../lib/shell');
 const Log = require('../lib/log');
 const Git = require('../lib/plugin/git/Git');
 const { git } = require('../conf/release-it.json');
-const { GitRepoError, GitRemoteUrlError, GitCleanWorkingDirError, GitUpstreamError } = require('../lib/errors');
+const { GitRemoteUrlError, GitCleanWorkingDirError, GitUpstreamError } = require('../lib/errors');
 
 test.serial.beforeEach(t => {
   const bare = mkTmpDir();
@@ -18,14 +18,6 @@ test.serial.beforeEach(t => {
   gitAdd('line', 'file', 'Add file');
   const gitClient = factory(Git, { options: { git } });
   t.context = { gitClient, bare, target };
-});
-
-test.serial('should throw when not a Git repository', async t => {
-  const { gitClient } = t.context;
-  sh.pushd('-q', '../../..');
-  const expected = { instanceOf: GitRepoError, message: /not \(inside\) a Git repository/ };
-  await t.throwsAsync(gitClient.init(), expected);
-  sh.popd('-q');
 });
 
 test.serial('should throw if there is no remote Git url', async t => {

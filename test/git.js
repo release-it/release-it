@@ -10,13 +10,6 @@ test.beforeEach(() => {
   sh.pushd('-q', tmp);
 });
 
-test.serial('should detect Git repo', async t => {
-  const gitClient = factory(Git);
-  t.false(await gitClient.isGitRepo());
-  sh.exec('git init');
-  t.true(await gitClient.isGitRepo());
-});
-
 test.serial('should return whether repo has upstream branch', async t => {
   const gitClient = factory(Git);
   sh.exec('git init');
@@ -78,7 +71,6 @@ test.serial('should stage, commit, tag and push', async t => {
   {
     sh.exec(`git tag ${version}`);
     const latestTagName = await gitClient.getLatestTagName();
-    t.true(await gitClient.isGitRepo());
     t.is(version, latestTagName);
   }
   {

@@ -129,7 +129,8 @@ test.serial('should use pkg.version (in sub dir) w/o tagging repo', async t => {
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
   const { stdout } = sh.exec('git describe --tags --abbrev=0');
   t.is(stdout.trim(), '1.0.0');
-  t.is(exec.args[3][0], 'npm version 1.3.0 --no-git-tag-version');
+  const npmArgs = getNpmArgs(exec.args);
+  t.is(npmArgs[3], 'npm version 1.3.0 --no-git-tag-version');
   exec.restore();
 });
 
