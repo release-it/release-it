@@ -224,11 +224,12 @@ Use `this.log.[verbose|warn|error]` to log and inform the user about what's goin
 
 ### Examples
 
-- [my-version](https://github.com/release-it/release-it/blob/master/docs/recipes/my-version.md) - reads and writes a
-  local `./VERSION` file, and includes a prompt to let the user confirm before publishing to a package registry.
 - [@release-it/conventional-changelog](https://github.com/release-it/conventional-changelog) - uses
   `conventional-recommended-bump` in `getIncrementedVersion()` and `conventional-changelog` in `beforeRelease` to
   generate the changelog. Optionally updates `CHANGELOG.md`.
+- [@release-it/bumper](https://github.com/release-it/bumper) - version read/write plugin for release-it
 - [@release-it/mercurial](https://github.com/release-it/mercurial) - use Mercurial
 - [npm](https://github.com/release-it/release-it/blob/master/lib/plugin/npm/npm.js) - the internal release-it plugin to
   publish a package to npm.
+- recipe: [my-version](https://github.com/release-it/release-it/blob/master/docs/recipes/my-version.md) - example plugin that reads and writes a
+  local `./VERSION` file, and includes a prompt to let the user confirm before publishing to a package registry.
