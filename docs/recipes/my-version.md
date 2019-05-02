@@ -29,7 +29,8 @@ class MyVersionPlugin extends Plugin {
     return false;
   }
   init() {
-    this.latestVersion = fs.readFileSync(this.versionFile).trim();
+    const data = fs.readFileSync(this.versionFile);
+    this.latestVersion = data.toString().trim();
   }
   getName() {
     return this.options.name;

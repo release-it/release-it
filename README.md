@@ -549,8 +549,6 @@ While mostly used as a CLI tool, release-it can be used as a dependency to ingra
 - [StevenBlack/hosts](https://github.com/StevenBlack/hosts)
 - [react-native-community/react-native-tab-view](https://github.com/react-native-community/react-native-tab-view)
 - [callstack/linaria](https://github.com/callstack/linaria)
-- [vuejs/vuefire](https://github.com/vuejs/vuefire)
-- [posva/vue-promised](https://github.com/posva/vue-promised)
 - [blockchain/blockchain-wallet-v4-frontend](https://github.com/blockchain/blockchain-wallet-v4-frontend)
 - [infor-design/enterprise](https://github.com/infor-design/enterprise)
 - [tsqllint/tsqllint](https://github.com/tsqllint/tsqllint)
