@@ -41,6 +41,7 @@ CLI release tool for Git repos and npm packages.
 - [Configuration](#configuration)
 - [Interactive vs. non-interactive mode](#interactive-vs-non-interactive-mode)
 - [Latest version](#latest-version)
+- [Prerequisite checks](#prerequisite-checks)
 - [Git](#git)
 - [GitHub Releases](#github-releases)
 - [GitLab Releases](#gitlab-releases)
@@ -94,7 +95,12 @@ Add this as a `script` to `package.json`:
 }
 ```
 
-Now you can run `npm run release` from the command line.
+Now you can run `npm run release` from the command line (any release-it arguments behind the `--`):
+
+```
+npm run release
+npm run release -- minor
+```
 
 ## Usage
 
@@ -163,9 +169,7 @@ Notes:
 - Only the settings to override need to be in `.release-it.json` (or `package.json`). Everything else will fall back to
   the [default configuration](conf/release-it.json).
 - You can use `--config` if you want to use another path for `.release-it.json`.
-- You can also use a regular JavaScript file, for example `.release-it.js`, as long as you point to it using `--config`.
-  This can be useful if your configuration depends on something else, so you have all JavaScript power to use instead of
-  a static JSON. Make sure you export the config with `module.exports`.
+- You can also export the configuration object from a custom script (e.g `--config release-it.js`).
 
 Any option can also be set on the command-line, and will have highest priority. Example:
 
@@ -198,6 +202,11 @@ determine which version should be released. In any case, as a last resort, `0.0.
 Use `--no-npm` (or `"npm": false`) to ignore and skip bumping `package.json` (and skip `npm publish`).
 
 Alternatively, a plugin can be used to get the version from anywhere else. Also see [plugins](docs/plugins/README.md).
+
+## Prerequisite checks
+
+Read more about [prerequisites checks](./docs/prerequisites.md) release-it does to help prevent incorrect or polluted
+releases.
 
 ## Git
 
