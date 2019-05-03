@@ -320,6 +320,23 @@ const BarPlugin = sandbox.stub().callsFake(() => barPlugin);
     exec.restore();
   });
 
+  test.serial('should initially publish non-private scoped npm package publicly', async t => {
+    const { target } = t.context;
+    const pkgName = path.basename(target);
+    gitAdd(`{"name":"@scope/${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
+
+    const container = getContainer({ npm: { name: pkgName } });
+
+    const exec = sinon.stub(container.shell, 'exec').callThrough();
+    exec.withArgs(`npm show @scope/${pkgName}@latest version`).rejects();
+
+    await tasks({}, container);
+
+    const npmArgs = getNpmArgs(container.shell.exec.args);
+    t.is(npmArgs[4], 'npm publish . --tag latest --access public');
+    exec.restore();
+  });
+
   test.serial('should run all scripts', async t => {
     const { bare } = t.context;
     const scripts = {
