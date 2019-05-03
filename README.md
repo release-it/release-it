@@ -389,6 +389,14 @@ the `CHANGELOG.md` file:
 With a `package.json` in the current directory, release-it will let `npm` bump the version in `package.json` (and
 `package-lock.json` if present), and publish to the npm registry.
 
+### Tags
+
+Use e.g. `--npm.tag=beta` to tag the package in the npm repository. With the `--preRelease=beta` shorthand, the npm
+dist-tag will have the same value (unless `--npm.tag` is used to override this). The default tag is "latest".
+
+For a pre-release, the default tag is "next". The tag will be derived from the pre-release version (e.g. version
+`2.0.0-alpha.3` will result in tag "alpha"), unless overridden by setting `npm.tag`.
+
 ### Public scoped packages
 
 A [scoped package](https://docs.npmjs.com/misc/plugin) (e.g. `@user/package`) is either public or private. To
