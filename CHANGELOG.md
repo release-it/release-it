@@ -5,6 +5,11 @@ This document lists breaking changes for each major release.
 See the GitHub Releases page for detailed changelogs:
 [https://github.com/release-it/release-it/releases](https://github.com/release-it/release-it/releases)
 
+## v12
+
+- The `--follow-tags` argument for `git push` has been moved to the default configuration. This is only a breaking
+  change if `git.pushArgs` was not empty (it was empty by default).
+
 ## v11
 
 - The custom `conventional-changelog` increment (e.g. `"increment": "conventional:angular"`) with additional script
