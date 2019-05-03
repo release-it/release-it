@@ -19,7 +19,7 @@
     "tagAnnotation": "Release ${version}",
     "tagArgs": "",
     "push": true,
-    "pushArgs": "",
+    "pushArgs": "--follow-tags",
     "pushRepo": "origin"
   },
   "npm": {

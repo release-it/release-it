@@ -112,7 +112,7 @@ test.serial('should push to origin', async t => {
   const gitClient = factory(Git);
   const spy = sinon.spy(gitClient.shell, 'exec');
   await gitClient.push();
-  t.is(spy.lastCall.args[0], 'git push --follow-tags  origin');
+  t.is(spy.lastCall.args[0], 'git push  origin');
   const actual = sh.exec('git ls-tree -r HEAD --name-only', { cwd: bare });
   t.is(actual.trim(), 'file');
   spy.restore();
@@ -129,7 +129,7 @@ test.serial('should push to repo url', async t => {
   try {
     await gitClient.push();
   } catch (err) {
-    t.is(spy.lastCall.args[0], 'git push --follow-tags  https://host/repo.git');
+    t.is(spy.lastCall.args[0], 'git push  https://host/repo.git');
   }
   spy.restore();
 });
@@ -144,14 +144,14 @@ test.serial('should push to remote name (not "origin")', async t => {
   const gitClient = factory(Git, { options });
   const spy = sinon.spy(gitClient.shell, 'exec');
   await gitClient.push();
-  t.is(spy.lastCall.args[0], 'git push --follow-tags  upstream');
+  t.is(spy.lastCall.args[0], 'git push  upstream');
   const actual = sh.exec('git ls-tree -r HEAD --name-only', { cwd: bare });
   t.is(actual.trim(), 'file');
   {
     sh.exec(`git checkout -b foo`);
     gitAdd('line', 'file', 'Add file');
     await gitClient.push();
-    t.is(spy.lastCall.args[0], 'git push --follow-tags  -u upstream foo');
+    t.is(spy.lastCall.args[0], 'git push  -u upstream foo');
     t.regex(await spy.lastCall.returnValue, /Branch .?foo.? set up to track remote branch .?foo.? from .?upstream.?/);
   }
   spy.restore();
