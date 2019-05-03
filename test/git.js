@@ -93,15 +93,15 @@ test.serial('should commit, tag and push with extra args', async t => {
   gitAdd('line', 'file', 'Add file');
   const options = { git: { commitArgs: '-S', tagArgs: '-T foo', pushArgs: '-U bar -V' } };
   const gitClient = factory(Git, { options });
-  const spy = sinon.stub(gitClient.shell, 'exec').resolves();
+  const stub = sinon.stub(gitClient.shell, 'exec').resolves();
   await gitClient.stage('package.json');
   await gitClient.commit({ message: `Release v1.2.4` });
   await gitClient.tag({ name: 'v1.2.4', annotation: 'Release v1.2.4' });
   await gitClient.push();
-  t.true(spy.secondCall.args[0].includes(' -S'));
-  t.true(spy.thirdCall.args[0].includes(' -T foo'));
-  t.true(spy.lastCall.args[0].includes(' -U bar -V'));
-  spy.restore();
+  t.true(stub.secondCall.args[0].includes(' -S'));
+  t.true(stub.thirdCall.args[0].includes(' -T foo'));
+  t.true(stub.lastCall.args[0].includes(' -U bar -V'));
+  stub.restore();
 });
 
 test.serial('should push to origin', async t => {
@@ -177,4 +177,51 @@ test.serial('should reset files', async t => {
   t.regex(await readFile('file'), /^line\s*$/);
   await gitClient.reset(['file2, file3']);
   t.regex(gitClient.log.warn.firstCall.args[0], /Could not reset file2, file3/);
+});
+
+test.serial('should roll back when cancelled', async t => {
+  sh.exec('git init');
+  const version = '1.2.3';
+  gitAdd(`{"version":"${version}"}`, 'package.json', 'Add package.json');
+  const options = { git: { requireCleanWorkingDir: true, commit: true, tag: true, tagName: 'v${version}' } };
+  const gitClient = factory(Git, { options });
+  sh.exec(`git tag ${version}`);
+  gitAdd('line', 'file', 'Add file');
+  sh.exec('npm --no-git-tag-version version patch');
+
+  const exec = sinon.spy(gitClient.shell, '_exec');
+  gitClient.config.setContext({ version: '1.2.4' });
+  await gitClient.beforeRelease();
+  await gitClient.stage('package.json');
+  await gitClient.commit();
+  await gitClient.tag();
+  await gitClient.rollbackOnce();
+
+  t.is(exec.args[5][0], 'git tag --delete v1.2.4');
+  t.is(exec.args[6][0], 'git reset --hard HEAD~1');
+});
+
+test.serial('should not touch existing history when rolling back', async t => {
+  sh.exec('git init');
+  const version = '1.2.3';
+  gitAdd(`{"version":"${version}"}`, 'package.json', 'Add package.json');
+  const options = { git: { requireCleanWorkingDir: true, commit: true, tag: true } };
+  const gitClient = factory(Git, { options });
+  sh.exec(`git tag ${version}`);
+
+  const exec = sinon.spy(gitClient.shell, '_exec');
+  gitClient.config.setContext({ version: '1.2.4' });
+  await gitClient.beforeRelease();
+  await gitClient.commit();
+  await gitClient.rollbackOnce();
+
+  t.is(exec.args[3][0], 'git reset --hard HEAD');
+});
+
+test.serial('should not roll back with risky config', async t => {
+  sh.exec('git init');
+  const options = { git: { requireCleanWorkingDir: false, commit: true, tag: true } };
+  const gitClient = factory(Git, { options });
+  await gitClient.beforeRelease();
+  t.is('rollbackOnce' in gitClient, false);
 });
