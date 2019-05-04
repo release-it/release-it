@@ -40,7 +40,7 @@ CLI release tool for Git repos and npm packages.
 - [Installation](#installation)
 - [Usage](#usage)
 - [Configuration](#configuration)
-- [Interactive vs. non-interactive mode](#interactive-vs-non-interactive-mode)
+- [Interactive vs. CI mode](#interactive-vs-ci-mode)
 - [Latest version](#latest-version)
 - [Prerequisite checks](#prerequisite-checks)
 - [Git](#git)
@@ -100,7 +100,7 @@ Now you can run `npm run release` from the command line (any release-it argument
 
 ```
 npm run release
-npm run release -- minor
+npm run release -- minor --ci
 ```
 
 ## Usage
@@ -184,16 +184,17 @@ Boolean arguments can be negated by using the `no-` prefix:
 release-it --no-npm.publish
 ```
 
-## Interactive vs. non-interactive mode
+## Interactive vs. CI mode
 
 By default, release-it is **interactive** and allows you to confirm each task before execution:
 
 <img src="./assets/release-it-interactive.gif?raw=true" height="290">
 
-By using the `-n` option (i.e. **non-interactive**), the process is fully automated without prompts. The configured
-tasks will be executed as demonstrated in the first animation above.
+By using the `--ci` option, the process is fully automated without prompts. The configured tasks will be executed as
+demonstrated in the first animation above. On a Continuous Integration (CI) environment, this non-interactive mode is
+activated automatically.
 
-On a Continuous Integration (CI) environment, the non-interactive mode is activated automatically.
+Note: the old `-n` (or `--non-interactive`) option still works and is identical to `--ci`.
 
 ## Latest version
 

@@ -9,7 +9,7 @@ const Spinner = require('../../lib/spinner');
 const Prompt = require('../../lib/prompt');
 
 module.exports.factory = (Definition, { namespace, options = {}, global = {}, container = {} } = {}) => {
-  _.defaults(global, { isInteractive: false, isVerbose: false, isDryRun: false, isDebug: false });
+  _.defaults(global, { isCI: true, isVerbose: false, isDryRun: false, isDebug: false });
 
   const ns = namespace || Definition.name.toLowerCase();
 

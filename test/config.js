@@ -23,14 +23,19 @@ test('should merge provided options', t => {
   const { options } = config;
   t.is(config.isVerbose, true);
   t.is(config.isDryRun, false);
-  t.is(config.isInteractive, !isCI);
+  t.is(config.isCI, isCI);
   t.is(options.increment, '1.0.0');
   t.is(options.github.release, true);
 });
 
-test('should override --non-interactive', t => {
+test('should set CI mode', t => {
+  const config = new Config({ ci: true });
+  t.is(config.isCI, true);
+});
+
+test('should set --ci (backwards compat)', t => {
   const config = new Config({ 'non-interactive': false });
-  t.is(config.isInteractive, true);
+  t.is(config.isCI, false);
 });
 
 test('should override --no-npm.publish', t => {
@@ -46,7 +51,7 @@ test('should throw if provided config file is invalid', t => {
   t.throws(() => new Config({ config: '.npmrc' }), /Invalid/);
 });
 
-test('should set default increment (for non-interactive mode)', t => {
+test('should set default increment (for CI mode)', t => {
   const config = new Config({ 'non-interactive': true });
   t.is(config.options.version.increment, 'patch');
 });
