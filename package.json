@@ -10,17 +10,20 @@
     "github",
     "gitlab",
     "interactive",
+    "ci",
     "npm",
     "publish",
     "push",
     "release",
+    "release-it",
     "repository",
     "script",
     "shell",
     "tag",
     "tool",
     "version",
-    "semver"
+    "semver",
+    "plugin"
   ],
   "repository": {
     "type": "git",
