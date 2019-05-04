@@ -11,7 +11,7 @@ test.beforeEach(t => {
 test('should not show spinner and not execute task if disabled', async t => {
   const { ora } = t.context;
   const task = sinon.spy();
-  const spinner = new Spinner({ ora });
+  const spinner = new Spinner({ container: { ora } });
   await spinner.show({ enabled: false, task });
   t.is(task.callCount, 0);
   t.is(ora.promise.callCount, 0);
@@ -21,7 +21,7 @@ test('should show spinner and run task by default', async t => {
   const { ora } = t.context;
   const task = sinon.stub().resolves();
   const label = 'foo';
-  const spinner = new Spinner({ ora });
+  const spinner = new Spinner({ global: { isCI: true }, container: { ora } });
   await spinner.show({ task, label });
   t.is(task.callCount, 1);
   t.is(ora.promise.callCount, 1);
@@ -32,7 +32,7 @@ test('should show spinner and run task by default', async t => {
 test('should run task, but not show spinner if interactive', async t => {
   const { ora } = t.context;
   const task = sinon.stub().resolves();
-  const spinner = new Spinner({ isInteractive: true, ora });
+  const spinner = new Spinner({ global: { isCI: false }, container: { ora } });
   await spinner.show({ task });
   t.is(task.callCount, 1);
   t.is(ora.promise.callCount, 0);
@@ -41,7 +41,7 @@ test('should run task, but not show spinner if interactive', async t => {
 test('should run task and show spinner if interactive, but forced', async t => {
   const { ora } = t.context;
   const task = sinon.stub().resolves();
-  const spinner = new Spinner({ isInteractive: true, ora });
+  const spinner = new Spinner({ global: { isCI: false }, container: { ora } });
   await spinner.show({ task, forced: true });
   t.is(task.callCount, 1);
   t.is(ora.promise.callCount, 1);
