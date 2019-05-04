@@ -16,6 +16,7 @@ CLI release tool for Git repos and npm packages.
 - [Manage pre-releases](#manage-pre-releases)
 - [Script Hooks](#scripts)
 - Extend with [plugins](#plugins)
+- Release from any [CI/CD environment](./docs/ci.md)
 
 [![Build Status](https://travis-ci.org/release-it/release-it.svg?branch=master)](https://travis-ci.org/release-it/release-it)
 [![npm version](https://badge.fury.io/js/release-it.svg)](https://badge.fury.io/js/release-it)
@@ -438,6 +439,7 @@ Monorepos do not require extra configuration, but release-it handles only one pa
 
 ### Misc.
 
+- Learn how to [authenticate and publish from a CI/CD environment](./docs/ci.md#npm).
 - The `"private": true` setting in package.json will be respected, and `release-it` will skip this step.
 - Getting an `ENEEDAUTH` error while a manual `npm publish` works? Please see
   [#95](https://github.com/release-it/release-it/issues/95#issuecomment-344919384).
