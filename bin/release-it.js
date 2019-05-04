@@ -11,17 +11,19 @@ const aliases = {
   h: 'help',
   i: 'increment',
   n: 'non-interactive',
+  q: 'quiet',
   v: 'version',
   V: 'verbose'
 };
 
 const parseCliArguments = args => {
   const options = parseArgs(args, {
-    boolean: ['dry-run', 'non-interactive', 'verbose'],
+    boolean: ['dry-run', 'non-interactive', 'verbose', 'quiet'],
     alias: aliases,
     default: {
       'dry-run': false,
-      verbose: false
+      verbose: false,
+      quiet: false
     },
     configuration: {
       'parse-numbers': false

@@ -91,3 +91,8 @@ test('should expand pre-release shortcut (including increment and npm.tag)', t =
     preReleaseId: 'rc'
   });
 });
+
+test('should override isInteractive if quiet is specified', t => {
+  const config = new Config({ quiet: true });
+  t.is(config.isInteractive, false);
+});

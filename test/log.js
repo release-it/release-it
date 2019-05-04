@@ -83,3 +83,21 @@ test('should print command execution (write)', t => {
   const { stdout } = mockStdIo.end();
   t.is(stdout.trim(), '! foo --arg n');
 });
+
+test('should not print log output when in quiet mode', t => {
+  const log = new Log({ isQuiet: true });
+  mockStdIo.start();
+  log.log('foo');
+  const { stdout, stderr } = mockStdIo.end();
+  t.is(stdout.trim(), '');
+  t.is(stderr.trim(), '');
+});
+
+test('should print errors when in quiet mode', t => {
+  const log = new Log({ isQuiet: true });
+  mockStdIo.start();
+  log.error('foo');
+  const { stdout, stderr } = mockStdIo.end();
+  t.is(stdout.trim(), '');
+  t.true(stderr.trim().endsWith('foo'));
+});
