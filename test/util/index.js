@@ -13,7 +13,7 @@ module.exports.factory = (Definition, { namespace, options = {}, global = {}, co
 
   const ns = namespace || Definition.name.toLowerCase();
 
-  container.config = container.config || new Config(Object.assign({ manifest: false, config: false }, options));
+  container.config = container.config || new Config(Object.assign({ config: false }, options));
   container.log = container.log || sinon.createStubInstance(Log);
 
   const spinner = container.spinner || sinon.createStubInstance(Spinner);

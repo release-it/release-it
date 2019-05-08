@@ -1,18 +1,26 @@
 const test = require('ava');
+const mock = require('mock-fs');
 const isCI = require('is-ci');
 const Config = require('../lib/config');
 const defaultConfig = require('../conf/release-it.json');
-const localConfig = require('../.release-it.json');
+
+const localConfig = { github: { release: true } };
+
+test.afterEach(() => mock.restore());
 
 test('should contain default values', t => {
+  mock({ '../.release-it.json': JSON.stringify(localConfig) });
   const config = new Config();
   t.deepEqual(config.constructorConfig, {});
   t.deepEqual(config.localConfig, localConfig);
-  t.deepEqual(config.localPackageManifestConfig, {});
   t.deepEqual(config.defaultConfig, defaultConfig);
 });
 
 test('should merge provided options', t => {
+  mock({
+    'package.json': JSON.stringify({ 'release-it': { git: { push: false } } }),
+    '../.release-it.json': JSON.stringify(localConfig)
+  });
   const config = new Config({
     increment: '1.0.0',
     verbose: true,
@@ -25,6 +33,7 @@ test('should merge provided options', t => {
   t.is(config.isDryRun, false);
   t.is(config.isCI, isCI);
   t.is(options.increment, '1.0.0');
+  t.is(options.git.push, false);
   t.is(options.github.release, true);
 });
 
@@ -43,12 +52,30 @@ test('should override --no-npm.publish', t => {
   t.is(config.options.npm.publish, false);
 });
 
-test('should throw if provided config file is not found', t => {
-  t.throws(() => new Config({ config: 'nofile' }), /File not found.+nofile/);
+test('should read YAML config', t => {
+  mock({ '.release-it.yaml': 'foo:\n  bar: 1' });
+  const config = new Config({ config: '.release-it.yaml' });
+  t.deepEqual(config.options.foo, { bar: 1 });
 });
 
-test('should throw if provided config file is invalid', t => {
-  t.throws(() => new Config({ config: '.npmrc' }), /Invalid/);
+test('should read TOML config', t => {
+  mock({ '.release-it.toml': '[foo]\nbar=1' });
+  const config = new Config({ config: '.release-it.toml' });
+  t.deepEqual(config.options.foo, { bar: 1 });
+});
+
+test('should throw if provided config file is not found', t => {
+  t.throws(() => new Config({ config: 'nofile' }), /no such file.+nofile/);
+});
+
+test('should throw if provided config file is invalid (cosmiconfig exception)', t => {
+  mock({ 'invalid-config-txt': 'foo\nbar\baz' });
+  t.throws(() => new Config({ config: 'invalid-config-txt' }), { name: 'YAMLException' });
+});
+
+test('should throw if provided config file is invalid (no object)', t => {
+  mock({ 'invalid-config-rc': 'foo=bar' });
+  t.throws(() => new Config({ config: 'invalid-config-rc' }), /Invalid configuration file at/);
 });
 
 test('should set default increment (for CI mode)', t => {

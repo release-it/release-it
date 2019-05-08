@@ -73,7 +73,13 @@ As a globally available CLI command:
 npm install --global release-it
 ```
 
-### Local
+Run `release-it` from anywhere. Without installation, `npx` (comes with `npm`) allows to run release-it from anywhere:
+
+```
+npx release-it
+```
+
+### Using npm (package.json)
 
 As a `devDependency` in your project:
 
@@ -135,8 +141,16 @@ $ git rev-parse --git-dir
 
 ## Configuration
 
-Out of the box, release-it has sane defaults, and [plenty of options](conf/release-it.json) to configure it. Put the
-options to override in `.release-it.json` in the project root. Example:
+Out of the box, release-it has sane defaults, and [plenty of options](conf/release-it.json) to configure it. Put (only)
+the options to override in a configuration file. This is where release-it looks for configuration:
+
+- `.release-it.json`
+- `.release-it.js` (export the configuration object: `module.exports = {}`)
+- `.release-it.yaml` (or `.yml`)
+- `.release-it.toml`
+- `package.json` (in the `release-it` property)
+
+Use `--config` to use another path for the configuration file. An example `.release-it.json`:
 
 ```json
 {
@@ -165,12 +179,19 @@ Or in a `release-it` property in `package.json`:
 }
 ```
 
-Notes:
+Or use YAML in `.release-it.yml`:
 
-- Only the settings to override need to be in `.release-it.json` (or `package.json`). Everything else will fall back to
-  the [default configuration](conf/release-it.json).
-- You can use `--config` if you want to use another path for `.release-it.json`.
-- You can also export the configuration object from a custom script (e.g `--config release-it.js`).
+```
+git:
+  commitMessage: 'chore: release v${version}'
+```
+
+Or TOML in `.release-it.toml`:
+
+```
+[scripts]
+beforeStart = "npm test"
+```
 
 Any option can also be set on the command-line, and will have highest priority. Example:
 

@@ -28,7 +28,6 @@ const gotStub = got();
 
 const testConfig = {
   config: false,
-  manifest: false,
   'non-interactive': true,
   'disable-metrics': true
 };
@@ -345,7 +344,7 @@ const BarPlugin = sandbox.stub().callsFake(() => barPlugin);
       beforeStage: 'echo beforeStage ${name}',
       afterRelease: 'echo afterRelease ${name} ${repo.project}'
     };
-    const container = getContainer({ increment: 'patch', manifest: false, scripts });
+    const container = getContainer({ increment: 'patch', scripts });
     const exec = sinon.spy(container.shell, '_exec');
     const { name } = await tasks({}, container);
     const commands = _.flatten(exec.args).filter(arg => typeof arg === 'string');
