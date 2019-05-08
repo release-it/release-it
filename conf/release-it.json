@@ -23,6 +23,7 @@
     "pushRepo": "origin"
   },
   "npm": {
+    "ping": true,
     "publish": true,
     "publishPath": ".",
     "access": null,
