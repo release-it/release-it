@@ -29,11 +29,16 @@ Use `--no-git.requireUpstream` to add `-u [remote] [branch]` to the `git push` c
 `git.pushRepo` ("origin" by default), and `[branch]` is the name of the current branch. So if the current branch is
 `next` then the full command becomes `git push --follow-tags -u origin next`.
 
-This is useful when releasing from a different branch (that is not yet tracking cq present on a remote). Or similar,
-when releasing a (new) project that did not push to the remote before. Please note that in general you should not need
-this, as it is considered a best practice to release from the `master` branch only.
-
 Configure `pushRepo` with either a remote name or a Git url to push the release to that remote instead of "origin".
+
+Disabling `git.requireUpstream` is useful when releasing from a different branch (that is not yet tracking cq present on
+a remote). Or similar, when releasing a (new) project that did not push to the remote before. Please note that in
+general you should not need this, as it is considered a best practice to release from the `master` branch only. Here is
+an example use case and how it can be handled using release-it:
+
+- After a major release (v2), a bug is found and a fix released in v2.0.1.
+- The fix should be backported to v1, so a branch "v1" is made and the fix is cherry-picked.
+- The release of v1.x.x can be done while still in this branch using `release-it --no-git.requireUpstream`.
 
 ### No commits
 
