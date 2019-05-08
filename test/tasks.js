@@ -1,15 +1,18 @@
 const path = require('path');
 const test = require('ava');
 const sh = require('shelljs');
+const {
+  interceptDraft: interceptGitHubDraft,
+  interceptPublish: interceptGitHubPublish,
+  interceptAsset: interceptGitHubAsset
+} = require('./stub/github');
+const { interceptPublish: interceptGitLabPublish, interceptAsset: interceptGitLabAsset } = require('./stub/gitlab');
 const proxyquire = require('proxyquire');
 const _ = require('lodash');
 const Log = require('../lib/log');
 const Spinner = require('../lib/spinner');
 const Config = require('../lib/config');
 const { mkTmpDir, gitAdd } = require('./util/helpers');
-const GitHubApi = require('@octokit/rest');
-const githubRequest = require('./stub/github.request');
-const got = require('./stub/got');
 const ShellStub = require('./stub/shell');
 const sinon = require('sinon');
 const runTasks = require('../lib/tasks');
@@ -18,13 +21,6 @@ const Plugin = require('../lib/plugin/Plugin');
 const noop = Promise.resolve();
 
 const sandbox = sinon.createSandbox();
-
-const githubRequestStub = sandbox.stub().callsFake(githubRequest);
-const githubApi = new GitHubApi();
-githubApi.hook.wrap('request', githubRequestStub);
-const GitHubApiStub = sandbox.stub().returns(githubApi);
-
-const gotStub = got();
 
 const testConfig = {
   config: false,
@@ -143,8 +139,6 @@ const ReplacePlugin = sandbox.stub().callsFake(() => replacePlugin);
 {
   const statics = { isEnabled: () => true, disablePlugin: () => null };
   const runTasks = proxyquire('../lib/tasks', {
-    '@octokit/rest': Object.assign(GitHubApiStub, { '@global': true }),
-    got: Object.assign(gotStub, { '@global': true }),
     'my-plugin': Object.assign(FooPlugin, statics, { '@global': true, '@noCallThru': true }),
     '/my/plugin': Object.assign(BarPlugin, statics, { '@global': true, '@noCallThru': true }),
     'replace-plugin': Object.assign(ReplacePlugin, statics, {
@@ -158,28 +152,27 @@ const ReplacePlugin = sandbox.stub().callsFake(() => replacePlugin);
 
   test.serial('should release all the things (basic)', async t => {
     const { bare, target } = t.context;
-    const repoName = path.basename(bare);
+    const project = path.basename(bare);
     const pkgName = path.basename(target);
     const owner = path.basename(path.dirname(bare));
     gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
     sh.exec('git tag 1.0.0');
-    gitAdd('line', 'file', 'More file');
+    const sha = gitAdd('line', 'file', 'More file');
 
-    const container = getContainer({ github: { release: true }, npm: { name: pkgName } });
+    interceptGitHubDraft({
+      owner,
+      project,
+      body: { tag_name: '1.0.1', name: 'Release 1.0.1', body: `* More file (${sha})`, prerelease: false, draft: true }
+    });
+    interceptGitHubPublish({ owner, project, body: { draft: false, tag_name: '1.0.1' } });
+
+    const container = getContainer({
+      github: { release: true, remoteUrl: `https://github.com/${owner}/${project}` },
+      npm: { name: pkgName }
+    });
     const exec = sinon.spy(container.shell, 'exec');
 
     await tasks({}, container);
-
-    const githubReleaseArg = githubRequestStub.firstCall.lastArg;
-    t.is(githubRequestStub.callCount, 2);
-    t.is(githubReleaseArg.url, '/repos/:owner/:repo/releases');
-    t.is(githubReleaseArg.owner, owner);
-    t.is(githubReleaseArg.repo, repoName);
-    t.is(githubReleaseArg.tag_name, '1.0.1');
-    t.is(githubReleaseArg.name, 'Release 1.0.1');
-    t.true(githubReleaseArg.body.startsWith('* More file'));
-    t.is(githubReleaseArg.prerelease, false);
-    t.is(githubReleaseArg.draft, true);
 
     const npmArgs = getNpmArgs(container.shell.exec.args);
 
@@ -192,7 +185,7 @@ const ReplacePlugin = sandbox.stub().callsFake(() => replacePlugin);
     ]);
 
     t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
-    t.true(log.log.firstCall.args[0].endsWith(`https://github.com/${owner}/${repoName}/releases/tag/1.0.1`));
+    t.true(log.log.firstCall.args[0].endsWith(`https://github.com/${owner}/${project}/releases/tag/1.0.1`));
     t.true(log.log.secondCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
 
     exec.restore();
@@ -200,13 +193,46 @@ const ReplacePlugin = sandbox.stub().callsFake(() => replacePlugin);
 
   test.serial('should release all the things (pre-release, github, gitlab)', async t => {
     const { bare, target } = t.context;
-    const repoName = path.basename(bare);
+    const project = path.basename(bare);
     const pkgName = path.basename(target);
     const owner = path.basename(path.dirname(bare));
     gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
     sh.exec('git tag v1.0.0');
-    gitAdd('line', 'file', 'More file');
+    const sha = gitAdd('line', 'file', 'More file');
     sh.exec('git push --follow-tags');
+
+    interceptGitHubDraft({
+      owner,
+      project,
+      body: {
+        tag_name: 'v1.1.0-alpha.0',
+        name: 'Release 1.1.0-alpha.0',
+        body: `Notes for ${pkgName} (v1.1.0-alpha.0): * More file (${sha})`,
+        prerelease: true,
+        draft: true
+      }
+    });
+    interceptGitHubAsset({ owner, project, body: 'lineline' });
+    interceptGitHubPublish({ owner, project, body: { draft: false, tag_name: 'v1.1.0-alpha.0' } });
+
+    interceptGitLabAsset({ owner, project });
+    interceptGitLabPublish({
+      owner,
+      project,
+      body: {
+        name: 'Release 1.1.0-alpha.0',
+        tag_name: 'v1.1.0-alpha.0',
+        description: `Notes for ${pkgName}: * More file (${sha})`,
+        assets: {
+          links: [
+            {
+              name: 'file',
+              url: `https://gitlab.com/${owner}/${project}/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/file`
+            }
+          ]
+        }
+      }
+    });
 
     const container = getContainer({
       increment: 'minor',
@@ -214,48 +240,22 @@ const ReplacePlugin = sandbox.stub().callsFake(() => replacePlugin);
       git: { tagName: 'v${version}' },
       github: {
         release: true,
+        remoteUrl: `https://github.com/${owner}/${project}`,
         releaseNotes: 'echo "Notes for ${name} (v${version}): ${changelog}"',
         assets: ['file']
       },
       gitlab: {
         release: true,
+        remoteUrl: `https://gitlab.com/${owner}/${project}`,
         releaseNotes: 'echo "Notes for ${name}: ${changelog}"',
         assets: ['file']
       },
       npm: { name: pkgName }
     });
+
     const exec = sinon.spy(container.shell, 'exec');
 
     await tasks({}, container);
-
-    t.is(githubRequestStub.callCount, 3);
-
-    const githubDraftArg = githubRequestStub.firstCall.lastArg;
-    const githubAssetsArg = githubRequestStub.secondCall.lastArg;
-    const githubPublishArg = githubRequestStub.thirdCall.lastArg;
-    const { id } = githubRequestStub.firstCall.returnValue.data;
-
-    t.is(githubDraftArg.url, '/repos/:owner/:repo/releases');
-    t.is(githubDraftArg.owner, owner);
-    t.is(githubDraftArg.repo, repoName);
-    t.is(githubDraftArg.tag_name, 'v1.1.0-alpha.0');
-    t.is(githubDraftArg.name, 'Release 1.1.0-alpha.0');
-    t.regex(githubDraftArg.body, RegExp(`Notes for ${pkgName} \\(v1.1.0-alpha.0\\): \\* More file`));
-    t.is(githubDraftArg.prerelease, true);
-    t.is(githubDraftArg.draft, true);
-
-    t.true(githubAssetsArg.url.endsWith(`/repos/${owner}/${repoName}/releases/${id}/assets{?name,label}`));
-    t.is(githubAssetsArg.name, 'file');
-
-    t.is(githubPublishArg.url, '/repos/:owner/:repo/releases/:release_id');
-    t.is(githubPublishArg.owner, owner);
-    t.is(githubPublishArg.repo, repoName);
-    t.is(githubPublishArg.draft, false);
-    t.is(githubPublishArg.release_id, id);
-
-    t.true(gotStub.post.firstCall.args[0].endsWith(`/projects/${owner}%2F${repoName}/uploads`));
-    t.true(gotStub.post.secondCall.args[0].endsWith(`/projects/${owner}%2F${repoName}/releases`));
-    t.regex(gotStub.post.secondCall.args[1].body.description, RegExp(`Notes for ${pkgName}: \\* More file`));
 
     const npmArgs = getNpmArgs(container.shell.exec.args);
     t.deepEqual(npmArgs, [
@@ -270,8 +270,8 @@ const ReplacePlugin = sandbox.stub().callsFake(() => replacePlugin);
     t.is(stdout.trim(), 'v1.1.0-alpha.0');
 
     t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.1.0-alpha.0)`));
-    t.true(log.log.firstCall.args[0].endsWith(`https://github.com/${owner}/${repoName}/releases/tag/v1.1.0-alpha.0`));
-    t.true(log.log.secondCall.args[0].endsWith(`${repoName}/releases`));
+    t.true(log.log.firstCall.args[0].endsWith(`https://github.com/${owner}/${project}/releases/tag/v1.1.0-alpha.0`));
+    t.true(log.log.secondCall.args[0].endsWith(`${project}/releases`));
     t.true(log.log.thirdCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
     t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
 

@@ -1,177 +1,134 @@
-const path = require('path');
 const test = require('ava');
 const sinon = require('sinon');
-const proxyquire = require('proxyquire');
-const GitHubApi = require('@octokit/rest');
-const sh = require('shelljs');
 const GitHub = require('../lib/plugin/github/GitHub');
-const githubRequest = require('./stub/github.request');
 const { factory, runTasks } = require('./util');
-const { parseGitUrl } = require('../lib/util');
 const { GitHubClientError } = require('../lib/errors');
+const { interceptDraft, interceptPublish, interceptAsset } = require('./stub/github');
 const HttpError = require('@octokit/request/lib/http-error');
-const pkg = require('../package.json');
 
-const remoteUrl = sh.exec('git ls-remote --get-url');
-const { owner, project } = parseGitUrl(remoteUrl);
-const tokenRef = 'GITLAB_TOKEN';
-
-test.beforeEach(t => {
-  const gitHubApi = new GitHubApi();
-  const GitHubApiStub = sinon.stub().returns(gitHubApi);
-  const githubRequestStub = sinon.stub().callsFake(githubRequest);
-  gitHubApi.hook.wrap('request', githubRequestStub);
-  t.context.gitHubApi = gitHubApi;
-  t.context.githubRequestStub = githubRequestStub;
-  t.context.GitHubApiStub = GitHubApiStub;
-  t.context.GitHub = proxyquire('../lib/plugin/github/GitHub', {
-    '@octokit/rest': GitHubApiStub
-  });
-});
+const tokenRef = 'GITHUB_TOKEN';
 
 test('should validate token', async t => {
   const tokenRef = 'MY_GITHUB_TOKEN';
   const options = { github: { release: true, tokenRef } };
   const github = factory(GitHub, { options });
   delete process.env[tokenRef];
+
   await t.throwsAsync(github.init(), /Environment variable "MY_GITHUB_TOKEN" is required for GitHub releases/);
   process.env[tokenRef] = '123';
   await t.notThrowsAsync(github.init());
 });
 
 test('should release and upload assets', async t => {
-  const { GitHub, GitHubApiStub, githubRequestStub } = t.context;
-
-  const asset = 'file1';
-  const version = '2.0.1';
-  const tagName = 'v${version}';
-
   const options = {
-    git: {
-      tagName
-    },
+    git: { tagName: 'v${version}' },
     github: {
+      remoteUrl: 'git://github.com:user/repo',
       tokenRef,
       release: true,
       releaseName: 'Release ${version}',
       releaseNotes: 'echo Custom notes',
-      assets: path.resolve('test/resources', asset)
+      assets: 'test/resources/file1'
     }
   };
   const github = factory(GitHub, { options });
-  await github.init();
-  await github.beforeRelease();
-  github.bump(version);
-  const attempt = await github.uploadAssets();
+  const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git describe --tags --abbrev=0').resolves('2.0.1');
 
-  t.falsy(github.isReleased);
-  t.is(attempt, undefined);
-  t.is(githubRequestStub.callCount, 0);
-
-  const releaseResult = await github.draftRelease({ version });
-
-  t.is(releaseResult.tag_name, 'v' + version);
-  t.is(releaseResult.name, 'Release ' + version);
-
-  t.is(github.isReleased, true);
-  t.is(github.getReleaseUrl(), `https://github.com/${owner}/${project}/releases/tag/v2.0.1`);
-
-  t.is(releaseResult.tag_name, 'v' + version);
-  t.is(releaseResult.name, 'Release ' + version);
-  t.is(releaseResult.draft, true);
-
-  t.is(githubRequestStub.callCount, 1);
-
-  const publishedResult = await github.publishRelease({ draft: false });
-
-  t.is(publishedResult.draft, false);
-
-  t.is(githubRequestStub.callCount, 2);
-  t.is(githubRequestStub.firstCall.lastArg.owner, owner);
-  t.is(githubRequestStub.firstCall.lastArg.repo, project);
-  t.is(githubRequestStub.firstCall.lastArg.tag_name, 'v2.0.1');
-  t.is(githubRequestStub.firstCall.lastArg.name, 'Release 2.0.1');
-  t.is(githubRequestStub.firstCall.lastArg.body, 'Custom notes');
-
-  const [upload] = await github.uploadAssets();
-
-  t.is(GitHubApiStub.callCount, 1);
-  t.deepEqual(GitHubApiStub.firstCall.args[0], {
-    baseUrl: 'https://api.github.com',
-    auth: `token ${github.token}`,
-    userAgent: `release-it/${pkg.version}`,
-    request: { timeout: undefined }
+  interceptDraft({
+    body: { tag_name: 'v2.0.2', name: 'Release 2.0.2', body: 'Custom notes', prerelease: false, draft: true }
   });
+  interceptPublish({ body: { draft: false, tag_name: 'v2.0.2' } });
+  interceptAsset({ body: 'file1' });
 
-  t.is(githubRequestStub.callCount, 3);
-  t.is(githubRequestStub.thirdCall.lastArg.name, 'file1');
+  await runTasks(github);
 
-  t.is(upload.name, asset);
-  t.is(upload.state, 'uploaded');
-  t.is(upload.browser_download_url, `https://github.com/${owner}/${project}/releases/download/v${version}/${asset}`);
+  t.true(github.isReleased);
+  t.is(github.getReleaseUrl(), `https://github.com/user/repo/releases/tag/v2.0.2`);
+  exec.restore();
 });
 
-test.serial('should release to enterprise host', async t => {
-  const { GitHub, GitHubApiStub } = t.context;
+test('should release to enterprise host', async t => {
   const github = factory(GitHub, { options: { github: { tokenRef } } });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
-  exec.withArgs('git config --get remote.origin.url').resolves('https://github.example.org/webpro/release-it');
+  exec.withArgs('git config --get remote.origin.url').resolves(`https://github.example.org/user/repo`);
+  exec.withArgs('git describe --tags --abbrev=0').resolves(`1.0.0`);
+
+  const remote = { api: 'https://github.example.org/api/v3', host: 'github.example.org' };
+  interceptDraft(Object.assign({ body: { tag_name: '1.0.1', name: '', prerelease: false, draft: true } }, remote));
+  interceptPublish(Object.assign({ body: { draft: false, tag_name: '1.0.1' } }, remote));
+
   await runTasks(github);
-  t.is(GitHubApiStub.callCount, 1);
-  t.is(GitHubApiStub.firstCall.args[0].baseUrl, 'https://github.example.org/api/v3');
+
+  t.true(github.isReleased);
+  t.is(github.getReleaseUrl(), `https://github.example.org/user/repo/releases/tag/1.0.1`);
   exec.restore();
 });
 
 test('should release to alternative host and proxy', async t => {
-  const { GitHub, GitHubApiStub } = t.context;
-  const options = { github: { tokenRef, host: 'my-custom-host.org', proxy: 'http://proxy:8080' } };
+  const remote = { api: 'https://my-custom-host.org/api/v3', host: 'my-custom-host.org' };
+  interceptDraft(Object.assign({ body: { tag_name: '1.0.1', name: '', prerelease: false, draft: true } }, remote));
+  interceptPublish(Object.assign({ body: { draft: false, tag_name: '1.0.1' } }, remote));
+  const options = {
+    github: {
+      tokenRef,
+      remoteUrl: `git://my-custom-host.org:user/repo`,
+      host: 'my-custom-host.org',
+      proxy: 'http://proxy:8080'
+    }
+  };
   const github = factory(GitHub, { options });
+  const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git describe --tags --abbrev=0').resolves('1.0.0');
+
   await runTasks(github);
-  t.is(GitHubApiStub.callCount, 1);
-  t.is(GitHubApiStub.firstCall.args[0].baseUrl, 'https://my-custom-host.org/api/v3');
-  t.is(GitHubApiStub.firstCall.args[0].proxy, 'http://proxy:8080');
+
+  t.true(github.isReleased);
+  t.is(github.getReleaseUrl(), `https://my-custom-host.org/user/repo/releases/tag/1.0.1`);
+  exec.restore();
 });
 
 test('should handle octokit client error (without retries)', async t => {
-  const { GitHub, gitHubApi } = t.context;
-  const stub = sinon.stub(gitHubApi.repos, 'createRelease');
-  stub.throws(new HttpError('Not found', 404, null, { url: '', headers: {} }));
   const github = factory(GitHub, { options: { github: { tokenRef } } });
+  const stub = sinon.stub(github.client.repos, 'createRelease');
+  stub.throws(new HttpError('Not found', 404, null, { url: '', headers: {} }));
+
   await t.throwsAsync(runTasks(github), { instanceOf: GitHubClientError, message: '404 (Not found)' });
+
   t.is(stub.callCount, 1);
   stub.restore();
 });
 
 test('should handle octokit client error (with retries)', async t => {
-  const { GitHub, gitHubApi } = t.context;
-  const stub = sinon.stub(gitHubApi.repos, 'createRelease');
-  stub.throws(new HttpError('Request failed', 500, null, { url: '', headers: {} }));
   const options = { github: { tokenRef, retryMinTimeout: 0 } };
   const github = factory(GitHub, { options });
+  const stub = sinon.stub(github.client.repos, 'createRelease');
+  stub.throws(new HttpError('Request failed', 500, null, { url: '', headers: {} }));
+
   await t.throwsAsync(runTasks(github), { instanceOf: GitHubClientError, message: '500 (Request failed)' });
+
   t.is(stub.callCount, 3);
   stub.restore();
 });
 
 test('should not call octokit client in dry run', async t => {
-  const { GitHub, GitHubApiStub, githubRequestStub } = t.context;
-
-  const options = { git: { tagName: 'v${version}' }, github: { tokenRef, releaseName: 'R ${version}', assets: ['*'] } };
+  const options = {
+    git: { tagName: 'v${version}' },
+    github: { tokenRef, remoteUrl: `git://github.com:user/repo`, releaseName: 'R ${version}', assets: ['*'] }
+  };
   const github = factory(GitHub, { options, global: { isDryRun: true } });
-  sinon.stub(github, 'getLatestVersion').resolves('1.0.0');
-
-  const spy = sinon.spy(github, 'uploadAsset');
+  const spy = sinon.spy(github, 'client', ['get']);
+  const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git describe --tags --abbrev=0').resolves('1.0.0');
 
   await runTasks(github);
 
-  t.is(GitHubApiStub.callCount, 0);
-  t.is(githubRequestStub.callCount, 0);
-  t.is(spy.callCount, 0);
-  t.is(github.log.exec.args[2][0], 'octokit releases#draftRelease "R 1.0.1" (v1.0.1)');
-  t.is(github.log.exec.args[3][0], 'octokit releases#uploadAssets');
+  t.is(spy.get.callCount, 0);
+  t.is(github.log.exec.args[0][0], 'octokit releases#draftRelease "R 1.0.1" (v1.0.1)');
+  t.is(github.log.exec.args[1][0], 'octokit releases#uploadAssets');
   t.is(github.log.exec.lastCall.args[0], 'octokit releases#publishRelease (v1.0.1)');
-  t.is(github.getReleaseUrl(), `https://github.com/${owner}/${project}/releases/tag/v1.0.1`);
+  t.is(github.getReleaseUrl(), `https://github.com/user/repo/releases/tag/v1.0.1`);
   t.is(github.isReleased, true);
-
   spy.restore();
+  exec.restore();
 });

@@ -1,5 +1,9 @@
+const shelljs = require('shelljs');
+const nock = require('nock');
 const test = require('ava');
-require('shelljs').config.silent = true;
+
+shelljs.config.silent = true;
+nock.disableNetConnect();
 
 const { GITHUB_TOKEN, GITLAB_TOKEN } = process.env;
 
