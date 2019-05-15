@@ -11,7 +11,7 @@ Plugins allow additional and custom actions in the release process, such as:
 - Trigger web hooks (e.g. post a message to a Slack channel).
 - Use a different VCS, such as Mercurial (example: [@release-it/mercurial](https://github.com/release-it/mercurial)).
 - Use Node.js directly (instead of executing shell scripts configured in `scripts.*`).
-- Not yet possible: replace existing plugins. For instance, integrate with the npm registry using their
+- Replace existing plugins. For instance, integrate with the npm registry using their
   [programmatic API](https://github.com/npm/libnpm) (as opposed to calling `npm publish` in a child process like
   release-it itself does).
 
@@ -82,6 +82,7 @@ be extended from.
 ```javascript
 class Plugin {
   static isEnabled() {}
+  static disablePlugin() {}
   init() {}
   getName() {}
   getLatestVersion() {}
@@ -127,6 +128,11 @@ the `release` and `afterRelease` methods at the end.
 
 By default, a plugin is always enabled. Override the static `isEnabled` method to enable the plugin based on specific
 conditions, such as plugin configuration or the presence of a file or directory.
+
+## Disable core plugins
+
+In case a plugin replaces a core plugin, it should be disabled by returning the name of the core plugin. Return a string
+(or array of strings) containing the plugin name (one or more of `version`, `git`, `github`, `gitlab`, `npm`).
 
 ## Release-cycle methods
 
@@ -231,5 +237,6 @@ Use `this.log.[verbose|warn|error]` to log and inform the user about what's goin
 - [@release-it/mercurial](https://github.com/release-it/mercurial) - use Mercurial
 - [npm](https://github.com/release-it/release-it/blob/master/lib/plugin/npm/npm.js) - the internal release-it plugin to
   publish a package to npm.
-- recipe: [my-version](https://github.com/release-it/release-it/blob/master/docs/recipes/my-version.md) - example plugin that reads and writes a
-  local `./VERSION` file, and includes a prompt to let the user confirm before publishing to a package registry.
+- recipe: [my-version](https://github.com/release-it/release-it/blob/master/docs/recipes/my-version.md) - example plugin
+  that reads and writes a local `./VERSION` file, and includes a prompt to let the user confirm before publishing to a
+  package registry.

@@ -137,13 +137,21 @@ const fooPlugin = sandbox.createStubInstance(Plugin);
 const FooPlugin = sandbox.stub().callsFake(() => fooPlugin);
 const barPlugin = sandbox.createStubInstance(Plugin);
 const BarPlugin = sandbox.stub().callsFake(() => barPlugin);
+const replacePlugin = sandbox.createStubInstance(Plugin);
+const ReplacePlugin = sandbox.stub().callsFake(() => replacePlugin);
 
 {
+  const statics = { isEnabled: () => true, disablePlugin: () => null };
   const runTasks = proxyquire('../lib/tasks', {
     '@octokit/rest': Object.assign(GitHubApiStub, { '@global': true }),
     got: Object.assign(gotStub, { '@global': true }),
-    'my-plugin': Object.assign(FooPlugin, { isEnabled: () => true, '@global': true, '@noCallThru': true }),
-    '/my/plugin': Object.assign(BarPlugin, { isEnabled: () => true, '@global': true, '@noCallThru': true })
+    'my-plugin': Object.assign(FooPlugin, statics, { '@global': true, '@noCallThru': true }),
+    '/my/plugin': Object.assign(BarPlugin, statics, { '@global': true, '@noCallThru': true }),
+    'replace-plugin': Object.assign(ReplacePlugin, statics, {
+      disablePlugin: () => ['version', 'git'],
+      '@global': true,
+      '@noCallThru': true
+    })
   });
 
   const tasks = (options, ...args) => runTasks(Object.assign({}, testConfig, options), ...args);
@@ -426,6 +434,22 @@ const BarPlugin = sandbox.stub().callsFake(() => barPlugin);
     t.deepEqual(barPlugin.getIncrementedVersionSync.firstCall.args[0], { latestVersion: '0.0.0' });
     t.is(fooPlugin.bump.firstCall.args[0], '0.0.1');
     t.is(barPlugin.bump.firstCall.args[0], '0.0.1');
+  });
+
+  test.serial('should disable core plugins', async t => {
+    const config = {
+      plugins: {
+        'replace-plugin': {}
+      }
+    };
+    const container = getContainer(config);
+    const result = await tasks({}, container);
+    t.deepEqual(result, {
+      changelog: undefined,
+      name: undefined,
+      latestVersion: undefined,
+      version: undefined
+    });
   });
 
   test.serial('should propagate errors', async t => {
