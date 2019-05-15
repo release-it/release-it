@@ -551,6 +551,9 @@ name
 repo.remote, repo.protocol, repo.host, repo.owner, repo.repository, repo.project
 ```
 
+The `version` variable is available from `beforeBump` (it's only available in `beforeStart` if there is no need to
+prompt the user for the next version).
+
 ## Plugins
 
 Since v11, release-it can be extended in many, many ways. Please head over to [plugins](docs/plugins/README.md) for more
