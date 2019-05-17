@@ -419,7 +419,7 @@ const ReplacePlugin = sandbox.stub().callsFake(() => replacePlugin);
       'init',
       'getName',
       'getLatestVersion',
-      'getIncrementedVersionSync',
+      'getIncrementedVersionCI',
       'beforeBump',
       'bump',
       'beforeRelease',
@@ -430,8 +430,9 @@ const ReplacePlugin = sandbox.stub().callsFake(() => replacePlugin);
       t.is(barPlugin[method].callCount, 1);
     });
 
-    t.deepEqual(fooPlugin.getIncrementedVersionSync.firstCall.args[0], { latestVersion: '0.0.0' });
-    t.deepEqual(barPlugin.getIncrementedVersionSync.firstCall.args[0], { latestVersion: '0.0.0' });
+    const incrementBase = { latestVersion: '0.0.0', increment: 'patch', isPreRelease: false, preReleaseId: undefined };
+    t.deepEqual(fooPlugin.getIncrementedVersionCI.firstCall.args[0], incrementBase);
+    t.deepEqual(barPlugin.getIncrementedVersionCI.firstCall.args[0], incrementBase);
     t.is(fooPlugin.bump.firstCall.args[0], '0.0.1');
     t.is(barPlugin.bump.firstCall.args[0], '0.0.1');
   });
