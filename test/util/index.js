@@ -35,11 +35,13 @@ module.exports.runTasks = async plugin => {
 
   const name = (await plugin.getName()) || '__test__';
   const latestVersion = (await plugin.getLatestVersion()) || '1.0.0';
-  const increment = plugin.getContext('increment') || 'patch';
+  const increment = plugin.getContext('increment') || plugin.config.getContext('increment');
   plugin.config.setContext({ name, latestVersion });
 
   const version =
-    (await plugin.getIncrementedVersion({ latestVersion, increment })) || semver.inc(latestVersion, increment);
+    plugin.getIncrementedVersionCI({ latestVersion, increment }) ||
+    (await plugin.getIncrementedVersion({ latestVersion, increment })) ||
+    semver.inc(latestVersion, increment || 'patch');
   plugin.config.setContext(parseVersion(version));
 
   await plugin.beforeBump();

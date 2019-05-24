@@ -78,9 +78,9 @@ test('should throw if provided config file is invalid (no object)', t => {
   t.throws(() => new Config({ config: 'invalid-config-rc' }), /Invalid configuration file at/);
 });
 
-test('should set default increment (for CI mode)', t => {
+test('should not set default increment (for CI mode)', t => {
   const config = new Config({ 'non-interactive': true });
-  t.is(config.options.version.increment, 'patch');
+  t.is(config.options.version.increment, undefined);
 });
 
 test('should not set default increment (for interactive mode)', t => {
@@ -100,7 +100,7 @@ test('should expand pre-release shortcut', t => {
 test('should expand pre-release shortcut (preRelease boolean)', t => {
   const config = new Config({ 'non-interactive': true, preRelease: true });
   t.deepEqual(config.options.version, {
-    increment: 'patch',
+    increment: undefined,
     isPreRelease: true,
     preReleaseId: undefined
   });
