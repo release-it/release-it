@@ -513,7 +513,7 @@ release-it major
 
 Notes:
 
-- Pre-releases work in tandem with [recommended bumps](#recommended-bump).
+- Pre-releases work in tandem with [recommended bumps](https://github.com/release-it/conventional-changelog).
 - You can still override individual options, e.g. `release-it --preRelease=rc --npm.tag=next`.
 - See [semver.org](http://semver.org) for more details about semantic versioning.
 
