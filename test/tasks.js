@@ -207,7 +207,7 @@ const ReplacePlugin = sandbox.stub().callsFake(() => replacePlugin);
       body: {
         tag_name: 'v1.1.0-alpha.0',
         name: 'Release 1.1.0-alpha.0',
-        body: `Notes for ${pkgName} (v1.1.0-alpha.0): * More file (${sha})`,
+        body: `Notes for ${pkgName} [v1.1.0-alpha.0]: ${sha}`,
         prerelease: true,
         draft: true
       }
@@ -222,7 +222,7 @@ const ReplacePlugin = sandbox.stub().callsFake(() => replacePlugin);
       body: {
         name: 'Release 1.1.0-alpha.0',
         tag_name: 'v1.1.0-alpha.0',
-        description: `Notes for ${pkgName}: * More file (${sha})`,
+        description: `Notes for ${pkgName}: ${sha}`,
         assets: {
           links: [
             {
@@ -237,17 +237,17 @@ const ReplacePlugin = sandbox.stub().callsFake(() => replacePlugin);
     const container = getContainer({
       increment: 'minor',
       preRelease: 'alpha',
-      git: { tagName: 'v${version}' },
+      git: { changelog: 'git log --pretty=format:%h ${latestTag}...HEAD', tagName: 'v${version}' },
       github: {
         release: true,
         remoteUrl: `https://github.com/${owner}/${project}`,
-        releaseNotes: 'echo "Notes for ${name} (v${version}): ${changelog}"',
+        releaseNotes: 'echo Notes for ${name} [v${version}]: ${changelog}',
         assets: ['file']
       },
       gitlab: {
         release: true,
         remoteUrl: `https://gitlab.com/${owner}/${project}`,
-        releaseNotes: 'echo "Notes for ${name}: ${changelog}"',
+        releaseNotes: 'echo Notes for ${name}: ${changelog}',
         assets: ['file']
       },
       npm: { name: pkgName }
