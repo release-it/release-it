@@ -5,6 +5,7 @@
     "beforeStage": null,
     "afterRelease": null
   },
+  "hooks": {},
   "git": {
     "changelog": "git log --pretty=format:\"* %s (%h)\" ${latestTag}...HEAD",
     "requireCleanWorkingDir": true,

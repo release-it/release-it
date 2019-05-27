@@ -406,6 +406,77 @@ test.serial('should propagate errors', async t => {
     })
   });
 
+  test.serial('should run all hooks', async t => {
+    gitAdd(`{"name":"hooked","version":"1.0.0"}`, 'package.json', 'Add package.json');
+    const hooks = {};
+    ['before', 'after'].forEach(prefix => {
+      ['version', 'git', 'npm', 'my-plugin'].forEach(ns => {
+        ['init', 'beforeBump', 'bump', 'beforeRelease', 'release', 'afterRelease'].forEach(lifecycle => {
+          hooks[`${prefix}:${ns}:${lifecycle}`] = `echo ${prefix}:${ns}:${lifecycle}`;
+        });
+      });
+    });
+    const container = getContainer({ plugins: { 'my-plugin': {} }, hooks });
+    const exec = sinon.spy(container.shell, '_exec');
+
+    await runTasks({}, container);
+
+    const commands = _.flatten(exec.args).filter(arg => typeof arg === 'string' && arg.startsWith('echo'));
+
+    t.deepEqual(commands, [
+      'echo before:my-plugin:init',
+      'echo after:my-plugin:init',
+      'echo before:npm:init',
+      'echo after:npm:init',
+      'echo before:git:init',
+      'echo after:git:init',
+      'echo before:version:init',
+      'echo after:version:init',
+      'echo before:my-plugin:beforeBump',
+      'echo after:my-plugin:beforeBump',
+      'echo before:npm:beforeBump',
+      'echo after:npm:beforeBump',
+      'echo before:git:beforeBump',
+      'echo after:git:beforeBump',
+      'echo before:version:beforeBump',
+      'echo after:version:beforeBump',
+      'echo before:my-plugin:bump',
+      'echo after:my-plugin:bump',
+      'echo before:npm:bump',
+      'echo after:npm:bump',
+      'echo before:git:bump',
+      'echo after:git:bump',
+      'echo before:version:bump',
+      'echo after:version:bump',
+      'echo before:my-plugin:beforeRelease',
+      'echo after:my-plugin:beforeRelease',
+      'echo before:npm:beforeRelease',
+      'echo after:npm:beforeRelease',
+      'echo before:git:beforeRelease',
+      'echo after:git:beforeRelease',
+      'echo before:version:beforeRelease',
+      'echo after:version:beforeRelease',
+      'echo before:version:release',
+      'echo after:version:release',
+      'echo before:git:release',
+      'echo after:git:release',
+      'echo before:npm:release',
+      'echo after:npm:release',
+      'echo before:my-plugin:release',
+      'echo after:my-plugin:release',
+      'echo before:version:afterRelease',
+      'echo after:version:afterRelease',
+      'echo before:git:afterRelease',
+      'echo after:git:afterRelease',
+      'echo before:npm:afterRelease',
+      'echo after:npm:afterRelease',
+      'echo before:my-plugin:afterRelease',
+      'echo after:my-plugin:afterRelease'
+    ]);
+
+    exec.restore();
+  });
+
   test.serial('should instantiate plugins and execute all release-cycle methods', async t => {
     const config = {
       plugins: {
