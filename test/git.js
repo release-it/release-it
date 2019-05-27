@@ -67,13 +67,13 @@ test.serial('should stage, commit, tag and push', async t => {
   sh.exec(`git clone ${bare} .`);
   const version = '1.2.3';
   gitAdd(`{"version":"${version}"}`, 'package.json', 'Add package.json');
-  const gitClient = factory(Git);
   {
+    const gitClient = factory(Git);
     sh.exec(`git tag ${version}`);
-    const latestTagName = await gitClient.getLatestTagName();
-    t.is(version, latestTagName);
+    t.is(await gitClient.getLatestTagName(), version);
   }
   {
+    const gitClient = factory(Git);
     gitAdd('line', 'file', 'Add file');
     sh.exec('npm --no-git-tag-version version patch');
     await gitClient.stage('package.json');
