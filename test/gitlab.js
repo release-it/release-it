@@ -6,6 +6,7 @@ const GitLab = require('../lib/plugin/gitlab/GitLab');
 const { factory, runTasks } = require('./util');
 const Log = require('../lib/log');
 const got = require('./stub/got');
+const globalTunnel = require('global-tunnel-ng');
 
 const tokenRef = 'GITLAB_TOKEN';
 const remoteUrl = 'https://gitlab.example.org/owner/repo';
@@ -109,6 +110,27 @@ test('should release to self-managed host', async t => {
     name: 'Release 1.0.1',
     tag_name: '1.0.1'
   });
+});
+
+test('should release through proxy', async t => {
+  const { GitLab, got } = t.context;
+  got.post.onFirstCall().resolves({});
+  got.post.onSecondCall().resolves({});
+
+  const options = { 
+    git: { remoteUrl },
+    gitlab: { 
+      tokenRef, 
+      proxy: { host: 'localhost', port: 8080 } 
+    }
+  };
+  const gitlab = factory(GitLab, { options });
+  await runTasks(gitlab);
+  t.is(got.post.callCount, 1);
+  t.is(globalTunnel.isProxying, true);
+  t.is(globalTunnel.proxyConfig.host, 'localhost');
+  t.is(globalTunnel.proxyConfig.port, 8080);
+  globalTunnel.end();
 });
 
 test('should release to sub-grouped repo', async t => {
