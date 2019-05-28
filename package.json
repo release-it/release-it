@@ -61,7 +61,7 @@
     "chalk": "2.4.2",
     "cosmiconfig": "5.2.0",
     "debug": "4.1.1",
-    "deprecated-obj": "1.0.0",
+    "deprecated-obj": "1.0.1",
     "detect-repo-changelog": "1.0.1",
     "find-up": "3.0.0",
     "form-data": "2.3.3",
