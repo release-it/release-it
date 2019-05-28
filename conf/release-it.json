@@ -1,10 +1,4 @@
 {
-  "scripts": {
-    "beforeStart": null,
-    "beforeBump": null,
-    "beforeStage": null,
-    "afterRelease": null
-  },
   "hooks": {},
   "git": {
     "changelog": "git log --pretty=format:\"* %s (%h)\" ${latestTag}...HEAD",
