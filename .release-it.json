@@ -1,6 +1,6 @@
 {
-  "scripts": {
-    "beforeStart": ["npm run lint", "npm test"]
+  "hooks": {
+    "after:init": ["npm run lint", "npm test"]
   },
   "git": {
     "requireUpstream": false

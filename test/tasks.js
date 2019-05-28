@@ -376,8 +376,8 @@ test.serial('should run all scripts', async t => {
 
 test.serial('should propagate errors', async t => {
   const config = {
-    scripts: {
-      beforeStart: 'some-failing-command'
+    hooks: {
+      'before:init': 'some-failing-command'
     }
   };
   const container = getContainer(config);
@@ -412,6 +412,7 @@ test.serial('should propagate errors', async t => {
     ['before', 'after'].forEach(prefix => {
       ['version', 'git', 'npm', 'my-plugin'].forEach(ns => {
         ['init', 'beforeBump', 'bump', 'beforeRelease', 'release', 'afterRelease'].forEach(lifecycle => {
+          hooks[`${prefix}:${lifecycle}`] = `echo ${prefix}:${lifecycle}`;
           hooks[`${prefix}:${ns}:${lifecycle}`] = `echo ${prefix}:${ns}:${lifecycle}`;
         });
       });
@@ -424,6 +425,7 @@ test.serial('should propagate errors', async t => {
     const commands = _.flatten(exec.args).filter(arg => typeof arg === 'string' && arg.startsWith('echo'));
 
     t.deepEqual(commands, [
+      'echo before:init',
       'echo before:my-plugin:init',
       'echo after:my-plugin:init',
       'echo before:npm:init',
@@ -432,6 +434,8 @@ test.serial('should propagate errors', async t => {
       'echo after:git:init',
       'echo before:version:init',
       'echo after:version:init',
+      'echo after:init',
+      'echo before:beforeBump',
       'echo before:my-plugin:beforeBump',
       'echo after:my-plugin:beforeBump',
       'echo before:npm:beforeBump',
@@ -440,6 +444,8 @@ test.serial('should propagate errors', async t => {
       'echo after:git:beforeBump',
       'echo before:version:beforeBump',
       'echo after:version:beforeBump',
+      'echo after:beforeBump',
+      'echo before:bump',
       'echo before:my-plugin:bump',
       'echo after:my-plugin:bump',
       'echo before:npm:bump',
@@ -448,6 +454,8 @@ test.serial('should propagate errors', async t => {
       'echo after:git:bump',
       'echo before:version:bump',
       'echo after:version:bump',
+      'echo after:bump',
+      'echo before:beforeRelease',
       'echo before:my-plugin:beforeRelease',
       'echo after:my-plugin:beforeRelease',
       'echo before:npm:beforeRelease',
@@ -456,6 +464,8 @@ test.serial('should propagate errors', async t => {
       'echo after:git:beforeRelease',
       'echo before:version:beforeRelease',
       'echo after:version:beforeRelease',
+      'echo after:beforeRelease',
+      'echo before:release',
       'echo before:version:release',
       'echo after:version:release',
       'echo before:git:release',
@@ -464,6 +474,8 @@ test.serial('should propagate errors', async t => {
       'echo after:npm:release',
       'echo before:my-plugin:release',
       'echo after:my-plugin:release',
+      'echo after:release',
+      'echo before:afterRelease',
       'echo before:version:afterRelease',
       'echo after:version:afterRelease',
       'echo before:git:afterRelease',
@@ -471,7 +483,8 @@ test.serial('should propagate errors', async t => {
       'echo before:npm:afterRelease',
       'echo after:npm:afterRelease',
       'echo before:my-plugin:afterRelease',
-      'echo after:my-plugin:afterRelease'
+      'echo after:my-plugin:afterRelease',
+      'echo after:afterRelease'
     ]);
 
     exec.restore();
