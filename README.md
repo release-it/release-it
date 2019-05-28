@@ -4,7 +4,7 @@ CLI release tool for Git repos and npm packages.
 
 **Release It!** automates the tedious tasks of software releases:
 
-<img align="right" src="./assets/release-it.gif?raw=true" height="170">
+<img align="right" src="./assets/release-it.gif?raw=true" height="280">
 
 - Execute test & build commands
 - Bump version (in e.g. `package.json`)
