@@ -355,7 +355,7 @@ test.serial('should use pkg.publishConfig.registry', async t => {
 test.serial('should run all scripts', async t => {
   const { bare } = t.context;
   const scripts = {
-    beforeStart: 'echo beforeStart ${name} ${repo.project}',
+    beforeStart: 'echo beforeStart',
     beforeBump: 'echo beforeBump ${name}',
     beforeStage: 'echo beforeStage ${name}',
     afterRelease: 'echo afterRelease ${name} ${repo.project}'
