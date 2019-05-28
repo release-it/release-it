@@ -15,9 +15,9 @@ In `.release-it.json` of the source repo:
   "increment": "minor",
   "preRelease": "alpha",
   "git": { "tagName": "v${version}" },
-  "scripts": {
-    "beforeStart": "git clone https://github.com/example/dist-repo .stage",
-    "afterRelease": "cd .stage && npm version ${version} && cd -"
+  "hooks": {
+    "before:init": "git clone https://github.com/example/dist-repo .stage",
+    "after:release": "cd .stage && npm version ${version} && cd -"
   }
 }
 ```
@@ -50,10 +50,10 @@ A single repository, with e.g. a `dist` or `gh-pages` branch. In `package.json`:
     "increment": "minor",
     "git": { "tagName": "v${version}" },
     "npm": { "publish": false },
-    "scripts": {
-      "beforeStart": "git clone https://github.com/my/my-package -b dist .stage",
-      "beforeStage": "npm run build",
-      "afterRelease": "cd .stage && git add . --all && git commit -m 'Updated!' && git push && cd -"
+    "hooks": {
+      "before:init": "git clone https://github.com/my/my-package -b dist .stage",
+      "before:release": "npm run build",
+      "after:release": "cd .stage && git add . --all && git commit -m 'Updated!' && git push && cd -"
     }
   }
 }
