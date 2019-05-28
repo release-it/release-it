@@ -19,7 +19,7 @@ Plugins allow additional and custom actions in the release process, such as:
 - Implement a different strategy to generate changelogs and/or release notes.
 - Trigger web hooks (e.g. post a message to a Slack channel).
 - Use a different VCS, such as Mercurial (example: [@release-it/mercurial](https://github.com/release-it/mercurial)).
-- Use Node.js directly (instead of executing shell scripts configured in `scripts.*`).
+- Use Node.js directly (instead of executing shell scripts configured in `hooks.*`).
 - Replace existing plugins. For instance, integrate with the npm registry using their
   [programmatic API](https://github.com/npm/libnpm) (as opposed to calling `npm publish` in a child process like
   release-it itself does).
@@ -228,9 +228,9 @@ cases this might be useful.
 
 ##### getIncrementedVersionCI({ latestVersion, increment, isPreRelease, preReleaseId }) → SemVer
 
-Implement `getIncrementedVersionCI` to provide the next version without prompting the user. I.e. determine the next
-version based on the provided values. This method exists to provide the next `version` to other elements of the release
-process early on, such as `scripts.beforeStart` and the introduction text.
+Implement `getIncrementedVersionCI` to provide the next version without prompting the user (i.e. determine the next
+version based on the provided `increment` value). This method exists to provide the next `version` to other elements of
+the release process early on, such as the introduction text.
 
 ##### getIncrementedVersion({ latestVersion, increment, isPreRelease, preReleaseId }) → SemVer
 

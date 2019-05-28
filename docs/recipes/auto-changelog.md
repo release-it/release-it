@@ -13,8 +13,10 @@ npm install --save-dev auto-changelog
 Example configuration in the release-it config:
 
 ```json
-"scripts": {
-  "beforeStage": "npx auto-changelog -p",
+"hooks": {
+  "before:release": "npx auto-changelog -p"
+},
+"git": {
   "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template ./preview.hbs"
 }
 ```

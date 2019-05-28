@@ -14,7 +14,7 @@ CLI release tool for Git repos and npm packages.
 - [Generate changelog](#changelogs)
 - [Publish to npm](#publish-to-npm)
 - [Manage pre-releases](#manage-pre-releases)
-- [Script Hooks](#scripts)
+- [Hooks](#hooks)
 - Extend with [plugins](#plugins)
 - Release from any [CI/CD environment](./docs/ci.md)
 
@@ -189,8 +189,8 @@ git:
 Or TOML in `.release-it.toml`:
 
 ```
-[scripts]
-beforeStart = "npm test"
+[hooks]
+before:init = "npm test"
 ```
 
 Any option can also be set on the command-line, and will have highest priority. Example:
@@ -379,25 +379,28 @@ Notes:
 - You can still override individual options, e.g. `release-it --preRelease=rc --npm.tag=next`.
 - See [semver.org](http://semver.org) for more details about semantic versioning.
 
-## Scripts
+## Hooks
 
-These script hooks can be used to execute commands (from the root directory of the repository):
+Use script hooks to run shell commands at any moment during the release process. The format is `[prefix]:[hook]` or
+`[prefix]:[namespace]:[hook]`:
 
-- `scripts.beforeStart`
-- `scripts.beforeBump`
-- `scripts.afterBump`
-- `scripts.beforeStage`
-- `scripts.afterRelease`
+- The `prefix` is one of `before` or `after`.
+- Use the optional `namespace` to precisely hook into a life cycle method between specific plugins. The core plugins
+  include `version`, `git`, `npm`, `github`, `gitlab`. When using a custom plugin, that name will also be available
+  (e.g. `@release-it/conventional-changelog` has the `conventional-changelog` namespace).
+- The `hook` is one of `init`, `bump` or `release`. Note that `beforeBump`, `beforeRelease` and `afterRelease` are also
+  available to be on par with plugins, but they sound and usually are redundant in the context of script hooks.
 
 All commands can use configuration variables (like template strings). An array of commands can also be provided, they
 will run one after another. Some examples:
 
 ```json
 {
-  "scripts": {
-    "beforeStart": ["npm run lint", "npm test"],
-    "afterBump": "tar -czvf foo-${version}.tar.gz",
-    "afterRelease": "echo Successfully released ${name} v${version} to ${repo.repository}."
+  "hooks": {
+    "before:init": ["npm run lint", "npm test"],
+    "after:my-plugin:bump": "./bin/my-script.sh",
+    "after:git:release": "npm run build",
+    "after:release": "echo Successfully released ${name} v${version} to ${repo.repository}."
   }
 }
 ```
@@ -413,8 +416,19 @@ name
 repo.remote, repo.protocol, repo.host, repo.owner, repo.repository, repo.project
 ```
 
-The `version` variable is available from `beforeBump` (it's only available in `beforeStart` if there is no need to
-prompt the user for the next version).
+All variables are available in all hooks. The only exception is that the additional variables listed above are not
+available in the `init` hook.
+
+## Scripts (deprecated)
+
+Please use [hooks](#hooks) instead, as hooks are more flexible. The `scripts` will stay for a while, but will be removed
+in a few major releases after v12. Here's how to migrate:
+
+- `scripts.beforeStart` → `hooks.before:init`
+- `scripts.beforeBump` → `hooks.before:bump`
+- `scripts.afterBump` → `hooks.after:bump`
+- `scripts.beforeStage` → `hooks.before:release`
+- `scripts.afterRelease` → `hooks.after:release`
 
 ## Plugins
 
