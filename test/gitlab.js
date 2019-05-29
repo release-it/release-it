@@ -100,6 +100,27 @@ test('should release to self-managed host', async t => {
   t.is(gitlab.baseUrl, 'https://gitlab.example.org/api/v4');
 });
 
+test('should release through proxy', async t => {
+  const { GitLab, got } = t.context;
+  got.post.onFirstCall().resolves({});
+  got.post.onSecondCall().resolves({});
+
+  const options = { 
+    git: { remoteUrl },
+    gitlab: { 
+      tokenRef, 
+      proxy: { host: 'localhost', port: 8080 } 
+    }
+  };
+  const gitlab = factory(GitLab, { options });
+  await runTasks(gitlab);
+  t.is(got.post.callCount, 1);
+  t.is(globalTunnel.isProxying, true);
+  t.is(globalTunnel.proxyConfig.host, 'localhost');
+  t.is(globalTunnel.proxyConfig.port, 8080);
+  globalTunnel.end();
+});
+
 test('should release to sub-grouped repo', async t => {
   const scope = nock('https://gitlab.com');
   scope.post('/api/v4/projects/group%2Fsub-group%2Frepo/releases').reply(200, {});
