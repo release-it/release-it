@@ -2,6 +2,7 @@ const path = require('path');
 const test = require('ava');
 const sinon = require('sinon');
 const nock = require('nock');
+const globalTunnel = require('global-tunnel-ng');
 const { interceptPublish, interceptAsset } = require('./stub/gitlab');
 const GitLab = require('../lib/plugin/gitlab/GitLab');
 const { factory, runTasks } = require('./util');
@@ -57,6 +58,30 @@ test('should upload assets and release', async t => {
   t.is(gitlab.assets[0].url, `${remoteUrl}/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/${asset}`);
   t.is(gitlab.getReleaseUrl(), `${remoteUrl}/releases`);
   t.is(gitlab.isReleased, true);
+});
+
+test('should release through proxy', async t => {
+  const scope = nock('https://gitlab.example.org');
+  scope.post('/api/v4/projects/user%2Frepo/releases').reply(200, {});
+  const options = {
+    git: { remoteUrl: `https://gitlab.example.org/user/repo`, tagName: '${version}' },
+    gitlab: { 
+      tokenRef,
+      releaseName: 'Release ${version}', 
+      releaseNotes: 'echo readme',
+      proxy: { host: 'localhost', port: 8080 }  
+    }
+  };
+  const gitlab = factory(GitLab, { options });
+  sinon.stub(gitlab, 'getLatestVersion').resolves('1.0.0');
+
+  await runTasks(gitlab);
+
+  t.is(gitlab.origin, 'https://gitlab.example.org');
+  t.is(gitlab.baseUrl, 'https://gitlab.example.org/api/v4');
+  t.is(globalTunnel.isProxying, true);
+  t.is(globalTunnel.proxyConfig.host, 'localhost');
+  t.is(globalTunnel.proxyConfig.port, 8080);
 });
 
 test('should release to self-managed host', async t => {
