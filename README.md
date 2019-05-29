@@ -4,7 +4,7 @@ CLI release tool for Git repos and npm packages.
 
 **Release It!** automates the tedious tasks of software releases:
 
-<img align="right" src="./assets/release-it.gif?raw=true" height="170">
+<img align="right" src="./assets/release-it.gif?raw=true" height="280">
 
 - Execute test & build commands
 - Bump version (in e.g. `package.json`)
@@ -513,7 +513,7 @@ release-it major
 
 Notes:
 
-- Pre-releases work in tandem with [recommended bumps](#recommended-bump).
+- Pre-releases work in tandem with [recommended bumps](https://github.com/release-it/conventional-changelog).
 - You can still override individual options, e.g. `release-it --preRelease=rc --npm.tag=next`.
 - See [semver.org](http://semver.org) for more details about semantic versioning.
 

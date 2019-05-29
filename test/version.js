@@ -95,11 +95,11 @@ test('should increment version (patch release after pre-release)', t => {
 test('should run tasks without errors', async t => {
   const options = { version: { increment: 'minor' } };
   const v = factory(Version, { options });
-  const getIncrementedVersion = sinon.spy(v, 'getIncrementedVersion');
+  const getIncrementedVersionCI = sinon.spy(v, 'getIncrementedVersionCI');
   const incrementVersion = sinon.spy(v, 'incrementVersion');
   await runTasks(v);
-  t.is(getIncrementedVersion.callCount, 1);
-  t.deepEqual(getIncrementedVersion.firstCall.args[0], { latestVersion: '0.0.0', increment: 'minor' });
+  t.is(getIncrementedVersionCI.callCount, 1);
+  t.deepEqual(getIncrementedVersionCI.firstCall.args[0], { latestVersion: '0.0.0', increment: 'minor' });
   t.is(await incrementVersion.firstCall.returnValue, '0.1.0');
   t.is(incrementVersion.callCount, 1);
   t.deepEqual(incrementVersion.firstCall.args[0], { latestVersion: '0.0.0', increment: 'minor' });

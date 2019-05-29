@@ -47,8 +47,6 @@ test.serial('should get the latest tag after fetch', async t => {
   const gitClient = factory(Git, { container: { shell } });
   const { bare, target } = t.context;
   const other = mkTmpDir();
-  await gitClient.init();
-  t.is(gitClient.getContext('latestTagName'), null);
   sh.exec('git push');
   sh.exec(`git clone ${bare} ${other}`);
   sh.pushd('-q', other);

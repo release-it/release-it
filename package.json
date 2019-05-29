@@ -1,6 +1,6 @@
 {
   "name": "release-it",
-  "version": "12.2.0",
+  "version": "12.2.2",
   "description": "CLI release tool for Git repos and npm packages.",
   "keywords": [
     "build",
@@ -95,6 +95,7 @@
     "markdown-toc": "1.2.0",
     "mock-fs": "4.9.0",
     "mock-stdio": "1.0.3",
+    "nock": "10.0.6",
     "nyc": "14.0.0",
     "prettier": "1.17.0",
     "proxyquire": "2.1.0",
