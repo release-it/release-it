@@ -9,8 +9,8 @@ CLI release tool for Git repos and npm packages.
 - Execute test & build commands
 - Bump version (in e.g. `package.json`)
 - Git commit, tag, push
-- [Create release at GitHub](#github-releases) (and [upload assets](#release-assets))
-- [Create release at GitLab](#gitlab-releases) (and [upload assets](#release-assets))
+- [Create release at GitHub](#github-releases)
+- [Create release at GitLab](#gitlab-releases)
 - [Generate changelog](#changelogs)
 - [Publish to npm](#publish-to-npm)
 - [Manage pre-releases](#manage-pre-releases)
@@ -224,7 +224,7 @@ determine which version should be released. In any case, as a last resort, `0.0.
 
 Use `--no-npm` (or `"npm": false`) to ignore and skip bumping `package.json` (and skip `npm publish`).
 
-Alternatively, a plugin can be used to get the version from anywhere else. Also see [plugins](docs/plugins/README.md).
+Alternatively, a plugin can be used to get the version from anywhere else. Also see [plugins](./docs/plugins/README.md).
 
 ## Prerequisite checks
 
@@ -245,7 +245,7 @@ The following help pages might be useful: [SSH](https://help.github.com/articles
 
 ### Remote repository
 
-By default, `release-it` uses `origin` as the remote name to push to. Use `git.pushRepo` to override this with a
+By default, `release-it` uses `"origin"` as the remote name to push to. Use `git.pushRepo` to override this with a
 different remote name (or a different git url).
 
 ### Extra arguments
@@ -288,7 +288,7 @@ The "Releases" tab on GitHub projects links to a page to store the changelog cq.
 export GITHUB_TOKEN="f941e0..."
 ```
 
-See [GitHub Releases](./docs/github-releases.md) for more details.
+→ See [GitHub Releases](./docs/github-releases.md) for more details.
 
 ## GitLab Releases
 
@@ -303,7 +303,7 @@ See [GitHub Releases](./docs/github-releases.md) for more details.
 export GITLAB_TOKEN="f941e0..."
 ```
 
-See [GitLab Releases](./docs/gitlab-releases.md) for more details.
+→ See [GitLab Releases](./docs/gitlab-releases.md) for more details.
 
 ## Changelogs
 
@@ -342,13 +342,13 @@ With this `git.changelog`, the changelog preview is based on the `changelog.hbs`
 Additionally, `scripts.beforeStage` will update the `CHANGELOG.md` with each release to get included with the release
 commit. This can be omitted if the project does not keep a `CHANGELOG.md` or similar.
 
-See the [auto-changelog recipe](docs/recipes/auto-changelog.md) for an example setup and template.
+See the [auto-changelog recipe](./docs/recipes/auto-changelog.md) for an example setup and template.
 
 ### Conventional Changelog
 
 If your project follows conventions, such as the
 [Angular commit guidelines](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#commits), the
-`@release-it/conventional-changelog` plugin is useful.
+[@release-it/conventional-changelog](https://github.com/release-it/conventional-changelog) plugin is useful.
 
 ```bash
 npm install @release-it/conventional-changelog --save-dev
@@ -380,7 +380,7 @@ the `CHANGELOG.md` file:
 With a `package.json` in the current directory, release-it will let `npm` bump the version in `package.json` (and
 `package-lock.json` if present), and publish to the npm registry.
 
-See [Publish to npm](./docs/npm.md) for more details.
+→ See [Publish to npm](./docs/npm.md) for more details.
 
 ## Manage pre-releases
 
@@ -472,8 +472,9 @@ prompt the user for the next version).
 
 ## Plugins
 
-Since v11, release-it can be extended in many, many ways. Please head over to [plugins](docs/plugins/README.md) for more
-details.
+Since v11, release-it can be extended in many, many ways.
+
+→ See [plugins](./docs/plugins/README.md) for more details.
 
 ## Distribution repository
 
@@ -483,7 +484,7 @@ distributed to a separate repository. Or to a separate branch, such as a `gh-pag
 [packaged Angular.js repository](https://github.com/angular/bower-angular) for distribution on npm and Bower.
 
 The `dist.repo` option was removed in v10, but similar setups can still be achieved. Please see the
-[distribution repository](docs/recipes/distribution-repo.md) recipe for example configurations.
+[distribution repository](./docs/recipes/distribution-repo.md) recipe for example configurations.
 
 ## Metrics
 
@@ -500,7 +501,7 @@ Use `--disable-metrics` to opt-out of sending some anonymous statistical data to
 ## Use release-it programmatically
 
 While mostly used as a CLI tool, release-it can be used as a dependency to ingrate in your own scripts. See
-[use release-it programmatically](docs/recipes/programmatic.md) for example code.
+[use release-it programmatically](./docs/recipes/programmatic.md) for example code.
 
 ## Example projects using release-it
 
