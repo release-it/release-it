@@ -9,11 +9,11 @@ const Spinner = require('../../lib/spinner');
 const Prompt = require('../../lib/prompt');
 
 module.exports.factory = (Definition, { namespace, options = {}, global = {}, container = {} } = {}) => {
-  _.defaults(global, { isInteractive: false, isVerbose: false, isDryRun: false, isDebug: false });
+  _.defaults(global, { isCI: true, isVerbose: false, isDryRun: false, isDebug: false });
 
   const ns = namespace || Definition.name.toLowerCase();
 
-  container.config = container.config || new Config(Object.assign({ manifest: false, config: false }, options));
+  container.config = container.config || new Config(Object.assign({ config: false }, options));
   container.log = container.log || sinon.createStubInstance(Log);
 
   const spinner = container.spinner || sinon.createStubInstance(Spinner);
@@ -35,9 +35,13 @@ module.exports.runTasks = async plugin => {
 
   const name = (await plugin.getName()) || '__test__';
   const latestVersion = (await plugin.getLatestVersion()) || '1.0.0';
+  const increment = plugin.getContext('increment') || plugin.config.getContext('increment');
   plugin.config.setContext({ name, latestVersion });
 
-  const version = (await plugin.getIncrementedVersion({ latestVersion })) || semver.inc(latestVersion, 'patch');
+  const version =
+    plugin.getIncrementedVersionCI({ latestVersion, increment }) ||
+    (await plugin.getIncrementedVersion({ latestVersion, increment })) ||
+    semver.inc(latestVersion, increment || 'patch');
   plugin.config.setContext(parseVersion(version));
 
   await plugin.beforeBump();

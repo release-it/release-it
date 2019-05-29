@@ -1,6 +1,6 @@
 {
   "name": "release-it",
-  "version": "11.0.4",
+  "version": "12.2.2",
   "description": "CLI release tool for Git repos and npm packages.",
   "keywords": [
     "build",
@@ -10,17 +10,20 @@
     "github",
     "gitlab",
     "interactive",
+    "ci",
     "npm",
     "publish",
     "push",
     "release",
+    "release-it",
     "repository",
     "script",
     "shell",
     "tag",
     "tool",
     "version",
-    "semver"
+    "semver",
+    "plugin"
   ],
   "repository": {
     "type": "git",
@@ -52,9 +55,11 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@iarna/toml": "2.2.3",
     "@octokit/rest": "16.25.0",
     "async-retry": "1.2.3",
     "chalk": "2.4.2",
+    "cosmiconfig": "5.2.0",
     "debug": "4.1.1",
     "deprecated-obj": "1.0.0",
     "detect-repo-changelog": "1.0.1",
@@ -89,7 +94,9 @@
     "eslint-plugin-ava": "6.0.0",
     "eslint-plugin-prettier": "3.0.1",
     "markdown-toc": "1.2.0",
+    "mock-fs": "4.9.0",
     "mock-stdio": "1.0.3",
+    "nock": "10.0.6",
     "nyc": "14.0.0",
     "prettier": "1.17.0",
     "proxyquire": "2.1.0",

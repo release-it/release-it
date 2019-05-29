@@ -17,7 +17,7 @@ const aliases = {
 
 const parseCliArguments = args => {
   const options = parseArgs(args, {
-    boolean: ['dry-run', 'non-interactive', 'verbose'],
+    boolean: ['dry-run', 'ci', 'non-interactive', 'verbose'],
     alias: aliases,
     default: {
       'dry-run': false,

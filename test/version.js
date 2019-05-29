@@ -42,20 +42,20 @@ test('should increment version (pre-release continuation)', t => {
 
 test('should increment version (prepatch)', t => {
   const v = factory(Version);
-  v.setContext({ preReleaseId: 'alpha' });
-  t.is(v.incrementVersion({ latestVersion: '1.2.3', increment: 'prepatch' }), '1.2.4-alpha.0');
+  t.is(v.incrementVersion({ latestVersion: '1.2.3', increment: 'prepatch', preReleaseId: 'alpha' }), '1.2.4-alpha.0');
 });
 
 test('should increment version (normalized)', t => {
   const v = factory(Version);
-  v.setContext({ preReleaseId: 'alpha', isPreRelease: true });
-  t.is(v.incrementVersion({ latestVersion: '1.2.3', increment: 'patch' }), '1.2.4-alpha.0');
+  t.is(
+    v.incrementVersion({ latestVersion: '1.2.3', increment: 'patch', preReleaseId: 'alpha', isPreRelease: true }),
+    '1.2.4-alpha.0'
+  );
 });
 
 test('should increment version (prerelease)', t => {
   const v = factory(Version);
-  v.setContext({ preReleaseId: 'alpha' });
-  t.is(v.incrementVersion({ latestVersion: '1.2.3', increment: 'prerelease' }), '1.2.4-alpha.0');
+  t.is(v.incrementVersion({ latestVersion: '1.2.3', increment: 'prerelease', preReleaseId: 'alpha' }), '1.2.4-alpha.0');
 });
 
 test('should increment version (prerelease cont.)', t => {
@@ -64,21 +64,22 @@ test('should increment version (prerelease cont.)', t => {
 });
 
 test('should increment version (preReleaseId continuation)', t => {
-  const options = { preReleaseId: 'alpha' };
-  const v = factory(Version, { options });
-  t.is(v.incrementVersion({ latestVersion: '1.2.3-alpha.0', increment: 'prerelease' }), '1.2.3-alpha.1');
+  const v = factory(Version);
+  t.is(
+    v.incrementVersion({ latestVersion: '1.2.3-alpha.0', increment: 'prerelease', preReleaseId: 'alpha' }),
+    '1.2.3-alpha.1'
+  );
 });
 
 test('should increment version (prepatch/preReleaseId continuation)', t => {
-  const options = { preReleaseId: 'alpha', isPreRelease: true };
-  const v = factory(Version, { options });
-  t.is(v.incrementVersion({ latestVersion: '1.2.3-alpha.0', increment: 'prerelease' }), '1.2.3-alpha.1');
+  const v = factory(Version);
+  const options = { latestVersion: '1.2.3-beta.0', increment: 'prerelease', preReleaseId: 'beta', isPreRelease: true };
+  t.is(v.incrementVersion(options), '1.2.3-beta.1');
 });
 
 test('should increment version (preReleaseId w/o preRelease)', t => {
-  const options = { preReleaseId: 'alpha' };
-  const v = factory(Version, { options });
-  t.is(v.incrementVersion({ latestVersion: '1.2.3-alpha.0', increment: 'patch' }), '1.2.3');
+  const v = factory(Version);
+  t.is(v.incrementVersion({ latestVersion: '1.2.3-alpha.0', increment: 'patch', preReleaseId: 'alpha' }), '1.2.3');
 });
 
 test('should increment version (non-numeric prepatch continuation)', t => {
@@ -91,24 +92,14 @@ test('should increment version (patch release after pre-release)', t => {
   t.is(v.incrementVersion({ latestVersion: '1.2.3-alpha.1', increment: 'patch' }), '1.2.3');
 });
 
-test('should set global (latest)version', async t => {
-  const v = factory(Version);
-  await runTasks(v);
-  const { latestVersion, version, isPreRelease, preReleaseId } = v.config.getContext();
-  t.is(latestVersion, '0.0.0');
-  t.is(version, '0.0.1');
-  t.is(isPreRelease, false);
-  t.is(preReleaseId, null);
-});
-
 test('should run tasks without errors', async t => {
   const options = { version: { increment: 'minor' } };
   const v = factory(Version, { options });
-  const getIncrementedVersion = sinon.spy(v, 'getIncrementedVersion');
+  const getIncrementedVersionCI = sinon.spy(v, 'getIncrementedVersionCI');
   const incrementVersion = sinon.spy(v, 'incrementVersion');
   await runTasks(v);
-  t.is(getIncrementedVersion.callCount, 1);
-  t.deepEqual(getIncrementedVersion.firstCall.args[0], { latestVersion: '0.0.0' });
+  t.is(getIncrementedVersionCI.callCount, 1);
+  t.deepEqual(getIncrementedVersionCI.firstCall.args[0], { latestVersion: '0.0.0', increment: 'minor' });
   t.is(await incrementVersion.firstCall.returnValue, '0.1.0');
   t.is(incrementVersion.callCount, 1);
   t.deepEqual(incrementVersion.firstCall.args[0], { latestVersion: '0.0.0', increment: 'minor' });

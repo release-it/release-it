@@ -4,7 +4,7 @@ CLI release tool for Git repos and npm packages.
 
 **Release It!** automates the tedious tasks of software releases:
 
-<img align="right" src="./assets/release-it.gif?raw=true" height="170">
+<img align="right" src="./assets/release-it.gif?raw=true" height="280">
 
 - Execute test & build commands
 - Bump version (in e.g. `package.json`)
@@ -16,6 +16,7 @@ CLI release tool for Git repos and npm packages.
 - [Manage pre-releases](#manage-pre-releases)
 - [Script Hooks](#scripts)
 - Extend with [plugins](#plugins)
+- Release from any [CI/CD environment](./docs/ci.md)
 
 [![Build Status](https://travis-ci.org/release-it/release-it.svg?branch=master)](https://travis-ci.org/release-it/release-it)
 [![npm version](https://badge.fury.io/js/release-it.svg)](https://badge.fury.io/js/release-it)
@@ -39,8 +40,9 @@ CLI release tool for Git repos and npm packages.
 - [Installation](#installation)
 - [Usage](#usage)
 - [Configuration](#configuration)
-- [Interactive vs. non-interactive mode](#interactive-vs-non-interactive-mode)
+- [Interactive vs. CI mode](#interactive-vs-ci-mode)
 - [Latest version](#latest-version)
+- [Prerequisite checks](#prerequisite-checks)
 - [Git](#git)
 - [GitHub Releases](#github-releases)
 - [GitLab Releases](#gitlab-releases)
@@ -71,7 +73,13 @@ As a globally available CLI command:
 npm install --global release-it
 ```
 
-### Local
+Run `release-it` from anywhere. Without installation, `npx` (comes with `npm`) allows to run release-it from anywhere:
+
+```
+npx release-it
+```
+
+### Using npm (package.json)
 
 As a `devDependency` in your project:
 
@@ -94,7 +102,12 @@ Add this as a `script` to `package.json`:
 }
 ```
 
-Now you can run `npm run release` from the command line.
+Now you can run `npm run release` from the command line (any release-it arguments behind the `--`):
+
+```
+npm run release
+npm run release -- minor --ci
+```
 
 ## Usage
 
@@ -128,8 +141,16 @@ $ git rev-parse --git-dir
 
 ## Configuration
 
-Out of the box, release-it has sane defaults, and [plenty of options](conf/release-it.json) to configure it. Put the
-options to override in `.release-it.json` in the project root. Example:
+Out of the box, release-it has sane defaults, and [plenty of options](conf/release-it.json) to configure it. Put (only)
+the options to override in a configuration file. This is where release-it looks for configuration:
+
+- `.release-it.json`
+- `.release-it.js` (export the configuration object: `module.exports = {}`)
+- `.release-it.yaml` (or `.yml`)
+- `.release-it.toml`
+- `package.json` (in the `release-it` property)
+
+Use `--config` to use another path for the configuration file. An example `.release-it.json`:
 
 ```json
 {
@@ -158,14 +179,19 @@ Or in a `release-it` property in `package.json`:
 }
 ```
 
-Notes:
+Or use YAML in `.release-it.yml`:
 
-- Only the settings to override need to be in `.release-it.json` (or `package.json`). Everything else will fall back to
-  the [default configuration](conf/release-it.json).
-- You can use `--config` if you want to use another path for `.release-it.json`.
-- You can also use a regular JavaScript file, for example `.release-it.js`, as long as you point to it using `--config`.
-  This can be useful if your configuration depends on something else, so you have all JavaScript power to use instead of
-  a static JSON. Make sure you export the config with `module.exports`.
+```
+git:
+  commitMessage: 'chore: release v${version}'
+```
+
+Or TOML in `.release-it.toml`:
+
+```
+[scripts]
+beforeStart = "npm test"
+```
 
 Any option can also be set on the command-line, and will have highest priority. Example:
 
@@ -179,16 +205,17 @@ Boolean arguments can be negated by using the `no-` prefix:
 release-it --no-npm.publish
 ```
 
-## Interactive vs. non-interactive mode
+## Interactive vs. CI mode
 
 By default, release-it is **interactive** and allows you to confirm each task before execution:
 
 <img src="./assets/release-it-interactive.gif?raw=true" height="290">
 
-By using the `-n` option (i.e. **non-interactive**), the process is fully automated without prompts. The configured
-tasks will be executed as demonstrated in the first animation above.
+By using the `--ci` option, the process is fully automated without prompts. The configured tasks will be executed as
+demonstrated in the first animation above. On a Continuous Integration (CI) environment, this non-interactive mode is
+activated automatically.
 
-On a Continuous Integration (CI) environment, the non-interactive mode is activated automatically.
+Note: the old `-n` (or `--non-interactive`) option still works and is identical to `--ci`.
 
 ## Latest version
 
@@ -198,6 +225,11 @@ determine which version should be released. In any case, as a last resort, `0.0.
 Use `--no-npm` (or `"npm": false`) to ignore and skip bumping `package.json` (and skip `npm publish`).
 
 Alternatively, a plugin can be used to get the version from anywhere else. Also see [plugins](docs/plugins/README.md).
+
+## Prerequisite checks
+
+Read more about [prerequisites checks](./docs/prerequisites.md) release-it does to help prevent incorrect or polluted
+releases.
 
 ## Git
 
@@ -429,6 +461,7 @@ Monorepos do not require extra configuration, but release-it handles only one pa
 
 ### Misc.
 
+- Learn how to [authenticate and publish from a CI/CD environment](./docs/ci.md#npm).
 - The `"private": true` setting in package.json will be respected, and `release-it` will skip this step.
 - Getting an `ENEEDAUTH` error while a manual `npm publish` works? Please see
   [#95](https://github.com/release-it/release-it/issues/95#issuecomment-344919384).
@@ -480,7 +513,7 @@ release-it major
 
 Notes:
 
-- Pre-releases work in tandem with [recommended bumps](#recommended-bump).
+- Pre-releases work in tandem with [recommended bumps](https://github.com/release-it/conventional-changelog).
 - You can still override individual options, e.g. `release-it --preRelease=rc --npm.tag=next`.
 - See [semver.org](http://semver.org) for more details about semantic versioning.
 
@@ -517,6 +550,9 @@ changelog
 name
 repo.remote, repo.protocol, repo.host, repo.owner, repo.repository, repo.project
 ```
+
+The `version` variable is available from `beforeBump` (it's only available in `beforeStart` if there is no need to
+prompt the user for the next version).
 
 ## Plugins
 
