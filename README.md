@@ -65,29 +65,18 @@ CLI release tool for Git repos and npm packages.
 
 ## Installation
 
-### Global
-
-As a globally available CLI command:
+Although release-it is a **generic** release tool, installation requires npm. A `package.json` file is not required. The
+recommended way to install release-it also adds basic configuration. Answer one or two questions and it's ready:
 
 ```bash
-npm install --global release-it
+npm init release-it
 ```
 
-Run `release-it` from anywhere. Without installation, `npx` (comes with `npm`) allows to run release-it from anywhere:
+Alternatively, install it manually, and add the `release` script to `package.json`:
 
-```
-npx release-it
-```
-
-### Using npm (package.json)
-
-As a `devDependency` in your project:
-
-```
+```bash
 npm install --save-dev release-it
 ```
-
-Add this as a `script` to `package.json`:
 
 ```json
 {
@@ -107,6 +96,19 @@ Now you can run `npm run release` from the command line (any release-it argument
 ```
 npm run release
 npm run release -- minor --ci
+```
+
+### Global usage
+
+Use release-it in any (non-npm) project, take it for a test drive, or install it globally:
+
+```bash
+# Run release-it from anywhere (without installation)
+npx release-it
+
+# Install globally and run from anywhere
+npm install --global release-it
+release-it
 ```
 
 ## Usage
