@@ -11,7 +11,7 @@ CLI release tool for Git repos and npm packages.
 - Git commit, tag, push
 - [Create release at GitHub](#github-releases)
 - [Create release at GitLab](#gitlab-releases)
-- [Generate changelog](#changelogs)
+- [Generate changelog](#changelog)
 - [Publish to npm](#publish-to-npm)
 - [Manage pre-releases](#manage-pre-releases)
 - [Hooks](#hooks)
