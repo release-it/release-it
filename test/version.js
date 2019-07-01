@@ -18,6 +18,7 @@ test('isPreRelease', t => {
 test('should increment latest version', t => {
   const v = factory(Version);
   const latestVersion = '1.0.0';
+  t.is(v.incrementVersion({ latestVersion, increment: false }), '1.0.0');
   t.is(v.incrementVersion({ latestVersion, increment: null }), undefined);
   t.is(v.incrementVersion({ latestVersion, increment: 'foo' }), undefined);
   t.is(v.incrementVersion({ latestVersion, increment: 'patsj' }), undefined);
