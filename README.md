@@ -429,7 +429,7 @@ in a few major releases after v12. Here's how to migrate:
 - `scripts.beforeStart` → `hooks.before:init`
 - `scripts.beforeBump` → `hooks.before:bump`
 - `scripts.afterBump` → `hooks.after:bump`
-- `scripts.beforeStage` → `hooks.before:release`
+- `scripts.beforeStage` → `hooks.after:bump`
 - `scripts.afterRelease` → `hooks.after:release`
 
 ## Plugins
