@@ -20,6 +20,7 @@ test('should validate token', async t => {
 });
 
 test('should release and upload assets', async t => {
+  const asset = 'file1';
   const options = {
     git: { tagName: 'v${version}' },
     github: {
@@ -28,7 +29,7 @@ test('should release and upload assets', async t => {
       release: true,
       releaseName: 'Release ${version}',
       releaseNotes: 'echo Custom notes',
-      assets: 'test/resources/file1'
+      assets: `test/resources/${asset}`
     }
   };
   const github = factory(GitHub, { options });
@@ -39,7 +40,7 @@ test('should release and upload assets', async t => {
     body: { tag_name: 'v2.0.2', name: 'Release 2.0.2', body: 'Custom notes', prerelease: false, draft: true }
   });
   interceptPublish({ body: { draft: false, tag_name: 'v2.0.2' } });
-  interceptAsset({ body: 'file1' });
+  interceptAsset({ body: asset });
 
   await runTasks(github);
 

@@ -1,4 +1,3 @@
-const path = require('path');
 const test = require('ava');
 const sinon = require('sinon');
 const nock = require('nock');
@@ -29,7 +28,7 @@ test('should upload assets and release', async t => {
       release: true,
       releaseName: 'Release ${version}',
       releaseNotes: 'echo Custom notes',
-      assets: path.resolve('test/resources', asset)
+      assets: `test/resources/${asset}`
     }
   };
   const gitlab = factory(GitLab, { options });
