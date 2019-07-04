@@ -15,7 +15,7 @@ test('should validate token', async t => {
   delete process.env[tokenRef];
 
   await t.throwsAsync(gitlab.init(), /Environment variable "MY_GITLAB_TOKEN" is required for GitLab releases/);
-  process.env[tokenRef] = '123';
+  process.env[tokenRef] = '123'; // eslint-disable-line require-atomic-updates
   await t.notThrowsAsync(gitlab.init());
 });
 

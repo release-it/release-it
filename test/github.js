@@ -4,7 +4,7 @@ const GitHub = require('../lib/plugin/github/GitHub');
 const { factory, runTasks } = require('./util');
 const { GitHubClientError } = require('../lib/errors');
 const { interceptDraft, interceptPublish, interceptAsset } = require('./stub/github');
-const HttpError = require('@octokit/request/lib/http-error');
+const { RequestError } = require('@octokit/request-error');
 
 const tokenRef = 'GITHUB_TOKEN';
 
@@ -15,7 +15,7 @@ test('should validate token', async t => {
   delete process.env[tokenRef];
 
   await t.throwsAsync(github.init(), /Environment variable "MY_GITHUB_TOKEN" is required for GitHub releases/);
-  process.env[tokenRef] = '123';
+  process.env[tokenRef] = '123'; // eslint-disable-line require-atomic-updates
   await t.notThrowsAsync(github.init());
 });
 
@@ -91,7 +91,7 @@ test('should release to alternative host and proxy', async t => {
 test('should handle octokit client error (without retries)', async t => {
   const github = factory(GitHub, { options: { github: { tokenRef } } });
   const stub = sinon.stub(github.client.repos, 'createRelease');
-  stub.throws(new HttpError('Not found', 404, null, { url: '', headers: {} }));
+  stub.throws(new RequestError('Not found', 404, { request: { url: '', headers: {} } }));
 
   await t.throwsAsync(runTasks(github), { instanceOf: GitHubClientError, message: '404 (Not found)' });
 
@@ -103,7 +103,7 @@ test('should handle octokit client error (with retries)', async t => {
   const options = { github: { tokenRef, retryMinTimeout: 0 } };
   const github = factory(GitHub, { options });
   const stub = sinon.stub(github.client.repos, 'createRelease');
-  stub.throws(new HttpError('Request failed', 500, null, { url: '', headers: {} }));
+  stub.throws(new RequestError('Request failed', 500, { request: { url: '', headers: {} } }));
 
   await t.throwsAsync(runTasks(github), { instanceOf: GitHubClientError, message: '500 (Request failed)' });
 

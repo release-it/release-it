@@ -7,15 +7,9 @@
     "ecmaVersion": 8,
     "sourceType": "module"
   },
-  "extends": [
-    "eslint:recommended",
-    "plugin:ava/recommended",
-    "prettier"
-  ],
-  "plugins": [
-    "prettier"
-  ],
+  "extends": ["eslint:recommended", "plugin:ava/recommended", "prettier"],
+  "plugins": ["prettier"],
   "rules": {
-    "prettier/prettier": ["error", {"singleQuote": true, "printWidth": 120}]
+    "prettier/prettier": ["error", { "singleQuote": true, "printWidth": 120 }]
   }
 }
