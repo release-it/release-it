@@ -1,8 +1,6 @@
-import isCi from 'is-ci';
-
-export default () => ({
+export default {
   files: ['test/*.js'],
-  failFast: !isCi,
-  require: ['./test/util/setup.js'],
+  helpers: ['**/helpers/**', '**/stub/**'],
+  require: ['./test/helpers/setup.js'],
   verbose: true
-});
+};

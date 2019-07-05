@@ -1,6 +1,6 @@
 const test = require('ava');
 const sinon = require('sinon');
-const { factory, runTasks } = require('./util');
+const { factory, runTasks } = require('./helpers/tasks');
 const Version = require('../lib/plugin/version/Version');
 
 test('isValidVersion', t => {

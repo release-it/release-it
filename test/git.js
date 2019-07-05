@@ -1,8 +1,8 @@
 const test = require('ava');
 const sinon = require('sinon');
 const sh = require('shelljs');
-const { mkTmpDir, readFile, gitAdd } = require('./util/helpers');
-const { factory } = require('./util');
+const { mkTmpDir, readFile, gitAdd } = require('./helpers/util');
+const { factory } = require('./helpers/tasks');
 const Git = require('../lib/plugin/git/Git');
 
 test.beforeEach(() => {
