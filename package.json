@@ -66,7 +66,7 @@
     "find-up": "4.1.0",
     "form-data": "2.5.0",
     "git-url-parse": "11.1.2",
-    "globby": "10.0.0",
+    "globby": "10.0.1",
     "got": "9.6.0",
     "import-cwd": "3.0.0",
     "inquirer": "6.4.1",
@@ -79,7 +79,7 @@
     "shelljs": "0.8.3",
     "supports-color": "7.0.0",
     "update-notifier": "3.0.1",
-    "url-join": "4.0.0",
+    "url-join": "4.0.1",
     "uuid": "3.3.2",
     "window-size": "1.1.1",
     "yargs-parser": "13.1.1"
