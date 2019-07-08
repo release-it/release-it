@@ -1,10 +1,10 @@
 const test = require('ava');
 const sinon = require('sinon');
-const GitHub = require('../lib/plugin/github/GitHub');
-const { factory, runTasks } = require('./helpers/tasks');
-const { GitHubClientError } = require('../lib/errors');
-const { interceptDraft, interceptPublish, interceptAsset } = require('./stub/github');
 const { RequestError } = require('@octokit/request-error');
+const GitHub = require('../lib/plugin/github/GitHub');
+const { GitHubClientError } = require('../lib/errors');
+const { factory, runTasks } = require('./helpers/tasks');
+const { interceptDraft, interceptPublish, interceptAsset } = require('./stub/github');
 
 const tokenRef = 'GITHUB_TOKEN';
 

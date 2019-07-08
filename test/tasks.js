@@ -1,22 +1,22 @@
 const path = require('path');
 const test = require('ava');
 const sh = require('shelljs');
+const proxyquire = require('proxyquire');
+const _ = require('lodash');
+const sinon = require('sinon');
+const Log = require('../lib/log');
+const Spinner = require('../lib/spinner');
+const Config = require('../lib/config');
+const runTasks = require('../lib/tasks');
+const Plugin = require('../lib/plugin/Plugin');
+const { mkTmpDir, gitAdd } = require('./helpers/util');
+const ShellStub = require('./stub/shell');
+const { interceptPublish: interceptGitLabPublish, interceptAsset: interceptGitLabAsset } = require('./stub/gitlab');
 const {
   interceptDraft: interceptGitHubDraft,
   interceptPublish: interceptGitHubPublish,
   interceptAsset: interceptGitHubAsset
 } = require('./stub/github');
-const { interceptPublish: interceptGitLabPublish, interceptAsset: interceptGitLabAsset } = require('./stub/gitlab');
-const proxyquire = require('proxyquire');
-const _ = require('lodash');
-const Log = require('../lib/log');
-const Spinner = require('../lib/spinner');
-const Config = require('../lib/config');
-const { mkTmpDir, gitAdd } = require('./helpers/util');
-const ShellStub = require('./stub/shell');
-const sinon = require('sinon');
-const runTasks = require('../lib/tasks');
-const Plugin = require('../lib/plugin/Plugin');
 
 const noop = Promise.resolve();
 

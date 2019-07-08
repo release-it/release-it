@@ -1,12 +1,12 @@
 const test = require('ava');
 const sh = require('shelljs');
-const { mkTmpDir, gitAdd } = require('./helpers/util');
-const { factory } = require('./helpers/tasks');
 const Shell = require('../lib/shell');
 const Log = require('../lib/log');
 const Git = require('../lib/plugin/git/Git');
 const { git } = require('../conf/release-it.json');
 const { GitRemoteUrlError, GitCleanWorkingDirError, GitUpstreamError } = require('../lib/errors');
+const { factory } = require('./helpers/tasks');
+const { mkTmpDir, gitAdd } = require('./helpers/util');
 
 test.serial.beforeEach(t => {
   const bare = mkTmpDir();

@@ -91,6 +91,7 @@
     "eslint": "6.0.1",
     "eslint-config-prettier": "6.0.0",
     "eslint-plugin-ava": "7.1.0",
+    "eslint-plugin-import": "2.18.0",
     "eslint-plugin-prettier": "3.1.0",
     "markdown-toc": "1.2.0",
     "mock-fs": "4.10.1",

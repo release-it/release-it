@@ -2,11 +2,11 @@ const test = require('ava');
 const sinon = require('sinon');
 const Prompt = require('../lib/prompt');
 const Config = require('../lib/config');
-const { factory } = require('./helpers/tasks');
 const git = require('../lib/plugin/git/prompts');
 const github = require('../lib/plugin/github/prompts');
 const gitlab = require('../lib/plugin/gitlab/prompts');
 const npm = require('../lib/plugin/npm/prompts');
+const { factory } = require('./helpers/tasks');
 
 const prompts = { git, github, gitlab, npm };
 
