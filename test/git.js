@@ -151,7 +151,7 @@ test.serial('should push to remote name (not "origin")', async t => {
     sh.exec(`git checkout -b foo`);
     gitAdd('line', 'file', 'Add file');
     await gitClient.push();
-    t.is(spy.lastCall.args[0], 'git push  -u upstream foo');
+    t.is(spy.lastCall.args[0], 'git push  --set-upstream upstream foo');
     t.regex(await spy.lastCall.returnValue, /Branch .?foo.? set up to track remote branch .?foo.? from .?upstream.?/);
   }
   spy.restore();

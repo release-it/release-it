@@ -56,7 +56,7 @@ test('should warn when bumping to same version', async t => {
     .stub(npmClient.shell, 'exec')
     .rejects('npm ERR! Version not changed, might want --allow-same-version');
   await npmClient.bump('1.0.0-next.0');
-  t.is(npmClient.log.warn.firstCall.args[0], 'Did not update version in package.json etc. (already at 1.0.0-next.0).');
+  t.is(npmClient.log.warn.firstCall.args[0], 'Did not update version in package.json, etc. (already at 1.0.0-next.0).');
   exec.restore();
 });
 
