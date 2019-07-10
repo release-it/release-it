@@ -24,8 +24,8 @@ CLI release tool for Git repos and npm packages.
 
 ## Links
 
-- **NEW**: [release-it supports plugins](https://github.com/release-it/release-it/issues/501) (since v11), so virtually
-  any functionality can be added to your release process.
+- Since v11, [release-it supports plugins](https://github.com/release-it/release-it/issues/501), so virtually any
+  functionality can be added to your release process.
 - For **updates**, see [CHANGELOG.md](CHANGELOG.md) for major updates, and
   [releases](https://github.com/release-it/release-it/releases) for a detailed version history.
 - To **contribute**, please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
@@ -224,9 +224,12 @@ Note: the old `-n` (or `--non-interactive`) option still works and is identical 
 For projects with a `package.json`, its `version` will be used. Otherwise, release-it uses the latest Git tag to
 determine which version should be released. In any case, as a last resort, `0.0.0` will be used as the latest version.
 
+Use `--no-increment` to not increment the version.
+
 Use `--no-npm` (or `"npm": false`) to ignore and skip bumping `package.json` (and skip `npm publish`).
 
-Alternatively, a plugin can be used to get the version from anywhere else. Also see [plugins](./docs/plugins/README.md).
+Alternatively, a plugin can be used to get the version from anywhere else (e.g. a `VERSION` file). Also see
+[plugins](./docs/plugins/README.md).
 
 ## Prerequisite checks
 
