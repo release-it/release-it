@@ -386,12 +386,18 @@ Notes:
 Use script hooks to run shell commands at any moment during the release process. The format is `[prefix]:[hook]` or
 `[prefix]:[namespace]:[hook]`:
 
-- The `prefix` is one of `before` or `after`.
-- Use the optional `namespace` to precisely hook into a life cycle method between specific plugins. The core plugins
-  include `version`, `git`, `npm`, `github`, `gitlab`. When using a custom plugin, that name will also be available
-  (e.g. `@release-it/conventional-changelog` has the `conventional-changelog` namespace).
-- The `hook` is one of `init`, `bump` or `release`. Note that `beforeBump`, `beforeRelease` and `afterRelease` are also
-  available to be on par with plugins, but they sound and usually are redundant in the context of script hooks.
+| part      | value                                                                      |
+| --------- | -------------------------------------------------------------------------- |
+| prefix    | `before` or `after`                                                        |
+| namespace | `version`, `git`, `npm`, `github`, `gitlab` or `[plugin-name]`             |
+| hook      | `init`, `beforeBump`, `bump`, `beforeRelease`, `release` or `afterRelease` |
+
+Use the optional `namespace` to precisely hook into a life cycle method between specific plugins. The core namespaces
+(plugins) include `version`, `git`, `npm`, `github`, `gitlab`. When using a custom plugin, that namespace will also be
+available (e.g. `@release-it/conventional-changelog` has the `conventional-changelog` namespace).
+
+See [execution order](./docs/plugins/README.md#execution-order) for more details on execution order of plugin lifecycle
+methods.
 
 All commands can use configuration variables (like template strings). An array of commands can also be provided, they
 will run one after another. Some examples:
@@ -401,7 +407,8 @@ will run one after another. Some examples:
   "hooks": {
     "before:init": ["npm run lint", "npm test"],
     "after:my-plugin:bump": "./bin/my-script.sh",
-    "after:git:release": "npm run build",
+    "after:bump": "npm run build",
+    "after:git:release": "echo After git push, before github release",
     "after:release": "echo Successfully released ${name} v${version} to ${repo.repository}."
   }
 }

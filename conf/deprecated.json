@@ -5,7 +5,7 @@
     "beforeStart": "hooks.before:init",
     "beforeBump": "hooks.before:bump",
     "afterBump": "hooks.after:bump",
-    "beforeStage": "hooks.before:release",
+    "beforeStage": "hooks.after:bump",
     "afterRelease": "hooks.after:release"
   }
 }
