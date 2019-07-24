@@ -1,6 +1,6 @@
 export default {
   files: ['test/*.js'],
-  helpers: ['**/helpers/**', '**/stub/**'],
-  require: ['./test/helpers/setup.js'],
+  helpers: ['**/util/**', '**/stub/**'],
+  require: ['./test/util/setup.js'],
   verbose: true
 };

@@ -6,7 +6,7 @@ const git = require('../lib/plugin/git/prompts');
 const github = require('../lib/plugin/github/prompts');
 const gitlab = require('../lib/plugin/gitlab/prompts');
 const npm = require('../lib/plugin/npm/prompts');
-const { factory } = require('./helpers/tasks');
+const { factory } = require('./util');
 
 const prompts = { git, github, gitlab, npm };
 

@@ -2,7 +2,7 @@ const test = require('ava');
 const sinon = require('sinon');
 const sh = require('shelljs');
 const Shell = require('../lib/shell');
-const { factory } = require('./helpers/tasks');
+const { factory } = require('./util');
 
 const cwd = process.cwd();
 

@@ -3,7 +3,7 @@ const sinon = require('sinon');
 const nock = require('nock');
 const GitLab = require('../lib/plugin/gitlab/GitLab');
 const { interceptPublish, interceptAsset } = require('./stub/gitlab');
-const { factory, runTasks } = require('./helpers/tasks');
+const { factory, runTasks } = require('./util');
 
 const tokenRef = 'GITLAB_TOKEN';
 

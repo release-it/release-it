@@ -3,7 +3,7 @@ const sinon = require('sinon');
 const { RequestError } = require('@octokit/request-error');
 const GitHub = require('../lib/plugin/github/GitHub');
 const { GitHubClientError } = require('../lib/errors');
-const { factory, runTasks } = require('./helpers/tasks');
+const { factory, runTasks } = require('./util');
 const { interceptDraft, interceptPublish, interceptAsset } = require('./stub/github');
 
 const tokenRef = 'GITHUB_TOKEN';

@@ -1,7 +1,7 @@
 const test = require('ava');
 const sinon = require('sinon');
 const npm = require('../lib/plugin/npm/npm');
-const { factory, runTasks } = require('./helpers/tasks');
+const { factory, runTasks } = require('./util');
 
 test('should return npm package url', t => {
   const options = { npm: { name: 'my-cool-package' } };

@@ -9,7 +9,7 @@ const Spinner = require('../lib/spinner');
 const Config = require('../lib/config');
 const runTasks = require('../lib/tasks');
 const Plugin = require('../lib/plugin/Plugin');
-const { mkTmpDir, gitAdd } = require('./helpers/util');
+const { mkTmpDir, gitAdd } = require('./util/helpers');
 const ShellStub = require('./stub/shell');
 const { interceptPublish: interceptGitLabPublish, interceptAsset: interceptGitLabAsset } = require('./stub/gitlab');
 const {
