@@ -9,8 +9,7 @@ CLI release tool for Git repos and npm packages.
 - Execute test & build commands
 - Bump version (in e.g. `package.json`)
 - Git commit, tag, push
-- [Create release at GitHub](#github-releases)
-- [Create release at GitLab](#gitlab-releases)
+- [Create release at GitHub](#github-releases) or [GitLab](#gitlab-releases)
 - [Generate changelog](#changelog)
 - [Publish to npm](#publish-to-npm)
 - [Manage pre-releases](#manage-pre-releases)

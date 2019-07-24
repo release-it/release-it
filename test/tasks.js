@@ -352,7 +352,7 @@ test.serial('should use pkg.publishConfig.registry', async t => {
   exec.restore();
 });
 
-test.serial('should run all scripts', async t => {
+test.serial('should run all scripts (deprecated)', async t => {
   const { bare } = t.context;
   const scripts = {
     beforeStart: 'echo beforeStart',

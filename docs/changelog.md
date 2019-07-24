@@ -11,7 +11,7 @@ Instead of executing a shell command, a (Handlebars) template can be used to gen
 [auto-changelog](#auto-changelog) below for more details.
 
 Some projects keep their changelog in e.g. `CHANGELOG.md` or `history.md`. To auto-update this file with the release,
-the recommended configuration is to use a command that does this in `scripts.beforeStage`. See below for examples and
+the recommended configuration is to use a command that does this in `hooks.after:bump`. See below for examples and
 workflows.
 
 ### Auto-changelog
@@ -23,8 +23,8 @@ A tool like [auto-changelog](https://github.com/CookPete/auto-changelog) is a gr
   "git": {
     "changelog": "npx auto-changelog --stdout --commit-limit false -u --template ./changelog.hbs"
   },
-  "scripts": {
-    "beforeStage": "npx auto-changelog -p"
+  "hooks": {
+    "after:bump": "npx auto-changelog -p"
   }
 }
 ```
@@ -32,7 +32,7 @@ A tool like [auto-changelog](https://github.com/CookPete/auto-changelog) is a gr
 With this `git.changelog`, the changelog preview is based on the `changelog.hbs` template file. This would be used for
 [GitHub](./github-releases.md) or [GitLab releases](./gitlab-releases.md) as well.
 
-Additionally, `scripts.beforeStage` will update the `CHANGELOG.md` with each release to get included with the release
+Additionally, `hooks.after:bump` will update the `CHANGELOG.md` with each release to get included with the release
 commit. This can be omitted if the project does not keep a `CHANGELOG.md` or similar.
 
 See the [auto-changelog recipe](./recipes/auto-changelog.md) for an example setup and template.
