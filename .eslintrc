@@ -11,7 +11,8 @@
   "plugins": ["prettier", "import"],
   "rules": {
     "prettier/prettier": [2, { "singleQuote": true, "printWidth": 120 }],
-    "ava/no-ignored-test-files": "off",
+    "ava/no-ignored-test-files": 0,
+    "ava/no-import-test-files": 0,
     "import/no-unresolved": 2,
     "import/no-unused-modules": 2,
     "import/order": [2, { "newlines-between": "never" }]
