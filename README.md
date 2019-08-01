@@ -4,11 +4,11 @@ CLI release tool for Git repos and npm packages.
 
 **Release It!** automates the tedious tasks of software releases:
 
-<img align="right" src="./assets/release-it.gif?raw=true" height="280">
+<img align="right" src="./docs/assets/release-it.gif?raw=true" height="280">
 
 - Execute test & build commands
 - Bump version (in e.g. `package.json`)
-- Git commit, tag, push
+- [Git commit, tag, push](#git)
 - [Create release at GitHub](#github-releases) or [GitLab](#gitlab-releases)
 - [Generate changelog](#changelog)
 - [Publish to npm](#publish-to-npm)
@@ -43,6 +43,7 @@ CLI release tool for Git repos and npm packages.
 - [Latest version](#latest-version)
 - [Prerequisite checks](#prerequisite-checks)
 - [Git](#git)
+- [Mercurial](#mercurial)
 - [GitHub Releases](#github-releases)
 - [GitLab Releases](#gitlab-releases)
 - [Changelog](#changelog)
@@ -211,7 +212,7 @@ release-it --no-npm.publish
 
 By default, release-it is **interactive** and allows you to confirm each task before execution:
 
-<img src="./assets/release-it-interactive.gif?raw=true" height="290">
+<img src="./docs/assets/release-it-interactive.gif?raw=true" height="290">
 
 By using the `--ci` option, the process is fully automated without prompts. The configured tasks will be executed as
 demonstrated in the first animation above. On a Continuous Integration (CI) environment, this non-interactive mode is
@@ -238,46 +239,14 @@ releases.
 
 ## Git
 
-### SSH keys & Git remotes
+Git projects are supported well by release-it, automating the tasks to stage, commit, tag and push releases to any Git
+remote.
 
-SSH keys and Git remotes are assumed to be configured correctly. If a manual `git push` from the command line works,
-release-it should be able to do the same.
+→ See [Git](./docs/github-releases.md) for more details.
 
-The following help pages might be useful: [SSH](https://help.github.com/articles/connecting-to-github-with-ssh/) and
-[Managing Remotes](https://help.github.com/categories/managing-remotes/) (GitHub),
-[SSH keys](https://confluence.atlassian.com/bitbucket/ssh-keys-935365775.html) (Bitbucket),
-[SSH keys](https://gitlab.com/help/ssh/README.md) (GitLab).
+## Mercurial
 
-### Remote repository
-
-By default, `release-it` uses `"origin"` as the remote name to push to. Use `git.pushRepo` to override this with a
-different remote name (or a different git url).
-
-### Extra arguments
-
-In case extra arguments should be provided to Git, these options are available:
-
-- `git.commitArgs`
-- `git.tagArgs`
-- `git.pushArgs`
-
-For example, use `"git.commitArgs": "-S"` to sign commits (also see
-[#35](https://github.com/release-it/release-it/issues/350)).
-
-### Skip Git steps
-
-To skip the Git steps (commit, tag, push) entirely (e.g. to only `npm publish`), use the shorthand:
-
-```
-release-it --no-git
-```
-
-Use e.g. `git.tag: false` or `--no-git.tag` to skip a single step.
-
-### Untracked files
-
-By default, untracked files are not added to the release commit. Use `git.addUntrackedFiles: true` to override this
-behavior.
+An experimental [Mercurial plugin](https://github.com/release-it/mercurial) is available.
 
 ## GitHub Releases
 
@@ -337,52 +306,9 @@ With a `package.json` in the current directory, release-it will let `npm` bump t
 
 With release-it, it's easy to create pre-releases: a version of your software that you want to make available, while
 it's not in the stable semver range yet. Often "alpha", "beta", and "rc" (release candidate) are used as identifier for
-pre-releases.
+pre-releases. An example pre-release version is `2.0.0-beta.0`.
 
-An example. The `awesome-pkg` is at version 1.3.0, and work is done for a new major update. To publish the latest beta
-of the new major version:
-
-```
-release-it major --preRelease=beta
-```
-
-This will tag and release version `2.0.0-beta.0`. Notes:
-
-- A normal installation of `awesome-pkg` will still be at version 1.3.0.
-- The [npm tag](https://docs.npmjs.com/cli/dist-tag) will be "beta", install it using `npm install awesome-pkg@beta`
-- A GitHub release will be marked as a "Pre-release".
-
-The above command is actually a shortcut for:
-
-```
-release-it premajor --preReleaseId=beta --npm.tag=beta --github.preRelease
-```
-
-Consecutive beta releases (`2.0.0-beta.1` and so on):
-
-```
-release-it --preRelease
-```
-
-And when ready to release the next phase (e.g. release candidate, in this case `2.0.0-rc.0`):
-
-```
-release-it --preRelease=rc
-```
-
-And eventually, for `2.0.0`:
-
-```
-release-it major
-```
-
-<img src="./assets/release-it-prerelease.gif?raw=true" height="524">
-
-Notes:
-
-- Pre-releases work in tandem with [recommended bumps](https://github.com/release-it/conventional-changelog).
-- You can still override individual options, e.g. `release-it --preRelease=rc --npm.tag=next`.
-- See [semver.org](http://semver.org) for more details about semantic versioning.
+→ See [pre-releases](./docs/pre-releases.md) for more details.
 
 ## Hooks
 

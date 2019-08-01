@@ -1,11 +1,14 @@
 # GitHub Releases
 
-The "Releases" tab on GitHub projects links to a page to store the changelog. Obviously, release-it uses this feature
-extensively: [release-it's releases page](https://github.com/release-it/release-it/releases).
+The "Releases" tab on GitHub projects links to a page to store the changelog. Releases are attached to an existing Git
+tag, so make sure the [Git part](./git.md) is configured correctly.
+
+Unsurprisingly, release-it uses this feature extensively:
+[release-it's releases page](https://github.com/release-it/release-it/releases).
 
 See this screenshot for an overview of what release-it automates:
 
-<img src="../assets/github-release.png?raw=true" width="662" style="border:red;">
+<img src="./assets/github-release.png?raw=true" width="662" style="border:red;">
 
 To add [GitHub releases](https://help.github.com/articles/creating-releases/) in your release-it flow:
 

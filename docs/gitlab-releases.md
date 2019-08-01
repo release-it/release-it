@@ -1,7 +1,8 @@
 # GitLab Releases
 
 GitLab 11.7 introduces [Releases](https://docs.gitlab.com/ce/user/project/releases.html) to create release entries (much
-like GitHub), including release assets.
+like GitHub), including release assets. Releases are attached to an existing Git tag, so make sure the
+[Git part](./git.md) is configured correctly.
 
 [GitLab releases](https://docs.gitlab.com/ee/workflow/releases.html) work just like GitHub releases:
 
