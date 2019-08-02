@@ -38,6 +38,30 @@ test.serial('should return whether tag exists and if working dir is clean', asyn
   t.true(await gitClient.isWorkingDirClean());
 });
 
+test.serial('should throw if tag exists', async t => {
+  const gitClient = factory(Git);
+  sh.exec('git init');
+  sh.touch('file');
+  gitAdd('line', 'file', 'Add file');
+  sh.exec('git tag 0.0.2');
+  gitClient.setContext({ latestTagName: '0.0.1', tagName: '0.0.2' });
+  const expected = { instanceOf: Error, message: /fatal: tag '0\.0\.2' already exists/ };
+  await t.throwsAsync(gitClient.tag({ name: '0.0.2' }), expected);
+});
+
+test.serial('should only warn if tag exists intentionally', async t => {
+  const gitClient = factory(Git);
+  const { warn } = gitClient.log;
+  sh.exec('git init');
+  sh.touch('file');
+  gitAdd('line', 'file', 'Add file');
+  sh.exec('git tag 1.0.0');
+  gitClient.setContext({ latestTagName: '1.0.0', tagName: '1.0.0' });
+  await t.notThrowsAsync(gitClient.tag({ name: '1.0.0' }));
+  t.is(warn.callCount, 1);
+  t.is(warn.firstCall.args[0], 'Tag "1.0.0" already exists');
+});
+
 test.serial('should return the remote url', async t => {
   sh.exec(`git init`);
   {

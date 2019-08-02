@@ -4,7 +4,7 @@ const Shell = require('../lib/shell');
 const Log = require('../lib/log');
 const Git = require('../lib/plugin/git/Git');
 const { git } = require('../conf/release-it.json');
-const { GitRemoteUrlError, GitCleanWorkingDirError, GitUpstreamError } = require('../lib/errors');
+const { GitRemoteUrlError, GitCleanWorkingDirError, GitUpstreamError, GitNoCommitsError } = require('../lib/errors');
 const { factory } = require('./util');
 const { mkTmpDir, gitAdd } = require('./util/helpers');
 
@@ -39,6 +39,22 @@ test.serial('should throw if no upstream is configured', async t => {
   sh.exec('git checkout -b foo');
   const expected = { instanceOf: GitUpstreamError, message: /No upstream configured for current branch/ };
   await t.throwsAsync(gitClient.init(), expected);
+});
+
+test.serial('should throw if there are no commits', async t => {
+  const options = { git: { requireCommits: true } };
+  const gitClient = factory(Git, { options });
+  sh.exec('git tag 1.0.0');
+  const expected = { instanceOf: GitNoCommitsError, message: /There are no commits since the latest tag/ };
+  await t.throwsAsync(gitClient.init(), expected);
+});
+
+test.serial('should not throw if there are commits', async t => {
+  const options = { git: { requireCommits: true } };
+  const gitClient = factory(Git, { options });
+  sh.exec('git tag 1.0.0');
+  gitAdd('line', 'file', 'Add file');
+  await t.notThrowsAsync(gitClient.init());
 });
 
 test.serial('should get the latest tag after fetch', async t => {
