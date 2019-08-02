@@ -3,9 +3,9 @@
 By default, release-it generates a changelog, to show and help select a version for the new release. Additionally, this
 changelog serves as the release notes for the GitHub or GitLab release.
 
-The [default command](conf/release-it.json) is based on `git log ...`. This setting (`git.changelog`) can be overridden.
-To customize the release notes for the GitHub or GitLab release, use `github.releaseNotes` or `gitlab.releaseNotes`.
-Make sure any of these commands output the changelog to `stdout`.
+The [default command](../conf/release-it.json) is based on `git log ...`. This setting (`git.changelog`) can be
+overridden. To customize the release notes for the GitHub or GitLab release, use `github.releaseNotes` or
+`gitlab.releaseNotes`. Make sure any of these commands output the changelog to `stdout`.
 
 Instead of executing a shell command, a (Handlebars) template can be used to generate the changelog. See
 [auto-changelog](#auto-changelog) below for more details.

@@ -1,8 +1,6 @@
 # Release It! 🚀
 
-CLI release tool for Git repos and npm packages.
-
-**Release It!** automates the tedious tasks of software releases:
+🚀 Generic CLI tool to automate versioning and package publishing related tasks:
 
 <img align="right" src="./docs/assets/release-it.gif?raw=true" height="280">
 
@@ -25,9 +23,9 @@ CLI release tool for Git repos and npm packages.
 
 - Since v11, [release-it supports plugins](https://github.com/release-it/release-it/issues/501), so virtually any
   functionality can be added to your release process.
-- For **updates**, see [CHANGELOG.md](CHANGELOG.md) for major updates, and
+- For **updates**, see [CHANGELOG.md](./CHANGELOG.md) for major updates, and
   [releases](https://github.com/release-it/release-it/releases) for a detailed version history.
-- To **contribute**, please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
+- To **contribute**, please read [CONTRIBUTING.md](./CONTRIBUTING.md) first.
 - Please [open an issue](https://github.com/release-it/release-it/issues/new) if anything is missing or unclear in this
   documentation.
 
@@ -144,8 +142,8 @@ $ git rev-parse --git-dir
 
 ## Configuration
 
-Out of the box, release-it has sane defaults, and [plenty of options](conf/release-it.json) to configure it. Put (only)
-the options to override in a configuration file. This is where release-it looks for configuration:
+Out of the box, release-it has sane defaults, and [plenty of options](./conf/release-it.json) to configure it. Put
+(only) the options to override in a configuration file. This is where release-it looks for configuration:
 
 - `.release-it.json`
 - `.release-it.js` (export the configuration object: `module.exports = {}`)
@@ -230,7 +228,7 @@ Use `--no-increment` to not increment the version.
 Use `--no-npm` (or `"npm": false`) to ignore and skip bumping `package.json` (and skip `npm publish`).
 
 Alternatively, a plugin can be used to get the version from anywhere else (e.g. a `VERSION` file). Also see
-[plugins](./docs/plugins/README.md).
+[plugins](./docs/plugins.md).
 
 ## Prerequisite checks
 
@@ -242,7 +240,7 @@ releases.
 Git projects are supported well by release-it, automating the tasks to stage, commit, tag and push releases to any Git
 remote.
 
-→ See [Git](./docs/github-releases.md) for more details.
+→ See [Git](./docs/git.md) for more details.
 
 ## Mercurial
 
@@ -284,9 +282,9 @@ export GITLAB_TOKEN="f941e0..."
 By default, release-it generates a changelog, to show and help select a version for the new release. Additionally, this
 changelog serves as the release notes for the GitHub or GitLab release.
 
-The [default command](conf/release-it.json) is based on `git log ...`. This setting (`git.changelog`) can be overridden.
-To customize the release notes for the GitHub or GitLab release, use `github.releaseNotes` or `gitlab.releaseNotes`.
-Make sure any of these commands output the changelog to `stdout`.
+The [default command](./conf/release-it.json) is based on `git log ...`. This setting (`git.changelog`) can be
+overridden. To customize the release notes for the GitHub or GitLab release, use `github.releaseNotes` or
+`gitlab.releaseNotes`. Make sure any of these commands output the changelog to `stdout`.
 
 Instead of executing a shell command, a (Handlebars) template can be used to generate the changelog. See
 [auto-changelog](./docs/changelogs#auto-changelog) for more details. If your project follows conventions, such as the
@@ -308,7 +306,7 @@ With release-it, it's easy to create pre-releases: a version of your software th
 it's not in the stable semver range yet. Often "alpha", "beta", and "rc" (release candidate) are used as identifier for
 pre-releases. An example pre-release version is `2.0.0-beta.0`.
 
-→ See [pre-releases](./docs/pre-releases.md) for more details.
+→ See [Manage pre-releases](./docs/pre-releases.md) for more details.
 
 ## Hooks
 
@@ -325,7 +323,7 @@ Use the optional `namespace` to precisely hook into a life cycle method between 
 (plugins) include `version`, `git`, `npm`, `github`, `gitlab`. When using a custom plugin, that namespace will also be
 available (e.g. `@release-it/conventional-changelog` has the `conventional-changelog` namespace).
 
-See [execution order](./docs/plugins/README.md#execution-order) for more details on execution order of plugin lifecycle
+See [execution order](./docs/plugins.md#execution-order) for more details on execution order of plugin lifecycle
 methods.
 
 All commands can use configuration variables (like template strings). An array of commands can also be provided, they
@@ -343,7 +341,7 @@ will run one after another. Some examples:
 }
 ```
 
-The variables can be found in the [default configuration](conf/release-it.json). Additionally, the following variables
+The variables can be found in the [default configuration](./conf/release-it.json). Additionally, the following variables
 are exposed:
 
 ```
@@ -372,7 +370,7 @@ in a few major releases after v12. Here's how to migrate:
 
 Since v11, release-it can be extended in many, many ways.
 
-→ See [plugins](./docs/plugins/README.md) for more details.
+→ See [plugins](./docs/plugins.md) for more details.
 
 ## Distribution repository
 
@@ -387,7 +385,7 @@ The `dist.repo` option was removed in v10, but similar setups can still be achie
 ## Metrics
 
 Use `--disable-metrics` to opt-out of sending some anonymous statistical data to Google Analytics. For details, refer to
-[lib/metrics.js](lib/metrics.js). Please consider to not opt-out: more data means more support for future development.
+[lib/metrics.js](./lib/metrics.js). Please consider to not opt-out: more data means more support for future development.
 
 ## Troubleshooting & debugging
 

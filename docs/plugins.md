@@ -289,7 +289,7 @@ Execute commands in the child process (i.e. the shell). This is used extensively
 
 Use template variables to render replacements. For instance, the command `git log ${latestTag}...HEAD` becomes
 `git log v1.2.3...HEAD` before being executed. The replacements are all configuration options (with the default values
-in [conf/release-it.json](conf/release-it.json)), plus the following variables:
+in [conf/release-it.json](../conf/release-it.json)), plus the following variables:
 
 ```
 version
