@@ -508,9 +508,9 @@ test.serial('should propagate errors', async t => {
 
     await runTasks({}, container);
 
-    t.deepEqual(MyPlugin.firstCall.args[0].namespace, 'my-plugin');
+    t.is(MyPlugin.firstCall.args[0].namespace, 'my-plugin');
     t.deepEqual(MyPlugin.firstCall.args[0].options['my-plugin'], { name: 'foo' });
-    t.deepEqual(MyLocalPlugin.firstCall.args[0].namespace, 'named-plugin');
+    t.is(MyLocalPlugin.firstCall.args[0].namespace, 'named-plugin');
     t.deepEqual(MyLocalPlugin.firstCall.args[0].options['named-plugin'], { name: 'bar' });
 
     [

@@ -6,7 +6,7 @@ const defaultConfig = require('../conf/release-it.json');
 
 const localConfig = { github: { release: true } };
 
-test.afterEach(() => mock.restore());
+test.afterEach(() => mock.restore()); // eslint-disable-line ava/no-inline-assertions
 
 test('should contain default values', t => {
   mock({ '../.release-it.json': JSON.stringify(localConfig) });

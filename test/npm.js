@@ -68,7 +68,7 @@ test('should return first pre-release tag from package in registry when resolvin
     beta: '2.0.0-beta.3'
   };
   const exec = sinon.stub(npmClient.shell, 'exec').resolves(JSON.stringify(response));
-  t.deepEqual(await npmClient.resolveTag('2.0.0-5'), 'alpha');
+  t.is(await npmClient.resolveTag('2.0.0-5'), 'alpha');
   exec.restore();
 });
 
@@ -78,21 +78,21 @@ test('should return default pre-release tag when resolving tag without pre-id', 
     latest: '1.4.1'
   };
   const exec = sinon.stub(npmClient.shell, 'exec').resolves(JSON.stringify(response));
-  t.deepEqual(await npmClient.resolveTag('2.0.0-0'), 'next');
+  t.is(await npmClient.resolveTag('2.0.0-0'), 'next');
   exec.restore();
 });
 
 test('should handle erroneous output when resolving tag without pre-id', async t => {
   const npmClient = factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves('');
-  t.deepEqual(await npmClient.resolveTag('2.0.0-0'), 'next');
+  t.is(await npmClient.resolveTag('2.0.0-0'), 'next');
   exec.restore();
 });
 
 test('should handle errored request when resolving tag without pre-id', async t => {
   const npmClient = factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').rejects();
-  t.deepEqual(await npmClient.resolveTag('2.0.0-0'), 'next');
+  t.is(await npmClient.resolveTag('2.0.0-0'), 'next');
   exec.restore();
 });
 
@@ -117,7 +117,7 @@ test('should not throw if npm returns 404 for unsupported ping/whoami', async t 
   exec.withArgs('npm ping').rejects(new Error(pingError));
   exec.withArgs('npm whoai').rejects(new Error(whoamiError));
   await runTasks(npmClient);
-  t.deepEqual(exec.lastCall.args[0].trim(), 'npm publish . --tag latest');
+  t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag latest');
   exec.restore();
 });
 
@@ -129,7 +129,7 @@ test('should not throw if npm returns 400 for unsupported ping/whoami', async t 
   exec.withArgs('npm ping').rejects(new Error(pingError));
   exec.withArgs('npm whoami').rejects(new Error(whoamiError));
   await runTasks(npmClient);
-  t.deepEqual(exec.lastCall.args[0].trim(), 'npm publish . --tag latest');
+  t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag latest');
   exec.restore();
 });
 
@@ -139,7 +139,7 @@ test('should not throw if npm returns 404 for unsupported ping', async t => {
   const pingError = 'npm ERR!     <title>404 - No content for path /-/ping</title>';
   exec.withArgs('npm ping').rejects(new Error(pingError));
   await runTasks(npmClient);
-  t.deepEqual(exec.lastCall.args[0].trim(), 'npm publish . --tag latest');
+  t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag latest');
   exec.restore();
 });
 
