@@ -355,6 +355,8 @@ repo.remote, repo.protocol, repo.host, repo.owner, repo.repository, repo.project
 All variables are available in all hooks. The only exception is that the additional variables listed above are not
 available in the `init` hook.
 
+Use `--verbose` to also log the output of the commands.
+
 ## Scripts (deprecated)
 
 Please use [hooks](#hooks) instead, as hooks are more flexible. The `scripts` will stay for a while, but will be removed
@@ -389,7 +391,8 @@ Use `--disable-metrics` to opt-out of sending some anonymous statistical data to
 
 ## Troubleshooting & debugging
 
-- With `release-it --verbose`, release-it prints every command and its output.
+- With `release-it --verbose` (or `-V`), release-it prints every custom script/hook and its output.
+- With `release-it -VV`, release-it prints every command (also internal) and its output.
 - Prepend `DEBUG=release-it:* release-it [...]` to print configuration and more error details.
 - Use `DEBUG=* release-it [...]` to include debug output for dependencies, such as
   [@octokit/rest](https://github.com/octokit/rest.js).
