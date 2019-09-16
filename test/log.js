@@ -31,9 +31,25 @@ test('should print a warning', t => {
 });
 
 test('should print verbose', t => {
-  const log = new Log({ isVerbose: true });
+  const log = new Log({ isVerbose: true, verbosityLevel: 2 });
   mockStdIo.start();
   log.verbose('foo');
+  const { stdout } = mockStdIo.end();
+  t.is(stdout, 'foo\n');
+});
+
+test('should print external scripts verbose', t => {
+  const log = new Log({ isVerbose: true });
+  mockStdIo.start();
+  log.verbose('foo', { isExternal: true });
+  const { stdout } = mockStdIo.end();
+  t.is(stdout, 'foo\n');
+});
+
+test('should always print external scripts verbose', t => {
+  const log = new Log({ isVerbose: true, verbosityLevel: 2 });
+  mockStdIo.start();
+  log.verbose('foo', { isExternal: true });
   const { stdout } = mockStdIo.end();
   t.is(stdout, 'foo\n');
 });
@@ -55,9 +71,25 @@ test('should not print command execution by default', t => {
 });
 
 test('should print command execution (verbose)', t => {
-  const log = new Log({ isVerbose: true });
+  const log = new Log({ isVerbose: true, verbosityLevel: 2 });
   mockStdIo.start();
   log.exec('foo');
+  const { stdout } = mockStdIo.end();
+  t.is(stdout.trim(), '$ foo');
+});
+
+test('should print command execution (verbose/dry run)', t => {
+  const log = new Log({ isVerbose: true });
+  mockStdIo.start();
+  log.exec('foo', { isDryRun: true, isExternal: true });
+  const { stdout } = mockStdIo.end();
+  t.is(stdout.trim(), '! foo');
+});
+
+test('should print command execution (verbose/external)', t => {
+  const log = new Log({ isVerbose: true });
+  mockStdIo.start();
+  log.exec('foo', { isExternal: true });
   const { stdout } = mockStdIo.end();
   t.is(stdout.trim(), '$ foo');
 });
@@ -81,7 +113,7 @@ test('should print command execution (read-only)', t => {
 test('should print command execution (write)', t => {
   const log = new Log({ isDryRun: true });
   mockStdIo.start();
-  log.exec('foo', '--arg n', true);
+  log.exec('foo', '--arg n', { isDryRun: true });
   const { stdout } = mockStdIo.end();
   t.is(stdout, '! foo --arg n\n');
 });

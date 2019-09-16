@@ -34,14 +34,14 @@ test('exec (dry-run/read-only)', async t => {
     const actual = await shell.exec('!pwd', { write: false });
     t.is(actual, cwd);
     t.is(shell.log.exec.callCount, 1);
-    t.is(shell.log.exec.firstCall.lastArg, 'pwd');
+    t.is(shell.log.exec.firstCall.args[0], 'pwd');
   }
   {
     const actual = await shell.exec('!pwd');
     t.is(actual, undefined);
     t.is(shell.log.exec.callCount, 2);
     t.is(shell.log.exec.secondCall.args[0], 'pwd');
-    t.is(shell.log.exec.secondCall.lastArg, true);
+    t.deepEqual(shell.log.exec.secondCall.lastArg, { isDryRun: true });
   }
 });
 

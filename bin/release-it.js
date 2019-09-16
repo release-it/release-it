@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 const updater = require('update-notifier');
-const pkg = require('../package.json');
 const parseArgs = require('yargs-parser');
+const pkg = require('../package.json');
 const release = require('../lib');
 
 const aliases = {
@@ -17,12 +17,13 @@ const aliases = {
 
 const parseCliArguments = args => {
   const options = parseArgs(args, {
-    boolean: ['dry-run', 'ci', 'non-interactive', 'verbose'],
+    boolean: ['dry-run', 'ci', 'non-interactive'],
     alias: aliases,
     default: {
       'dry-run': false,
-      verbose: false
+      verbose: 0
     },
+    count: ['verbose'],
     configuration: {
       'parse-numbers': false
     }

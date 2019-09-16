@@ -38,11 +38,11 @@ test('should run task, but not show spinner if interactive', async t => {
   t.is(ora.promise.callCount, 0);
 });
 
-test('should run task and show spinner if interactive, but forced', async t => {
+test('should run task and show spinner if interactive, but external', async t => {
   const { ora } = t.context;
   const task = sinon.stub().resolves();
   const spinner = new Spinner({ global: { isCI: false }, container: { ora } });
-  await spinner.show({ task, forced: true });
+  await spinner.show({ task, external: true });
   t.is(task.callCount, 1);
   t.is(ora.promise.callCount, 1);
 });
