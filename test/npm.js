@@ -96,6 +96,17 @@ test('should handle errored request when resolving tag without pre-id', async t 
   exec.restore();
 });
 
+test('should add registry to commands when specified', async t => {
+  const npmClient = factory(npm);
+  npmClient.setContext({ publishConfig: { registry: 'registry.example.org' } });
+  const exec = sinon.stub(npmClient.shell, 'exec').resolves();
+  await runTasks(npmClient);
+  t.is(exec.args[0][0], 'npm ping --registry registry.example.org');
+  t.is(exec.args[1][0], 'npm whoami --registry registry.example.org');
+  t.is(exec.args[2][0], 'npm show release-it@latest version --registry registry.example.org');
+  exec.restore();
+});
+
 test('should not throw when executing tasks', async t => {
   const npmClient = factory(npm);
   await t.notThrowsAsync(runTasks(npmClient));
