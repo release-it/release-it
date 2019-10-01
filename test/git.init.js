@@ -57,6 +57,13 @@ test.serial('should not throw if there are commits', async t => {
   await t.notThrowsAsync(gitClient.init());
 });
 
+test.serial('should not throw if there are no tags', async t => {
+  const options = { git: { requireCommits: true } };
+  const gitClient = factory(Git, { options });
+  gitAdd('line', 'file', 'Add file');
+  await t.notThrowsAsync(gitClient.init());
+});
+
 test.serial('should get the latest tag after fetch', async t => {
   const log = new Log();
   const shell = new Shell({ container: { log } });
