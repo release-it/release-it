@@ -20,7 +20,8 @@ const gitAdd = (content, file, message) => {
   sh.ShellString(content).toEnd(file);
   sh.exec(`git add ${file}`);
   const { stdout } = sh.exec(`git commit -m "${message}"`);
-  return stdout.match(/\[.+([a-z0-9]{7})\]/)[1];
+  const match = stdout.match(/\[.+([a-z0-9]{7})\]/);
+  return match ? match[1] : null;
 };
 
 module.exports = {
