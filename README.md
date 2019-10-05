@@ -287,7 +287,7 @@ overridden. To customize the release notes for the GitHub or GitLab release, use
 `gitlab.releaseNotes`. Make sure any of these commands output the changelog to `stdout`.
 
 Instead of executing a shell command, a (Handlebars) template can be used to generate the changelog. See
-[auto-changelog](./docs/changelogs#auto-changelog) for more details. If your project follows conventions, such as the
+[auto-changelog](./docs/changelog.md#auto-changelog) for more details. If your project follows conventions, such as the
 [Angular commit guidelines](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#commits), the
 [@release-it/conventional-changelog](https://github.com/release-it/conventional-changelog) plugin is useful.
 
