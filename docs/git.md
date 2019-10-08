@@ -56,3 +56,21 @@ Use e.g. `git.tag: false` or `--no-git.tag` to skip a single step.
 
 By default, untracked files are not added to the release commit. Use `git.addUntrackedFiles: true` to override this
 behavior.
+
+## Further custimizations
+
+In case you need even more freedom, here is some inspiration:
+
+```json
+{
+  "git": {
+    "push": false
+  },
+  "hooks": {
+    "after:git:release": "git push origin HEAD"
+  }
+}
+```
+
+Since the `after:git:release` hook runs after the Git commands, the `git.push` can be disabled, and replaced by a custom
+script.
