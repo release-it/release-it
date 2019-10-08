@@ -1,11 +1,24 @@
 const { EOL } = require('os');
 const test = require('ava');
+const mockStdIo = require('mock-stdio');
+const stripAnsi = require('strip-ansi');
 const { format, truncateLines, parseGitUrl } = require('../lib/util');
 
 test('format', t => {
   t.is(format('release v${version}', { version: '1.0.0' }), 'release v1.0.0');
   t.is(format('release v${version} (${name})', { version: '1.0.0', name: 'foo' }), 'release v1.0.0 (foo)');
   t.is(format('release v${version} (${name})', { version: '1.0.0', name: 'foo' }), 'release v1.0.0 (foo)');
+});
+
+test('format (throw)', t => {
+  mockStdIo.start();
+  t.throws(() => format('release v${foo}', { version: '1.0.0' }), /foo is not defined/);
+  const { stdout, stderr } = mockStdIo.end();
+  t.is(stdout, '');
+  t.regex(
+    stripAnsi(stderr),
+    /ERROR Unable to render template with context:\s+release v\${foo}\s+{"version":"1\.0\.0"}\s+ERROR ReferenceError: foo is not defined/
+  );
 });
 
 test('format (back-compat)', t => {
