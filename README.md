@@ -406,7 +406,7 @@ While mostly used as a CLI tool, release-it can be used as a dependency to ingra
 
 - [react-navigation/react-navigation](https://github.com/react-navigation/react-navigation)
 - [swagger-api/swagger-ui](https://github.com/swagger-api/swagger-ui)
-- [js-cookie/js-cookie])(https://github.com/js-cookie/js-cookie)
+- [js-cookie/js-cookie](https://github.com/js-cookie/js-cookie)
 - [StevenBlack/hosts](https://github.com/StevenBlack/hosts)
 - [react-native-community/react-native-tab-view](https://github.com/react-native-community/react-native-tab-view)
 - [callstack/linaria](https://github.com/callstack/linaria)
