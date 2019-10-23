@@ -3,6 +3,18 @@
 With a `package.json` in the current directory, release-it will let `npm` bump the version in `package.json` (and
 `package-lock.json` if present), and publish to the npm registry.
 
+## Skip publish
+
+To bump the version in `package.json` with the release, but not publish to the registry:
+
+```json
+{
+  "npm": {
+    "publish": false
+  }
+}
+```
+
 ## Tags
 
 Use e.g. `--npm.tag=beta` to tag the package in the npm repository. With the `--preRelease=beta` shorthand, the npm
