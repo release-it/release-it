@@ -32,8 +32,9 @@ command-line directly: `--github.releaseName="Arcade Silver"`.
 ## Release notes
 
 By default, the output of `git.changelog` is used for the GitHub release notes. This is the printed `Changelog: ...`
-when release-it boots. Override this with the `github.releaseNotes` option. This script will run just before the actual
-GitHub release itself. Make sure it outputs to `stdout`. An example:
+when release-it boots. This can be overridden with the `github.releaseNotes` option to customize the release notes for
+the GitHub release. This script will run just before the actual GitHub release itself. Make sure it outputs to `stdout`.
+An example:
 
 ```
 {
@@ -43,6 +44,8 @@ GitHub release itself. Make sure it outputs to `stdout`. An example:
   }
 }
 ```
+
+See [Changelog](./changelog) for more information about generating changelogs/release notes.
 
 ## Attach binary assets
 
