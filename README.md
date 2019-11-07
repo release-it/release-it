@@ -330,7 +330,9 @@ All commands can use configuration variables (like template strings). An array o
 will run one after another. Some examples:
 
 ```json
+// .release-it.json
 {
+  "git": {},
   "hooks": {
     "before:init": ["npm run lint", "npm test"],
     "after:my-plugin:bump": "./bin/my-script.sh",
