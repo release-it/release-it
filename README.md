@@ -311,23 +311,23 @@ pre-releases. An example pre-release version is `2.0.0-beta.0`.
 ## Hooks
 
 Use script hooks to run shell commands at any moment during the release process. The format is `[prefix]:[hook]` or
-`[prefix]:[namespace]:[hook]`:
+`[prefix]:[plugin]:[hook]`:
 
 | part   | value                                                                      |
-| --------- | -------------------------------------------------------------------------- |
+| ------ | -------------------------------------------------------------------------- |
 | prefix | `before` or `after`                                                        |
-| namespace | `version`, `git`, `npm`, `github`, `gitlab` or `[plugin-name]`             |
+| plugin | `version`, `git`, `npm`, `github`, `gitlab` or `[plugin-name]`             |
 | hook   | `init`, `beforeBump`, `bump`, `beforeRelease`, `release` or `afterRelease` |
 
-Use the optional `namespace` to precisely hook into a life cycle method between specific plugins. The core namespaces
-(plugins) include `version`, `git`, `npm`, `github`, `gitlab`. When using a custom plugin, that namespace will also be
-available (e.g. `@release-it/conventional-changelog` has the `conventional-changelog` namespace).
+Use the optional `plugin` to hook into a life cycle method before or after any plugin. The core plugins include
+`version`, `git`, `npm`, `github`, `gitlab`. When using a custom plugin, the plugin name will also be available (e.g.
+`@release-it/conventional-changelog` becomes `conventional-changelog`).
 
 See [execution order](./docs/plugins.md#execution-order) for more details on execution order of plugin lifecycle
 methods.
 
 All commands can use configuration variables (like template strings). An array of commands can also be provided, they
-will run one after another. Some examples:
+will run one after another. Some example release-it configuration:
 
 ```json
 {

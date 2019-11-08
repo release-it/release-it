@@ -15,6 +15,8 @@ To bump the version in `package.json` with the release, but not publish to the r
 }
 ```
 
+In case there is a `package.json`, but no npm-related tasks should be executed, use `"npm": false` (or `--no-npm`).
+
 ## Tags
 
 Use e.g. `--npm.tag=beta` to tag the package in the npm repository. With the `--preRelease=beta` shorthand, the npm
@@ -51,7 +53,7 @@ basically defeats the purpose of 2FA (also, the OTP expires after a short period
 ## Monorepos
 
 Monorepos do not require extra configuration, but release-it handles only one package at a time. Also see how
-[Git steps can be skipped](#skip-git-steps) (e.g. if tagging the Git repo should be skipped).
+[Git steps can be skipped](#skip-git-steps). This is useful if, for instance, tagging the Git repo should be skipped.
 
 ## Miscellaneous
 
