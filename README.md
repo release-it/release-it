@@ -92,7 +92,7 @@ npm install --save-dev release-it
 
 Now you can run `npm run release` from the command line (any release-it arguments behind the `--`):
 
-```
+```bash
 npm run release
 npm run release -- minor --ci
 ```
@@ -133,7 +133,7 @@ release-it --dry-run
 
 Note: read-only commands are still executed (`$ ...`), while the rest is not (`! ...`):
 
-```
+```bash
 $ git rev-parse --git-dir
 .git
 ! git add package.json
@@ -182,14 +182,14 @@ Or in a `release-it` property in `package.json`:
 
 Or use YAML in `.release-it.yml`:
 
-```
+```yaml
 git:
   commitMessage: 'chore: release v${version}'
 ```
 
 Or TOML in `.release-it.toml`:
 
-```
+```toml
 [hooks]
 before:init = "npm test"
 ```
@@ -313,11 +313,11 @@ pre-releases. An example pre-release version is `2.0.0-beta.0`.
 Use script hooks to run shell commands at any moment during the release process. The format is `[prefix]:[hook]` or
 `[prefix]:[namespace]:[hook]`:
 
-| part      | value                                                                      |
+| part   | value                                                                      |
 | --------- | -------------------------------------------------------------------------- |
-| prefix    | `before` or `after`                                                        |
+| prefix | `before` or `after`                                                        |
 | namespace | `version`, `git`, `npm`, `github`, `gitlab` or `[plugin-name]`             |
-| hook      | `init`, `beforeBump`, `bump`, `beforeRelease`, `release` or `afterRelease` |
+| hook   | `init`, `beforeBump`, `bump`, `beforeRelease`, `release` or `afterRelease` |
 
 Use the optional `namespace` to precisely hook into a life cycle method between specific plugins. The core namespaces
 (plugins) include `version`, `git`, `npm`, `github`, `gitlab`. When using a custom plugin, that namespace will also be

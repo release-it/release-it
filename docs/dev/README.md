@@ -20,6 +20,6 @@
 
 To run the nightly build of GitLab:
 
-```
+```bash
 docker run --hostname localhost --publish 443:443 --publish 80:80 --publish 22:22 --name gitlab --restart always --volume config:/etc/gitlab --volume logs:/var/log/gitlab --volume data:/var/opt/gitlab gitlab/gitlab-ce:nightly
 ```

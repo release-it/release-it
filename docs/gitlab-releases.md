@@ -24,7 +24,7 @@ when release-it boots. This can be overridden with the `gitlab.releaseNotes` opt
 the GitHub release. This script will run just before the actual GitLab release itself. Make sure it outputs to `stdout`.
 An example:
 
-```
+```json
 {
   "gitlab": {
     "release": true,

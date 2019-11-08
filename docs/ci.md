@@ -25,7 +25,7 @@ When using an `HTTPS` url (such as `https://github.com/user/project.git`), thing
 token (e.g. `GITHUB_TOKEN`) to the CI/CD environment. Then make sure to add this token as a password in the origin url
 before running release-it. E.g. add this to a .travis.yml` script section:
 
-```
+```yaml
 script:
   - git remote rm origin
   - git remote add origin https://[user]:${GITHUB_TOKEN}@github.com/[user]/[project].git
@@ -45,7 +45,7 @@ in the `.npmrc` file. This file should look like this before release-it attempts
 
 One way to achieve this is to set the `NPM_TOKEN` in the CI environment, and from a script do:
 
-```
+```bash
 echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
 ```
 

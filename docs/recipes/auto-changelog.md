@@ -6,18 +6,20 @@ Please refer to [auto-changelog documentation](https://github.com/CookPete/auto-
 
 Add auto-changelog to the project:
 
-```
+```bash
 npm install --save-dev auto-changelog
 ```
 
 Example configuration in the release-it config:
 
 ```json
-"hooks": {
-  "before:release": "npx auto-changelog -p"
-},
-"git": {
-  "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template ./preview.hbs"
+{
+  "hooks": {
+    "before:release": "npx auto-changelog -p"
+  },
+  "git": {
+    "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template ./preview.hbs"
+  }
 }
 ```
 

@@ -23,6 +23,6 @@ shell script like this:
 
 Or even take it upfront like this:
 
-```shell
+```bash
 [ "$(git rev-list $(git describe --tags --abbrev=0)..HEAD --count)" = "0" ] || release-it
 ```

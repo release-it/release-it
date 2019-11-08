@@ -7,7 +7,7 @@ pre-releases.
 An example. The `awesome-pkg` is at version 1.3.0, and work is done for a new major update. To publish the latest beta
 of the new major version:
 
-```
+```bash
 release-it major --preRelease=beta
 ```
 
@@ -19,25 +19,25 @@ This will tag and release version `2.0.0-beta.0`. Notes:
 
 The above command is actually a shortcut for:
 
-```
+```bash
 release-it premajor --preReleaseId=beta --npm.tag=beta --github.preRelease
 ```
 
 Consecutive beta releases (`2.0.0-beta.1` and so on):
 
-```
+```bash
 release-it --preRelease
 ```
 
 And when ready to release the next phase (e.g. release candidate, in this case `2.0.0-rc.0`):
 
-```
+```bash
 release-it --preRelease=rc
 ```
 
 And eventually, for `2.0.0`:
 
-```
+```bash
 release-it major
 ```
 

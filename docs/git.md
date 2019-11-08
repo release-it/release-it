@@ -46,7 +46,7 @@ For example, use `"git.commitArgs": "-S"` to sign commits (also see
 
 To skip the Git steps entirely (for instance, if you only want to `npm publish`), this shorthand is available:
 
-```
+```bash
 release-it --no-git
 ```
 

@@ -36,7 +36,7 @@ when release-it boots. This can be overridden with the `github.releaseNotes` opt
 the GitHub release. This script will run just before the actual GitHub release itself. Make sure it outputs to `stdout`.
 An example:
 
-```
+```json
 {
   "github": {
     "release": true,

@@ -67,13 +67,13 @@ npm install
 
 Verify the tests are passing:
 
-```
+```bash
 npm test
 ```
 
 To use your modified version of release-it in your project, [npm-link](https://docs.npmjs.com/cli/link.html) it:
 
-```
+```bash
 # From your release-it clone:
 npm link
 
