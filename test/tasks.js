@@ -13,6 +13,8 @@ const { mkTmpDir, gitAdd } = require('./util/helpers');
 const ShellStub = require('./stub/shell');
 const { interceptPublish: interceptGitLabPublish, interceptAsset: interceptGitLabAsset } = require('./stub/gitlab');
 const {
+  interceptAuthentication: interceptGitHubAuthentication,
+  interceptCollaborator: interceptGitHubCollaborator,
   interceptDraft: interceptGitHubDraft,
   interceptPublish: interceptGitHubPublish,
   interceptAsset: interceptGitHubAsset
@@ -138,6 +140,8 @@ test.serial('should release all the things (basic)', async t => {
   sh.exec('git tag 1.0.0');
   const sha = gitAdd('line', 'file', 'More file');
 
+  interceptGitHubAuthentication();
+  interceptGitHubCollaborator({ owner, project });
   interceptGitHubDraft({
     owner,
     project,
@@ -180,6 +184,8 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
   const sha = gitAdd('line', 'file', 'More file');
   sh.exec('git push --follow-tags');
 
+  interceptGitHubAuthentication();
+  interceptGitHubCollaborator({ owner, project });
   interceptGitHubDraft({
     owner,
     project,

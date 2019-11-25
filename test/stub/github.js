@@ -1,5 +1,22 @@
 const nock = require('nock');
 
+const interceptAuthentication = ({ api = 'https://api.github.com', username = 'john' } = {}) =>
+  nock(api)
+    .get('/user')
+    .reply(200, {
+      login: username
+    });
+
+const interceptCollaborator = ({
+  api = 'https://api.github.com',
+  owner = 'user',
+  project = 'repo',
+  username = 'john'
+} = {}) =>
+  nock(api)
+    .get(`/repos/${owner}/${project}/collaborators/${username}`)
+    .reply(204);
+
 const interceptDraft = ({
   api = 'https://api.github.com',
   host = 'github.com',
@@ -64,4 +81,4 @@ const interceptAsset = ({
       };
     });
 
-module.exports = { interceptDraft, interceptPublish, interceptAsset };
+module.exports = { interceptAuthentication, interceptCollaborator, interceptDraft, interceptPublish, interceptAsset };
