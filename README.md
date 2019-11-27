@@ -394,8 +394,6 @@ Use `--disable-metrics` to opt-out of sending some anonymous statistical data to
 - With `release-it --verbose` (or `-V`), release-it prints every custom script/hook and its output.
 - With `release-it -VV`, release-it prints every command (also internal) and its output.
 - Prepend `DEBUG=release-it:* release-it [...]` to print configuration and more error details.
-- Use `DEBUG=* release-it [...]` to include debug output for dependencies, such as
-  [@octokit/rest](https://github.com/octokit/rest.js).
 
 ## Use release-it programmatically
 
