@@ -1,3 +1,4 @@
+const { EOL } = require('os');
 const test = require('ava');
 const sinon = require('sinon');
 const sh = require('shelljs');
@@ -126,6 +127,27 @@ test.serial('should commit, tag and push with extra args', async t => {
   t.true(stub.thirdCall.args[0].includes(' -T foo'));
   t.true(stub.lastCall.args[0].includes(' -U bar -V'));
   stub.restore();
+});
+
+test.serial('should commit and tag with quoted characters', async t => {
+  const bare = mkTmpDir();
+  sh.exec(`git init --bare ${bare}`);
+  sh.exec(`git clone ${bare} .`);
+  const gitClient = factory(Git);
+  sh.touch('file');
+  const message = `Foo${EOL}"$bar"${EOL}'$baz'${EOL}foo`;
+  await gitClient.stage('file');
+  await gitClient.commit({ message });
+  await gitClient.tag({ name: 'v1.0.0', annotation: message });
+  await gitClient.push();
+  {
+    const { stdout } = sh.exec('git log -1 --format=%s');
+    t.is(stdout.trim(), `Foo "$bar" '$baz' foo`);
+  }
+  {
+    const { stdout } = sh.exec('git tag -n4');
+    t.is(stdout.trim(), `v1.0.0          Foo${EOL}    "$bar"${EOL}    '$baz'${EOL}    foo`);
+  }
 });
 
 test.serial('should push to origin', async t => {
