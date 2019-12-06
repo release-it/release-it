@@ -246,7 +246,7 @@ test.serial('should roll back when cancelled', async t => {
   gitClient.config.setContext({ version: '1.2.4' });
   await gitClient.beforeRelease();
   await gitClient.stage('package.json');
-  await gitClient.commit();
+  await gitClient.commit({ message: 'Add this' });
   await gitClient.tag();
   await gitClient.rollbackOnce();
 

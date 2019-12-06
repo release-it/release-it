@@ -103,7 +103,7 @@ test('should add registry to commands when specified', async t => {
   await runTasks(npmClient);
   t.is(exec.args[0][0], 'npm ping --registry registry.example.org');
   t.is(exec.args[1][0], 'npm whoami --registry registry.example.org');
-  t.is(exec.args[2][0], 'npm show release-it@latest version --registry registry.example.org');
+  t.regex(exec.args[2][0], /npm show release-it@[a-z]+ version --registry registry\.example\.org/);
   exec.restore();
 });
 
