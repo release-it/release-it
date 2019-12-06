@@ -133,20 +133,27 @@ test.serial('should commit and tag with quoted characters', async t => {
   const bare = mkTmpDir();
   sh.exec(`git init --bare ${bare}`);
   sh.exec(`git clone ${bare} .`);
-  const gitClient = factory(Git);
+  const gitClient = factory(Git, {
+    options: { git: { commitMessage: 'Release ${version}', tagAnnotation: 'Release ${version}\n\n${changelog}' } }
+  });
   sh.touch('file');
-  const message = `Foo${EOL}"$bar"${EOL}'$baz'${EOL}foo`;
+  const changelog = `- Foo's${EOL}- "$bar"${EOL}- '$baz'${EOL}- foo`;
+  gitClient.setContext({ version: '1.0.0', changelog });
+
   await gitClient.stage('file');
-  await gitClient.commit({ message });
-  await gitClient.tag({ name: 'v1.0.0', annotation: message });
+  await gitClient.commit();
+  await gitClient.tag({ name: '1.0.0' });
   await gitClient.push();
   {
     const { stdout } = sh.exec('git log -1 --format=%s');
-    t.is(stdout.trim(), `Foo "$bar" '$baz' foo`);
+    t.is(stdout.trim(), 'Release 1.0.0');
   }
   {
-    const { stdout } = sh.exec('git tag -n4');
-    t.is(stdout.trim(), `v1.0.0          Foo${EOL}    "$bar"${EOL}    '$baz'${EOL}    foo`);
+    const { stdout } = sh.exec('git tag -n99');
+    t.is(
+      stdout.trim(),
+      `1.0.0           Release 1.0.0${EOL}    ${EOL}    - Foo's${EOL}    - "$bar"${EOL}    - '$baz'${EOL}    - foo`
+    );
   }
 });
 
