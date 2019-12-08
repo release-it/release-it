@@ -15,7 +15,7 @@
 - Extend with [plugins](#plugins)
 - Release from any [CI/CD environment](./docs/ci.md)
 
-[![Build Status](https://travis-ci.org/release-it/release-it.svg?branch=master)](https://travis-ci.org/release-it/release-it)
+[![Build Status](https://api.travis-ci.org/release-it/release-it.svg?branch=master)](https://travis-ci.org/release-it/release-it)
 [![npm version](https://badge.fury.io/js/release-it.svg)](https://badge.fury.io/js/release-it)
 [![codecov](https://codecov.io/gh/release-it/release-it/branch/master/graph/badge.svg)](https://codecov.io/gh/release-it/release-it)
 
@@ -249,7 +249,7 @@ An experimental [Mercurial plugin](https://github.com/release-it/mercurial) is a
 ## GitHub Releases
 
 The "Releases" tab on GitHub projects links to a page to store the changelog cq. release notes. To add
-[GitHub releases](https://help.github.com/articles/creating-releases/) in your release-it flow:
+[GitHub releases](https://help.github.com/articles/creating-releases) in your release-it flow:
 
 - Configure `github.release: true`.
 - Obtain a [personal access token](https://github.com/settings/tokens) (release-it only needs "repo" access; no "admin"
@@ -418,8 +418,8 @@ While mostly used as a CLI tool, release-it can be used as a dependency to ingra
 
 ## Resources
 
-- [semver.org](http://semver.org)
-- [GitHub Help](https://help.github.com) (→ [About Releases](https://help.github.com/articles/about-releases/))
+- [semver.org](https://semver.org)
+- [GitHub Help](https://help.github.com) (→ [About Releases](https://help.github.com/articles/about-releases))
 - [npm Blog: Publishing what you mean to publish](https://blog.npmjs.org/post/165769683050/publishing-what-you-mean-to-publish)
 - [npm Documentation: package.json](https://docs.npmjs.com/files/package.json)
 - [Prereleases and npm](https://medium.com/@mbostock/prereleases-and-npm-e778fc5e2420)
