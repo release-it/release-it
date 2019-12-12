@@ -2,23 +2,27 @@ const test = require('ava');
 const sinon = require('sinon');
 const nock = require('nock');
 const GitLab = require('../lib/plugin/gitlab/GitLab');
-const { interceptPublish, interceptAsset } = require('./stub/gitlab');
+const { interceptUser, interceptMembers, interceptPublish, interceptAsset } = require('./stub/gitlab');
 const { factory, runTasks } = require('./util');
 
 const tokenRef = 'GITLAB_TOKEN';
 
-test('should validate token', async t => {
+test.serial('should validate token', async t => {
   const tokenRef = 'MY_GITLAB_TOKEN';
-  const options = { gitlab: { release: true, tokenRef } };
+  const remoteUrl = 'https://gitlab.com/user/repo';
+  const options = { gitlab: { release: true, tokenRef, remoteUrl } };
   const gitlab = factory(GitLab, { options });
   delete process.env[tokenRef];
 
   await t.throwsAsync(gitlab.init(), /Environment variable "MY_GITLAB_TOKEN" is required for GitLab releases/);
   process.env[tokenRef] = '123'; // eslint-disable-line require-atomic-updates
+
+  interceptUser();
+  interceptMembers();
   await t.notThrowsAsync(gitlab.init());
 });
 
-test('should upload assets and release', async t => {
+test.serial('should upload assets and release', async t => {
   const remoteUrl = 'https://gitlab.com/user/repo';
   const asset = 'file1';
   const options = {
@@ -34,6 +38,8 @@ test('should upload assets and release', async t => {
   const gitlab = factory(GitLab, { options });
   sinon.stub(gitlab, 'getLatestVersion').resolves('2.0.0');
 
+  interceptUser();
+  interceptMembers();
   interceptAsset();
   interceptPublish({
     body: {
@@ -58,27 +64,34 @@ test('should upload assets and release', async t => {
   t.is(gitlab.isReleased, true);
 });
 
-test('should release to self-managed host', async t => {
-  const scope = nock('https://gitlab.example.org');
+test.serial('should release to self-managed host', async t => {
+  const host = 'https://gitlab.example.org';
+  const scope = nock(host);
   scope.post('/api/v4/projects/user%2Frepo/releases').reply(200, {});
   const options = {
-    git: { remoteUrl: `https://gitlab.example.org/user/repo`, tagName: '${version}' },
+    git: { remoteUrl: `${host}/user/repo`, tagName: '${version}' },
     gitlab: { releaseName: 'Release ${version}', releaseNotes: 'echo readme', tokenRef }
   };
   const gitlab = factory(GitLab, { options });
   sinon.stub(gitlab, 'getLatestVersion').resolves('1.0.0');
 
+  interceptUser({ host });
+  interceptMembers({ host });
+
   await runTasks(gitlab);
 
-  t.is(gitlab.origin, 'https://gitlab.example.org');
-  t.is(gitlab.baseUrl, 'https://gitlab.example.org/api/v4');
+  t.is(gitlab.origin, host);
+  t.is(gitlab.baseUrl, `${host}/api/v4`);
 });
 
-test('should release to sub-grouped repo', async t => {
+test.serial('should release to sub-grouped repo', async t => {
   const scope = nock('https://gitlab.com');
   scope.post('/api/v4/projects/group%2Fsub-group%2Frepo/releases').reply(200, {});
   const options = { gitlab: { tokenRef }, git: { remoteUrl: 'git@gitlab.com:group/sub-group/repo.git' } };
   const gitlab = factory(GitLab, { options });
+
+  interceptUser({ owner: 'sub-group' });
+  interceptMembers({ owner: 'sub-group', group: 'group' });
 
   await runTasks(gitlab);
 
@@ -86,7 +99,51 @@ test('should release to sub-grouped repo', async t => {
   t.is(gitlab.isReleased, true);
 });
 
-test('should handle (http) error and use fallback tag release', async t => {
+test.serial('should throw for unauthenticated user', async t => {
+  const host = 'https://gitlab.com';
+  const remoteUrl = `${host}/user/repo`;
+  const options = { gitlab: { tokenRef, remoteUrl, host } };
+  const gitlab = factory(GitLab, { options });
+  const scope = nock(host);
+  scope.get(`/api/v4/user`).reply(401);
+
+  await t.throwsAsync(runTasks(gitlab), {
+    instanceOf: Error,
+    message: 'Could not authenticate with GitLab using environment variable "GITLAB_TOKEN".'
+  });
+});
+
+test.serial('should throw for non-collaborator', async t => {
+  const host = 'https://gitlab.com';
+  const remoteUrl = `${host}/john/repo`;
+  const options = { gitlab: { tokenRef, remoteUrl, host } };
+  const gitlab = factory(GitLab, { options });
+  const scope = nock(host);
+  scope.get(`/api/v4/projects/john%2Frepo/members`).reply(200, [{ username: 'emma' }]);
+  interceptUser({ owner: 'john' });
+
+  await t.throwsAsync(runTasks(gitlab), {
+    instanceOf: Error,
+    message: 'User john is not a collaborator for john/repo.'
+  });
+});
+
+test.serial('should throw for insufficient access level', async t => {
+  const host = 'https://gitlab.com';
+  const remoteUrl = `${host}/john/repo`;
+  const options = { gitlab: { tokenRef, remoteUrl, host } };
+  const gitlab = factory(GitLab, { options });
+  const scope = nock(host);
+  scope.get(`/api/v4/projects/john%2Frepo/members`).reply(200, [{ username: 'john', access_level: 10 }]);
+  interceptUser({ owner: 'john' });
+
+  await t.throwsAsync(runTasks(gitlab), {
+    instanceOf: Error,
+    message: 'User john is not a collaborator for john/repo.'
+  });
+});
+
+test.serial('should handle (http) error and use fallback tag release', async t => {
   const [host, owner, repo] = ['https://gitlab.example.org', 'legacy', 'repo'];
   const remoteUrl = `${host}/${owner}/${repo}`;
   const scope = nock(host);
@@ -95,6 +152,9 @@ test('should handle (http) error and use fallback tag release', async t => {
   const options = { git: { remoteUrl }, gitlab: { release: true, retryMinTimeout: 0, tokenRef } };
   const gitlab = factory(GitLab, { options });
   sinon.stub(gitlab, 'getLatestVersion').resolves('1.0.0');
+
+  interceptUser({ host, owner });
+  interceptMembers({ host, owner, project: repo });
 
   await runTasks(gitlab);
 

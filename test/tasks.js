@@ -11,7 +11,12 @@ const runTasks = require('../lib/tasks');
 const Plugin = require('../lib/plugin/Plugin');
 const { mkTmpDir, gitAdd } = require('./util/helpers');
 const ShellStub = require('./stub/shell');
-const { interceptPublish: interceptGitLabPublish, interceptAsset: interceptGitLabAsset } = require('./stub/gitlab');
+const {
+  interceptUser: interceptGitLabUser,
+  interceptMembers: interceptGitLabMembers,
+  interceptPublish: interceptGitLabPublish,
+  interceptAsset: interceptGitLabAsset
+} = require('./stub/gitlab');
 const {
   interceptAuthentication: interceptGitHubAuthentication,
   interceptCollaborator: interceptGitHubCollaborator,
@@ -200,6 +205,8 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
   interceptGitHubAsset({ owner, project, body: 'lineline' });
   interceptGitHubPublish({ owner, project, body: { draft: false, tag_name: 'v1.1.0-alpha.0' } });
 
+  interceptGitLabUser({ owner });
+  interceptGitLabMembers({ owner, project });
   interceptGitLabAsset({ owner, project });
   interceptGitLabPublish({
     owner,
