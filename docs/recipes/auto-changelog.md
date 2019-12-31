@@ -45,3 +45,17 @@ unreleased tag:
   {{/if}}
 {{/each}}
 ```
+
+You can also use the template above [changelog-compact-template.hbs](./changelog-compact-template.hbs)
+directly from the URL:
+
+```json
+{
+  "hooks": {
+    "before:release": "npx auto-changelog -p"
+  },
+  "git": {
+    "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template https://raw.githubusercontent.com/release-it/release-it/master/docs/recipes/changelog-compact-template.hbs"
+  }
+}
+```
