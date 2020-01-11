@@ -191,7 +191,7 @@ Or TOML in `.release-it.toml`:
 
 ```toml
 [hooks]
-before:init = "npm test"
+"before:init" = "npm test"
 ```
 
 Any option can also be set on the command-line, and will have highest priority. Example:
