@@ -21,7 +21,7 @@ A tool like [auto-changelog](https://github.com/CookPete/auto-changelog) is a gr
 ```json
 {
   "git": {
-    "changelog": "npx auto-changelog --stdout --commit-limit false -u --template ./changelog.hbs"
+    "changelog": "npx auto-changelog --stdout --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/master/conf/changelog-compact.hbs"
   },
   "hooks": {
     "after:bump": "npx auto-changelog -p"
@@ -29,8 +29,9 @@ A tool like [auto-changelog](https://github.com/CookPete/auto-changelog) is a gr
 }
 ```
 
-With this `git.changelog`, the changelog preview is based on the `changelog.hbs` template file. This would be used for
-[GitHub](./github-releases.md) or [GitLab releases](./gitlab-releases.md) as well.
+With this `git.changelog`, the changelog preview is based on the `changelog-compact.hbs`
+template file. This would be used for [GitHub](./github-releases.md)
+or [GitLab releases](./gitlab-releases.md) as well.
 
 Additionally, `hooks.after:bump` will update the `CHANGELOG.md` with each release to get included with the release
 commit. This can be omitted if the project does not keep a `CHANGELOG.md` or similar.
