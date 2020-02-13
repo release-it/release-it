@@ -4,7 +4,7 @@ GitLab 11.7 introduces [Releases](https://docs.gitlab.com/ce/user/project/releas
 like GitHub), including release assets. Releases are attached to an existing Git tag, so make sure the
 [Git part](./git.md) is configured correctly.
 
-[GitLab releases](https://docs.gitlab.com/ee/workflow/releases.html) work just like GitHub releases:
+[GitLab releases](https://docs.gitlab.com/ce/user/project/releases/) work just like GitHub releases:
 
 - Configure `gitlab.release: true`.
 - Obtain a [personal access token](https://gitlab.com/profile/personal_access_tokens) (release-it only needs the "api"
@@ -21,7 +21,7 @@ GitLab Releases do not support pre-releases or drafts.
 
 By default, the output of `git.changelog` is used for the GitLab release notes. This is the printed `Changelog: ...`
 when release-it boots. This can be overridden with the `gitlab.releaseNotes` option to customize the release notes for
-the GitHub release. This script will run just before the actual GitLab release itself. Make sure it outputs to `stdout`.
+the GitLab release. This script will run just before the actual GitLab release itself. Make sure it outputs to `stdout`.
 An example:
 
 ```json
@@ -33,13 +33,12 @@ An example:
 }
 ```
 
-See [Changelog](./changelog) for more information about generating changelogs/release notes.
+See [Changelog](./changelog.md) for more information about generating changelogs/release notes.
 
 ## GitLab 11.6 (and lower)
 
-For GitLab 11.6 and lower, a [GitLab Release](https://docs.gitlab.com/ce/workflow/releases.html) means release-it will
-automatically fall back to [attach releases notes to a tag](https://docs.gitlab.com/ce/workflow/releases.html). In this
-case, assets will not get included.
+For GitLab 11.6 and lower, a [GitLab Release](https://docs.gitlab.com/ce/user/project/releases/) means release-it will
+automatically fall back to [attach releases notes to a tag](https://docs.gitlab.com/ce/user/project/releases/#add-release-notes-to-git-tags). In this case, assets will not get included.
 
 ## Attach binary assets
 
