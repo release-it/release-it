@@ -50,6 +50,11 @@ In case two-factor authentication (2FA) is enabled for the package, release-it w
 The OTP can be provided from the command line (`--npm.otp=123456`). However, providing the OTP without a prompt
 basically defeats the purpose of 2FA (also, the OTP expires after a short period).
 
+## Publish path
+
+Use `npm.publishPath` to publish only a specific folder. For example, set `npm.publishPath` to `"dist"`. The default
+value is the current (root) folder (`"."`).
+
 ## Monorepos
 
 Monorepos do not require extra configuration, but release-it handles only one package at a time. Also see how
