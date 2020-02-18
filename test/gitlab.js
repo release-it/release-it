@@ -14,7 +14,9 @@ test.serial('should validate token', async t => {
   const gitlab = factory(GitLab, { options });
   delete process.env[tokenRef];
 
-  await t.throwsAsync(gitlab.init(), /Environment variable "MY_GITLAB_TOKEN" is required for GitLab releases/);
+  await t.throwsAsync(gitlab.init(), {
+    message: /Environment variable "MY_GITLAB_TOKEN" is required for GitLab releases/
+  });
   process.env[tokenRef] = '123'; // eslint-disable-line require-atomic-updates
 
   interceptUser();

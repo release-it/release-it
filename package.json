@@ -87,7 +87,7 @@
   },
   "devDependencies": {
     "@octokit/request-error": "1.2.1",
-    "ava": "2.4.0",
+    "ava": "3.3.0",
     "codecov": "3.6.5",
     "eslint": "6.8.0",
     "eslint-config-prettier": "6.10.0",

@@ -384,7 +384,7 @@ test.serial('should propagate errors', async t => {
   };
   const container = getContainer(config);
 
-  await t.throwsAsync(runTasks({}, container), /some-failing-command/);
+  await t.throwsAsync(runTasks({}, container), { message: /some-failing-command/ });
 
   t.is(log.error.callCount, 1);
 });

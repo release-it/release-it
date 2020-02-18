@@ -22,7 +22,9 @@ test('should validate token', async t => {
   const github = factory(GitHub, { options });
   delete process.env[tokenRef];
 
-  await t.throwsAsync(github.init(), /Environment variable "MY_GITHUB_TOKEN" is required for GitHub releases/);
+  await t.throwsAsync(github.init(), {
+    message: /Environment variable "MY_GITHUB_TOKEN" is required for GitHub releases/
+  });
   process.env[tokenRef] = '123'; // eslint-disable-line require-atomic-updates
 
   interceptAuthentication();

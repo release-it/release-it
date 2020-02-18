@@ -116,7 +116,7 @@ test('should throw if npm is down', async t => {
   const npmClient = factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   exec.withArgs('npm ping').rejects();
-  await t.throwsAsync(runTasks(npmClient), /Unable to reach npm registry/);
+  await t.throwsAsync(runTasks(npmClient), { message: /Unable to reach npm registry/ });
   exec.restore();
 });
 
@@ -158,7 +158,7 @@ test('should throw if user is not authenticated', async t => {
   const npmClient = factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   exec.withArgs('npm whoami').rejects();
-  await t.throwsAsync(runTasks(npmClient), /Not authenticated with npm/);
+  await t.throwsAsync(runTasks(npmClient), { message: /Not authenticated with npm/ });
   exec.restore();
 });
 

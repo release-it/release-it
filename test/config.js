@@ -65,7 +65,7 @@ test('should read TOML config', t => {
 });
 
 test('should throw if provided config file is not found', t => {
-  t.throws(() => new Config({ config: 'nofile' }), /no such file.+nofile/);
+  t.throws(() => new Config({ config: 'nofile' }), { message: /no such file.+nofile/ });
 });
 
 test('should throw if provided config file is invalid (cosmiconfig exception)', t => {
@@ -75,7 +75,7 @@ test('should throw if provided config file is invalid (cosmiconfig exception)', 
 
 test('should throw if provided config file is invalid (no object)', t => {
   mock({ 'invalid-config-rc': 'foo=bar' });
-  t.throws(() => new Config({ config: 'invalid-config-rc' }), /Invalid configuration file at/);
+  t.throws(() => new Config({ config: 'invalid-config-rc' }), { message: /Invalid configuration file at/ });
 });
 
 test('should not set default increment (for CI mode)', t => {

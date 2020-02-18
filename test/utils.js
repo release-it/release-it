@@ -12,7 +12,7 @@ test('format', t => {
 
 test('format (throw)', t => {
   mockStdIo.start();
-  t.throws(() => format('release v${foo}', { version: '1.0.0' }), /foo is not defined/);
+  t.throws(() => format('release v${foo}', { version: '1.0.0' }), { message: /foo is not defined/ });
   const { stdout, stderr } = mockStdIo.end();
   t.is(stdout, '');
   t.regex(
