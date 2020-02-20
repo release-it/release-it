@@ -136,6 +136,17 @@ test.serial('should use pkg.version (in sub dir) w/o tagging repo', async t => {
   exec.restore();
 });
 
+test.serial('should ignore version in pkg.version and use git tag instead', async t => {
+  gitAdd('{"name":"my-package","version":"0.0.0"}', 'package.json', 'Add package.json');
+  sh.exec('git tag 1.1.1');
+  gitAdd('line', 'file', 'More file');
+  await runTasks({}, getContainer({ increment: 'minor', npm: { ignoreVersion: true } }));
+  t.true(log.obtrusive.firstCall.args[0].includes('release my-package (1.1.1...1.2.0)'));
+  t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
+  const { stdout } = sh.exec('git describe --tags --abbrev=0');
+  t.is(stdout.trim(), '1.2.0');
+});
+
 test.serial('should release all the things (basic)', async t => {
   const { bare, target } = t.context;
   const project = path.basename(bare);

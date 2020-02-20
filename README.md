@@ -225,7 +225,9 @@ determine which version should be released. In any case, as a last resort, `0.0.
 
 Use `--no-increment` to not increment the version.
 
-Use `--no-npm` (or `"npm": false`) to ignore and skip bumping `package.json` (and skip `npm publish`).
+Use `--npm.ignoreVersion` to use the latest Git tag.
+
+Use `--no-npm` (or `"npm": false`) to ignore and skip bumping `package.json` and skip `npm publish` altogether.
 
 Alternatively, a plugin can be used to get the version from anywhere else (e.g. a `VERSION` file). Also see
 [plugins](./docs/plugins.md).

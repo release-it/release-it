@@ -17,6 +17,20 @@ To bump the version in `package.json` with the release, but not publish to the r
 
 In case there is a `package.json`, but no npm-related tasks should be executed, use `"npm": false` (or `--no-npm`).
 
+## Ignore version
+
+To ignore the `version` from `package.json`, (and use the latest Git tag instead):
+
+```
+{
+  "npm": {
+    "ignoreVersion": true
+  }
+}
+```
+
+Or `--npm.ignoreVersion` from the command line.
+
 ## Tags
 
 Use e.g. `--npm.tag=beta` to tag the package in the npm repository. With the `--preRelease=beta` shorthand, the npm

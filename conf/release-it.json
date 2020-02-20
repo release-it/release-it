@@ -21,7 +21,8 @@
     "publish": true,
     "publishPath": ".",
     "access": null,
-    "otp": null
+    "otp": null,
+    "ignoreVersion": false
   },
   "github": {
     "release": false,
