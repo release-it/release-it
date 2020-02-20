@@ -5,6 +5,20 @@ ways you can change release-it's behavior.
 
 ## Git
 
+### Required branch
+
+By default this is disabled, but release-it can exit the process when the current branch is not as configured:
+
+```json
+{
+  "git": {
+    "requireBranch": "master"
+  }
+}
+```
+
+Use an array to allow releases from more branch names.
+
 ### Clean working directory
 
 The working directory should be clean (i.e. `git status` should say something like this:

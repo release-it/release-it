@@ -4,7 +4,13 @@ const Shell = require('../lib/shell');
 const Log = require('../lib/log');
 const Git = require('../lib/plugin/git/Git');
 const { git } = require('../conf/release-it.json');
-const { GitRemoteUrlError, GitCleanWorkingDirError, GitUpstreamError, GitNoCommitsError } = require('../lib/errors');
+const {
+  GitRequiredBranchError,
+  GitRemoteUrlError,
+  GitCleanWorkingDirError,
+  GitUpstreamError,
+  GitNoCommitsError
+} = require('../lib/errors');
 const { factory } = require('./util');
 const { mkTmpDir, gitAdd } = require('./util/helpers');
 
@@ -18,6 +24,14 @@ test.serial.beforeEach(t => {
   gitAdd('line', 'file', 'Add file');
   const gitClient = factory(Git, { options: { git } });
   t.context = { gitClient, bare, target };
+});
+
+test.serial('should throw if on wrong branch', async t => {
+  const options = { git: { requireBranch: 'dev' } };
+  const gitClient = factory(Git, { options });
+  sh.exec('git remote remove origin');
+  const expected = { instanceOf: GitRequiredBranchError, message: /Must be on branch dev/ };
+  await t.throwsAsync(gitClient.init(), expected);
 });
 
 test.serial('should throw if there is no remote Git url', async t => {

@@ -3,6 +3,7 @@
   "git": {
     "changelog": "git log --pretty=format:\"* %s (%h)\" ${latestTag}...HEAD",
     "requireCleanWorkingDir": true,
+    "requireBranch": false,
     "requireUpstream": true,
     "requireCommits": false,
     "addUntrackedFiles": false,
