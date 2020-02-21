@@ -5,6 +5,11 @@ This document lists breaking changes for each major release.
 See the GitHub Releases page for detailed changelogs:
 [https://github.com/release-it/release-it/releases](https://github.com/release-it/release-it/releases)
 
+## v13
+
+- Dropped support for Node v8
+- Deprecated `scripts` are removed (in favor of [hooks](https://github.com/release-it/release-it#hooks)).
+
 ## v12
 
 - The `--follow-tags` argument for `git push` has been moved to the default configuration. This is only a breaking
@@ -14,7 +19,8 @@ See the GitHub Releases page for detailed changelogs:
 
 - The custom `conventional-changelog` increment (e.g. `"increment": "conventional:angular"`) with additional script
   configuration is replaced with a plugin. Please see
-  [conventional changelog](https://github.com/release-it/release-it#conventional-changelog) how to use this plugin.
+  [conventional changelog](https://github.com/release-it/release-it/blob/master/docs/changelog.md#conventional-changelog)
+  how to use this plugin.
 - The `pkgFiles` option has been removed. If there's a need to bump other files than what `npm version` bumps, it should
   be (part of) a plugin.
 - By default, the latest version was derived from the latest Git tag. From v11, if the repo has a `package.json` then
@@ -26,7 +32,8 @@ See the GitHub Releases page for detailed changelogs:
 
 - Dropped support for Node v6
 - Deprecated options from v9 are removed, the `dist.repo` config in particular (also see
-  [distribution repository](https://github.com/release-it/release-it#distribution-repository) for alternatives).
+  [distribution repository](https://github.com/release-it/release-it/blob/master/docs/recipes/distribution-repo.md) for
+  alternatives).
 - Drop the `--debug` flag. `DEBUG=release-it:* ...` still works.
 
 ## v9
