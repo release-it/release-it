@@ -48,7 +48,6 @@
 - [Publish to npm](#publish-to-npm)
 - [Manage pre-releases](#manage-pre-releases)
 - [Hooks](#hooks)
-- [Scripts (deprecated)](#scripts-deprecated)
 - [Plugins](#plugins)
 - [Distribution repository](#distribution-repository)
 - [Metrics](#metrics)
@@ -364,17 +363,6 @@ Use `--verbose` to log the output of the commands.
 For the sake of verbosity and to not complicate matters further, the above table is not complete. The full list of hooks
 is actually: `init`, `beforeBump`, `bump`, `beforeRelease`, `release` or `afterRelease`. However, hooks like
 `before:beforeRelease` look weird and are usually not useful in practice.
-
-## Scripts (deprecated)
-
-Please use [hooks](#hooks) instead, as hooks are more flexible. The `scripts` will stay for a while, but will be removed
-in a few major releases after v12. Here's how to migrate:
-
-- `scripts.beforeStart` → `hooks.before:init`
-- `scripts.beforeBump` → `hooks.before:bump`
-- `scripts.afterBump` → `hooks.after:bump`
-- `scripts.beforeStage` → `hooks.after:bump`
-- `scripts.afterRelease` → `hooks.after:release`
 
 ## Plugins
 
