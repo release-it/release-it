@@ -67,7 +67,7 @@
     "form-data": "3.0.0",
     "git-url-parse": "11.1.2",
     "globby": "10.0.2",
-    "got": "9.6.0",
+    "got": "10.5.7",
     "import-cwd": "3.0.0",
     "inquirer": "7.0.4",
     "is-ci": "2.0.0",
