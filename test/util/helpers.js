@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 const sh = require('shelljs');
 const tmp = require('tmp');
@@ -8,13 +8,7 @@ const mkTmpDir = () => {
   return dir.name;
 };
 
-const readFile = file =>
-  new Promise((resolve, reject) => {
-    fs.readFile(path.resolve(file), 'utf8', (err, data) => {
-      if (err) reject(err);
-      resolve(data);
-    });
-  });
+const readFile = file => fs.readFile(path.resolve(file), 'utf8');
 
 const gitAdd = (content, file, message) => {
   sh.ShellString(content).toEnd(file);
