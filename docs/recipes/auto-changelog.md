@@ -18,7 +18,7 @@ Example configuration in the release-it config:
     "before:release": "npx auto-changelog -p"
   },
   "git": {
-    "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template https://raw.githubusercontent.com/release-it/release-it/master/conf/changelog-compact.hbs"
+    "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template https://raw.githubusercontent.com/release-it/release-it/master/config/changelog-compact.hbs"
   }
 }
 ```
@@ -46,8 +46,7 @@ unreleased tag:
 {{/each}}
 ```
 
-You can also use the template above [changelog-compact.hbs](../../conf/changelog-compact.hbs)
-directly from the URL:
+You can also use the template above [changelog-compact.hbs](../../config/changelog-compact.hbs) directly from the URL:
 
 ```json
 {
@@ -55,22 +54,21 @@ directly from the URL:
     "before:release": "npx auto-changelog -p"
   },
   "git": {
-    "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template https://raw.githubusercontent.com/release-it/release-it/master/conf/changelog-compact.hbs"
+    "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template https://raw.githubusercontent.com/release-it/release-it/master/config/changelog-compact.hbs"
   }
 }
 ```
 
-In case you are not using the `package.json` and you just want to simply
-generate `CHANGELOG.md` compatible with [https://keepachangelog.com/](https://keepachangelog.com/)
-you can use this example:
+In case you are not using the `package.json` and you just want to simply generate `CHANGELOG.md` compatible with
+[https://keepachangelog.com/](https://keepachangelog.com/) you can use this example:
 
 ```json
 {
   "hooks": {
-    "before:release": "npx auto-changelog --commit-limit false https://raw.githubusercontent.com/release-it/release-it/master/conf/keepachangelog.hbs"
+    "before:release": "npx auto-changelog --commit-limit false https://raw.githubusercontent.com/release-it/release-it/master/config/keepachangelog.hbs"
   },
   "git": {
-    "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template https://raw.githubusercontent.com/release-it/release-it/master/conf/changelog-compact.hbs"
+    "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template https://raw.githubusercontent.com/release-it/release-it/master/config/changelog-compact.hbs"
   }
 }
 ```

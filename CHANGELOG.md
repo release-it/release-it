@@ -34,7 +34,7 @@ See the GitHub Releases page for detailed changelogs:
 There should be no breaking changes, but there have been major internal refactorings and an improved UI. A bunch of new
 features and bug fixes have been implemented. Last but not least, the configuration structure is changed significantly.
 For this (backwards compatible) change, deprecation warnings are shown, and configurations must be migrated with the
-next major release (v10). See [deprecated.json](./conf/deprecated.json) for the changes, mainly:
+next major release (v10). See [deprecated.json](./config/deprecated.json) for the changes, mainly:
 
 - All "command hooks" have been moved to `scripts.*`, and some have been renamed.
 - All `src.*` options have been moved to `git.*` (and `scripts.*`).

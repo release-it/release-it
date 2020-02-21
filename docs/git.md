@@ -12,7 +12,7 @@ The Git plugin in release-it, by default, does the following:
 When not in CI mode, release-it will ask for confirmation before each of the commit, tag, and push steps.
 
 Configure the `[git.*]` options to modify the commands accordingly. See
-[all options and their default values](../conf/release-it.json).
+[all options and their default values](../config/release-it.json).
 
 ## SSH keys & Git remotes
 

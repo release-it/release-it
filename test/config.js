@@ -2,7 +2,7 @@ const test = require('ava');
 const mock = require('mock-fs');
 const isCI = require('is-ci');
 const Config = require('../lib/config');
-const defaultConfig = require('../conf/release-it.json');
+const defaultConfig = require('../config/release-it.json');
 
 const localConfig = { github: { release: true } };
 

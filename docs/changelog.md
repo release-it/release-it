@@ -3,7 +3,7 @@
 By default, release-it generates a changelog, to show and help select a version for the new release. Additionally, this
 changelog serves as the release notes for the GitHub or GitLab release.
 
-The [default command](../conf/release-it.json) is based on `git log ...`. This setting (`git.changelog`) can be
+The [default command](../config/release-it.json) is based on `git log ...`. This setting (`git.changelog`) can be
 overridden. To customize the release notes for the GitHub or GitLab release, use `github.releaseNotes` or
 `gitlab.releaseNotes`. Make sure any of these commands output the changelog to `stdout`.
 
@@ -21,7 +21,7 @@ A tool like [auto-changelog](https://github.com/CookPete/auto-changelog) is a gr
 ```json
 {
   "git": {
-    "changelog": "npx auto-changelog --stdout --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/master/conf/changelog-compact.hbs"
+    "changelog": "npx auto-changelog --stdout --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/master/config/changelog-compact.hbs"
   },
   "hooks": {
     "after:bump": "npx auto-changelog -p"
@@ -29,9 +29,8 @@ A tool like [auto-changelog](https://github.com/CookPete/auto-changelog) is a gr
 }
 ```
 
-With this `git.changelog`, the changelog preview is based on the `changelog-compact.hbs`
-template file. This would be used for [GitHub](./github-releases.md)
-or [GitLab releases](./gitlab-releases.md) as well.
+With this `git.changelog`, the changelog preview is based on the `changelog-compact.hbs` template file. This would be
+used for [GitHub](./github-releases.md) or [GitLab releases](./gitlab-releases.md) as well.
 
 Additionally, `hooks.after:bump` will update the `CHANGELOG.md` with each release to get included with the release
 commit. This can be omitted if the project does not keep a `CHANGELOG.md` or similar.

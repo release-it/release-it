@@ -142,7 +142,7 @@ $ git rev-parse --git-dir
 
 ## Configuration
 
-Out of the box, release-it has sane defaults, and [plenty of options](./conf/release-it.json) to configure it. Put
+Out of the box, release-it has sane defaults, and [plenty of options](./config/release-it.json) to configure it. Put
 (only) the options to override in a configuration file. This is where release-it looks for configuration:
 
 - `.release-it.json`
@@ -284,7 +284,7 @@ export GITLAB_TOKEN="f941e0..."
 By default, release-it generates a changelog, to show and help select a version for the new release. Additionally, this
 changelog serves as the release notes for the GitHub or GitLab release.
 
-The [default command](./conf/release-it.json) is based on `git log ...`. This setting (`git.changelog`) can be
+The [default command](./config/release-it.json) is based on `git log ...`. This setting (`git.changelog`) can be
 overridden. To customize the release notes for the GitHub or GitLab release, use `github.releaseNotes` or
 `gitlab.releaseNotes`. Make sure any of these commands output the changelog to `stdout`.
 
@@ -345,8 +345,8 @@ will run one after another. Some example release-it configuration:
 }
 ```
 
-The variables can be found in the [default configuration](./conf/release-it.json). Additionally, the following variables
-are exposed:
+The variables can be found in the [default configuration](./config/release-it.json). Additionally, the following
+variables are exposed:
 
 ```
 version
