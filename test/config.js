@@ -14,6 +14,7 @@ test('should contain default values', t => {
   t.deepEqual(config.constructorConfig, {});
   t.deepEqual(config.localConfig, localConfig);
   t.deepEqual(config.defaultConfig, defaultConfig);
+  mock.restore();
 });
 
 test('should merge provided options', t => {
@@ -35,6 +36,7 @@ test('should merge provided options', t => {
   t.is(options.increment, '1.0.0');
   t.is(options.git.push, false);
   t.is(options.github.release, true);
+  mock.restore();
 });
 
 test('should set CI mode', t => {
@@ -56,12 +58,21 @@ test('should read YAML config', t => {
   mock({ '.release-it.yaml': 'foo:\n  bar: 1' });
   const config = new Config({ config: '.release-it.yaml' });
   t.deepEqual(config.options.foo, { bar: 1 });
+  mock.restore();
+});
+
+test('should read YML config', t => {
+  mock({ '.release-it.yml': 'foo:\n  bar: 1' });
+  const config = new Config({ config: '.release-it.yml' });
+  t.deepEqual(config.options.foo, { bar: 1 });
+  mock.restore();
 });
 
 test('should read TOML config', t => {
   mock({ '.release-it.toml': '[foo]\nbar=1' });
   const config = new Config({ config: '.release-it.toml' });
   t.deepEqual(config.options.foo, { bar: 1 });
+  mock.restore();
 });
 
 test('should throw if provided config file is not found', t => {
@@ -70,12 +81,14 @@ test('should throw if provided config file is not found', t => {
 
 test('should throw if provided config file is invalid (cosmiconfig exception)', t => {
   mock({ 'invalid-config-txt': 'foo\nbar\baz' });
-  t.throws(() => new Config({ config: 'invalid-config-txt' }), { name: 'YAMLException' });
+  t.throws(() => new Config({ config: 'invalid-config-txt' }), { message: /Invalid configuration file at/ });
+  mock.restore();
 });
 
 test('should throw if provided config file is invalid (no object)', t => {
   mock({ 'invalid-config-rc': 'foo=bar' });
   t.throws(() => new Config({ config: 'invalid-config-rc' }), { message: /Invalid configuration file at/ });
+  mock.restore();
 });
 
 test('should not set default increment (for CI mode)', t => {
