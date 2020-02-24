@@ -2,7 +2,7 @@ const test = require('ava');
 const sinon = require('sinon');
 const nock = require('nock');
 const GitLab = require('../lib/plugin/gitlab/GitLab');
-const { interceptUser, interceptMembers, interceptPublish, interceptAsset } = require('./stub/gitlab');
+const { interceptUser, interceptCollaborator, interceptPublish, interceptAsset } = require('./stub/gitlab');
 const { factory, runTasks } = require('./util');
 
 const tokenRef = 'GITLAB_TOKEN';
@@ -18,7 +18,7 @@ test.serial('should validate token', async t => {
   process.env[tokenRef] = '123'; // eslint-disable-line require-atomic-updates
 
   interceptUser();
-  interceptMembers();
+  interceptCollaborator();
   await t.notThrowsAsync(gitlab.init());
 });
 
@@ -39,7 +39,7 @@ test.serial('should upload assets and release', async t => {
   sinon.stub(gitlab, 'getLatestVersion').resolves('2.0.0');
 
   interceptUser();
-  interceptMembers();
+  interceptCollaborator();
   interceptAsset();
   interceptPublish({
     body: {
@@ -76,7 +76,7 @@ test.serial('should release to self-managed host', async t => {
   sinon.stub(gitlab, 'getLatestVersion').resolves('1.0.0');
 
   interceptUser({ host });
-  interceptMembers({ host });
+  interceptCollaborator({ host });
 
   await runTasks(gitlab);
 
@@ -91,7 +91,7 @@ test.serial('should release to sub-grouped repo', async t => {
   const gitlab = factory(GitLab, { options });
 
   interceptUser({ owner: 'sub-group' });
-  interceptMembers({ owner: 'sub-group', group: 'group' });
+  interceptCollaborator({ owner: 'sub-group', group: 'group' });
 
   await runTasks(gitlab);
 
@@ -119,7 +119,7 @@ test.serial('should throw for non-collaborator', async t => {
   const options = { gitlab: { tokenRef, remoteUrl, host } };
   const gitlab = factory(GitLab, { options });
   const scope = nock(host);
-  scope.get(`/api/v4/projects/john%2Frepo/members`).reply(200, [{ username: 'emma' }]);
+  scope.get(`/api/v4/projects/john%2Frepo/members/all/1`).reply(200, { username: 'emma' });
   interceptUser({ owner: 'john' });
 
   await t.throwsAsync(runTasks(gitlab), {
@@ -134,7 +134,7 @@ test.serial('should throw for insufficient access level', async t => {
   const options = { gitlab: { tokenRef, remoteUrl, host } };
   const gitlab = factory(GitLab, { options });
   const scope = nock(host);
-  scope.get(`/api/v4/projects/john%2Frepo/members`).reply(200, [{ username: 'john', access_level: 10 }]);
+  scope.get(`/api/v4/projects/john%2Frepo/members/all/1`).reply(200, { username: 'john', access_level: 10 });
   interceptUser({ owner: 'john' });
 
   await t.throwsAsync(runTasks(gitlab), {
@@ -154,7 +154,7 @@ test.serial('should handle (http) error and use fallback tag release', async t =
   sinon.stub(gitlab, 'getLatestVersion').resolves('1.0.0');
 
   interceptUser({ host, owner });
-  interceptMembers({ host, owner, project: repo });
+  interceptCollaborator({ host, owner, project: repo });
 
   await runTasks(gitlab);
 
