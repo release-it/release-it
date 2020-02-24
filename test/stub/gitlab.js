@@ -7,7 +7,7 @@ module.exports.interceptUser = ({ host = 'https://gitlab.com', owner = 'user' } 
 
 module.exports.interceptMembers = ({ host = 'https://gitlab.com', owner = 'user', project = 'repo', group } = {}) =>
   nock(host)
-    .get(`/api/v4/projects/${group ? `${group}%2F` : ''}${owner}%2F${project}/members`)
+    .get(`/api/v4/projects/${group ? `${group}%2F` : ''}${owner}%2F${project}/members/all`)
     .reply(200, [{ username: owner, access_level: 30 }]);
 
 module.exports.interceptPublish = ({ host = 'https://gitlab.com', owner = 'user', project = 'repo', body } = {}) =>
