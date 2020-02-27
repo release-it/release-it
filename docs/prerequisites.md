@@ -40,8 +40,8 @@ be committed with the release commit, use `--no-git.requireCleanWorkingDir` or c
 If no upstream branch is known to Git, it does not know where to push the release commit and tag to, and halts.
 
 Use `--no-git.requireUpstream` to add `--set-upstream [remote] [branch]` to the `git push` command, where `[remote]` is
-the value of `git.pushRepo` ("origin" by default), and `[branch]` is the name of the current branch. So if the current
-branch is `next` then the full command becomes `git push --follow-tags --set-upstream origin next`.
+the value of `git.pushRepo` ("origin" by default, if no upstream branch), and `[branch]` is the name of the current
+branch. So if the current branch is `next` then the full command becomes `git push --follow-tags --set-upstream origin next`.
 
 Configure `pushRepo` with either a remote name or a Git url to push the release to that remote instead of "origin".
 
