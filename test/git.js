@@ -165,7 +165,22 @@ test.serial('should push to origin', async t => {
   const gitClient = factory(Git);
   const spy = sinon.spy(gitClient.shell, 'exec');
   await gitClient.push();
-  t.is(spy.lastCall.args[0], 'git push  origin');
+  t.is(spy.lastCall.args[0], 'git push  ');
+  const actual = sh.exec('git ls-tree -r HEAD --name-only', { cwd: bare });
+  t.is(actual.trim(), 'file');
+  spy.restore();
+});
+
+test.serial('should push to tracked upstream branch', async t => {
+  const bare = mkTmpDir();
+  sh.exec(`git init --bare ${bare}`);
+  sh.exec(`git clone ${bare} .`);
+  sh.exec(`git remote rename origin upstream`);
+  gitAdd('line', 'file', 'Add file');
+  const gitClient = factory(Git);
+  const spy = sinon.spy(gitClient.shell, 'exec');
+  await gitClient.push();
+  t.is(spy.lastCall.args[0], 'git push  ');
   const actual = sh.exec('git ls-tree -r HEAD --name-only', { cwd: bare });
   t.is(actual.trim(), 'file');
   spy.restore();
