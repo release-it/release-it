@@ -21,6 +21,7 @@
   "npm": {
     "publish": true,
     "publishPath": ".",
+    "tag": null,
     "access": null,
     "otp": null,
     "ignoreVersion": false
