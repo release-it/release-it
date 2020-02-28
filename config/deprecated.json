@@ -1,4 +1,1 @@
-{
-  "pkgFiles": "If present, package.json, package-lock.json, and npm-shrinkwrap.json are automatically updated.",
-  "use": "For projects with a package.json, its version will be used. Otherwise, the latest Git tag determines which version should be released."
-}
+{}
