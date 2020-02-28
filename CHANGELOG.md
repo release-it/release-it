@@ -8,10 +8,10 @@ See the GitHub Releases page for detailed changelogs:
 ## v13
 
 - Dropped support for Node v8
+- Dropped support for GitLab v11.6 and lower.
 - Deprecated `scripts` are removed (in favor of [hooks](https://github.com/release-it/release-it#hooks)).
-- Changed default value of `git.pushRepo` from `"origin"` to `""`. Changes behavior when branch has tracking
-  information and `git.pushRepo` is set to default value. Previously would push to `origin`, now will
-  push to tracked branch.
+- Changed default value of `git.pushRepo` from `"origin"` to `""`. Changes behavior when branch has tracking information
+  and `git.pushRepo` is set to default value. Previously would push to `origin`, now will push to tracked branch.
 
 ## v12
 

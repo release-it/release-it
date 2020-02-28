@@ -145,25 +145,6 @@ test.serial('should throw for insufficient access level', async t => {
   });
 });
 
-test.serial('should handle (http) error and use fallback tag release', async t => {
-  const [host, owner, repo] = ['https://gitlab.example.org', 'legacy', 'repo'];
-  const remoteUrl = `${host}/${owner}/${repo}`;
-  const scope = nock(host);
-  scope.post(`/api/v4/projects/legacy%2Frepo/releases`).reply(404);
-  scope.post(`/api/v4/projects/legacy%2Frepo/repository/tags/1.0.1/release`).reply(200, {});
-  const options = { git: { remoteUrl }, gitlab: { release: true, retryMinTimeout: 0, tokenRef } };
-  const gitlab = factory(GitLab, { options });
-  sinon.stub(gitlab, 'getLatestVersion').resolves('1.0.0');
-
-  interceptUser({ host, owner });
-  interceptMembers({ host, owner, project: repo });
-
-  await runTasks(gitlab);
-
-  t.is(gitlab.getReleaseUrl(), `${remoteUrl}/tags/1.0.1`);
-  t.is(gitlab.isReleased, true);
-});
-
 test('should not make requests in dry run', async t => {
   const [host, owner, repo] = ['https://gitlab.example.org', 'user', 'repo'];
   const remoteUrl = `${host}/${owner}/${repo}`;
