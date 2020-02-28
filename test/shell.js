@@ -16,7 +16,7 @@ test('exec (with context)', async t => {
   const exec = cmd => shell.exec(cmd, { verbose: false }, shell.config.getContext());
   t.is(await exec(''), undefined);
   t.is(await exec('!pwd'), cwd);
-  t.is(await exec('echo ${git.pushRepo}'), 'origin');
+  t.is(await exec('echo ${git.pushArgs}'), '--follow-tags');
   t.is(await exec('echo -*- ${github.tokenRef} -*-'), '-*- GITHUB_TOKEN -*-');
 });
 
