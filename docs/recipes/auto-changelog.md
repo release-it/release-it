@@ -18,7 +18,7 @@ Example configuration in the release-it config:
     "before:release": "npx auto-changelog -p"
   },
   "git": {
-    "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template https://raw.githubusercontent.com/release-it/release-it/master/config/changelog-compact.hbs"
+    "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs"
   }
 }
 ```
@@ -46,7 +46,8 @@ unreleased tag:
 {{/each}}
 ```
 
-You can also use the template above [changelog-compact.hbs](../../config/changelog-compact.hbs) directly from the URL:
+You can also use the template above [changelog-compact.hbs](../../templates/changelog-compact.hbs) directly from the
+URL:
 
 ```json
 {
@@ -54,7 +55,7 @@ You can also use the template above [changelog-compact.hbs](../../config/changel
     "before:release": "npx auto-changelog -p"
   },
   "git": {
-    "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template https://raw.githubusercontent.com/release-it/release-it/master/config/changelog-compact.hbs"
+    "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs"
   }
 }
 ```
@@ -65,10 +66,10 @@ In case you are not using the `package.json` and you just want to simply generat
 ```json
 {
   "hooks": {
-    "before:release": "npx auto-changelog --commit-limit false https://raw.githubusercontent.com/release-it/release-it/master/config/keepachangelog.hbs"
+    "before:release": "npx auto-changelog --commit-limit false https://raw.githubusercontent.com/release-it/release-it/master/templates/keepachangelog.hbs"
   },
   "git": {
-    "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template https://raw.githubusercontent.com/release-it/release-it/master/config/changelog-compact.hbs"
+    "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs"
   }
 }
 ```
