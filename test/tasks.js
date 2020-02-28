@@ -30,8 +30,8 @@ const noop = Promise.resolve();
 const sandbox = sinon.createSandbox();
 
 const testConfig = {
+  ci: true,
   config: false,
-  'non-interactive': true,
   'disable-metrics': true
 };
 

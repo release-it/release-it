@@ -44,11 +44,6 @@ test('should set CI mode', t => {
   t.is(config.isCI, true);
 });
 
-test('should set --ci (backwards compat)', t => {
-  const config = new Config({ 'non-interactive': false });
-  t.is(config.isCI, false);
-});
-
 test('should override --no-npm.publish', t => {
   const config = new Config({ npm: { publish: false } });
   t.is(config.options.npm.publish, false);
@@ -92,12 +87,12 @@ test('should throw if provided config file is invalid (no object)', t => {
 });
 
 test('should not set default increment (for CI mode)', t => {
-  const config = new Config({ 'non-interactive': true });
+  const config = new Config({ ci: true });
   t.is(config.options.version.increment, undefined);
 });
 
 test('should not set default increment (for interactive mode)', t => {
-  const config = new Config({ 'non-interactive': false });
+  const config = new Config({ ci: false });
   t.is(config.options.version.increment, undefined);
 });
 
@@ -111,7 +106,7 @@ test('should expand pre-release shortcut', t => {
 });
 
 test('should expand pre-release shortcut (preRelease boolean)', t => {
-  const config = new Config({ 'non-interactive': true, preRelease: true });
+  const config = new Config({ ci: true, preRelease: true });
   t.deepEqual(config.options.version, {
     increment: undefined,
     isPreRelease: true,
@@ -120,7 +115,7 @@ test('should expand pre-release shortcut (preRelease boolean)', t => {
 });
 
 test('should expand pre-release shortcut (without increment)', t => {
-  const config = new Config({ 'non-interactive': false, preRelease: 'alpha' });
+  const config = new Config({ ci: false, preRelease: 'alpha' });
   t.deepEqual(config.options.version, {
     increment: undefined,
     isPreRelease: true,

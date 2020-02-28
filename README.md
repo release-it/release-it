@@ -215,8 +215,6 @@ By using the `--ci` option, the process is fully automated without prompts. The 
 demonstrated in the first animation above. On a Continuous Integration (CI) environment, this non-interactive mode is
 activated automatically.
 
-Note: the old `-n` (or `--non-interactive`) option still works and is identical to `--ci`.
-
 ## Latest version
 
 For projects with a `package.json`, its `version` will be used. Otherwise, release-it uses the latest Git tag to

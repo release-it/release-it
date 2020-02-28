@@ -10,14 +10,13 @@ const aliases = {
   d: 'dry-run',
   h: 'help',
   i: 'increment',
-  n: 'non-interactive',
   v: 'version',
   V: 'verbose'
 };
 
 const parseCliArguments = args => {
   const options = parseArgs(args, {
-    boolean: ['dry-run', 'ci', 'non-interactive'],
+    boolean: ['dry-run', 'ci'],
     alias: aliases,
     default: {
       'dry-run': false,
@@ -35,4 +34,7 @@ const parseCliArguments = args => {
 const options = parseCliArguments([].slice.call(process.argv, 2));
 
 updater({ pkg: pkg }).notify();
-release(options).then(() => process.exit(0), () => process.exit(1));
+release(options).then(
+  () => process.exit(0),
+  () => process.exit(1)
+);
