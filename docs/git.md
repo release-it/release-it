@@ -40,7 +40,7 @@ In case extra arguments should be provided to Git, these options are available:
 - `git.tagArgs`
 - `git.pushArgs`
 
-For example, use `"git.commitArgs": "-S"` to sign commits (also see
+For example, use `"git.commitArgs": ["-S"]` to sign commits (also see
 [#35](https://github.com/release-it/release-it/issues/350)).
 
 ## Skip Git steps

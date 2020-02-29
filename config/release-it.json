@@ -1,7 +1,7 @@
 {
   "hooks": {},
   "git": {
-    "changelog": "git log --pretty=format:\"* %s (%h)\" ${latestTag}...HEAD",
+    "changelog": "git log --pretty=format:*\\ %s\\ (%h) ${latestTag}...HEAD",
     "requireCleanWorkingDir": true,
     "requireBranch": false,
     "requireUpstream": true,
@@ -9,13 +9,13 @@
     "addUntrackedFiles": false,
     "commit": true,
     "commitMessage": "Release ${version}",
-    "commitArgs": "",
+    "commitArgs": [],
     "tag": true,
     "tagName": "${version}",
     "tagAnnotation": "Release ${version}",
-    "tagArgs": "",
+    "tagArgs": [],
     "push": true,
-    "pushArgs": "--follow-tags",
+    "pushArgs": ["--follow-tags"],
     "pushRepo": ""
   },
   "npm": {

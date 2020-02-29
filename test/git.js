@@ -116,16 +116,17 @@ test.serial('should commit, tag and push with extra args', async t => {
   sh.exec(`git init --bare ${bare}`);
   sh.exec(`git clone ${bare} .`);
   gitAdd('line', 'file', 'Add file');
-  const options = { git: { commitArgs: '-S', tagArgs: '-T foo', pushArgs: '-U bar -V' } };
+  const options = { git: { commitArgs: '-S', tagArgs: ['-T', 'foo'], pushArgs: ['-U', 'bar', '-V'] } };
   const gitClient = factory(Git, { options });
   const stub = sinon.stub(gitClient.shell, 'exec').resolves();
   await gitClient.stage('package.json');
   await gitClient.commit({ message: `Release v1.2.4` });
   await gitClient.tag({ name: 'v1.2.4', annotation: 'Release v1.2.4' });
   await gitClient.push();
-  t.true(stub.secondCall.args[0].includes(' -S'));
-  t.true(stub.thirdCall.args[0].includes(' -T foo'));
-  t.true(stub.lastCall.args[0].includes(' -U bar -V'));
+  t.true(stub.secondCall.args[0].includes('-S'));
+  t.is(stub.thirdCall.args[0][5], '-T');
+  t.is(stub.thirdCall.args[0][6], 'foo');
+  t.true(stub.lastCall.args[0].join(' ').includes('-U bar -V'));
   stub.restore();
 });
 
@@ -165,7 +166,7 @@ test.serial('should push to origin', async t => {
   const gitClient = factory(Git);
   const spy = sinon.spy(gitClient.shell, 'exec');
   await gitClient.push();
-  t.is(spy.lastCall.args[0], 'git push  ');
+  t.deepEqual(spy.lastCall.args[0], ['git', 'push']);
   const actual = sh.exec('git ls-tree -r HEAD --name-only', { cwd: bare });
   t.is(actual.trim(), 'file');
   spy.restore();
@@ -180,7 +181,7 @@ test.serial('should push to tracked upstream branch', async t => {
   const gitClient = factory(Git);
   const spy = sinon.spy(gitClient.shell, 'exec');
   await gitClient.push();
-  t.is(spy.lastCall.args[0], 'git push  ');
+  t.deepEqual(spy.lastCall.args[0], ['git', 'push']);
   const actual = sh.exec('git ls-tree -r HEAD --name-only', { cwd: bare });
   t.is(actual.trim(), 'file');
   spy.restore();
@@ -197,7 +198,7 @@ test.serial('should push to repo url', async t => {
   try {
     await gitClient.push();
   } catch (err) {
-    t.is(spy.lastCall.args[0], 'git push  https://host/repo.git');
+    t.deepEqual(spy.lastCall.args[0], ['git', 'push', 'https://host/repo.git']);
   }
   spy.restore();
 });
@@ -212,14 +213,14 @@ test.serial('should push to remote name (not "origin")', async t => {
   const gitClient = factory(Git, { options });
   const spy = sinon.spy(gitClient.shell, 'exec');
   await gitClient.push();
-  t.is(spy.lastCall.args[0], 'git push  upstream');
+  t.deepEqual(spy.lastCall.args[0], ['git', 'push', 'upstream']);
   const actual = sh.exec('git ls-tree -r HEAD --name-only', { cwd: bare });
   t.is(actual.trim(), 'file');
   {
     sh.exec(`git checkout -b foo`);
     gitAdd('line', 'file', 'Add file');
     await gitClient.push();
-    t.is(spy.lastCall.args[0], 'git push  --set-upstream upstream foo');
+    t.deepEqual(spy.lastCall.args[0], ['git', 'push', '--set-upstream', 'upstream', 'foo']);
     t.regex(await spy.lastCall.returnValue, /Branch .?foo.? set up to track remote branch .?foo.? from .?upstream.?/);
   }
   spy.restore();
@@ -232,7 +233,7 @@ test.serial('should return repo status', async t => {
   sh.ShellString('line').toEnd('file1');
   sh.ShellString('line').toEnd('file2');
   sh.exec('git add file2');
-  t.is(await gitClient.status(), 'M file1\nA  file2');
+  t.is(await gitClient.status(), ' M file1\nA  file2');
 });
 
 test.serial('should reset files', async t => {
@@ -257,8 +258,8 @@ test.serial('should roll back when cancelled', async t => {
   gitAdd('line', 'file', 'Add file');
   sh.exec('npm --no-git-tag-version version patch');
 
-  const exec = sinon.spy(gitClient.shell, '_exec');
-  gitClient.config.setContext({ version: '1.2.4' });
+  const exec = sinon.spy(gitClient.shell, 'execFormattedCommand');
+  gitClient.bump('1.2.4');
   await gitClient.beforeRelease();
   await gitClient.stage('package.json');
   await gitClient.commit({ message: 'Add this' });
@@ -277,7 +278,7 @@ test.serial('should not touch existing history when rolling back', async t => {
   const gitClient = factory(Git, { options });
   sh.exec(`git tag ${version}`);
 
-  const exec = sinon.spy(gitClient.shell, '_exec');
+  const exec = sinon.spy(gitClient.shell, 'execFormattedCommand');
   gitClient.config.setContext({ version: '1.2.4' });
   await gitClient.beforeRelease();
   await gitClient.commit();

@@ -50,7 +50,8 @@ const getContainer = options => {
   };
 };
 
-const getNpmArgs = args => args.filter(args => args[0].startsWith('npm ')).map(args => args[0].trim());
+const getNpmArgs = args =>
+  args.filter(args => typeof args[0] === 'string' && args[0].startsWith('npm ')).map(args => args[0].trim());
 
 test.serial.beforeEach(t => {
   const bare = mkTmpDir();
@@ -420,7 +421,7 @@ test.serial('should propagate errors', async t => {
       });
     });
     const container = getContainer({ plugins: { 'my-plugin': {} }, hooks });
-    const exec = sinon.spy(container.shell, '_exec');
+    const exec = sinon.spy(container.shell, 'execFormattedCommand');
 
     await runTasks({}, container);
 
