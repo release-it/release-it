@@ -74,3 +74,5 @@ or `E404`, release-it will give a warning but continue.
 When `github.release` and/or `gitlab.release` is set to `true`, release-it will check whether the `GITHUB_TOKEN` (or
 `GITLAB_TOKEN`) environment variable is set. Otherwise it will throw an error and exit. The name of the variable can be
 set with `github.tokenRef` and `gitlab.tokenRef`, respectively.
+
+Then, it will authenticate, and verify whether the current user is a collaborator and authorized to publish a release.

@@ -3,12 +3,18 @@ const nock = require('nock');
 module.exports.interceptUser = ({ host = 'https://gitlab.com', owner = 'user' } = {}) =>
   nock(host)
     .get('/api/v4/user')
-    .reply(200, { username: owner });
+    .reply(200, { id: 1, username: owner });
 
-module.exports.interceptMembers = ({ host = 'https://gitlab.com', owner = 'user', project = 'repo', group } = {}) =>
+module.exports.interceptCollaborator = ({
+  host = 'https://gitlab.com',
+  owner = 'user',
+  project = 'repo',
+  group,
+  userId = 1
+} = {}) =>
   nock(host)
-    .get(`/api/v4/projects/${group ? `${group}%2F` : ''}${owner}%2F${project}/members`)
-    .reply(200, [{ username: owner, access_level: 30 }]);
+    .get(`/api/v4/projects/${group ? `${group}%2F` : ''}${owner}%2F${project}/members/all/${userId}`)
+    .reply(200, { id: userId, username: owner, access_level: 30 });
 
 module.exports.interceptPublish = ({ host = 'https://gitlab.com', owner = 'user', project = 'repo', body } = {}) =>
   nock(host)

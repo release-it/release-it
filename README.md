@@ -117,14 +117,8 @@ Release a new version:
 release-it
 ```
 
-You will be prompted to select the new version. To skip the first prompt, provide a specific increment or version:
-
-```bash
-release-it minor
-release-it 0.8.3
-```
-
-For a "dry run", to show the interactivity and the commands it _would_ execute:
+You will be prompted to select the new version, and more questions will follow based on your setup. For a "dry run" (to
+show the interactivity and the commands it _would_ execute):
 
 ```bash
 release-it --dry-run

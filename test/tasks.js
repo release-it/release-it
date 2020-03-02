@@ -13,7 +13,7 @@ const { mkTmpDir, gitAdd } = require('./util/helpers');
 const ShellStub = require('./stub/shell');
 const {
   interceptUser: interceptGitLabUser,
-  interceptMembers: interceptGitLabMembers,
+  interceptCollaborator: interceptGitLabCollaborator,
   interceptPublish: interceptGitLabPublish,
   interceptAsset: interceptGitLabAsset
 } = require('./stub/gitlab');
@@ -218,7 +218,7 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
   interceptGitHubPublish({ owner, project, body: { draft: false, tag_name: 'v1.1.0-alpha.0' } });
 
   interceptGitLabUser({ owner });
-  interceptGitLabMembers({ owner, project });
+  interceptGitLabCollaborator({ owner, project });
   interceptGitLabAsset({ owner, project });
   interceptGitLabPublish({
     owner,
