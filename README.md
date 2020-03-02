@@ -419,16 +419,3 @@ While mostly used as a CLI tool, release-it can be used as a dependency to ingra
 - [Prereleases and npm](https://medium.com/@mbostock/prereleases-and-npm-e778fc5e2420)
 - [Glob Primer (node-glob)](https://github.com/isaacs/node-glob#glob-primer) (release-it uses
   [globby](https://github.com/sindresorhus/globby#readme))
-
-## Credits
-
-Major dependencies:
-
-- [ShellJS](https://documentup.com/shelljs/shelljs)
-- [Inquirer.js](https://github.com/SBoudrias/Inquirer.js)
-- [@octokit/rest](https://github.com/octokit/rest.js)
-
-The following Grunt plugins have been a source of inspiration:
-
-- [grunt-release](https://github.com/geddski/grunt-release)
-- [grunt-release-component](https://github.com/walmartlabs/grunt-release-component)

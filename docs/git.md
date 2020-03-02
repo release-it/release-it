@@ -28,9 +28,9 @@ The following help pages might be useful:
 
 ## Remote repository
 
-By default, `release-it` uses branch's tracking information, unless there isn't any, in which case it
-defaults to `"origin"` as the remote name to push to. Use `git.pushRepo` to override this with a
-different remote name, or a different git url.
+By default, `release-it` uses branch's tracking information, unless there isn't any, in which case it defaults to
+`"origin"` as the remote name to push to. Use `git.pushRepo` to override this with a different remote name, or a
+different git url.
 
 ## Extra arguments
 
