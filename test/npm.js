@@ -46,8 +46,10 @@ test('should derive tag from pre-release version', async t => {
 test('should use provided (default) tag even for pre-release', async t => {
   const options = { npm: { tag: 'latest' } };
   const npmClient = factory(npm, { options });
+  const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   await npmClient.bump('1.0.0-next.0');
   t.is(npmClient.getContext('tag'), 'latest');
+  exec.restore();
 });
 
 test('should warn when bumping to same version', async t => {
@@ -109,7 +111,9 @@ test('should add registry to commands when specified', async t => {
 
 test('should not throw when executing tasks', async t => {
   const npmClient = factory(npm);
+  const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   await t.notThrowsAsync(runTasks(npmClient));
+  exec.restore();
 });
 
 test('should throw if npm is down', async t => {
@@ -211,7 +215,7 @@ test('should handle 2FA and publish with OTP', async t => {
 
 test('should publish', async t => {
   const npmClient = factory(npm);
-  const exec = sinon.spy(npmClient.shell, 'exec');
+  const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   await runTasks(npmClient);
   t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag latest');
   exec.restore();

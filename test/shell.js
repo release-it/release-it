@@ -18,6 +18,13 @@ test('exec (with context)', async t => {
   t.is(await exec('echo -*- ${github.tokenRef} -*-'), '-*- GITHUB_TOKEN -*-');
 });
 
+test('exec (with args)', async t => {
+  t.is(await shell.exec([]), undefined);
+  t.is(await shell.exec(['pwd']), cwd);
+  t.is(await shell.exec(['echo', 'a', 'b']), 'a b');
+  t.is(await shell.exec(['echo', '"a"']), '"a"');
+});
+
 test('exec (dry-run/read-only)', async t => {
   const shell = factory(Shell, { global: { isDryRun: true } });
   {

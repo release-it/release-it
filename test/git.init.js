@@ -104,15 +104,3 @@ test.serial('should generate correct changelog', async t => {
   const changelog = gitClient.getContext('changelog');
   t.regex(changelog, /\* Add file \(\w{7}\)\n\* Add file \(\w{7}\)/);
 });
-
-test.serial('should generate correct changelog (backwards compat)', async t => {
-  const gitOptions = Object.assign({}, git, { changelog: 'git log --pretty=format:"* %s (%h)" ${latestTag}...HEAD' });
-  const options = { git: gitOptions };
-  const gitClient = factory(Git, { options });
-  sh.exec('git tag 1.0.0');
-  gitAdd('line', 'file', 'Add file');
-  gitAdd('line', 'file', 'Add file');
-  await gitClient.init();
-  const changelog = gitClient.getContext('changelog');
-  t.regex(changelog, /\* Add file \(\w{7}\)\n\* Add file \(\w{7}\)/);
-});
