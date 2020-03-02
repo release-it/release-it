@@ -1,6 +1,4 @@
 const test = require('ava');
-const sinon = require('sinon');
-const sh = require('shelljs');
 const Shell = require('../lib/shell');
 const { factory } = require('./util');
 

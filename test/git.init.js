@@ -94,7 +94,7 @@ test.serial('should get the latest tag after fetch', async t => {
   t.is(gitClient.getContext('latestTagName'), '1.0.0');
 });
 
-test.serial.only('should generate correct changelog', async t => {
+test.serial('should generate correct changelog', async t => {
   const options = { git };
   const gitClient = factory(Git, { options });
   sh.exec('git tag 1.0.0');
@@ -105,11 +105,13 @@ test.serial.only('should generate correct changelog', async t => {
   t.regex(changelog, /\* Add file \(\w{7}\)\n\* Add file \(\w{7}\)/);
 });
 
-test.serial.skip('should generate correct changelog (backwards compat)', async t => {
-  const options = { git: { ...git, changelog: 'git log --pretty=format:"* %s (%h)" ${latestTag}...HEAD' } };
+test.serial('should generate correct changelog (backwards compat)', async t => {
+  const gitOptions = Object.assign({}, git, { changelog: 'git log --pretty=format:"* %s (%h)" ${latestTag}...HEAD' });
+  const options = { git: gitOptions };
   const gitClient = factory(Git, { options });
-  gitAdd('line', 'file', 'Add file');
   sh.exec('git tag 1.0.0');
+  gitAdd('line', 'file', 'Add file');
+  gitAdd('line', 'file', 'Add file');
   await gitClient.init();
   const changelog = gitClient.getContext('changelog');
   t.regex(changelog, /\* Add file \(\w{7}\)\n\* Add file \(\w{7}\)/);
