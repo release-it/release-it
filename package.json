@@ -57,6 +57,7 @@
   "dependencies": {
     "@iarna/toml": "2.2.3",
     "@octokit/rest": "16.43.1",
+    "any-shell-escape": "0.1.1",
     "async-retry": "1.3.1",
     "chalk": "3.0.0",
     "cosmiconfig": "5.2.1",
@@ -76,7 +77,6 @@
     "ora": "4.0.3",
     "os-name": "3.1.0",
     "semver": "7.1.3",
-    "shell-quote": "1.7.2",
     "shelljs": "0.8.3",
     "supports-color": "7.1.0",
     "update-notifier": "4.1.0",
