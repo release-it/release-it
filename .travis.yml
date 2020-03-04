@@ -10,7 +10,8 @@ node_js:
 before_script:
   - git config --global user.name "webpro"
   - git config --global user.email "lars@webpro.nl"
-cache: npm
+cache:
+  npm: false
 matrix:
   exclude:
     - os: windows
