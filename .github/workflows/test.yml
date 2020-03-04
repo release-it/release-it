@@ -1,6 +1,6 @@
 name: Cross-OS Tests
 
-on: [push]
+on: [push, pull_request]
 
 env:
   GITHUB_TOKEN: 1
