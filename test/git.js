@@ -151,10 +151,7 @@ test.serial('should commit and tag with quoted characters', async t => {
   }
   {
     const { stdout } = sh.exec('git tag -n99');
-    t.is(
-      stdout.trim(),
-      `1.0.0           Release 1.0.0${EOL}    ${EOL}    - Foo's${EOL}    - "$bar"${EOL}    - '$baz'${EOL}    - foo`
-    );
+    t.is(stdout.trim(), `1.0.0           Release 1.0.0\n    \n    - Foo's\n    - "$bar"\n    - '$baz'\n    - foo`);
   }
 });
 

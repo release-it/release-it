@@ -52,8 +52,8 @@ Please keep the following in mind:
 - To match the existing code styling, use `npm run format` before committing code.
 - Make sure the tests pass (run `npm test`). Your changes probably deserve new tests as well.
 - Remember that this project is cross-platform compatible (macOS, Windows, Linux), and that it runs in different
-  versions of Node. On PR submission, [Travis CI](https://travis-ci.org/release-it/release-it) will run the tests in
-  multiple supported platforms and Node.js versions.
+  versions of Node. On PR submission, a [GitHub Action](https://github.com/release-it/release-it/actions) will run the
+  tests in multiple supported platforms and Node.js versions.
 
 Unsure about whether you should open a pull request? Feel free to discuss it first in a ticket.
 

@@ -1,8 +1,10 @@
 const test = require('ava');
+const sh = require('shelljs');
 const Shell = require('../lib/shell');
 const { factory } = require('./util');
 
-const cwd = process.cwd();
+const { stdout } = sh.exec('pwd');
+const cwd = stdout.trim();
 
 const shell = factory(Shell);
 
