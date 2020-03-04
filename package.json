@@ -35,10 +35,8 @@
   "main": "./lib/index.js",
   "files": [
     "bin",
-    "conf",
-    "lib",
-    "test/stub",
-    "test/util"
+    "config",
+    "lib"
   ],
   "scripts": {
     "lint": "eslint lib test",
