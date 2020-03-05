@@ -64,6 +64,27 @@ test('should release and upload assets', async t => {
   exec.restore();
 });
 
+test('should release to non-origin upstream', async t => {
+  const github = factory(GitHub, { options: { github: { tokenRef } } });
+  const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git rev-parse --abbrev-ref HEAD').resolves(`test`);
+  exec.withArgs('git config --get branch.test.remote').resolves(`upstream`);
+  exec.withArgs('git config --get remote.upstream.url').resolves(`https://github.example.org/user/repo`);
+  exec.withArgs('git describe --tags --abbrev=0').resolves(`1.0.0`);
+
+  const remote = { api: 'https://github.example.org/api/v3', host: 'github.example.org' };
+  interceptAuthentication(remote);
+  interceptCollaborator(remote);
+  interceptDraft(Object.assign({ body: { tag_name: '1.0.1', name: '', prerelease: false, draft: true } }, remote));
+  interceptPublish(Object.assign({ body: { draft: false, tag_name: '1.0.1' } }, remote));
+
+  await runTasks(github);
+
+  t.true(github.isReleased);
+  t.is(github.getReleaseUrl(), `https://github.example.org/user/repo/releases/tag/1.0.1`);
+  exec.restore();
+});
+
 test('should release to enterprise host', async t => {
   const github = factory(GitHub, { options: { github: { tokenRef } } });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
