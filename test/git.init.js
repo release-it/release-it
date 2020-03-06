@@ -78,6 +78,13 @@ test.serial('should not throw if there are no tags', async t => {
   await t.notThrowsAsync(gitClient.init());
 });
 
+test.serial('should not throw if origin remote is renamed', async t => {
+  const options = { git };
+  const gitClient = factory(Git, { options });
+  sh.exec('git remote rename origin upstream');
+  await t.notThrowsAsync(gitClient.init());
+});
+
 test.serial('should get the latest tag after fetch', async t => {
   const log = new Log();
   const shell = new Shell({ container: { log } });
