@@ -79,9 +79,8 @@ test.serial('should not throw if there are no tags', async t => {
 });
 
 test.serial('should not throw if origin remote is renamed', async t => {
-  const options = { git };
-  const gitClient = factory(Git, { options });
   sh.exec('git remote rename origin upstream');
+  const gitClient = factory(Git);
   await t.notThrowsAsync(gitClient.init());
 });
 

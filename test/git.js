@@ -86,6 +86,16 @@ test.serial('should return the remote url', async t => {
   }
 });
 
+test.serial('should return the non-origin remote', async t => {
+  const bare = mkTmpDir();
+  sh.exec(`git init --bare ${bare}`);
+  sh.exec(`git clone ${bare} .`);
+  gitAdd('line', 'file', 'Add file');
+  sh.exec('git remote rename origin upstream');
+  const gitClient = factory(Git);
+  t.is(await gitClient.getRemoteUrl(), bare);
+});
+
 test.serial('should stage, commit, tag and push', async t => {
   const bare = mkTmpDir();
   sh.exec(`git init --bare ${bare}`);
