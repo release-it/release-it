@@ -12,7 +12,7 @@ The Git plugin in release-it, by default, does the following:
 When not in CI mode, release-it will ask for confirmation before each of the commit, tag, and push steps.
 
 Configure the `[git.*]` options to modify the commands accordingly. See
-[all options and their default values](../conf/release-it.json).
+[all options and their default values](../config/release-it.json).
 
 ## SSH keys & Git remotes
 
@@ -28,8 +28,9 @@ The following help pages might be useful:
 
 ## Remote repository
 
-By default, `release-it` uses `"origin"` as the remote name to push to. Use `git.pushRepo` to override this with a
-different remote name, or a different git url.
+By default, `release-it` uses branch's tracking information, unless there isn't any, in which case it defaults to
+`"origin"` as the remote name to push to. Use `git.pushRepo` to override this with a different remote name, or a
+different git url.
 
 ## Extra arguments
 
@@ -39,7 +40,7 @@ In case extra arguments should be provided to Git, these options are available:
 - `git.tagArgs`
 - `git.pushArgs`
 
-For example, use `"git.commitArgs": "-S"` to sign commits (also see
+For example, use `"git.commitArgs": ["-S"]` to sign commits (also see
 [#35](https://github.com/release-it/release-it/issues/350)).
 
 ## Skip Git steps

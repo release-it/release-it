@@ -15,7 +15,7 @@
 - Extend with [plugins](#plugins)
 - Release from any [CI/CD environment](./docs/ci.md)
 
-[![Build Status](https://api.travis-ci.org/release-it/release-it.svg?branch=master)](https://travis-ci.org/release-it/release-it)
+[![Action Status](https://github.com/release-it/release-it/workflows/Cross-OS%20Tests/badge.svg)](https://github.com/release-it/release-it/actions)
 [![npm version](https://badge.fury.io/js/release-it.svg)](https://badge.fury.io/js/release-it)
 [![codecov](https://codecov.io/gh/release-it/release-it/branch/master/graph/badge.svg)](https://codecov.io/gh/release-it/release-it)
 
@@ -48,7 +48,6 @@
 - [Publish to npm](#publish-to-npm)
 - [Manage pre-releases](#manage-pre-releases)
 - [Hooks](#hooks)
-- [Scripts (deprecated)](#scripts-deprecated)
 - [Plugins](#plugins)
 - [Distribution repository](#distribution-repository)
 - [Metrics](#metrics)
@@ -136,7 +135,7 @@ $ git rev-parse --git-dir
 
 ## Configuration
 
-Out of the box, release-it has sane defaults, and [plenty of options](./conf/release-it.json) to configure it. Put
+Out of the box, release-it has sane defaults, and [plenty of options](./config/release-it.json) to configure it. Put
 (only) the options to override in a configuration file. This is where release-it looks for configuration:
 
 - `.release-it.json`
@@ -210,8 +209,6 @@ By using the `--ci` option, the process is fully automated without prompts. The 
 demonstrated in the first animation above. On a Continuous Integration (CI) environment, this non-interactive mode is
 activated automatically.
 
-Note: the old `-n` (or `--non-interactive`) option still works and is identical to `--ci`.
-
 ## Latest version
 
 For projects with a `package.json`, its `version` will be used. Otherwise, release-it uses the latest Git tag to
@@ -278,7 +275,7 @@ export GITLAB_TOKEN="f941e0..."
 By default, release-it generates a changelog, to show and help select a version for the new release. Additionally, this
 changelog serves as the release notes for the GitHub or GitLab release.
 
-The [default command](./conf/release-it.json) is based on `git log ...`. This setting (`git.changelog`) can be
+The [default command](./config/release-it.json) is based on `git log ...`. This setting (`git.changelog`) can be
 overridden. To customize the release notes for the GitHub or GitLab release, use `github.releaseNotes` or
 `gitlab.releaseNotes`. Make sure any of these commands output the changelog to `stdout`.
 
@@ -339,8 +336,8 @@ will run one after another. Some example release-it configuration:
 }
 ```
 
-The variables can be found in the [default configuration](./conf/release-it.json). Additionally, the following variables
-are exposed:
+The variables can be found in the [default configuration](./config/release-it.json). Additionally, the following
+variables are exposed:
 
 ```
 version
@@ -358,17 +355,6 @@ Use `--verbose` to log the output of the commands.
 For the sake of verbosity and to not complicate matters further, the above table is not complete. The full list of hooks
 is actually: `init`, `beforeBump`, `bump`, `beforeRelease`, `release` or `afterRelease`. However, hooks like
 `before:beforeRelease` look weird and are usually not useful in practice.
-
-## Scripts (deprecated)
-
-Please use [hooks](#hooks) instead, as hooks are more flexible. The `scripts` will stay for a while, but will be removed
-in a few major releases after v12. Here's how to migrate:
-
-- `scripts.beforeStart` → `hooks.before:init`
-- `scripts.beforeBump` → `hooks.before:bump`
-- `scripts.afterBump` → `hooks.after:bump`
-- `scripts.beforeStage` → `hooks.after:bump`
-- `scripts.afterRelease` → `hooks.after:release`
 
 ## Plugins
 
@@ -427,16 +413,3 @@ While mostly used as a CLI tool, release-it can be used as a dependency to ingra
 - [Prereleases and npm](https://medium.com/@mbostock/prereleases-and-npm-e778fc5e2420)
 - [Glob Primer (node-glob)](https://github.com/isaacs/node-glob#glob-primer) (release-it uses
   [globby](https://github.com/sindresorhus/globby#readme))
-
-## Credits
-
-Major dependencies:
-
-- [ShellJS](https://documentup.com/shelljs/shelljs)
-- [Inquirer.js](https://github.com/SBoudrias/Inquirer.js)
-- [@octokit/rest](https://github.com/octokit/rest.js)
-
-The following Grunt plugins have been a source of inspiration:
-
-- [grunt-release](https://github.com/geddski/grunt-release)
-- [grunt-release-component](https://github.com/walmartlabs/grunt-release-component)

@@ -5,6 +5,14 @@ This document lists breaking changes for each major release.
 See the GitHub Releases page for detailed changelogs:
 [https://github.com/release-it/release-it/releases](https://github.com/release-it/release-it/releases)
 
+## v13
+
+- Dropped support for Node v8
+- Dropped support for GitLab v11.6 and lower.
+- Deprecated `scripts` are removed (in favor of [hooks](https://github.com/release-it/release-it#hooks)).
+- Removed deprecated `--non-interactive` (`-n`) argument. Use `--ci` instead.
+- Removed old `%s` and `[REV_RANGE]` syntax in command substitutions. Use `${version}` and `${latestTag}` instead.
+
 ## v12
 
 - The `--follow-tags` argument for `git push` has been moved to the default configuration. This is only a breaking
@@ -14,7 +22,8 @@ See the GitHub Releases page for detailed changelogs:
 
 - The custom `conventional-changelog` increment (e.g. `"increment": "conventional:angular"`) with additional script
   configuration is replaced with a plugin. Please see
-  [conventional changelog](https://github.com/release-it/release-it#conventional-changelog) how to use this plugin.
+  [conventional changelog](https://github.com/release-it/release-it/blob/master/docs/changelog.md#conventional-changelog)
+  how to use this plugin.
 - The `pkgFiles` option has been removed. If there's a need to bump other files than what `npm version` bumps, it should
   be (part of) a plugin.
 - By default, the latest version was derived from the latest Git tag. From v11, if the repo has a `package.json` then
@@ -26,7 +35,8 @@ See the GitHub Releases page for detailed changelogs:
 
 - Dropped support for Node v6
 - Deprecated options from v9 are removed, the `dist.repo` config in particular (also see
-  [distribution repository](https://github.com/release-it/release-it#distribution-repository) for alternatives).
+  [distribution repository](https://github.com/release-it/release-it/blob/master/docs/recipes/distribution-repo.md) for
+  alternatives).
 - Drop the `--debug` flag. `DEBUG=release-it:* ...` still works.
 
 ## v9
@@ -34,7 +44,7 @@ See the GitHub Releases page for detailed changelogs:
 There should be no breaking changes, but there have been major internal refactorings and an improved UI. A bunch of new
 features and bug fixes have been implemented. Last but not least, the configuration structure is changed significantly.
 For this (backwards compatible) change, deprecation warnings are shown, and configurations must be migrated with the
-next major release (v10). See [deprecated.json](./conf/deprecated.json) for the changes, mainly:
+next major release (v10). See [deprecated.json](./config/deprecated.json) for the changes, mainly:
 
 - All "command hooks" have been moved to `scripts.*`, and some have been renamed.
 - All `src.*` options have been moved to `git.*` (and `scripts.*`).

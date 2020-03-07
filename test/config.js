@@ -2,7 +2,7 @@ const test = require('ava');
 const mock = require('mock-fs');
 const isCI = require('is-ci');
 const Config = require('../lib/config');
-const defaultConfig = require('../conf/release-it.json');
+const defaultConfig = require('../config/release-it.json');
 
 const localConfig = { github: { release: true } };
 
@@ -14,6 +14,7 @@ test('should contain default values', t => {
   t.deepEqual(config.constructorConfig, {});
   t.deepEqual(config.localConfig, localConfig);
   t.deepEqual(config.defaultConfig, defaultConfig);
+  mock.restore();
 });
 
 test('should merge provided options', t => {
@@ -35,16 +36,12 @@ test('should merge provided options', t => {
   t.is(options.increment, '1.0.0');
   t.is(options.git.push, false);
   t.is(options.github.release, true);
+  mock.restore();
 });
 
 test('should set CI mode', t => {
   const config = new Config({ ci: true });
   t.is(config.isCI, true);
-});
-
-test('should set --ci (backwards compat)', t => {
-  const config = new Config({ 'non-interactive': false });
-  t.is(config.isCI, false);
 });
 
 test('should override --no-npm.publish', t => {
@@ -56,35 +53,46 @@ test('should read YAML config', t => {
   mock({ '.release-it.yaml': 'foo:\n  bar: 1' });
   const config = new Config({ config: '.release-it.yaml' });
   t.deepEqual(config.options.foo, { bar: 1 });
+  mock.restore();
+});
+
+test('should read YML config', t => {
+  mock({ '.release-it.yml': 'foo:\n  bar: 1' });
+  const config = new Config({ config: '.release-it.yml' });
+  t.deepEqual(config.options.foo, { bar: 1 });
+  mock.restore();
 });
 
 test('should read TOML config', t => {
   mock({ '.release-it.toml': '[foo]\nbar=1' });
   const config = new Config({ config: '.release-it.toml' });
   t.deepEqual(config.options.foo, { bar: 1 });
+  mock.restore();
 });
 
 test('should throw if provided config file is not found', t => {
-  t.throws(() => new Config({ config: 'nofile' }), /no such file.+nofile/);
+  t.throws(() => new Config({ config: 'nofile' }), { message: /no such file.+nofile/ });
 });
 
 test('should throw if provided config file is invalid (cosmiconfig exception)', t => {
   mock({ 'invalid-config-txt': 'foo\nbar\baz' });
-  t.throws(() => new Config({ config: 'invalid-config-txt' }), { name: 'YAMLException' });
+  t.throws(() => new Config({ config: 'invalid-config-txt' }), { message: /Invalid configuration file at/ });
+  mock.restore();
 });
 
 test('should throw if provided config file is invalid (no object)', t => {
   mock({ 'invalid-config-rc': 'foo=bar' });
-  t.throws(() => new Config({ config: 'invalid-config-rc' }), /Invalid configuration file at/);
+  t.throws(() => new Config({ config: 'invalid-config-rc' }), { message: /Invalid configuration file at/ });
+  mock.restore();
 });
 
 test('should not set default increment (for CI mode)', t => {
-  const config = new Config({ 'non-interactive': true });
+  const config = new Config({ ci: true });
   t.is(config.options.version.increment, undefined);
 });
 
 test('should not set default increment (for interactive mode)', t => {
-  const config = new Config({ 'non-interactive': false });
+  const config = new Config({ ci: false });
   t.is(config.options.version.increment, undefined);
 });
 
@@ -98,7 +106,7 @@ test('should expand pre-release shortcut', t => {
 });
 
 test('should expand pre-release shortcut (preRelease boolean)', t => {
-  const config = new Config({ 'non-interactive': true, preRelease: true });
+  const config = new Config({ ci: true, preRelease: true });
   t.deepEqual(config.options.version, {
     increment: undefined,
     isPreRelease: true,
@@ -107,7 +115,7 @@ test('should expand pre-release shortcut (preRelease boolean)', t => {
 });
 
 test('should expand pre-release shortcut (without increment)', t => {
-  const config = new Config({ 'non-interactive': false, preRelease: 'alpha' });
+  const config = new Config({ ci: false, preRelease: 'alpha' });
   t.deepEqual(config.options.version, {
     increment: undefined,
     isPreRelease: true,

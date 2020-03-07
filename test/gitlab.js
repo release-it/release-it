@@ -14,7 +14,9 @@ test.serial('should validate token', async t => {
   const gitlab = factory(GitLab, { options });
   delete process.env[tokenRef];
 
-  await t.throwsAsync(gitlab.init(), /Environment variable "MY_GITLAB_TOKEN" is required for GitLab releases/);
+  await t.throwsAsync(gitlab.init(), {
+    message: /Environment variable "MY_GITLAB_TOKEN" is required for GitLab releases/
+  });
   process.env[tokenRef] = '123'; // eslint-disable-line require-atomic-updates
 
   interceptUser();
@@ -141,25 +143,6 @@ test.serial('should throw for insufficient access level', async t => {
     instanceOf: Error,
     message: 'User john is not a collaborator for john/repo.'
   });
-});
-
-test.serial('should handle (http) error and use fallback tag release', async t => {
-  const [host, owner, repo] = ['https://gitlab.example.org', 'legacy', 'repo'];
-  const remoteUrl = `${host}/${owner}/${repo}`;
-  const scope = nock(host);
-  scope.post(`/api/v4/projects/legacy%2Frepo/releases`).reply(404);
-  scope.post(`/api/v4/projects/legacy%2Frepo/repository/tags/1.0.1/release`).reply(200, {});
-  const options = { git: { remoteUrl }, gitlab: { release: true, retryMinTimeout: 0, tokenRef } };
-  const gitlab = factory(GitLab, { options });
-  sinon.stub(gitlab, 'getLatestVersion').resolves('1.0.0');
-
-  interceptUser({ host, owner });
-  interceptCollaborator({ host, owner, project: repo });
-
-  await runTasks(gitlab);
-
-  t.is(gitlab.getReleaseUrl(), `${remoteUrl}/tags/1.0.1`);
-  t.is(gitlab.isReleased, true);
 });
 
 test('should not make requests in dry run', async t => {

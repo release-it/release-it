@@ -9,18 +9,19 @@
     "addUntrackedFiles": false,
     "commit": true,
     "commitMessage": "Release ${version}",
-    "commitArgs": "",
+    "commitArgs": [],
     "tag": true,
     "tagName": "${version}",
     "tagAnnotation": "Release ${version}",
-    "tagArgs": "",
+    "tagArgs": [],
     "push": true,
-    "pushArgs": "--follow-tags",
-    "pushRepo": "origin"
+    "pushArgs": ["--follow-tags"],
+    "pushRepo": ""
   },
   "npm": {
     "publish": true,
     "publishPath": ".",
+    "tag": null,
     "access": null,
     "otp": null,
     "ignoreVersion": false

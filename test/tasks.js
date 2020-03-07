@@ -30,8 +30,8 @@ const noop = Promise.resolve();
 const sandbox = sinon.createSandbox();
 
 const testConfig = {
+  ci: true,
   config: false,
-  'non-interactive': true,
   'disable-metrics': true
 };
 
@@ -50,7 +50,8 @@ const getContainer = options => {
   };
 };
 
-const getNpmArgs = args => args.filter(args => args[0].startsWith('npm ')).map(args => args[0].trim());
+const getNpmArgs = args =>
+  args.filter(args => typeof args[0] === 'string' && args[0].startsWith('npm ')).map(args => args[0].trim());
 
 test.serial.beforeEach(t => {
   const bare = mkTmpDir();
@@ -376,28 +377,6 @@ test.serial('should use pkg.publishConfig.registry', async t => {
   exec.restore();
 });
 
-test.serial('should run all scripts (deprecated)', async t => {
-  const { bare } = t.context;
-  const scripts = {
-    beforeStart: 'echo beforeStart',
-    beforeBump: 'echo beforeBump ${name}',
-    beforeStage: 'echo beforeStage ${name}',
-    afterRelease: 'echo afterRelease ${name} ${repo.project}'
-  };
-  const container = getContainer({ increment: 'patch', scripts });
-  const exec = sinon.spy(container.shell, '_exec');
-
-  const { name } = await runTasks({}, container);
-
-  const commands = _.flatten(exec.args).filter(arg => typeof arg === 'string');
-  const scriptsArray = _.values(scripts)
-    .map(script => script.replace('${name}', name))
-    .map(script => script.replace('${repo.project}', path.basename(bare)));
-  const filtered = commands.filter(command => scriptsArray.includes(command));
-  t.deepEqual(filtered, scriptsArray);
-  exec.restore();
-});
-
 test.serial('should propagate errors', async t => {
   const config = {
     hooks: {
@@ -406,7 +385,7 @@ test.serial('should propagate errors', async t => {
   };
   const container = getContainer(config);
 
-  await t.throwsAsync(runTasks({}, container), /some-failing-command/);
+  await t.throwsAsync(runTasks({}, container), { message: /some-failing-command/ });
 
   t.is(log.error.callCount, 1);
 });
@@ -442,7 +421,7 @@ test.serial('should propagate errors', async t => {
       });
     });
     const container = getContainer({ plugins: { 'my-plugin': {} }, hooks });
-    const exec = sinon.spy(container.shell, '_exec');
+    const exec = sinon.spy(container.shell, 'execFormattedCommand');
 
     await runTasks({}, container);
 

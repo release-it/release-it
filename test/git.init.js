@@ -3,7 +3,7 @@ const sh = require('shelljs');
 const Shell = require('../lib/shell');
 const Log = require('../lib/log');
 const Git = require('../lib/plugin/git/Git');
-const { git } = require('../conf/release-it.json');
+const { git } = require('../config/release-it.json');
 const {
   GitRequiredBranchError,
   GitRemoteUrlError,
@@ -78,6 +78,12 @@ test.serial('should not throw if there are no tags', async t => {
   await t.notThrowsAsync(gitClient.init());
 });
 
+test.serial('should not throw if origin remote is renamed', async t => {
+  sh.exec('git remote rename origin upstream');
+  const gitClient = factory(Git);
+  await t.notThrowsAsync(gitClient.init());
+});
+
 test.serial('should get the latest tag after fetch', async t => {
   const log = new Log();
   const shell = new Shell({ container: { log } });
@@ -92,4 +98,15 @@ test.serial('should get the latest tag after fetch', async t => {
   sh.pushd('-q', target);
   await gitClient.init();
   t.is(gitClient.getContext('latestTagName'), '1.0.0');
+});
+
+test.serial('should generate correct changelog', async t => {
+  const options = { git };
+  const gitClient = factory(Git, { options });
+  sh.exec('git tag 1.0.0');
+  gitAdd('line', 'file', 'Add file');
+  gitAdd('line', 'file', 'Add file');
+  await gitClient.init();
+  const changelog = gitClient.getContext('changelog');
+  t.regex(changelog, /\* Add file \(\w{7}\)\n\* Add file \(\w{7}\)/);
 });

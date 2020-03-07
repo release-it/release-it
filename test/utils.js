@@ -12,25 +12,12 @@ test('format', t => {
 
 test('format (throw)', t => {
   mockStdIo.start();
-  t.throws(() => format('release v${foo}', { version: '1.0.0' }), /foo is not defined/);
+  t.throws(() => format('release v${foo}', { version: '1.0.0' }), { message: /foo is not defined/ });
   const { stdout, stderr } = mockStdIo.end();
   t.is(stdout, '');
   t.regex(
     stripAnsi(stderr),
     /ERROR Unable to render template with context:\s+release v\${foo}\s+{"version":"1\.0\.0"}\s+ERROR ReferenceError: foo is not defined/
-  );
-});
-
-test('format (back-compat)', t => {
-  t.is(
-    format('git log --pretty=format:"* %s (%h)" ${latestTag}...HEAD', { version: '1.0.0', latestTag: '2.0.0' }),
-    'git log --pretty=format:"* %s (%h)" 2.0.0...HEAD'
-  );
-  t.is(format('v%s', { version: '1.0.0' }), 'v1.0.0');
-  t.is(format('v%s ${version} %s', { version: '1.0.0' }), 'v1.0.0 1.0.0 1.0.0');
-  t.is(
-    format('git log --pretty=format:"* %s (%h)" [REV_RANGE]', { latestTag: '2.0.0' }),
-    'git log --pretty=format:"* %s (%h)" 2.0.0...HEAD'
   );
 });
 
