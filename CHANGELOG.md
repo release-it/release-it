@@ -12,8 +12,6 @@ See the GitHub Releases page for detailed changelogs:
 - Deprecated `scripts` are removed (in favor of [hooks](https://github.com/release-it/release-it#hooks)).
 - Removed deprecated `--non-interactive` (`-n`) argument. Use `--ci` instead.
 - Removed old `%s` and `[REV_RANGE]` syntax in command substitutions. Use `${version}` and `${latestTag}` instead.
-- Changed default value of `git.pushRepo` from `"origin"` to `""`. Changes behavior when branch has tracking information
-  and `git.pushRepo` is set to default value. Previously would push to `origin`, now will push to tracked branch.
 
 ## v12
 
