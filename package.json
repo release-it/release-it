@@ -36,7 +36,8 @@
   "files": [
     "bin",
     "config",
-    "lib"
+    "lib",
+    "test"
   ],
   "scripts": {
     "lint": "eslint lib test",
