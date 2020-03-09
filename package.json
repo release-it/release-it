@@ -83,8 +83,8 @@
     "url-join": "4.0.1",
     "uuid": "7.0.2",
     "window-size": "1.1.1",
-    "yaml": "1.7.2",
-    "yargs-parser": "18.0.0"
+    "yaml": "1.8.0",
+    "yargs-parser": "18.1.0"
   },
   "devDependencies": {
     "@octokit/request-error": "1.2.1",
