@@ -362,3 +362,8 @@ otherwise be taken from the core plugins.
 - recipe: [my-version](https://github.com/release-it/release-it/blob/master/docs/recipes/my-version.md) - example plugin
   that reads and writes a local `./VERSION` file, and includes a prompt to let the user confirm before publishing to a
   package registry.
+  
+### Third party plugins
+
+- [@grupoboticario/news-fragments](https://github.com/grupoboticario/news-fragments) - an easy way to create your changelog file!
+
