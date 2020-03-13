@@ -22,8 +22,7 @@ test.serial.beforeEach(t => {
   sh.exec(`git clone ${bare} ${target}`);
   sh.pushd('-q', target);
   gitAdd('line', 'file', 'Add file');
-  const gitClient = factory(Git, { options: { git } });
-  t.context = { gitClient, bare, target };
+  t.context = { bare, target };
 });
 
 test.serial('should throw if on wrong branch', async t => {
@@ -35,21 +34,21 @@ test.serial('should throw if on wrong branch', async t => {
 });
 
 test.serial('should throw if there is no remote Git url', async t => {
-  const { gitClient } = t.context;
+  const gitClient = factory(Git, { options: { git } });
   sh.exec('git remote remove origin');
   const expected = { instanceOf: GitRemoteUrlError, message: /Could not get remote Git url/ };
   await t.throwsAsync(gitClient.init(), expected);
 });
 
 test.serial('should throw if working dir is not clean', async t => {
-  const { gitClient } = t.context;
+  const gitClient = factory(Git, { options: { git } });
   sh.exec('rm file');
   const expected = { instanceOf: GitCleanWorkingDirError, message: /Working dir must be clean/ };
   await t.throwsAsync(gitClient.init(), expected);
 });
 
 test.serial('should throw if no upstream is configured', async t => {
-  const { gitClient } = t.context;
+  const gitClient = factory(Git, { options: { git } });
   sh.exec('git checkout -b foo');
   const expected = { instanceOf: GitUpstreamError, message: /No upstream configured for current branch/ };
   await t.throwsAsync(gitClient.init(), expected);
@@ -84,6 +83,30 @@ test.serial('should not throw if origin remote is renamed', async t => {
   await t.notThrowsAsync(gitClient.init());
 });
 
+test.serial('should detect and include version prefix ("v")', async t => {
+  const gitClient = factory(Git, { options: { git } });
+  sh.exec('git tag v1.0.0');
+  await gitClient.init();
+  await gitClient.bump('1.0.1');
+  t.is(gitClient.getContext('tagName'), 'v1.0.1');
+});
+
+test.serial('should detect include version prefix (without "v")', async t => {
+  const gitClient = factory(Git, { options: { git } });
+  sh.exec('git tag 1.0.0');
+  await gitClient.init();
+  await gitClient.bump('1.0.1');
+  t.is(gitClient.getContext('tagName'), '1.0.1');
+});
+
+test.serial('should detect include version prefix (configured)', async t => {
+  const gitClient = factory(Git, { options: { git: { tagName: 'v${version}' } } });
+  sh.exec('git tag 1.0.0');
+  await gitClient.init();
+  await gitClient.bump('1.0.1');
+  t.is(gitClient.getContext('tagName'), 'v1.0.1');
+});
+
 test.serial('should get the latest tag after fetch', async t => {
   const log = new Log();
   const shell = new Shell({ container: { log } });
@@ -101,8 +124,7 @@ test.serial('should get the latest tag after fetch', async t => {
 });
 
 test.serial('should generate correct changelog', async t => {
-  const options = { git };
-  const gitClient = factory(Git, { options });
+  const gitClient = factory(Git, { options: { git } });
   sh.exec('git tag 1.0.0');
   gitAdd('line', 'file', 'Add file');
   gitAdd('line', 'file', 'Add file');

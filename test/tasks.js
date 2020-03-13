@@ -208,7 +208,7 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
     project,
     body: {
       tag_name: 'v1.1.0-alpha.0',
-      name: 'Release 1.1.0-alpha.0',
+      name: 'Release v1.1.0-alpha.0',
       body: `Notes for ${pkgName} [v1.1.0-alpha.0]: ${sha}`,
       prerelease: true,
       draft: true
@@ -224,7 +224,7 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
     owner,
     project,
     body: {
-      name: 'Release 1.1.0-alpha.0',
+      name: 'Release v1.1.0-alpha.0',
       tag_name: 'v1.1.0-alpha.0',
       description: `Notes for ${pkgName}: ${sha}`,
       assets: {
@@ -241,7 +241,7 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
   const container = getContainer({
     increment: 'minor',
     preRelease: 'alpha',
-    git: { changelog: 'git log --pretty=format:%h ${latestTag}...HEAD', tagName: 'v${version}' },
+    git: { changelog: 'git log --pretty=format:%h ${latestTag}...HEAD' },
     github: {
       release: true,
       remoteUrl: `https://github.com/${owner}/${project}`,
@@ -303,7 +303,7 @@ test.serial('should publish pre-release without pre-id with different npm.tag', 
   ]);
 
   const { stdout } = sh.exec('git describe --tags --abbrev=0');
-  t.is(stdout.trim(), '2.0.0-0');
+  t.is(stdout.trim(), 'v2.0.0-0');
   t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...2.0.0-0)`));
   t.true(log.log.firstCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);

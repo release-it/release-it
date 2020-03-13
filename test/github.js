@@ -35,12 +35,11 @@ test('should validate token', async t => {
 test('should release and upload assets', async t => {
   const asset = 'file1';
   const options = {
-    git: { tagName: 'v${version}' },
     github: {
       remoteUrl,
       tokenRef,
       release: true,
-      releaseName: 'Release ${version}',
+      releaseName: 'Release ${tagName}',
       releaseNotes: 'echo Custom notes',
       assets: `test/resources/${asset}`
     }
@@ -52,15 +51,15 @@ test('should release and upload assets', async t => {
   interceptAuthentication();
   interceptCollaborator();
   interceptDraft({
-    body: { tag_name: 'v2.0.2', name: 'Release 2.0.2', body: 'Custom notes', prerelease: false, draft: true }
+    body: { tag_name: '2.0.2', name: 'Release 2.0.2', body: 'Custom notes', prerelease: false, draft: true }
   });
-  interceptPublish({ body: { draft: false, tag_name: 'v2.0.2' } });
+  interceptPublish({ body: { draft: false, tag_name: '2.0.2' } });
   interceptAsset({ body: asset });
 
   await runTasks(github);
 
   t.true(github.isReleased);
-  t.is(github.getReleaseUrl(), `https://github.com/user/repo/releases/tag/v2.0.2`);
+  t.is(github.getReleaseUrl(), `https://github.com/user/repo/releases/tag/2.0.2`);
   exec.restore();
 });
 
@@ -167,13 +166,12 @@ test('should handle octokit client error (with retries)', async t => {
 
 test('should not call octokit client in dry run', async t => {
   const options = {
-    git: { tagName: 'v${version}' },
     github: { tokenRef, remoteUrl, releaseName: 'R ${version}', assets: ['*'] }
   };
   const github = factory(GitHub, { options, global: { isDryRun: true } });
   const spy = sinon.spy(github, 'client', ['get']);
   const exec = sinon.stub(github.shell, 'exec').callThrough();
-  exec.withArgs('git describe --tags --abbrev=0').resolves('1.0.0');
+  exec.withArgs('git describe --tags --abbrev=0').resolves('v1.0.0');
 
   await runTasks(github);
 
