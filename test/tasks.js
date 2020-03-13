@@ -208,7 +208,7 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
     project,
     body: {
       tag_name: 'v1.1.0-alpha.0',
-      name: 'Release v1.1.0-alpha.0',
+      name: 'Release 1.1.0-alpha.0',
       body: `Notes for ${pkgName} [v1.1.0-alpha.0]: ${sha}`,
       prerelease: true,
       draft: true
@@ -224,7 +224,7 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
     owner,
     project,
     body: {
-      name: 'Release v1.1.0-alpha.0',
+      name: 'Release 1.1.0-alpha.0',
       tag_name: 'v1.1.0-alpha.0',
       description: `Notes for ${pkgName}: ${sha}`,
       assets: {

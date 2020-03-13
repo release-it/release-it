@@ -49,7 +49,7 @@ test('should create prompt', async t => {
 
 [
   ['git', 'commit', 'Commit (Release 1.0.0)?'],
-  ['git', 'tag', 'Tag (v1.0.0)?'],
+  ['git', 'tag', 'Tag (1.0.0)?'],
   ['git', 'push', 'Push?'],
   ['github', 'release', 'Create a pre-release on GitHub (Release 1.0.0)?'],
   ['gitlab', 'release', 'Create a release on GitLab (Release 1.0.0)?'],
@@ -63,7 +63,7 @@ test('should create prompt', async t => {
       git: { tagName: 'v${version}' },
       npm: { name: 'my-pkg', tag: 'next' }
     });
-    config.setContext({ version: '1.0.0', tagName: '1.0.0' });
+    config.setContext({ version: '1.0.0', git: { tagName: '1.0.0' } });
     const inquirer = t.context.getInquirer(stub);
     const p = factory(Prompt, { container: { inquirer } });
     p.register(prompts[namespace], namespace);
