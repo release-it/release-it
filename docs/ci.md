@@ -36,8 +36,9 @@ Replace `[user]` and `[project]` with the correct strings.
 
 ## npm
 
-To publish a package to npm from within a CI or CD environment such as Travis or Circle, make the `NPM_TOKEN` available
-in the `.npmrc` file. This file should look like this before release-it attempts to publish the package:
+To publish a package to the (or any) npm registry from within a CI or CD environment such as Travis or Circle, make the
+`NPM_TOKEN` available in the `.npmrc` file. This file should look like this before release-it attempts to publish the
+package:
 
 ```
 //registry.npmjs.org/:_authToken=$NPM_TOKEN

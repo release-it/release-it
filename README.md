@@ -21,9 +21,7 @@
 
 ## Links
 
-- Since v11, [release-it supports plugins](https://github.com/release-it/release-it/issues/501), so virtually any
-  functionality can be added to your release process.
-- For **updates**, see [CHANGELOG.md](./CHANGELOG.md) for major updates, and
+- See [CHANGELOG.md](./CHANGELOG.md) for major/breaking updates, and
   [releases](https://github.com/release-it/release-it/releases) for a detailed version history.
 - To **contribute**, please read [CONTRIBUTING.md](./CONTRIBUTING.md) first.
 - Please [open an issue](https://github.com/release-it/release-it/issues/new) if anything is missing or unclear in this
@@ -55,7 +53,6 @@
 - [Use release-it programmatically](#use-release-it-programmatically)
 - [Example projects using release-it](#example-projects-using-release-it)
 - [Resources](#resources)
-- [Credits](#credits)
 
 <!-- tocstop -->
 
@@ -358,7 +355,18 @@ is actually: `init`, `beforeBump`, `bump`, `beforeRelease`, `release` or `afterR
 
 ## Plugins
 
-Since v11, release-it can be extended in many, many ways.
+Since v11, release-it can be extended in many, many ways. Here are some examples:
+
+| Plugin                                                                                     | Description                                                                   |
+| ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| [@release-it/bumper](https://github.com/release-it/bumper)                                 | Read & write the version from/to any file                                     |
+| [@release-it/conventional-changelog](https://github.com/release-it/conventional-changelog) | Provides recommended bump, conventional-changelog, and updates `CHANGELOG.md` |
+| [release-it-lerna-changelog](https://github.com/rwjblue/release-it-lerna-changelog)        | Integrates lerna-changelog into the release-it pipeline                       |
+| [@grupoboticario/news-fragments](https://github.com/grupoboticario/news-fragments)         | An easy way to generate your changelog file                                   |
+
+Internally, release-it uses its own plugin architecture (for Git, GitHub, GitLab, npm).
+
+→ See all [release-it plugins on npm](https://www.npmjs.com/search?q=keywords:release-it-plugin).
 
 → See [plugins](./docs/plugins.md) for more details.
 
