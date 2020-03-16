@@ -393,7 +393,7 @@ Use `--disable-metrics` to opt-out of sending some anonymous statistical data to
 
 ## Use release-it programmatically
 
-While mostly used as a CLI tool, release-it can be used as a dependency to ingrate in your own scripts. See
+While mostly used as a CLI tool, release-it can be used as a dependency to integrate in your own scripts. See
 [use release-it programmatically](./docs/recipes/programmatic.md) for example code.
 
 ## Example projects using release-it
