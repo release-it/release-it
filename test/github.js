@@ -19,7 +19,7 @@ const host = 'github.com';
 test('should validate token', async t => {
   const tokenRef = 'MY_GITHUB_TOKEN';
   const options = { github: { release: true, tokenRef, remoteUrl } };
-  const github = factory(GitHub, { options });
+  const github = factory(GitHub, { options, global: { isGitHubAction: false } });
   delete process.env[tokenRef];
 
   await t.throwsAsync(github.init(), {
@@ -44,7 +44,7 @@ test('should release and upload assets', async t => {
       assets: `test/resources/${asset}`
     }
   };
-  const github = factory(GitHub, { options });
+  const github = factory(GitHub, { options, global: { isGitHubAction: false } });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
   exec.withArgs('git describe --tags --abbrev=0').resolves('2.0.1');
 
@@ -64,7 +64,7 @@ test('should release and upload assets', async t => {
 });
 
 test('should release to enterprise host', async t => {
-  const github = factory(GitHub, { options: { github: { tokenRef } } });
+  const github = factory(GitHub, { options: { github: { tokenRef } }, global: { isGitHubAction: false } });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
   exec.withArgs('git config --get remote.origin.url').resolves(`https://github.example.org/user/repo`);
   exec.withArgs('git describe --tags --abbrev=0').resolves(`1.0.0`);
@@ -96,7 +96,7 @@ test('should release to alternative host and proxy', async t => {
       proxy: 'http://proxy:8080'
     }
   };
-  const github = factory(GitHub, { options });
+  const github = factory(GitHub, { options, global: { isGitHubAction: false } });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
   exec.withArgs('git describe --tags --abbrev=0').resolves('1.0.0');
 
@@ -109,7 +109,7 @@ test('should release to alternative host and proxy', async t => {
 
 test('should throw for unauthenticated user', async t => {
   const options = { github: { tokenRef, remoteUrl, host } };
-  const github = factory(GitHub, { options });
+  const github = factory(GitHub, { options, global: { isGitHubAction: false } });
   const stub = sinon.stub(github.client.users, 'getAuthenticated');
   stub.throws(new RequestError('Bad credentials', 401, { request: { url: '', headers: {} } }));
 
@@ -125,7 +125,7 @@ test('should throw for unauthenticated user', async t => {
 test('should throw for non-collaborator', async t => {
   interceptAuthentication({ username: 'john' });
   const options = { github: { tokenRef, remoteUrl, host } };
-  const github = factory(GitHub, { options });
+  const github = factory(GitHub, { options, global: { isGitHubAction: false } });
   const stub = sinon.stub(github.client.repos, 'checkCollaborator');
   stub.throws(new RequestError('HttpError', 401, { request: { url: '', headers: {} } }));
 
@@ -137,8 +137,23 @@ test('should throw for non-collaborator', async t => {
   stub.restore();
 });
 
+test('should skip authentication and collaborator checks when running on GitHub Actions', async t => {
+  const options = { github: { tokenRef, remoteUrl, host } };
+  const github = factory(GitHub, { options, global: { isGitHubAction: true } });
+  const authStub = sinon.stub(github, 'isAuthenticated');
+  const collaboratorStub = sinon.stub(github, 'isCollaborator');
+
+  await t.notThrowsAsync(github.init());
+
+  t.is(authStub.callCount, 0);
+  t.is(collaboratorStub.callCount, 0);
+  
+  authStub.restore();
+  collaboratorStub.restore();
+});
+
 test('should handle octokit client error (without retries)', async t => {
-  const github = factory(GitHub, { options: { github: { tokenRef, remoteUrl, host } } });
+  const github = factory(GitHub, { options: { github: { tokenRef, remoteUrl, host } }, global: { isGitHubAction: false } });
   const stub = sinon.stub(github.client.repos, 'createRelease');
   stub.throws(new RequestError('Not found', 404, { request: { url: '', headers: {} } }));
   interceptAuthentication();
@@ -152,7 +167,7 @@ test('should handle octokit client error (without retries)', async t => {
 
 test('should handle octokit client error (with retries)', async t => {
   const options = { github: { tokenRef, remoteUrl, host, retryMinTimeout: 0 } };
-  const github = factory(GitHub, { options });
+  const github = factory(GitHub, { options, global: { isGitHubAction: false } });
   const stub = sinon.stub(github.client.repos, 'createRelease');
   stub.throws(new RequestError('Request failed', 500, { request: { url: '', headers: {} } }));
   interceptAuthentication();
@@ -168,7 +183,7 @@ test('should not call octokit client in dry run', async t => {
   const options = {
     github: { tokenRef, remoteUrl, releaseName: 'R ${version}', assets: ['*'] }
   };
-  const github = factory(GitHub, { options, global: { isDryRun: true } });
+  const github = factory(GitHub, { options, global: { isDryRun: true, isGitHubAction: false } });
   const spy = sinon.spy(github, 'client', ['get']);
   const exec = sinon.stub(github.shell, 'exec').callThrough();
   exec.withArgs('git describe --tags --abbrev=0').resolves('v1.0.0');
