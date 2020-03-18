@@ -107,7 +107,7 @@ test('should release to alternative host and proxy', async t => {
   exec.restore();
 });
 
-test.serial('should throw for unauthenticated user', async t => {
+test('should throw for unauthenticated user', async t => {
   const options = { github: { tokenRef, remoteUrl, host } };
   const github = factory(GitHub, { options });
   const stub = sinon.stub(github.client.users, 'getAuthenticated');
@@ -122,7 +122,7 @@ test.serial('should throw for unauthenticated user', async t => {
   stub.restore();
 });
 
-test.serial('should throw for non-collaborator', async t => {
+test('should throw for non-collaborator', async t => {
   interceptAuthentication({ username: 'john' });
   const options = { github: { tokenRef, remoteUrl, host } };
   const github = factory(GitHub, { options });
@@ -137,7 +137,7 @@ test.serial('should throw for non-collaborator', async t => {
   stub.restore();
 });
 
-test.serial('should skip authentication and collaborator checks when running on GitHub Actions', async t => {
+test('should skip authentication and collaborator checks when running on GitHub Actions', async t => {
   process.env.GITHUB_ACTION = 'run4';
 
   const options = { github: { tokenRef, remoteUrl, host } };
@@ -152,6 +152,8 @@ test.serial('should skip authentication and collaborator checks when running on 
 
   authStub.restore();
   collaboratorStub.restore();
+
+  process.env.GITHUB_ACTION = '';
 });
 
 test('should handle octokit client error (without retries)', async t => {
