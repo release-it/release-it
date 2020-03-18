@@ -16,10 +16,6 @@ const tokenRef = 'GITHUB_TOKEN';
 const remoteUrl = 'git://github.com:user/repo';
 const host = 'github.com';
 
-test.beforeEach(t => {
-  process.env.GITHUB_ACTION = undefined;
-});
-
 test('should validate token', async t => {
   const tokenRef = 'MY_GITHUB_TOKEN';
   const options = { github: { release: true, tokenRef, remoteUrl } };
@@ -111,7 +107,7 @@ test('should release to alternative host and proxy', async t => {
   exec.restore();
 });
 
-test('should throw for unauthenticated user', async t => {
+test.serial('should throw for unauthenticated user', async t => {
   const options = { github: { tokenRef, remoteUrl, host } };
   const github = factory(GitHub, { options });
   const stub = sinon.stub(github.client.users, 'getAuthenticated');
@@ -126,7 +122,7 @@ test('should throw for unauthenticated user', async t => {
   stub.restore();
 });
 
-test('should throw for non-collaborator', async t => {
+test.serial('should throw for non-collaborator', async t => {
   interceptAuthentication({ username: 'john' });
   const options = { github: { tokenRef, remoteUrl, host } };
   const github = factory(GitHub, { options });
@@ -141,7 +137,7 @@ test('should throw for non-collaborator', async t => {
   stub.restore();
 });
 
-test('should skip authentication and collaborator checks when running on GitHub Actions', async t => {
+test.serial('should skip authentication and collaborator checks when running on GitHub Actions', async t => {
   process.env.GITHUB_ACTION = 'run4';
 
   const options = { github: { tokenRef, remoteUrl, host } };

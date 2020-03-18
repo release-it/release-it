@@ -12,4 +12,5 @@ process.env.GITHUB_TOKEN = process.env.GITLAB_TOKEN = 1;
 test.after.always(() => {
   process.env.GITHUB_TOKEN = GITHUB_TOKEN;
   process.env.GITLAB_TOKEN = GITLAB_TOKEN;
+  process.env.GITHUB_ACTION = undefined;  
 });
