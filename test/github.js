@@ -185,7 +185,7 @@ test('should not call octokit client in dry run', async t => {
   const options = {
     github: { tokenRef, remoteUrl, releaseName: 'R ${version}', assets: ['*'], isGitHubAction: false }
   };
-  const github = factory(GitHub, { options, global: { isDryRun: true, isGitHubAction: false } });
+  const github = factory(GitHub, { options, global: { isDryRun: true } });
   const spy = sinon.spy(github, 'client', ['get']);
   const exec = sinon.stub(github.shell, 'exec').callThrough();
   exec.withArgs('git describe --tags --abbrev=0').resolves('v1.0.0');
