@@ -137,6 +137,25 @@ test('should throw for non-collaborator', async t => {
   stub.restore();
 });
 
+test('should skip authentication and collaborator checks when running on GitHub Actions', async t => {
+  process.env.GITHUB_ACTION = 'run4';
+
+  const options = { github: { tokenRef, remoteUrl, host } };
+  const github = factory(GitHub, { options });
+  const authStub = sinon.stub(github, 'isAuthenticated');
+  const collaboratorStub = sinon.stub(github, 'isCollaborator');
+
+  await t.notThrowsAsync(github.init());
+
+  t.is(authStub.callCount, 0);
+  t.is(collaboratorStub.callCount, 0);
+
+  authStub.restore();
+  collaboratorStub.restore();
+
+  process.env.GITHUB_ACTION = '';
+});
+
 test('should handle octokit client error (without retries)', async t => {
   const github = factory(GitHub, { options: { github: { tokenRef, remoteUrl, host } } });
   const stub = sinon.stub(github.client.repos, 'createRelease');
