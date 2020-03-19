@@ -1,7 +1,12 @@
+const path = require('path');
 const test = require('ava');
 const sinon = require('sinon');
+const mock = require('mock-fs');
 const npm = require('../lib/plugin/npm/npm');
 const { factory, runTasks } = require('./util');
+
+const getNpmArgs = args =>
+  args.filter(args => typeof args[0] === 'string' && args[0].startsWith('npm ')).map(args => args[0].trim());
 
 test('should return npm package url', t => {
   const options = { npm: { name: 'my-cool-package' } };
@@ -218,5 +223,33 @@ test('should publish', async t => {
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   await runTasks(npmClient);
   t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag latest');
+  exec.restore();
+});
+
+test('should publish to a different/scoped registry', async t => {
+  delete require.cache[require.resolve('../package.json')];
+  mock({
+    [path.resolve('package.json')]: JSON.stringify({
+      name: '@my-scope/my-pkg',
+      version: '1.0.0',
+      publishConfig: {
+        '@my-scope:registry': 'https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/'
+      }
+    })
+  });
+  const options = { npm };
+  const npmClient = factory(npm, { options });
+  const exec = sinon.stub(npmClient.shell, 'exec').resolves();
+
+  await runTasks(npmClient);
+
+  t.deepEqual(getNpmArgs(exec.args), [
+    'npm ping --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
+    'npm whoami --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
+    'npm show @my-scope/my-pkg@latest version --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
+    'npm version 1.0.1 --no-git-tag-version',
+    'npm publish . --tag latest --access public'
+  ]);
+
   exec.restore();
 });
