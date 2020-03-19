@@ -16,7 +16,7 @@ const tokenRef = 'GITHUB_TOKEN';
 const remoteUrl = 'git://github.com:user/repo';
 const host = 'github.com';
 
-test('should validate token', async t => {
+test.serial('should validate token', async t => {
   const tokenRef = 'MY_GITHUB_TOKEN';
   const options = { github: { release: true, tokenRef, remoteUrl } };
   const github = factory(GitHub, { options });
@@ -137,10 +137,11 @@ test('should throw for non-collaborator', async t => {
   stub.restore();
 });
 
-test('should skip authentication and collaborator checks when running on GitHub Actions', async t => {
-  process.env.GITHUB_ACTION = 'run4';
+test.serial('should skip authentication and collaborator checks when running on GitHub Actions', async t => {
+  process.env.GITHUB_ACTIONS = 1;
+  process.env.GITHUB_ACTOR = 'release-it';
 
-  const options = { github: { tokenRef, remoteUrl, host } };
+  const options = { github: { tokenRef } };
   const github = factory(GitHub, { options });
   const authStub = sinon.stub(github, 'isAuthenticated');
   const collaboratorStub = sinon.stub(github, 'isCollaborator');
@@ -149,11 +150,12 @@ test('should skip authentication and collaborator checks when running on GitHub 
 
   t.is(authStub.callCount, 0);
   t.is(collaboratorStub.callCount, 0);
+  t.is(github.getContext('github.username'), 'release-it');
 
   authStub.restore();
   collaboratorStub.restore();
-
-  process.env.GITHUB_ACTION = '';
+  delete process.env.GITHUB_ACTIONS;
+  delete process.env.GITHUB_ACTOR;
 });
 
 test('should handle octokit client error (without retries)', async t => {
