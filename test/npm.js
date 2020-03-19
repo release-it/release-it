@@ -186,10 +186,10 @@ test('should publish a private scoped package as private', async t => {
   exec.restore();
 });
 
-test('should publish a new private scoped package as NPM would', async t => {
+test('should publish a new private scoped package as npm would', async t => {
   const options = { npm: { tag: 'beta' } };
   const npmClient = factory(npm, { options });
-  npmClient.setContext({ name: '@scoped/pkg', isNewPackage: true });
+  npmClient.setContext({ name: '@scoped/pkg' });
   const exec = sinon.spy(npmClient.shell, 'exec');
   await npmClient.publish();
   t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag beta');
@@ -199,7 +199,7 @@ test('should publish a new private scoped package as NPM would', async t => {
 test('should publish a new public scoped package as public', async t => {
   const options = { npm: { access: 'public', tag: 'beta' } };
   const npmClient = factory(npm, { options });
-  npmClient.setContext({ name: '@scoped/pkg', isNewPackage: true });
+  npmClient.setContext({ name: '@scoped/pkg' });
   const exec = sinon.spy(npmClient.shell, 'exec');
   await npmClient.publish();
   t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag beta --access public');
