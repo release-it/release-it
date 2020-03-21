@@ -18,15 +18,14 @@ const parseCliArguments = args => {
   const options = parseArgs(args, {
     boolean: ['dry-run', 'ci'],
     alias: aliases,
-    default: {
-      'dry-run': false,
-      verbose: 0
-    },
-    count: ['verbose'],
     configuration: {
       'parse-numbers': false
     }
   });
+  if (options.V) {
+    options.verbose = typeof options.V === 'boolean' ? options.V : options.V.length;
+    delete options.V;
+  }
   options.increment = options._[0] || options.i;
   return options;
 };
