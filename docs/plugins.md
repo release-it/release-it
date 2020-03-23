@@ -352,13 +352,9 @@ otherwise be taken from the core plugins.
 ## Available & example plugins
 
 - All packages tagged with [`"release-it-plugin"` on npm](https://www.npmjs.com/search?q=keywords:release-it-plugin).
-- [@release-it/conventional-changelog](https://github.com/release-it/conventional-changelog) - uses
-  `conventional-recommended-bump` in `getIncrementedVersion()` and `conventional-changelog` in `beforeRelease` to
-  generate the changelog. Optionally updates `CHANGELOG.md`.
-- [@release-it/bumper](https://github.com/release-it/bumper) - version read/write plugin for release-it
-- [@release-it/mercurial](https://github.com/release-it/mercurial) - use Mercurial
-- [npm](https://github.com/release-it/release-it/blob/master/lib/plugin/npm/npm.js) - the internal release-it plugin to
-  publish a package to npm.
-- recipe: [my-version](https://github.com/release-it/release-it/blob/master/docs/recipes/my-version.md) - example plugin
-  that reads and writes a local `./VERSION` file, and includes a prompt to let the user confirm before publishing to a
-  package registry.
+- Recipe: [my-version](https://github.com/release-it/release-it/blob/master/docs/recipes/my-version.md) - example plugin
+- Internal release-it plugins:
+  - [Git](https://github.com/release-it/release-it/blob/master/lib/plugin/git/Git.js)
+  - [GitHub](https://github.com/release-it/release-it/blob/master/lib/plugin/github/GitHub.js)
+  - [GitLab](https://github.com/release-it/release-it/blob/master/lib/plugin/gitlab/GitLab.js)
+  - [npm](https://github.com/release-it/release-it/blob/master/lib/plugin/npm/npm.js)

@@ -399,15 +399,17 @@ While mostly used as a CLI tool, release-it can be used as a dependency to integ
 ## Example projects using release-it
 
 - [react-navigation/react-navigation](https://github.com/react-navigation/react-navigation)
-- [swagger-api/swagger-ui](https://github.com/swagger-api/swagger-ui)
+- [swagger-api/swagger-ui](https://github.com/swagger-api/swagger-ui) +
+  [swagger-editor](https://github.com/swagger-api/swagger-editor)
 - [js-cookie/js-cookie](https://github.com/js-cookie/js-cookie)
 - [StevenBlack/hosts](https://github.com/StevenBlack/hosts)
+- [youzan/vant](https://github.com/youzan/vant/search?q=release-it)
+- [antonmedv/fx](https://github.com/antonmedv/fx)
 - [react-native-community/react-native-tab-view](https://github.com/react-native-community/react-native-tab-view)
-- [callstack/linaria](https://github.com/callstack/linaria)
+- [callstack/linaria](https://github.com/callstack/linaria) +
+  [react-native-paper](https://github.com/callstack/react-native-paper)
+- [tabler/tabler-icons](https://github.com/tabler/tabler-icons)
 - [blockchain/blockchain-wallet-v4-frontend](https://github.com/blockchain/blockchain-wallet-v4-frontend)
-- [infor-design/enterprise](https://github.com/infor-design/enterprise)
-- [tsqllint/tsqllint](https://github.com/tsqllint/tsqllint)
-- [segmentio/typewriter](https://github.com/segmentio/typewriter)
 - [Repositories that depend on release-it](https://github.com/release-it/release-it/network/dependents)
 - GitHub search for
   [projects with .release-it.json](https://github.com/search?o=desc&q=in%3Apath+.release-it.json&s=indexed&type=Code)
