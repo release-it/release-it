@@ -24,7 +24,8 @@
     "tag": null,
     "access": null,
     "otp": null,
-    "ignoreVersion": false
+    "ignoreVersion": false,
+    "skipChecks": false
   },
   "github": {
     "release": false,
@@ -36,7 +37,8 @@
     "assets": null,
     "host": null,
     "timeout": 0,
-    "proxy": null
+    "proxy": null,
+    "skipChecks": false
   },
   "gitlab": {
     "release": false,
@@ -44,6 +46,7 @@
     "releaseNotes": null,
     "tokenRef": "GITLAB_TOKEN",
     "assets": null,
-    "origin": null
+    "origin": null,
+    "skipChecks": false
   }
 }

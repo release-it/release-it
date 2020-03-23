@@ -162,3 +162,9 @@ test('should not make requests in dry run', async t => {
   t.is(gitlab.isReleased, true);
   spy.restore();
 });
+
+test('should skip checks', async t => {
+  const options = { gitlab: { tokenRef, skipChecks: true } };
+  const gitlab = factory(GitLab, { options });
+  await t.notThrowsAsync(gitlab.init());
+});

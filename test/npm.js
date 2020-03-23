@@ -220,3 +220,9 @@ test('should publish', async t => {
   t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag latest');
   exec.restore();
 });
+
+test('should skip checks', async t => {
+  const options = { npm: { skipChecks: true } };
+  const npmClient = factory(npm, { options });
+  await t.notThrowsAsync(npmClient.init());
+});

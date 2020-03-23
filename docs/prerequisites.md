@@ -41,7 +41,8 @@ If no upstream branch is known to Git, it does not know where to push the releas
 
 Use `--no-git.requireUpstream` to add `--set-upstream [remote] [branch]` to the `git push` command, where `[remote]` is
 the value of `git.pushRepo` ("origin" by default, if no upstream branch), and `[branch]` is the name of the current
-branch. So if the current branch is `next` then the full command becomes `git push --follow-tags --set-upstream origin next`.
+branch. So if the current branch is `next` then the full command becomes
+`git push --follow-tags --set-upstream origin next`.
 
 Configure `pushRepo` with either a remote name or a Git url to push the release to that remote instead of "origin".
 
@@ -69,6 +70,8 @@ prevent issues later on in the process.
 Some instances of npm registries, such as Nexus, do not support `npm ping` and/or `npm whoami`. If the error is a `E400`
 or `E404`, release-it will give a warning but continue.
 
+To skip these checks, use `npm.skipChecks`.
+
 ## GitHub and GitLab
 
 When `github.release` and/or `gitlab.release` is set to `true`, release-it will check whether the `GITHUB_TOKEN` (or
@@ -76,3 +79,5 @@ When `github.release` and/or `gitlab.release` is set to `true`, release-it will 
 set with `github.tokenRef` and `gitlab.tokenRef`, respectively.
 
 Then, it will authenticate, and verify whether the current user is a collaborator and authorized to publish a release.
+
+To skip these checks, use `github.skipChecks` or `gitlab.skipChecks`, respectively.

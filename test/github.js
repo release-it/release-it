@@ -205,3 +205,9 @@ test('should not call octokit client in dry run', async t => {
   spy.restore();
   exec.restore();
 });
+
+test('should skip checks', async t => {
+  const options = { github: { tokenRef, skipChecks: true } };
+  const github = factory(GitHub, { options });
+  await t.notThrowsAsync(github.init());
+});
