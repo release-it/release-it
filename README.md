@@ -146,7 +146,7 @@ Use `--config` to use another path for the configuration file. An example `.rele
 ```json
 {
   "git": {
-    "tagName": "v${version}"
+    "commitMessage": "chore: release v${version}"
   },
   "github": {
     "release": true
@@ -174,7 +174,7 @@ Or use YAML in `.release-it.yml`:
 
 ```yaml
 git:
-  commitMessage: 'chore: release v${version}'
+  requireCleanWorkingDir: false
 ```
 
 Or TOML in `.release-it.toml`:
@@ -187,7 +187,7 @@ Or TOML in `.release-it.toml`:
 Any option can also be set on the command-line, and will have highest priority. Example:
 
 ```bash
-release-it minor --git.tagName='v${version}' --github.release
+release-it minor --git.requireBranch=master --github.release
 ```
 
 Boolean arguments can be negated by using the `no-` prefix:
