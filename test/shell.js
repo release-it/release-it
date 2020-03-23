@@ -1,6 +1,8 @@
 const test = require('ava');
 const sh = require('shelljs');
+const sinon = require('sinon');
 const Shell = require('../lib/shell');
+const Log = require('../lib/log');
 const { factory } = require('./util');
 
 const { stdout } = sh.exec('pwd');
@@ -50,4 +52,21 @@ test('exec (verbose)', async t => {
   t.is(shell.log.exec.firstCall.args[0], 'echo foo');
   t.is(shell.log.verbose.firstCall.args[0], 'foo');
   t.is(actual, 'foo');
+});
+
+test('should cache results of command execution', async t => {
+  const log = sinon.createStubInstance(Log);
+  const shell = new Shell({ container: { log } });
+  const result1 = await shell.exec('echo foo');
+  const result2 = await shell.exec('echo foo');
+  t.is(result1, result2);
+  t.deepEqual(log.exec.args, [
+    ['echo foo', { isExternal: false, isCached: false }],
+    ['echo foo', { isExternal: false, isCached: true }]
+  ]);
+});
+
+test('should bail out on failed command execution', async t => {
+  const shell = new Shell({ container: { log: sinon.createStubInstance(Log) } });
+  await t.throwsAsync(() => shell.exec('foo'));
 });

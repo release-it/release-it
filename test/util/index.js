@@ -21,6 +21,7 @@ module.exports.factory = (Definition, { namespace, options = {}, global = {}, co
   container.spinner = spinner;
   container.shell = container.shell || new ShellStub({ global, container });
   container.prompt = container.prompt || new Prompt({ container });
+  container.shell.cache = { set: () => {}, has: () => false };
 
   return new Definition({
     namespace: ns,
