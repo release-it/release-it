@@ -1,21 +1,16 @@
 const nock = require('nock');
 
 const interceptAuthentication = ({ api = 'https://api.github.com', username = 'john' } = {}) =>
-  nock(api)
-    .get('/user')
-    .reply(200, {
-      login: username
-    });
+  nock(api).get('/user').reply(200, {
+    login: username
+  });
 
 const interceptCollaborator = ({
   api = 'https://api.github.com',
   owner = 'user',
   project = 'repo',
   username = 'john'
-} = {}) =>
-  nock(api)
-    .get(`/repos/${owner}/${project}/collaborators/${username}`)
-    .reply(204);
+} = {}) => nock(api).get(`/repos/${owner}/${project}/collaborators/${username}`).reply(204);
 
 const interceptDraft = ({
   api = 'https://api.github.com',
@@ -67,7 +62,7 @@ const interceptAsset = ({
   nock(`https://uploads.${host}`)
     .post(`/repos/${owner}/${project}/releases/1/assets`, body)
     .query(true)
-    .reply(200, function() {
+    .reply(200, function () {
       const id = 1;
       const [, name] = this.req.path.match(/\?name=([^&]+)/);
       return {
