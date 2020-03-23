@@ -1,6 +1,5 @@
 const test = require('ava');
 const mock = require('mock-fs');
-const isCI = require('is-ci');
 const Config = require('../lib/config');
 const defaultConfig = require('../config/release-it.json');
 
@@ -32,7 +31,6 @@ test('should merge provided options', t => {
   const { options } = config;
   t.is(config.isVerbose, true);
   t.is(config.isDryRun, false);
-  t.is(config.isCI, isCI);
   t.is(options.increment, '1.0.0');
   t.is(options.git.push, false);
   t.is(options.github.release, true);
