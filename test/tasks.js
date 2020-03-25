@@ -331,7 +331,7 @@ test.serial('should handle private package correctly, bump lockfile', async t =>
   exec.restore();
 });
 
-test.serial('should initially publish non-private scoped npm package publicly', async t => {
+test.serial('should initially publish non-private scoped npm package privately', async t => {
   const { target } = t.context;
   const pkgName = path.basename(target);
   gitAdd(`{"name":"@scope/${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
@@ -344,7 +344,7 @@ test.serial('should initially publish non-private scoped npm package publicly', 
   await runTasks({}, container);
 
   const npmArgs = getNpmArgs(container.shell.exec.args);
-  t.is(npmArgs[4], 'npm publish . --tag latest --access public');
+  t.is(npmArgs[4], 'npm publish . --tag latest');
   exec.restore();
 });
 

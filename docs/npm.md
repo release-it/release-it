@@ -41,21 +41,30 @@ For a pre-release, the default tag is "next". The tag will be derived from the p
 
 ## Public scoped packages
 
-A [scoped package](https://docs.npmjs.com/misc/plugin) (e.g. `@user/package`) is either public or private. To
-[publish scoped packages](https://docs.npmjs.com/misc/plugin#publishing-scoped-packages), make sure this is in
-`package.json`:
+A [scoped package](https://docs.npmjs.com/about-scopes) (e.g. `@user/package`) is either public or private. By default, 
+`npm publish` will publish a scoped package as private. Note that scoped packages requires a paid account.
+
+In order to publish a public scoped package, you can add the following to your release-it config:
 
 ```json
 {
-  "publishConfig": {
-    "access": "public"
+  "npm": {
+    "access": "public" // or "restricted"
   }
 }
 ```
 
-By default, `npm publish` will
-[publish a scoped package as private](https://docs.npmjs.com/creating-and-publishing-private-packages) (requires paid
-account).
+However, this should most likely be specified in your `package.json`: 
+
+```json
+{
+  "publishConfig": {
+    "access": "public" // or "restricted"
+  }
+}
+```
+
+By specifying this in your `package.json`, publishing via `npm` will respect this setting as well. 
 
 ## Two-factor authentication
 
