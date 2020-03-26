@@ -1,1 +1,5 @@
-{}
+{
+  "npm": {
+    "access": "Please set publishConfig.access in package.json to \"public\" (or \"restricted\")."
+  }
+}
