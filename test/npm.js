@@ -166,10 +166,40 @@ test('should throw if user is not authenticated', async t => {
   exec.restore();
 });
 
-test('should publish scoped package', async t => {
+test('should publish public scoped package as public', async t => {
   const options = { npm: { access: 'public', tag: 'beta' } };
   const npmClient = factory(npm, { options });
   npmClient.setContext({ name: '@scoped/pkg' });
+  const exec = sinon.spy(npmClient.shell, 'exec');
+  await npmClient.publish();
+  t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag beta --access public');
+  exec.restore();
+});
+
+test('should publish a private scoped package as private', async t => {
+  const options = { npm: { access: 'restricted', tag: 'beta' } };
+  const npmClient = factory(npm, { options });
+  npmClient.setContext({ name: '@scoped/pkg' });
+  const exec = sinon.spy(npmClient.shell, 'exec');
+  await npmClient.publish();
+  t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag beta --access restricted');
+  exec.restore();
+});
+
+test('should publish a new private scoped package as NPM would', async t => {
+  const options = { npm: { tag: 'beta' } };
+  const npmClient = factory(npm, { options });
+  npmClient.setContext({ name: '@scoped/pkg', isNewPackage: true });
+  const exec = sinon.spy(npmClient.shell, 'exec');
+  await npmClient.publish();
+  t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag beta');
+  exec.restore();
+});
+
+test('should publish a new public scoped package as public', async t => {
+  const options = { npm: { access: 'public', tag: 'beta' } };
+  const npmClient = factory(npm, { options });
+  npmClient.setContext({ name: '@scoped/pkg', isNewPackage: true });
   const exec = sinon.spy(npmClient.shell, 'exec');
   await npmClient.publish();
   t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag beta --access public');
