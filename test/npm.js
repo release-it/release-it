@@ -119,7 +119,7 @@ test('should not throw when executing tasks', async t => {
 test('should throw if npm is down', async t => {
   const npmClient = factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
-  exec.withArgs('npm ping').rejects();
+  exec.withArgs('npm ping --registry https://registry.npmjs.org').rejects();
   await t.throwsAsync(runTasks(npmClient), { message: /Unable to reach npm registry/ });
   exec.restore();
 });
@@ -130,7 +130,7 @@ test('should not throw if npm returns 404 for unsupported ping/whoami', async t 
   const pingError = "npm ERR! code E404\nnpm ERR! 404 Package '--ping' not found : ping";
   const whoamiError = "npm ERR! code E404\nnpm ERR! 404 Package '--whoami' not found : whoami";
   exec.withArgs('npm ping').rejects(new Error(pingError));
-  exec.withArgs('npm whoai').rejects(new Error(whoamiError));
+  exec.withArgs('npm whoami').rejects(new Error(whoamiError));
   await runTasks(npmClient);
   t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag latest');
   exec.restore();
@@ -161,7 +161,7 @@ test('should not throw if npm returns 404 for unsupported ping', async t => {
 test('should throw if user is not authenticated', async t => {
   const npmClient = factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
-  exec.withArgs('npm whoami').rejects();
+  exec.withArgs('npm whoami --registry https://registry.npmjs.org').rejects();
   await t.throwsAsync(runTasks(npmClient), { message: /Not authenticated with npm/ });
   exec.restore();
 });
