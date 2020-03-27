@@ -150,7 +150,7 @@ test.serial('should skip authentication and collaborator checks when running on 
 
   t.is(authStub.callCount, 0);
   t.is(collaboratorStub.callCount, 0);
-  t.is(github.getContext('github.username'), 'release-it');
+  t.is(github.getContext('username'), 'release-it');
 
   authStub.restore();
   collaboratorStub.restore();
