@@ -167,7 +167,7 @@ test.serial('should release all the things (basic)', async t => {
   interceptGitHubPublish({ owner, project, body: { draft: false, tag_name: '1.0.1' } });
 
   const container = getContainer({
-    github: { release: true, remoteUrl: `https://github.com/${owner}/${project}` },
+    github: { release: true, pushRepo: `https://github.com/${owner}/${project}` },
     npm: { name: pkgName }
   });
   const exec = sinon.spy(container.shell, 'exec');
@@ -244,13 +244,13 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
     git: { changelog: 'git log --pretty=format:%h ${latestTag}...HEAD' },
     github: {
       release: true,
-      remoteUrl: `https://github.com/${owner}/${project}`,
+      pushRepo: `https://github.com/${owner}/${project}`,
       releaseNotes: 'echo Notes for ${name} [v${version}]: ${changelog}',
       assets: ['file']
     },
     gitlab: {
       release: true,
-      remoteUrl: `https://gitlab.com/${owner}/${project}`,
+      pushRepo: `https://gitlab.com/${owner}/${project}`,
       releaseNotes: 'echo Notes for ${name}: ${changelog}',
       assets: ['file']
     },

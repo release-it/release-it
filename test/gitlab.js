@@ -9,8 +9,8 @@ const tokenRef = 'GITLAB_TOKEN';
 
 test.serial('should validate token', async t => {
   const tokenRef = 'MY_GITLAB_TOKEN';
-  const remoteUrl = 'https://gitlab.com/user/repo';
-  const options = { gitlab: { release: true, tokenRef, remoteUrl } };
+  const pushRepo = 'https://gitlab.com/user/repo';
+  const options = { gitlab: { release: true, tokenRef, pushRepo } };
   const gitlab = factory(GitLab, { options });
   delete process.env[tokenRef];
 
@@ -25,10 +25,10 @@ test.serial('should validate token', async t => {
 });
 
 test.serial('should upload assets and release', async t => {
-  const remoteUrl = 'https://gitlab.com/user/repo';
+  const pushRepo = 'https://gitlab.com/user/repo';
   const asset = 'file1';
   const options = {
-    git: { remoteUrl },
+    git: { pushRepo },
     gitlab: {
       tokenRef,
       release: true,
@@ -52,7 +52,7 @@ test.serial('should upload assets and release', async t => {
         links: [
           {
             name: asset,
-            url: `${remoteUrl}/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/${asset}`
+            url: `${pushRepo}/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/${asset}`
           }
         ]
       }
@@ -61,8 +61,8 @@ test.serial('should upload assets and release', async t => {
 
   await runTasks(gitlab);
 
-  t.is(gitlab.assets[0].url, `${remoteUrl}/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/${asset}`);
-  t.is(gitlab.getReleaseUrl(), `${remoteUrl}/releases`);
+  t.is(gitlab.assets[0].url, `${pushRepo}/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/${asset}`);
+  t.is(gitlab.getReleaseUrl(), `${pushRepo}/releases`);
   t.is(gitlab.isReleased, true);
 });
 
@@ -71,7 +71,7 @@ test.serial('should release to self-managed host', async t => {
   const scope = nock(host);
   scope.post('/api/v4/projects/user%2Frepo/releases').reply(200, {});
   const options = {
-    git: { remoteUrl: `${host}/user/repo`, tagName: '${version}' },
+    git: { pushRepo: `${host}/user/repo`, tagName: '${version}' },
     gitlab: { releaseName: 'Release ${version}', releaseNotes: 'echo readme', tokenRef }
   };
   const gitlab = factory(GitLab, { options });
@@ -89,7 +89,7 @@ test.serial('should release to self-managed host', async t => {
 test.serial('should release to sub-grouped repo', async t => {
   const scope = nock('https://gitlab.com');
   scope.post('/api/v4/projects/group%2Fsub-group%2Frepo/releases').reply(200, {});
-  const options = { gitlab: { tokenRef }, git: { remoteUrl: 'git@gitlab.com:group/sub-group/repo.git' } };
+  const options = { gitlab: { tokenRef }, git: { pushRepo: 'git@gitlab.com:group/sub-group/repo.git' } };
   const gitlab = factory(GitLab, { options });
 
   interceptUser({ owner: 'sub-group' });
@@ -103,8 +103,8 @@ test.serial('should release to sub-grouped repo', async t => {
 
 test.serial('should throw for unauthenticated user', async t => {
   const host = 'https://gitlab.com';
-  const remoteUrl = `${host}/user/repo`;
-  const options = { gitlab: { tokenRef, remoteUrl, host } };
+  const pushRepo = `${host}/user/repo`;
+  const options = { gitlab: { tokenRef, pushRepo, host } };
   const gitlab = factory(GitLab, { options });
   const scope = nock(host);
   scope.get(`/api/v4/user`).reply(401);
@@ -117,8 +117,8 @@ test.serial('should throw for unauthenticated user', async t => {
 
 test.serial('should throw for non-collaborator', async t => {
   const host = 'https://gitlab.com';
-  const remoteUrl = `${host}/john/repo`;
-  const options = { gitlab: { tokenRef, remoteUrl, host } };
+  const pushRepo = `${host}/john/repo`;
+  const options = { gitlab: { tokenRef, pushRepo, host } };
   const gitlab = factory(GitLab, { options });
   const scope = nock(host);
   scope.get(`/api/v4/projects/john%2Frepo/members/all/1`).reply(200, { username: 'emma' });
@@ -132,8 +132,8 @@ test.serial('should throw for non-collaborator', async t => {
 
 test.serial('should throw for insufficient access level', async t => {
   const host = 'https://gitlab.com';
-  const remoteUrl = `${host}/john/repo`;
-  const options = { gitlab: { tokenRef, remoteUrl, host } };
+  const pushRepo = `${host}/john/repo`;
+  const options = { gitlab: { tokenRef, pushRepo, host } };
   const gitlab = factory(GitLab, { options });
   const scope = nock(host);
   scope.get(`/api/v4/projects/john%2Frepo/members/all/1`).reply(200, { username: 'john', access_level: 10 });
@@ -147,8 +147,8 @@ test.serial('should throw for insufficient access level', async t => {
 
 test('should not make requests in dry run', async t => {
   const [host, owner, repo] = ['https://gitlab.example.org', 'user', 'repo'];
-  const remoteUrl = `${host}/${owner}/${repo}`;
-  const options = { git: { remoteUrl }, gitlab: { releaseName: 'R', tokenRef } };
+  const pushRepo = `${host}/${owner}/${repo}`;
+  const options = { git: { pushRepo }, gitlab: { releaseName: 'R', tokenRef } };
   const gitlab = factory(GitLab, { options, global: { isDryRun: true } });
   sinon.stub(gitlab, 'getLatestVersion').resolves('1.0.0');
   const spy = sinon.spy(gitlab, 'client', ['get']);
@@ -158,7 +158,7 @@ test('should not make requests in dry run', async t => {
   t.is(spy.get.callCount, 0);
   t.is(gitlab.log.exec.args[1][0], 'gitlab releases#uploadAssets');
   t.is(gitlab.log.exec.args[2][0], 'gitlab releases#createRelease "R" (1.0.1)');
-  t.is(gitlab.getReleaseUrl(), `${remoteUrl}/releases`);
+  t.is(gitlab.getReleaseUrl(), `${pushRepo}/releases`);
   t.is(gitlab.isReleased, true);
   spy.restore();
 });
