@@ -14,6 +14,8 @@ When not in CI mode, release-it will ask for confirmation before each of the com
 Configure the `[git.*]` options to modify the commands accordingly. See
 [all options and their default values](../config/release-it.json).
 
+The minimum required version of Git is v2.0.0.
+
 ## SSH keys & Git remotes
 
 SSH keys and Git remotes are assumed to be configured correctly. If a manual `git push` from the command line works,

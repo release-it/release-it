@@ -215,7 +215,7 @@ test.serial('should push to remote name (not "origin")', async t => {
   sh.exec(`git init --bare ${bare}`);
   sh.exec(`git clone ${bare} .`);
   gitAdd('line', 'file', 'Add file');
-  sh.exec(`git remote add upstream ${sh.exec('git remote get-url origin')}`);
+  sh.exec(`git remote add upstream ${sh.exec('git config --get remote.origin.url')}`);
   const options = { git: { pushRepo: 'upstream' } };
   const gitClient = factory(Git, { options });
   const spy = sinon.spy(gitClient.shell, 'exec');
