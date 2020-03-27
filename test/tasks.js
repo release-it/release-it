@@ -177,8 +177,8 @@ test.serial('should release all the things (basic)', async t => {
   const npmArgs = getNpmArgs(container.shell.exec.args);
 
   t.deepEqual(npmArgs, [
-    'npm ping --registry https://registry.npmjs.org',
-    'npm whoami --registry https://registry.npmjs.org',
+    'npm ping',
+    'npm whoami',
     `npm show ${pkgName}@latest version`,
     'npm version 1.0.1 --no-git-tag-version',
     'npm publish . --tag latest'
@@ -263,8 +263,8 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
 
   const npmArgs = getNpmArgs(container.shell.exec.args);
   t.deepEqual(npmArgs, [
-    'npm ping --registry https://registry.npmjs.org',
-    'npm whoami --registry https://registry.npmjs.org',
+    'npm ping',
+    'npm whoami',
     `npm show ${pkgName}@latest version`,
     'npm version 1.1.0-alpha.0 --no-git-tag-version',
     'npm publish . --tag alpha'
@@ -295,8 +295,8 @@ test.serial('should publish pre-release without pre-id with different npm.tag', 
 
   const npmArgs = getNpmArgs(container.shell.exec.args);
   t.deepEqual(npmArgs, [
-    'npm ping --registry https://registry.npmjs.org',
-    'npm whoami --registry https://registry.npmjs.org',
+    'npm ping',
+    'npm whoami',
     `npm show ${pkgName}@latest version`,
     'npm version 2.0.0-0 --no-git-tag-version',
     'npm publish . --tag next'

@@ -119,7 +119,7 @@ test('should not throw when executing tasks', async t => {
 test('should throw if npm is down', async t => {
   const npmClient = factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
-  exec.withArgs('npm ping --registry https://registry.npmjs.org').rejects();
+  exec.withArgs('npm ping').rejects();
   await t.throwsAsync(runTasks(npmClient), { message: /Unable to reach npm registry/ });
   exec.restore();
 });
@@ -161,7 +161,7 @@ test('should not throw if npm returns 404 for unsupported ping', async t => {
 test('should throw if user is not authenticated', async t => {
   const npmClient = factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
-  exec.withArgs('npm whoami --registry https://registry.npmjs.org').rejects();
+  exec.withArgs('npm whoami').rejects();
   await t.throwsAsync(runTasks(npmClient), { message: /Not authenticated with npm/ });
   exec.restore();
 });
