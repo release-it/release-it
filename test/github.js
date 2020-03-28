@@ -66,7 +66,7 @@ test('should release and upload assets', async t => {
 test('should release to enterprise host', async t => {
   const github = factory(GitHub, { options: { github: { tokenRef } } });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
-  exec.withArgs('git config --get remote.origin.url').resolves(`https://github.example.org/user/repo`);
+  exec.withArgs('git remote get-url origin').resolves(`https://github.example.org/user/repo`);
   exec.withArgs('git describe --tags --abbrev=0').resolves(`1.0.0`);
 
   const remote = { api: 'https://github.example.org/api/v3', host: 'github.example.org' };
