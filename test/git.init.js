@@ -91,7 +91,7 @@ test.serial('should detect and include version prefix ("v")', async t => {
   t.is(gitClient.getContext('tagName'), 'v1.0.1');
 });
 
-test.serial('should detect include version prefix (without "v")', async t => {
+test.serial('should detect and exclude version prefix', async t => {
   const gitClient = factory(Git, { options: { git } });
   sh.exec('git tag 1.0.0');
   await gitClient.init();
@@ -99,20 +99,20 @@ test.serial('should detect include version prefix (without "v")', async t => {
   t.is(gitClient.getContext('tagName'), '1.0.1');
 });
 
-test.serial('should honor tagName configuration', async t => {
-  const gitClient = factory(Git, { options: { git: { tagName: 'TAGNAME-v${version}' } } });
-  sh.exec('git tag 1.0.0');
-  await gitClient.init();
-  await gitClient.bump('1.0.1');
-  t.is(gitClient.getContext('tagName'), 'TAGNAME-v1.0.1');
-});
-
-test.serial('should detect include version prefix (configured)', async t => {
+test.serial('should detect and exclude version prefix (configured)', async t => {
   const gitClient = factory(Git, { options: { git: { tagName: 'v${version}' } } });
   sh.exec('git tag 1.0.0');
   await gitClient.init();
   await gitClient.bump('1.0.1');
   t.is(gitClient.getContext('tagName'), 'v1.0.1');
+});
+
+test.serial('should honor custom tagName configuration', async t => {
+  const gitClient = factory(Git, { options: { git: { tagName: 'TAGNAME-v${version}' } } });
+  sh.exec('git tag 1.0.0');
+  await gitClient.init();
+  await gitClient.bump('1.0.1');
+  t.is(gitClient.getContext('tagName'), 'TAGNAME-v1.0.1');
 });
 
 test.serial('should get the latest tag after fetch', async t => {
