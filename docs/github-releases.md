@@ -45,7 +45,7 @@ An example:
 }
 ```
 
-See [Changelog](./changelog) for more information about generating changelogs/release notes.
+See [Changelog](./changelog.md) for more information about generating changelogs/release notes.
 
 ## Attach binary assets
 
