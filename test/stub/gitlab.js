@@ -11,7 +11,7 @@ module.exports.interceptCollaborator = ({
   userId = 1
 } = {}) =>
   nock(host)
-    .get(`/api/v4/projects/${group ? `${group}%2F` : ''}${owner}%2F${project}/members/all/${userId}`)
+    .get(`/api/v4/projects/${group ? `${group}%2F` : ''}${owner}%2F${project}/members/${userId}`)
     .reply(200, { id: userId, username: owner, access_level: 30 });
 
 module.exports.interceptPublish = ({ host = 'https://gitlab.com', owner = 'user', project = 'repo', body } = {}) =>
