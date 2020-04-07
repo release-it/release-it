@@ -121,7 +121,7 @@ test.serial('should throw for non-collaborator', async t => {
   const options = { gitlab: { tokenRef, pushRepo, host } };
   const gitlab = factory(GitLab, { options });
   const scope = nock(host);
-  scope.get(`/api/v4/projects/john%2Frepo/members/1`).reply(200, { username: 'emma' });
+  scope.get(`/api/v4/projects/john%2Frepo/members/all/1`).reply(200, { username: 'emma' });
   interceptUser({ owner: 'john' });
 
   await t.throwsAsync(runTasks(gitlab), {
@@ -136,7 +136,7 @@ test.serial('should throw for insufficient access level', async t => {
   const options = { gitlab: { tokenRef, pushRepo, host } };
   const gitlab = factory(GitLab, { options });
   const scope = nock(host);
-  scope.get(`/api/v4/projects/john%2Frepo/members/1`).reply(200, { username: 'john', access_level: 10 });
+  scope.get(`/api/v4/projects/john%2Frepo/members/all/1`).reply(200, { username: 'john', access_level: 10 });
   interceptUser({ owner: 'john' });
 
   await t.throwsAsync(runTasks(gitlab), {
