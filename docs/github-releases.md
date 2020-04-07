@@ -15,11 +15,7 @@ To add [GitHub releases](https://help.github.com/articles/creating-releases/) in
 - Configure `github.release: true`.
 - Obtain a [personal access token](https://github.com/settings/tokens) (release-it only needs "repo" access; no "admin"
   or other scopes).
-- Make sure the token is available as an environment variable. Example:
-
-```bash
-export GITHUB_TOKEN="f941e0..."
-```
+- Make sure the token is [available as an environment variable](./environment-variables.md).
 
 Do not put the actual token in the release-it configuration. It will be read from the `GITHUB_TOKEN` environment
 variable. You can change this variable name by setting the `github.tokenRef` option to something else.

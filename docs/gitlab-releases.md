@@ -10,11 +10,7 @@ configured correctly.
 - Configure `gitlab.release: true`.
 - Obtain a [personal access token](https://gitlab.com/profile/personal_access_tokens) (release-it only needs the "api"
   scope).
-- Make sure the token is available as an environment variable. Example:
-
-```bash
-export GITLAB_TOKEN="f941e0..."
-```
+- Make sure the token is [available as an environment variable](./environment-variables.md).
 
 GitLab Releases do not support pre-releases or drafts.
 

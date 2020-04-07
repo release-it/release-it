@@ -244,11 +244,7 @@ The "Releases" tab on GitHub projects links to a page to store the changelog cq.
 - Configure `github.release: true`.
 - Obtain a [personal access token](https://github.com/settings/tokens) (release-it only needs "repo" access; no "admin"
   or other scopes).
-- Make sure the token is available as an environment variable. Example:
-
-```bash
-export GITHUB_TOKEN="f941e0..."
-```
+- Make sure the token is [available as an environment variable](./docs/environment-variables.md).
 
 → See [GitHub Releases](./docs/github-releases.md) for more details.
 
@@ -259,11 +255,7 @@ export GITHUB_TOKEN="f941e0..."
 - Configure `gitlab.release: true`.
 - Obtain a [personal access token](https://gitlab.com/profile/personal_access_tokens) (release-it only needs the "api"
   scope).
-- Make sure the token is available as an environment variable. Example:
-
-```bash
-export GITLAB_TOKEN="f941e0..."
-```
+- Make sure the token is [available as an environment variable](./docs/environment-variables.md).
 
 → See [GitLab Releases](./docs/gitlab-releases.md) for more details.
 
