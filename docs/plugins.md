@@ -165,9 +165,7 @@ can be used freely.
 
 #### init()
 
-Implement `init` to validate prequisites and gather application or package details such as the current version.
-
-The `init` method for all plugins are run async in parallel.
+Implement `init` to validate prerequisites, and gather application or package details such as the current version.
 
 #### beforeBump()
 
@@ -289,7 +287,7 @@ Execute commands in the child process (i.e. the shell). This is used extensively
 
 Use template variables to render replacements. For instance, the command `git log ${latestTag}...HEAD` becomes
 `git log v1.2.3...HEAD` before being executed. The replacements are all configuration options (with the default values
-in [config/release-it.json](../config/release-it.json)), plus the following variables:
+in [config/release-it.json](../config/release-it.json)), plus the following additional variables:
 
 ```
 version
@@ -300,7 +298,7 @@ name
 repo.remote, repo.protocol, repo.host, repo.owner, repo.repository, repo.project
 ```
 
-All variables are available from `beforeBump` (i.e. not in `init`).
+The additional variables are available in every release-cycle method, except `init`.
 
 Note that in dry runs, commands are **not** executed as they may contain write operations. Read-only operations should
 add the `write: false` option to run in dry mode:
@@ -343,11 +341,14 @@ And finally, for `release` and `afterRelease` the order is reversed, so that tas
 plugins are done. Examples include to trigger deployment hooks, or send a notification to indicate a successfull release
 or deployment.
 
-Here's an example. If the `npm` plugin is enabled, `npm.getName()` is the first plugin/method that returns something
-(the `name` from `package.json` is used in this case). If this plugin is not enabled, `getName` of the next plugin is
-invoked (e.g. the `git` plugin will infer the name from the remote Git url), etcetera. However, the methods of custom
-plugins are invoked first, so they can override the `name`, `latestVersion`, `repo`, and `changelog` values that would
-otherwise be taken from the core plugins.
+Here's an example:
+
+- If the `npm` plugin is enabled, `npm.getName()` is the first plugin/method that returns something (the `name` from
+  `package.json` is used in this case).
+- If this plugin is not enabled, `getName` of the next plugin is invoked (e.g. the `git` plugin will infer the name from
+  the remote Git url), etcetera.
+- The methods of custom plugins are invoked first, so they can override the `name`, `latestVersion`, `repo`, and
+  `changelog` values that would otherwise be taken from the core plugins.
 
 ## Available & example plugins
 
