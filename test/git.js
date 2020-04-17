@@ -149,7 +149,7 @@ test.serial('should commit and tag with quoted characters', async t => {
   });
   sh.touch('file');
   const changelog = `- Foo's${EOL}- "$bar"${EOL}- '$baz'${EOL}- foo`;
-  gitClient.setContext({ version: '1.0.0', changelog });
+  gitClient.config.setContext({ version: '1.0.0', changelog });
 
   await gitClient.stage('file');
   await gitClient.commit();
