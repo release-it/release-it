@@ -245,7 +245,7 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
     git: {
       changelog: 'git log --pretty=format:%h ${latestTag}...HEAD',
       commitMessage: 'Release ${version} for ${name} (from ${latestVersion})',
-      tagAnnotation: '${repo.remote} ${repo.owner} ${repo.repository} ${repo.project}'
+      tagAnnotation: '${repo.owner} ${repo.repository} ${repo.project}'
     },
     github: {
       release: true,
@@ -281,8 +281,8 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
   const { stdout: tagName } = sh.exec('git describe --tags --abbrev=0');
   t.is(tagName.trim(), 'v1.1.0-alpha.0');
 
-  const { stdout: tagAnnotation } = sh.exec("git for-each-ref refs/tags/v1.1.0-alpha.0 --format='%(contents)'");
-  t.is(tagAnnotation.trim(), `${bare} ${owner} ${owner}/${project} ${project}`);
+  const { stdout: tagAnnotation } = sh.exec('git for-each-ref refs/tags/v1.1.0-alpha.0 --format="%(contents)"');
+  t.is(tagAnnotation.trim(), `${owner} ${owner}/${project} ${project}`);
 
   t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.1.0-alpha.0)`));
   t.true(log.log.firstCall.args[0].endsWith(`https://github.com/${owner}/${project}/releases/tag/v1.1.0-alpha.0`));
