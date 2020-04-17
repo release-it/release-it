@@ -163,6 +163,9 @@ In case a plugin replaces a core plugin, it should be disabled by returning the 
 Implement release-cycle methods to execute logic during the release process. All methods are run async, so `async/await`
 can be used freely.
 
+Make sure any method returns `false` when it's disabled or skipped, in order to skip the execution of the
+`after:[plugin]:[method]` hook. this is especially relevant for the `release` method.
+
 #### init()
 
 Implement `init` to validate prerequisites, and gather application or package details such as the current version.
