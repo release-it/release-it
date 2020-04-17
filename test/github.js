@@ -50,10 +50,8 @@ test('should release and upload assets', async t => {
 
   interceptAuthentication();
   interceptCollaborator();
-  interceptDraft({
-    body: { tag_name: '2.0.2', name: 'Release 2.0.2', body: 'Custom notes', prerelease: false, draft: true }
-  });
-  interceptPublish({ body: { draft: false, tag_name: '2.0.2' } });
+  interceptDraft({ body: { tag_name: '2.0.2', name: 'Release 2.0.2', body: 'Custom notes' } });
+  interceptPublish({ body: { tag_name: '2.0.2' } });
   interceptAsset({ body: asset });
 
   await runTasks(github);
@@ -73,8 +71,8 @@ test('should release to enterprise host', async t => {
   const remote = { api: 'https://github.example.org/api/v3', host: 'github.example.org' };
   interceptAuthentication(remote);
   interceptCollaborator(remote);
-  interceptDraft(Object.assign({ body: { tag_name: '1.0.1', name: '', prerelease: false, draft: true } }, remote));
-  interceptPublish(Object.assign({ body: { draft: false, tag_name: '1.0.1' } }, remote));
+  interceptDraft(Object.assign({ body: { tag_name: '1.0.1' } }, remote));
+  interceptPublish(Object.assign({ body: { tag_name: '1.0.1' } }, remote));
 
   await runTasks(github);
 
@@ -87,8 +85,8 @@ test('should release to alternative host and proxy', async t => {
   const remote = { api: 'https://my-custom-host.org/api/v3', host: 'my-custom-host.org' };
   interceptAuthentication(remote);
   interceptCollaborator(remote);
-  interceptDraft(Object.assign({ body: { tag_name: '1.0.1', name: '', prerelease: false, draft: true } }, remote));
-  interceptPublish(Object.assign({ body: { draft: false, tag_name: '1.0.1' } }, remote));
+  interceptDraft(Object.assign({ body: { tag_name: '1.0.1' } }, remote));
+  interceptPublish(Object.assign({ body: { tag_name: '1.0.1' } }, remote));
   const options = {
     github: {
       tokenRef,
@@ -110,8 +108,8 @@ test('should release to alternative host and proxy', async t => {
 
 test('should release to git.pushRepo', async t => {
   const remote = { api: 'https://my-custom-host.org/api/v3', host: 'my-custom-host.org' };
-  interceptDraft(Object.assign({ body: { tag_name: '1.0.1', name: '', prerelease: false, draft: true } }, remote));
-  interceptPublish(Object.assign({ body: { draft: false, tag_name: '1.0.1' } }, remote));
+  interceptDraft(Object.assign({ body: { tag_name: '1.0.1' } }, remote));
+  interceptPublish(Object.assign({ body: { tag_name: '1.0.1' } }, remote));
   const options = { git: { pushRepo: 'upstream' }, github: { tokenRef, skipChecks: true } };
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();

@@ -257,15 +257,19 @@ test.serial('should reset files', async t => {
 
 test.serial('should roll back when cancelled', async t => {
   sh.exec('git init');
+  sh.exec(`git remote add origin foo`);
   const version = '1.2.3';
   gitAdd(`{"version":"${version}"}`, 'package.json', 'Add package.json');
   const options = { git: { requireCleanWorkingDir: true, commit: true, tag: true, tagName: 'v${version}' } };
   const gitClient = factory(Git, { options });
+  const exec = sinon.spy(gitClient.shell, 'execFormattedCommand');
   sh.exec(`git tag ${version}`);
   gitAdd('line', 'file', 'Add file');
+
+  await gitClient.init();
+
   sh.exec('npm --no-git-tag-version version patch');
 
-  const exec = sinon.spy(gitClient.shell, 'execFormattedCommand');
   gitClient.bump('1.2.4');
   await gitClient.beforeRelease();
   await gitClient.stage('package.json');
@@ -273,8 +277,8 @@ test.serial('should roll back when cancelled', async t => {
   await gitClient.tag();
   await gitClient.rollbackOnce();
 
-  t.is(exec.args[5][0], 'git tag --delete v1.2.4');
-  t.is(exec.args[6][0], 'git reset --hard HEAD~1');
+  t.is(exec.args[10][0], 'git tag --delete v1.2.4');
+  t.is(exec.args[11][0], 'git reset --hard HEAD~1');
 });
 
 test.serial('should not touch existing history when rolling back', async t => {

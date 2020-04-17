@@ -196,6 +196,7 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
   const project = path.basename(bare);
   const pkgName = path.basename(target);
   const owner = path.basename(path.dirname(bare));
+  const url = `https://gitlab.com/${owner}/${project}`;
   gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
   sh.exec('git tag v1.0.0');
   const sha = gitAdd('line', 'file', 'More file');
@@ -231,7 +232,7 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
         links: [
           {
             name: 'file',
-            url: `https://gitlab.com/${owner}/${project}/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/file`
+            url: `${url}/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/file`
           }
         ]
       }
@@ -241,7 +242,11 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
   const container = getContainer({
     increment: 'minor',
     preRelease: 'alpha',
-    git: { changelog: 'git log --pretty=format:%h ${latestTag}...HEAD' },
+    git: {
+      changelog: 'git log --pretty=format:%h ${latestTag}...HEAD',
+      commitMessage: 'Release ${version} for ${name} (from ${latestVersion})',
+      tagAnnotation: '${repo.remote} ${repo.owner} ${repo.repository} ${repo.project}'
+    },
     github: {
       release: true,
       pushRepo: `https://github.com/${owner}/${project}`,
@@ -250,7 +255,7 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
     },
     gitlab: {
       release: true,
-      pushRepo: `https://gitlab.com/${owner}/${project}`,
+      pushRepo: url,
       releaseNotes: 'echo Notes for ${name}: ${changelog}',
       assets: ['file']
     },
@@ -270,8 +275,14 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
     'npm publish . --tag alpha'
   ]);
 
-  const { stdout } = sh.exec('git describe --tags --abbrev=0');
-  t.is(stdout.trim(), 'v1.1.0-alpha.0');
+  const { stdout: commitMessage } = sh.exec('git log --oneline --format=%B -n 1 HEAD');
+  t.is(commitMessage.trim(), `Release 1.1.0-alpha.0 for ${pkgName} (from 1.0.0)`);
+
+  const { stdout: tagName } = sh.exec('git describe --tags --abbrev=0');
+  t.is(tagName.trim(), 'v1.1.0-alpha.0');
+
+  const { stdout: tagAnnotation } = sh.exec("git for-each-ref refs/tags/v1.1.0-alpha.0 --format='%(contents)'");
+  t.is(tagAnnotation.trim(), `${bare} ${owner} ${owner}/${project} ${project}`);
 
   t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.1.0-alpha.0)`));
   t.true(log.log.firstCall.args[0].endsWith(`https://github.com/${owner}/${project}/releases/tag/v1.1.0-alpha.0`));

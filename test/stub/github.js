@@ -17,13 +17,12 @@ const interceptDraft = ({
   host = 'github.com',
   owner = 'user',
   project = 'repo',
-  body: requestBody
+  body: { tag_name, name = '', body = null, prerelease = false, draft = true }
 } = {}) =>
   nock(api)
-    .post(`/repos/${owner}/${project}/releases`, requestBody)
+    .post(`/repos/${owner}/${project}/releases`, { tag_name, name, body, prerelease, draft })
     .reply(() => {
       const id = 1;
-      const { tag_name, name, body, prerelease, draft } = requestBody;
       const responseBody = {
         id,
         tag_name,
@@ -42,13 +41,13 @@ const interceptPublish = ({
   api = 'https://api.github.com',
   owner = 'user',
   project = 'repo',
-  body = {}
+  body: { tag_name, draft = false }
 } = {}) =>
   nock(api)
-    .patch(`/repos/${owner}/${project}/releases/1`, body)
+    .patch(`/repos/${owner}/${project}/releases/1`, { tag_name, draft })
     .reply(200, {
       draft: false,
-      html_url: `https://${host}/${owner}/${project}/releases/tag/${body.tag_name}`
+      html_url: `https://${host}/${owner}/${project}/releases/tag/${tag_name}`
     });
 
 const interceptAsset = ({
