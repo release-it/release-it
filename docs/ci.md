@@ -9,6 +9,7 @@ below, feel free to [open a ticket](https://github.com/release-it/release-it/iss
 - [Git](#git)
 - [npm](#npm)
 - [GitHub & GitLab Releases](#github--gitlab-releases)
+- [GitLab CI](#gitlab-ci)
 
 ## Git
 
@@ -88,3 +89,32 @@ Make sure the `GITHUB_TOKEN` or `GITLAB_TOKEN` environment variable is set in th
 draft) [GitHub](https://github.com/release-it/release-it#github-releases) or
 [GitLab releases](https://github.com/release-it/release-it#gitlab-releases). This works the same as on your local
 machine.
+
+## GitLab CI
+
+### SSH (recommended)
+
+When using release-it with GitLab CI and SSH, make sure the following requirements are available:
+
+- `git` and `ssh` as packages are installed in the job
+- `npm install` is run beforehand
+- environment variables contain `GITLAB_TOKEN`, `SSH_PRIVATE_KEY`, `CI_EMAIL` and `CI_USER`
+- a user with permissions to write to protected branches or deploy key (env var) are added to the repo
+
+The following example shows a pipeline that first installs git and openssh to alpine, adds the SSH private key to the SSH agent, configures SSH, checks out the branch, sets the git user, runs npm install and executes release-it:
+
+```yaml
+before_script:
+    - apk add --no-cache git openssh
+    - eval `ssh-agent -s`
+    - echo "${SSH_PRIVATE_KEY}" | tr -d '\r' | ssh-add - > /dev/null # add ssh key
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - git checkout $CI_BUILD_REF_NAME
+    - git remote set-url origin "git@gitlab.com:$CI_PROJECT_PATH.git"
+    - git config --global user.email "${CI_EMAIL}" && git config --global user.name "${CI_USERNAME}"
+    - npm install
+  script:
+    - npx release-it --ci
+```
