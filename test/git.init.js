@@ -137,6 +137,6 @@ test.serial('should generate correct changelog', async t => {
   gitAdd('line', 'file', 'Add file');
   gitAdd('line', 'file', 'Add file');
   await gitClient.init();
-  const changelog = gitClient.config.getContext('changelog');
+  const changelog = await gitClient.getChangelog();
   t.regex(changelog, /\* Add file \(\w{7}\)\n\* Add file \(\w{7}\)/);
 });
