@@ -11,14 +11,14 @@ jobs:
     strategy:
       matrix:
         os:
-          - ubuntu-latest
-          - windows-latest
-          - macos-latest
+          - ubuntu
+          - windows
+          - macos
         node:
           - 10
           - 12
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}-latest
     name: ${{ matrix.os }} (Node v${{ matrix.node }})
 
     steps:
