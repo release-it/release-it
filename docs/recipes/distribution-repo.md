@@ -1,8 +1,8 @@
 # Distribution repository
 
 The `dist.repo` setting is deprecated since [v9.8.0](https://github.com/release-it/release-it/releases/tag/9.8.0), and
-removed in v10. However, the idea can still be achieved. There are many solutions to this, here are some basic examples
-for inspiration.
+removed in v10. However, publishing a seperate distribution can still be achieved. There are many solutions to this,
+here are some basic examples for inspiration.
 
 ## Separate distribution repo
 

@@ -1,7 +1,7 @@
 # GitHub Releases
 
-The "Releases" tab on GitHub projects links to a page to store the changelog. Releases are attached to an existing Git
-tag, so make sure the [Git part](./git.md) is configured correctly.
+The "Releases" tab on GitHub projects links to a page containing the project's history, or changelog. Releases are
+attached to an existing Git tag, so make sure the [Git part](./git.md) is configured correctly.
 
 Unsurprisingly, release-it uses this feature extensively:
 [release-it's releases page](https://github.com/release-it/release-it/releases).

@@ -14,11 +14,11 @@ Example configuration in the release-it config:
 
 ```json
 {
-  "hooks": {
-    "before:release": "npx auto-changelog -p"
-  },
   "git": {
     "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs"
+  },
+  "hooks": {
+    "after:bump": "npx auto-changelog -p"
   }
 }
 ```
@@ -46,30 +46,29 @@ unreleased tag:
 {{/each}}
 ```
 
-You can also use the template above [changelog-compact.hbs](../../templates/changelog-compact.hbs) directly from the
-URL:
+The template above [changelog-compact.hbs](../../templates/changelog-compact.hbs) can also be used directly from here:
 
 ```json
 {
-  "hooks": {
-    "before:release": "npx auto-changelog -p"
-  },
   "git": {
     "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs"
+  },
+  "hooks": {
+    "after:bump": "npx auto-changelog -p"
   }
 }
 ```
 
-In case you are not using the `package.json` and you just want to simply generate `CHANGELOG.md` compatible with
-[https://keepachangelog.com/](https://keepachangelog.com/) you can use this example:
+Projects without a `package.json` that need to generate a `CHANGELOG.md` compatible with
+[https://keepachangelog.com](https://keepachangelog.com) can use this example:
 
 ```json
 {
-  "hooks": {
-    "before:release": "npx auto-changelog --commit-limit false https://raw.githubusercontent.com/release-it/release-it/master/templates/keepachangelog.hbs"
-  },
   "git": {
     "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs"
+  },
+  "hooks": {
+    "after:bump": "npx auto-changelog --commit-limit false https://raw.githubusercontent.com/release-it/release-it/master/templates/keepachangelog.hbs"
   }
 }
 ```

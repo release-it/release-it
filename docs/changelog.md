@@ -1,20 +1,26 @@
-## Changelog
+# Changelog
 
-By default, release-it generates a changelog, to show and help select a version for the new release. Additionally, this
-changelog serves as the release notes for the GitHub or GitLab release.
+By default, release-it generates a changelog, to show and help select a version for the new release. It contains all
+commits since the latest tag.
 
 The [default command](../config/release-it.json) is based on `git log ...`. This setting (`git.changelog`) can be
-overridden. To customize the release notes for the GitHub or GitLab release, use `github.releaseNotes` or
-`gitlab.releaseNotes`. Make sure any of these commands output the changelog to `stdout`.
+overridden. Make sure any of these commands output the changelog to `stdout`.
 
-Instead of executing a shell command, a (Handlebars) template can be used to generate the changelog. See
-[auto-changelog](#auto-changelog) below for more details.
+For a more rich changelog (e.g. with headers, sections), a (Handlebars) template can be used to generate the changelog.
+See [auto-changelog](#auto-changelog) below for more details.
 
-Some projects keep their changelog in e.g. `CHANGELOG.md` or `history.md`. To auto-update this file with the release,
-the recommended configuration is to use a command that does this in `hooks.after:bump`. See below for examples and
-workflows.
+Some projects keep their changelog in e.g. `CHANGELOG.md` or `history.md`. To auto-update this file and include this in
+the release commit, the recommended configuration is to do this in the `after:bump` hook (see example below).
 
-### Auto-changelog
+An alternative is to use the [conventional-changelog](#conventional-changelog) plugin for this.
+
+## GitHub and GitLab Releases
+
+The output of `git.changelog` also serves as the release notes for the [GitHub](./github-releases.md) or
+[GitLab release](./gitlab-releases.md). To customize the release notes for the GitHub or GitLab release, use
+`github.releaseNotes` or `gitlab.releaseNotes`. Make sure any of these commands output the changelog to `stdout`.
+
+## Auto-changelog
 
 A tool like [auto-changelog](https://github.com/CookPete/auto-changelog) is a great companion to release-it:
 
@@ -29,15 +35,14 @@ A tool like [auto-changelog](https://github.com/CookPete/auto-changelog) is a gr
 }
 ```
 
-With this `git.changelog`, the changelog preview is based on the `changelog-compact.hbs` template file. This would be
-used for [GitHub](./github-releases.md) or [GitLab releases](./gitlab-releases.md) as well.
+With this `git.changelog`, the changelog preview is based on the `changelog-compact.hbs` template file.
 
 Additionally, `hooks.after:bump` will update the `CHANGELOG.md` with each release to get included with the release
 commit. This can be omitted if the project does not keep a `CHANGELOG.md` or similar.
 
 See the [auto-changelog recipe](./recipes/auto-changelog.md) for an example setup and template.
 
-### Conventional Changelog
+## Conventional Changelog
 
 If your project follows conventions, such as the
 [Angular commit guidelines](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#commits), the
@@ -47,8 +52,9 @@ If your project follows conventions, such as the
 npm install @release-it/conventional-changelog --save-dev
 ```
 
-Use this plugin to get the recommended bump based on the commit messages, generate a conventional changelog, and update
-the `CHANGELOG.md` file:
+Use this plugin to get the recommended bump based on the commit messages.
+
+Additionally, it can generate a conventional changelog, and optionally update the `CHANGELOG.md` file in the process.
 
 ```json
 {
@@ -61,7 +67,7 @@ the `CHANGELOG.md` file:
 }
 ```
 
-- Omit the `infile` at will. If set, but the file does not exist yet, it's created with the full history.
+- Omit the `infile` to only use the recommended bump. If the file doesn't exist yet, it's created with the full history.
 - Please find the
   [list of available presets](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages)
   (`angular`, `ember`, etc).
