@@ -45,6 +45,8 @@ In case extra arguments should be provided to Git, these options are available:
 For example, use `"git.commitArgs": ["-S"]` to sign commits (also see
 [#35](https://github.com/release-it/release-it/issues/350)).
 
+Note that `["--follow-tags"]` is the default for `pushArgs`, so add this to the custom array of arguments.
+
 ## Skip Git steps
 
 To skip the Git steps entirely (for instance, if you only want to `npm publish`), this shorthand is available:
