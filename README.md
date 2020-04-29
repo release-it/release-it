@@ -39,7 +39,6 @@
 - [Latest version](#latest-version)
 - [Prerequisite checks](#prerequisite-checks)
 - [Git](#git)
-- [Mercurial](#mercurial)
 - [GitHub Releases](#github-releases)
 - [GitLab Releases](#gitlab-releases)
 - [Changelog](#changelog)
@@ -232,10 +231,6 @@ remote.
 
 → See [Git](./docs/git.md) for more details.
 
-## Mercurial
-
-An experimental [Mercurial plugin](https://github.com/release-it/mercurial) is available.
-
 ## GitHub Releases
 
 The "Releases" tab on GitHub projects links to a page to store the changelog cq. release notes. To add
@@ -347,13 +342,14 @@ is actually: `init`, `beforeBump`, `bump`, `beforeRelease`, `release` or `afterR
 
 ## Plugins
 
-Since v11, release-it can be extended in many, many ways. Here are some examples:
+Since v11, release-it can be extended in many, many ways. Here are some plugins:
 
 | Plugin                                                                                     | Description                                                                   |
 | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
 | [@release-it/bumper](https://github.com/release-it/bumper)                                 | Read & write the version from/to any file                                     |
 | [@release-it/conventional-changelog](https://github.com/release-it/conventional-changelog) | Provides recommended bump, conventional-changelog, and updates `CHANGELOG.md` |
 | [release-it-lerna-changelog](https://github.com/rwjblue/release-it-lerna-changelog)        | Integrates lerna-changelog into the release-it pipeline                       |
+| [release-it-yarn-workspaces](https://github.com/rwjblue/release-it-yarn-workspaces)        | Releases each of your projects configured workspaces                          |
 | [@grupoboticario/news-fragments](https://github.com/grupoboticario/news-fragments)         | An easy way to generate your changelog file                                   |
 
 Internally, release-it uses its own plugin architecture (for Git, GitHub, GitLab, npm).
