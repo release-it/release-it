@@ -8,6 +8,7 @@ const {
   interceptAuthentication,
   interceptCollaborator,
   interceptDraft,
+  interceptReuse,
   interceptPublish,
   interceptAsset
 } = require('./stub/github');
@@ -51,6 +52,36 @@ test('should release and upload assets', async t => {
   interceptAuthentication();
   interceptCollaborator();
   interceptDraft({ body: { tag_name: '2.0.2', name: 'Release 2.0.2', body: 'Custom notes' } });
+  interceptPublish({ body: { tag_name: '2.0.2' } });
+  interceptAsset({ body: asset });
+
+  await runTasks(github);
+
+  t.true(github.isReleased);
+  t.is(github.getReleaseUrl(), `https://github.com/user/repo/releases/tag/2.0.2`);
+  exec.restore();
+});
+
+test('should reuse release and upload assets', async t => {
+  const asset = 'file2';
+  const options = {
+    github: {
+      pushRepo,
+      tokenRef,
+      release: true,
+      releaseName: 'Release ${tagName}',
+      releaseNotes: 'echo Custom notes',
+      assets: `test/resources/${asset}`,
+      reuseRelease: true
+    }
+  };
+  const github = factory(GitHub, { options });
+  const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git describe --tags --abbrev=0').resolves('2.0.1');
+
+  interceptAuthentication();
+  interceptCollaborator();
+  interceptReuse({ body: { tag_name: '2.0.2', name: 'Release 2.0.2', body: 'Custom notes', asset: 'file1' } });
   interceptPublish({ body: { tag_name: '2.0.2' } });
   interceptAsset({ body: asset });
 

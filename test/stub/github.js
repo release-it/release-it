@@ -31,8 +31,36 @@ const interceptDraft = ({
         prerelease,
         draft,
         upload_url: `https://uploads.${host}/repos/${owner}/${project}/releases/${id}/assets{?name,label}`,
-        html_url: `https://${host}/${owner}/${project}/releases/tag/untagged-${tag_name}`
+        html_url: `https://${host}/${owner}/${project}/releases/tag/untagged-${tag_name}`,
+        assets: []
       };
+      return [200, responseBody, { location: `${api}/repos/${owner}/${project}/releases/${id}` }];
+    });
+
+const interceptReuse = ({
+  api = 'https://api.github.com',
+  host = 'github.com',
+  owner = 'user',
+  project = 'repo',
+  body: { tag_name, name = '', body = null, prerelease = false, draft = true, asset }
+} = {}) =>
+  nock(api)
+    .get(`/repos/${owner}/${project}/releases`)
+    .reply(() => {
+      const id = 1;
+      const responseBody = [
+        {
+          id,
+          tag_name,
+          name,
+          body,
+          prerelease,
+          draft,
+          upload_url: `https://uploads.${host}/repos/${owner}/${project}/releases/${id}/assets{?name,label}`,
+          html_url: `https://${host}/${owner}/${project}/releases/tag/untagged-${tag_name}`,
+          assets: asset ? [{ name: asset }] : []
+        }
+      ];
       return [200, responseBody, { location: `${api}/repos/${owner}/${project}/releases/${id}` }];
     });
 
@@ -75,4 +103,11 @@ const interceptAsset = ({
       };
     });
 
-module.exports = { interceptAuthentication, interceptCollaborator, interceptDraft, interceptPublish, interceptAsset };
+module.exports = {
+  interceptAuthentication,
+  interceptCollaborator,
+  interceptDraft,
+  interceptReuse,
+  interceptPublish,
+  interceptAsset
+};
