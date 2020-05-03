@@ -67,7 +67,7 @@
     "form-data": "3.0.0",
     "git-url-parse": "11.1.2",
     "globby": "11.0.0",
-    "got": "11.0.2",
+    "got": "11.1.0",
     "import-cwd": "3.0.0",
     "inquirer": "7.1.0",
     "is-ci": "2.0.0",
@@ -81,7 +81,7 @@
     "supports-color": "7.1.0",
     "update-notifier": "4.1.0",
     "url-join": "4.0.1",
-    "uuid": "7.0.3",
+    "uuid": "8.0.0",
     "window-size": "1.1.1",
     "yaml": "1.9.2",
     "yargs-parser": "18.1.3"
