@@ -38,7 +38,7 @@ module.exports.runTasks = async plugin => {
   const latestVersion = (await plugin.getLatestVersion()) || '1.0.0';
   const changelog = (await plugin.getChangelog(latestVersion)) || null;
   const increment = plugin.getContext('increment') || plugin.config.getContext('increment');
-  plugin.config.setContext({ name, latestVersion, changelog });
+  plugin.config.setContext({ name, latestVersion, latestTag: latestVersion, changelog });
 
   const version =
     plugin.getIncrementedVersionCI({ latestVersion, increment }) ||
@@ -48,6 +48,9 @@ module.exports.runTasks = async plugin => {
 
   await plugin.beforeBump();
   await plugin.bump(version);
+
+  plugin.config.setContext({ tagName: version });
+
   await plugin.beforeRelease();
   await plugin.release();
   await plugin.afterRelease();
