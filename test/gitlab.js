@@ -77,7 +77,7 @@ test.serial('should release to self-managed host', async t => {
   const scope = nock(host);
   scope.post('/api/v4/projects/user%2Frepo/releases').reply(200, {});
   const options = {
-    git: { pushRepo: `${host}/user/repo`, tagName: '${version}' },
+    git: { pushRepo: `${host}/user/repo` },
     gitlab: { releaseName: 'Release ${version}', releaseNotes: 'echo readme', tokenRef }
   };
   const gitlab = factory(GitLab, { options });
