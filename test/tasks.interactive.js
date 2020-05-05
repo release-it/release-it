@@ -11,7 +11,7 @@ const runTasks = require('../lib/tasks');
 const { mkTmpDir, gitAdd } = require('./util/helpers');
 const ShellStub = require('./stub/shell');
 const { interceptPublish: interceptGitLabPublish } = require('./stub/gitlab');
-const { interceptDraft: interceptGitHubDraft, interceptPublish: interceptGitHubPublish } = require('./stub/github');
+const { interceptCreate: interceptGitHubCreate } = require('./stub/github');
 
 const noop = Promise.resolve();
 
@@ -158,12 +158,11 @@ test.serial('should run "after:*:release" plugin hooks', async t => {
   sh.exec('git tag 1.0.0');
   const sha = gitAdd('line', 'file', 'More file');
 
-  interceptGitHubDraft({
+  interceptGitHubCreate({
     owner,
     project,
     body: { tag_name: '1.1.0', name: 'Release 1.1.0', body: `* More file (${sha})` }
   });
-  interceptGitHubPublish({ owner, project, body: { tag_name: '1.1.0' } });
 
   interceptGitLabPublish({
     owner,

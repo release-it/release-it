@@ -20,8 +20,7 @@ const {
 const {
   interceptAuthentication: interceptGitHubAuthentication,
   interceptCollaborator: interceptGitHubCollaborator,
-  interceptDraft: interceptGitHubDraft,
-  interceptPublish: interceptGitHubPublish,
+  interceptCreate: interceptGitHubCreate,
   interceptAsset: interceptGitHubAsset
 } = require('./stub/github');
 
@@ -159,12 +158,11 @@ test.serial('should release all the things (basic)', async t => {
 
   interceptGitHubAuthentication();
   interceptGitHubCollaborator({ owner, project });
-  interceptGitHubDraft({
+  interceptGitHubCreate({
     owner,
     project,
-    body: { tag_name: '1.0.1', name: 'Release 1.0.1', body: `* More file (${sha})`, prerelease: false, draft: true }
+    body: { tag_name: '1.0.1', name: 'Release 1.0.1', body: `* More file (${sha})`, prerelease: false }
   });
-  interceptGitHubPublish({ owner, project, body: { draft: false, tag_name: '1.0.1' } });
 
   const container = getContainer({
     github: { release: true, pushRepo: `https://github.com/${owner}/${project}` },
@@ -204,19 +202,17 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
 
   interceptGitHubAuthentication();
   interceptGitHubCollaborator({ owner, project });
-  interceptGitHubDraft({
+  interceptGitHubCreate({
     owner,
     project,
     body: {
       tag_name: 'v1.1.0-alpha.0',
       name: 'Release 1.1.0-alpha.0',
       body: `Notes for ${pkgName} [v1.1.0-alpha.0]: ${sha}`,
-      prerelease: true,
-      draft: true
+      prerelease: true
     }
   });
   interceptGitHubAsset({ owner, project, body: 'lineline' });
-  interceptGitHubPublish({ owner, project, body: { draft: false, tag_name: 'v1.1.0-alpha.0' } });
 
   interceptGitLabUser({ owner });
   interceptGitLabCollaborator({ owner, project });
