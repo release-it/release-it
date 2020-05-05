@@ -6,13 +6,13 @@ const { factory, runTasks } = require('./util');
 test('should return npm package url', t => {
   const options = { npm: { name: 'my-cool-package' } };
   const npmClient = factory(npm, { options });
-  t.is(npmClient.getReleaseUrl(), 'https://www.npmjs.com/package/my-cool-package');
+  t.is(npmClient.getPackageUrl(), 'https://www.npmjs.com/package/my-cool-package');
 });
 
 test('should return npm package url (custom registry)', t => {
   const options = { npm: { name: 'my-cool-package', publishConfig: { registry: 'https://my-registry.com/' } } };
   const npmClient = factory(npm, { options });
-  t.is(npmClient.getReleaseUrl(), 'https://my-registry.com/package/my-cool-package');
+  t.is(npmClient.getPackageUrl(), 'https://my-registry.com/package/my-cool-package');
 });
 
 test('should return default tag', async t => {
