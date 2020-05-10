@@ -12,7 +12,7 @@ const interceptCollaborator = ({
   username = 'john'
 } = {}) => nock(api).get(`/repos/${owner}/${project}/collaborators/${username}`).reply(204);
 
-const interceptGetByTag = ({
+const interceptListReleases = ({
   host = 'github.com',
   api = 'https://api.github.com',
   owner = 'user',
@@ -20,12 +20,14 @@ const interceptGetByTag = ({
   tag_name
 } = {}) =>
   nock(api)
-    .get(`/repos/${owner}/${project}/releases/tags/${tag_name}`)
-    .reply(200, {
-      id: 1,
-      upload_url: `https://uploads.${host}/repos/${owner}/${project}/releases/1/assets{?name,label}`,
-      html_url: `https://${host}/${owner}/${project}/releases/tag/${tag_name}`
-    });
+    .get(`/repos/${owner}/${project}/releases?per_page=1&page=1`)
+    .reply(200, [
+      {
+        id: 1,
+        upload_url: `https://uploads.${host}/repos/${owner}/${project}/releases/1/assets{?name,label}`,
+        html_url: `https://${host}/${owner}/${project}/releases/tag/${tag_name}`
+      }
+    ]);
 
 const interceptCreate = ({
   api = 'https://api.github.com',
@@ -99,7 +101,7 @@ const interceptAsset = ({
 module.exports = {
   interceptAuthentication,
   interceptCollaborator,
-  interceptGetByTag,
+  interceptListReleases,
   interceptCreate,
   interceptUpdate,
   interceptAsset

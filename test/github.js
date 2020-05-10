@@ -7,7 +7,7 @@ const { factory, runTasks } = require('./util');
 const {
   interceptAuthentication,
   interceptCollaborator,
-  interceptGetByTag,
+  interceptListReleases,
   interceptCreate,
   interceptUpdate,
   interceptAsset
@@ -85,7 +85,7 @@ test('should update release and upload assets', async t => {
 
   interceptAuthentication();
   interceptCollaborator();
-  interceptGetByTag({ tag_name: '2.0.1' });
+  interceptListReleases({ tag_name: '2.0.1' });
   interceptUpdate({ body: { tag_name: '2.0.1', name: 'Release 2.0.1', body: 'Custom notes' } });
   interceptAsset({ body: asset });
 
