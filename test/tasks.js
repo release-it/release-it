@@ -282,7 +282,7 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
 
   t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.1.0-alpha.0)`));
   t.true(log.log.firstCall.args[0].endsWith(`https://github.com/${owner}/${project}/releases/tag/v1.1.0-alpha.0`));
-  t.true(log.log.secondCall.args[0].endsWith(`${project}/releases`));
+  t.true(log.log.secondCall.args[0].endsWith(`${project}/-/releases`));
   t.true(log.log.thirdCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
 

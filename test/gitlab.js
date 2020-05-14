@@ -70,7 +70,7 @@ test.serial('should upload assets and release', async t => {
   t.is(gitlab.assets[0].url, `${pushRepo}/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/${asset}`);
   const { isReleased, releaseUrl } = gitlab.getContext();
   t.true(isReleased);
-  t.is(releaseUrl, `${pushRepo}/releases`);
+  t.is(releaseUrl, `${pushRepo}/-/releases`);
 });
 
 test.serial('should release to self-managed host', async t => {
@@ -106,7 +106,7 @@ test.serial('should release to sub-grouped repo', async t => {
 
   const { isReleased, releaseUrl } = gitlab.getContext();
   t.true(isReleased);
-  t.is(releaseUrl, 'https://gitlab.com/group/sub-group/repo/releases');
+  t.is(releaseUrl, 'https://gitlab.com/group/sub-group/repo/-/releases');
 });
 
 test.serial('should throw for unauthenticated user', async t => {
@@ -181,7 +181,7 @@ test('should not make requests in dry run', async t => {
   t.is(gitlab.log.exec.args[1][0], 'gitlab releases#uploadAssets');
   t.is(gitlab.log.exec.args[2][0], 'gitlab releases#createRelease "R" (1.0.1)');
   t.true(isReleased);
-  t.is(releaseUrl, `${pushRepo}/releases`);
+  t.is(releaseUrl, `${pushRepo}/-/releases`);
   spy.restore();
 });
 
