@@ -261,12 +261,12 @@ changelog serves as the release notes for the GitHub or GitLab release.
 
 The [default command](./config/release-it.json) is based on `git log ...`. This setting (`git.changelog`) can be
 overridden. To customize the release notes for the GitHub or GitLab release, use `github.releaseNotes` or
-`gitlab.releaseNotes`. Make sure any of these commands output the changelog to `stdout`.
+`gitlab.releaseNotes`. Make sure any of these commands output the changelog to `stdout`. Topics include:
 
-Instead of executing a shell command, a (Handlebars) template can be used to generate the changelog. See
-[auto-changelog](./docs/changelog.md#auto-changelog) for more details. If your project follows conventions, such as the
-[Angular commit guidelines](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#commits), the
-[@release-it/conventional-changelog](https://github.com/release-it/conventional-changelog) plugin is useful.
+- GitHub and GitLab Releases
+- auto-changelog
+- Conventional Changelog
+- Keep A Changelog
 
 → See [Changelog](./docs/changelog.md) for more details.
 

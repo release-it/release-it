@@ -6,13 +6,13 @@ commits since the latest tag.
 The [default command](../config/release-it.json) is based on `git log ...`. This setting (`git.changelog`) can be
 overridden. Make sure any of these commands output the changelog to `stdout`.
 
-For a more rich changelog (e.g. with headers, sections), a (Handlebars) template can be used to generate the changelog.
-See [auto-changelog](#auto-changelog) below for more details.
+- [GitHub and GitLab Releases](#github-and-gitlab-releases)
+- [auto-changelog](#auto-changelog)
+- [Conventional Changelog](#conventional-changelog)
+- [Keep A Changelog](#keep-a-changelog)
 
 Some projects keep their changelog in e.g. `CHANGELOG.md` or `history.md`. To auto-update this file and include this in
 the release commit, the recommended configuration is to do this in the `after:bump` hook (see example below).
-
-An alternative is to use the [conventional-changelog](#conventional-changelog) plugin for this.
 
 ## GitHub and GitLab Releases
 
@@ -22,7 +22,8 @@ The output of `git.changelog` also serves as the release notes for the [GitHub](
 
 ## Auto-changelog
 
-A tool like [auto-changelog](https://github.com/CookPete/auto-changelog) is a great companion to release-it:
+For a more rich changelog (e.g. with headers, sections), a (Handlebars) template can be used to generate the changelog.
+For this, [auto-changelog](https://github.com/CookPete/auto-changelog) is a great companion to release-it:
 
 ```json
 {
@@ -67,9 +68,27 @@ Additionally, it can generate a conventional changelog, and optionally update th
 }
 ```
 
-- Omit the `infile` to only use the recommended bump. If the file doesn't exist yet, it's created with the full history.
-- Please find the
-  [list of available presets](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages)
-  (`angular`, `ember`, etc).
-- The options are sent verbatim to
-  [conventional-changelog](https://github.com/conventional-changelog/conventional-changelog/blob/master/packages/conventional-changelog/README.md).
+## Keep A Changelog
+
+If your project follows the [Keep a Changelog](https://keepachangelog.com) conventions, the
+[@release-it/keep-a-changelog](https://github.com/release-it/keep-a-changelog) plugin is useful. It updates the
+`CHANGELOG.md` file according to the convention of using human-readable items and an "Unreleased" section.
+
+The GitHub releases section could then be used for either a copy of this changelog, or for a log of commits
+(`github.releaseNotes: "git log ..."`).
+
+```bash
+npm install @release-it/keep-a-changelog --save-dev
+```
+
+This plugin updates `CHANGELOG.md` file according to
+
+```json
+{
+  "plugins": {
+    "@release-it/keep-a-changelog": {
+      "filename": "CHANGELOG.md"
+    }
+  }
+}
+```
