@@ -9,7 +9,7 @@ const Spinner = require('../lib/spinner');
 const Config = require('../lib/config');
 const runTasks = require('../lib/tasks');
 const Plugin = require('../lib/plugin/Plugin');
-const { mkTmpDir, gitAdd } = require('./util/helpers');
+const { mkTmpDir, gitAdd, getArgs } = require('./util/helpers');
 const ShellStub = require('./stub/shell');
 const {
   interceptUser: interceptGitLabUser,
@@ -48,9 +48,6 @@ const getContainer = options => {
     shell
   };
 };
-
-const getNpmArgs = args =>
-  args.filter(args => typeof args[0] === 'string' && args[0].startsWith('npm ')).map(args => args[0].trim());
 
 test.serial.beforeEach(t => {
   const bare = mkTmpDir();
@@ -131,7 +128,7 @@ test.serial('should use pkg.version (in sub dir) w/o tagging repo', async t => {
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
   const { stdout } = sh.exec('git describe --tags --abbrev=0');
   t.is(stdout.trim(), '1.0.0');
-  const npmArgs = getNpmArgs(exec.args);
+  const npmArgs = getArgs(exec.args, 'npm');
   t.is(npmArgs[3], 'npm version 1.3.0 --no-git-tag-version');
   exec.restore();
 });
@@ -172,7 +169,7 @@ test.serial('should release all the things (basic)', async t => {
 
   await runTasks({}, container);
 
-  const npmArgs = getNpmArgs(container.shell.exec.args);
+  const npmArgs = getArgs(container.shell.exec.args, 'npm');
 
   t.deepEqual(npmArgs, [
     'npm ping',
@@ -262,7 +259,7 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
 
   await runTasks({}, container);
 
-  const npmArgs = getNpmArgs(container.shell.exec.args);
+  const npmArgs = getArgs(container.shell.exec.args, 'npm');
   t.deepEqual(npmArgs, [
     'npm ping',
     'npm whoami',
@@ -300,7 +297,7 @@ test.serial('should publish pre-release without pre-id with different npm.tag', 
 
   await runTasks({}, container);
 
-  const npmArgs = getNpmArgs(container.shell.exec.args);
+  const npmArgs = getArgs(container.shell.exec.args, 'npm');
   t.deepEqual(npmArgs, [
     'npm ping',
     'npm whoami',
@@ -329,7 +326,7 @@ test.serial('should handle private package correctly, bump lockfile', async t =>
 
   await runTasks({}, container);
 
-  const npmArgs = getNpmArgs(container.shell.exec.args);
+  const npmArgs = getArgs(container.shell.exec.args, 'npm');
   t.deepEqual(npmArgs, ['npm version 1.0.1 --no-git-tag-version']);
   t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
   t.is(log.warn.lastCall.args[0], 'Skip publish: package is private.');
@@ -350,7 +347,7 @@ test.serial('should initially publish non-private scoped npm package privately',
 
   await runTasks({}, container);
 
-  const npmArgs = getNpmArgs(container.shell.exec.args);
+  const npmArgs = getArgs(container.shell.exec.args, 'npm');
   t.is(npmArgs[4], 'npm publish . --tag latest');
   exec.restore();
 });
@@ -376,7 +373,7 @@ test.serial('should use pkg.publishConfig.registry', async t => {
 
   await runTasks({}, container);
 
-  const npmArgs = getNpmArgs(exec.args);
+  const npmArgs = getArgs(exec.args, 'npm');
   t.is(npmArgs[0], `npm ping --registry ${registry}`);
   t.is(npmArgs[1], `npm whoami --registry ${registry}`);
   t.true(container.log.log.firstCall.args[0].endsWith(`${registry}/package/${pkgName}`));

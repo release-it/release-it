@@ -18,8 +18,12 @@ const gitAdd = (content, file, message) => {
   return match ? match[1] : null;
 };
 
+const getArgs = (args, prefix) =>
+  args.filter(args => typeof args[0] === 'string' && args[0].startsWith(prefix)).map(args => args[0].trim());
+
 module.exports = {
   mkTmpDir,
   readFile,
-  gitAdd
+  gitAdd,
+  getArgs
 };
