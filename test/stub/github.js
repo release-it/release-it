@@ -20,10 +20,11 @@ const interceptListReleases = ({
   tag_name
 } = {}) =>
   nock(api)
-    .get(`/repos/${owner}/${project}/releases?per_page=1&page=1`)
+    .get(`/repos/${owner}/${project}/releases`)
     .reply(200, [
       {
         id: 1,
+        tag_name,
         upload_url: `https://uploads.${host}/repos/${owner}/${project}/releases/1/assets{?name,label}`,
         html_url: `https://${host}/${owner}/${project}/releases/tag/${tag_name}`
       }
