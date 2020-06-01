@@ -28,7 +28,7 @@ For this, [auto-changelog](https://github.com/CookPete/auto-changelog) is a grea
 ```json
 {
   "git": {
-    "changelog": "npx auto-changelog --stdout --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/master/config/changelog-compact.hbs"
+    "changelog": "npx auto-changelog --stdout --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs"
   },
   "hooks": {
     "after:bump": "npx auto-changelog -p"
