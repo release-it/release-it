@@ -379,6 +379,8 @@ Use `--disable-metrics` to opt-out of sending some anonymous statistical data to
 - With `release-it -VV`, release-it also prints every internal command and its output.
 - Prepend `DEBUG=release-it:* release-it [...]` to print configuration and more error details.
 
+Use `verbose: 2` to have the equivalent of `-VV` on the command line in a configuration file.
+
 ## Use release-it programmatically
 
 While mostly used as a CLI tool, release-it can be used as a dependency to integrate in your own scripts. See
