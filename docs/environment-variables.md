@@ -8,6 +8,8 @@ export GITHUB_TOKEN="f941e0..."
 
 In macOS or Linux, this can be added to e.g. `~/.profile`, so it's available everytime the shell is used.
 
+## dotenv
+
 Another solution, that works in every environment (Windows, macOS, Linux), is to use an `.env` file and a package like
 [dotenv-cli](https://github.com/entropitor/dotenv-cli#readme):
 
@@ -32,6 +34,20 @@ Prefix the release-it script like so:
   }
 }
 ```
+
+## Read from input
+
+Not used often, but this script asks for the token everytime a `npm run release` is invoked:
+
+```json
+{
+  "scripts": {
+    "release": "read -p 'GITHUB_TOKEN: ' GITHUB_TOKEN && export GITHUB_TOKEN=$GITHUB_TOKEN && release-it"
+  }
+}
+```
+
+## Notes
 
 - Do not check the token into the Git repository.
 - Do not check the `.env` file into the Git repository (add it to `.gitignore`). A convention is to use a `.env.example`

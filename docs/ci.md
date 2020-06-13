@@ -14,7 +14,7 @@ below, feel free to [open a ticket](https://github.com/release-it/release-it/iss
 ## Git
 
 In order to push the release commit and tag back to the remote, the CI/CD environment should be authenticated with the
-original host (e.g. GitHub). Also see [release-it#git](https://github.com/release-it/release-it#git).
+original host (e.g. GitHub). Also see [Git](./git.md).
 
 ### SSH (recommended)
 
@@ -124,3 +124,27 @@ script:
 ```
 
 Note: the `git remote set-url` could also be set with the `git.pushRepo` option in the release-it configuration.
+
+### Error: tag already exists
+
+Some people have reported an issue when using GitLab CI (in
+[#573](https://github.com/release-it/release-it/issues/573)):
+
+> ERROR fatal: tag vX.X.X already exists
+
+Here is an example script sequence for GitLab to mitigate the issue:
+
+```bash
+- git pull origin $CI_BUILD_REF_NAME
+- npm run release
+```
+
+Specifically, make sure to `fetch` with the `--prune-tags` argument before release-it tries to create the Git tag:
+
+```json
+{
+  "hooks": {
+    "before:init": "git fetch --prune --prune-tags origin"
+  }
+}
+```

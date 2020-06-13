@@ -34,6 +34,11 @@ By default, `release-it` uses branch's tracking information, unless there isn't 
 `"origin"` as the remote name to push to. Use `git.pushRepo` to override this with a different remote name, or a
 different git url.
 
+## Tag name
+
+The `v` prefix is automatically detected from the latest tag. No need to configure e.g. `git.tagName: "v${version}"`,
+unless you specifically want to override or change this.
+
 ## Extra arguments
 
 In case extra arguments should be provided to Git, these options are available:
