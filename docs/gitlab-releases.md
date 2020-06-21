@@ -14,6 +14,14 @@ configured correctly.
 
 GitLab Releases do not support pre-releases or drafts.
 
+## Prerequisite checks
+
+First, release-it will check whether the `GITLAB_TOKEN` environment variable is set. Otherwise it will throw an error
+and exit. Then, it will authenticate, and verify whether the current user is a collaborator and authorized to publish a
+release.
+
+To skip these checks, use `gitlab.skipChecks`.
+
 ## Release notes
 
 By default, the output of `git.changelog` is used for the GitLab release notes. This is the printed `Changelog: ...`

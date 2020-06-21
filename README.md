@@ -37,7 +37,6 @@
 - [Configuration](#configuration)
 - [Interactive vs. CI mode](#interactive-vs-ci-mode)
 - [Latest version](#latest-version)
-- [Prerequisite checks](#prerequisite-checks)
 - [Git](#git)
 - [GitHub Releases](#github-releases)
 - [GitLab Releases](#gitlab-releases)
@@ -218,11 +217,6 @@ Use `--no-npm` (or `"npm": false`) to ignore and skip bumping `package.json` and
 
 Alternatively, a plugin can be used to get the version from anywhere else (e.g. a `VERSION` file). Also see
 [plugins](./docs/plugins.md).
-
-## Prerequisite checks
-
-Read more about [prerequisites checks](./docs/prerequisites.md) release-it does to help prevent incorrect or polluted
-releases.
 
 ## Git
 

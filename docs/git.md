@@ -2,7 +2,7 @@
 
 The Git plugin in release-it, by default, does the following:
 
-1. [Prerequisite checks](./prerequisites.md#git)
+1. [Prerequisite checks](#prerequisite-checks)
 1. [Files may be updated by other plugins and/or user commands/hooks]
 1. `git add . --update`
 1. `git commit -m "[git.commitMessage]"`
@@ -67,9 +67,68 @@ Use e.g. `git.tag: false` or `--no-git.tag` to skip a single step.
 By default, untracked files are not added to the release commit. Use `git.addUntrackedFiles: true` to override this
 behavior.
 
+## Prerequisite checks
+
+### Required branch
+
+This is disabled by default, but release-it can exit the process when the current branch is not as configured:
+
+```json
+{
+  "git": {
+    "requireBranch": "master"
+  }
+}
+```
+
+Use an array to allow releases from more branch names.
+
+### Clean working directory
+
+The working directory should be clean (i.e. `git status` should say something like this:
+
+```
+$ git status
+On branch master
+Your branch is up to date with 'origin/master'.
+
+nothing to commit, working tree clean
+```
+
+Make sure to commit, stash, or revert the changes before running release-it. In case the currently staged changes should
+be committed with the release commit, use `--no-git.requireCleanWorkingDir` or configure
+`"git.requireCleanWorkingDir": false`.
+
+### Upstream branch
+
+If no upstream branch is known to Git, it does not know where to push the release commit and tag to, and halts.
+
+Use `--no-git.requireUpstream` to add `--set-upstream [remote] [branch]` to the `git push` command, where `[remote]` is
+the value of `git.pushRepo` ("origin" by default, if no upstream branch), and `[branch]` is the name of the current
+branch. So if the current branch is `next` then the full command that release-it will execute becomes
+`git push --follow-tags --set-upstream origin next`.
+
+Configure `pushRepo` with either a remote name or a Git url to push the release to that remote instead of `origin`.
+
+Disabling `git.requireUpstream` is useful when releasing from a different branch (that is not yet tracking cq present on
+a remote). Or similar, when releasing a (new) project that did not push to the remote before. Please note that in
+general you should not need this, as it is considered a best practice to release from the `master` branch only. Here is
+an example use case and how it can be handled using release-it:
+
+- After a major release (v2), a bug is found and a fix released in v2.0.1.
+- The fix should be backported to v1, so a branch "v1" is made and the fix is cherry-picked.
+- The release of v1.x.x can be done while still in this branch using `release-it --no-git.requireUpstream`.
+
+### No commits
+
+By default, release-it does not check the number of commits upfront to prevent "empty" releases. Configure
+`"git.requireCommits": true` to exit the release-it process if there are no commits since the latest tag.
+
+Also see the [Require Commits](./recipes/require-commits.md) recipe(s).
+
 ## Further custimizations
 
-In case you need even more freedom, here is some inspiration:
+In case you need even more customizations, here is some inspiration:
 
 ```json
 {

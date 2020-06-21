@@ -20,6 +20,14 @@ To add [GitHub releases](https://help.github.com/articles/creating-releases/) in
 Do not put the actual token in the release-it configuration. It will be read from the `GITHUB_TOKEN` environment
 variable. You can change this variable name by setting the `github.tokenRef` option to something else.
 
+## Prerequisite checks
+
+First, release-it will check whether the `GITHUB_TOKEN` environment variable is set. Otherwise it will throw an error
+and exit. Then, it will authenticate, and verify whether the current user is a collaborator and authorized to publish a
+release.
+
+To skip these checks, use `github.skipChecks`.
+
 ## Release name
 
 The default release name is `Release ${version}`. However, many projects are more creative here. It can be set from the

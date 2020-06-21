@@ -3,6 +3,16 @@
 With a `package.json` in the current directory, release-it will let `npm` bump the version in `package.json` (and
 `package-lock.json` if present), and publish to the npm registry.
 
+## Prerequisite checks
+
+First, release-it checks whether the npm registry is up and the user is authenticated with npm to prevent issues later
+on in the process.
+
+Some instances of npm registries, such as Nexus, do not support `npm ping` and/or `npm whoami`. If the error is a `E400`
+or `E404`, release-it will give a warning but continue.
+
+To skip these checks, use `npm.skipChecks`.
+
 ## Skip publish
 
 To bump the version in `package.json` with the release, but not publish to the registry:
@@ -21,7 +31,7 @@ In case there is a `package.json`, but no npm-related tasks should be executed, 
 
 To ignore the `version` from `package.json`, (and use the latest Git tag instead):
 
-```
+```json
 {
   "npm": {
     "ignoreVersion": true
@@ -73,6 +83,8 @@ value is the current (root) folder (`"."`).
 
 Monorepos do not require extra configuration, but release-it handles only one package at a time. Also see how
 [Git steps can be skipped](#skip-git-steps). This is useful if, for instance, tagging the Git repo should be skipped.
+
+For Yarn workspaces, see the [release-it-yarn-workspaces](https://github.com/rwjblue/release-it-yarn-workspaces) plugin.
 
 ## Miscellaneous
 
