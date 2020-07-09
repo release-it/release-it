@@ -72,7 +72,7 @@
     "import-cwd": "3.0.0",
     "inquirer": "7.2.0",
     "is-ci": "2.0.0",
-    "lodash": "4.17.15",
+    "lodash": "4.17.17",
     "mime-types": "2.1.27",
     "ora": "4.0.4",
     "os-name": "3.1.0",
