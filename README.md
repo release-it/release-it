@@ -394,6 +394,8 @@ While mostly used as a CLI tool, release-it can be used as a dependency to integ
   [react-native-paper](https://github.com/callstack/react-native-paper)
 - [tabler/tabler-icons](https://github.com/tabler/tabler-icons)
 - [blockchain/blockchain-wallet-v4-frontend](https://github.com/blockchain/blockchain-wallet-v4-frontend)
+- [ember-cli/ember-cli](https://github.com/ember-cli/ember-cli)
+- [shipshapecode/shepherd](https://github.com/shipshapecode/shepherd)
 - [Repositories that depend on release-it](https://github.com/release-it/release-it/network/dependents)
 - GitHub search for
   [projects with .release-it.json](https://github.com/search?o=desc&q=in%3Apath+.release-it.json&s=indexed&type=Code)
