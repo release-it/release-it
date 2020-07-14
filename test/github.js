@@ -168,7 +168,8 @@ test('should throw for unauthenticated user', async t => {
 
   await t.throwsAsync(runTasks(github), {
     instanceOf: GitHubClientError,
-    message: 'Could not authenticate with GitHub using environment variable "GITHUB_TOKEN".'
+    message:
+      'Could not authenticate with GitHub using environment variable "GITHUB_TOKEN". Generate a new token at https://github.com/settings/tokens'
   });
 
   t.is(stub.callCount, 1);
