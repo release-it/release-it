@@ -28,7 +28,7 @@ const spinner = sandbox.createStubInstance(Spinner);
 spinner.show.callsFake(({ enabled = true, task }) => (enabled ? task() : noop));
 
 const defaultInquirer = {
-  prompt: sinon.stub().callsFake(([options]) => {
+  prompt: sandbox.stub().callsFake(([options]) => {
     const answer = options.type === 'list' ? options.choices[0].value : options.name === 'version' ? '0.0.1' : true;
     return { [options.name]: answer };
   })
@@ -196,4 +196,11 @@ test.serial('should run "after:*:release" plugin hooks', async t => {
   t.true(commands.includes('echo after:github:release'));
   t.true(commands.includes('echo after:gitlab:release'));
   t.true(commands.includes('echo after:npm:release'));
+});
+
+test.serial('should show only version prompt', async t => {
+  const config = { ci: false, 'only-version': true };
+  await runTasks({}, getContainer(config));
+  t.true(defaultInquirer.prompt.calledOnce);
+  t.is(defaultInquirer.prompt.firstCall.args[0][0].name, 'incrementList');
 });
