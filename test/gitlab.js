@@ -169,8 +169,8 @@ test.serial('should fallback for gitlab < v12.4', async t => {
 test('should not make requests in dry run', async t => {
   const [host, owner, repo] = ['https://gitlab.example.org', 'user', 'repo'];
   const pushRepo = `${host}/${owner}/${repo}`;
-  const options = { git: { pushRepo }, gitlab: { releaseName: 'R', tokenRef } };
-  const gitlab = factory(GitLab, { options, global: { isDryRun: true } });
+  const options = { 'dry-run': true, git: { pushRepo }, gitlab: { releaseName: 'R', tokenRef } };
+  const gitlab = factory(GitLab, { options });
   sinon.stub(gitlab, 'getLatestVersion').resolves('1.0.0');
   const spy = sinon.spy(gitlab, 'client', ['get']);
 

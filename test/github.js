@@ -240,8 +240,8 @@ test('should handle octokit client error (with retries)', async t => {
 });
 
 test('should not call octokit client in dry run', async t => {
-  const options = { git, github: { tokenRef, pushRepo, releaseName: 'R ${version}', assets: ['*'] } };
-  const github = factory(GitHub, { options, global: { isDryRun: true } });
+  const options = { 'dry-run': true, git, github: { tokenRef, pushRepo, releaseName: 'R ${version}', assets: ['*'] } };
+  const github = factory(GitHub, { options });
   const spy = sinon.spy(github, 'client', ['get']);
   const exec = sinon.stub(github.shell, 'exec').callThrough();
   exec.withArgs('git describe --tags --abbrev=0').resolves('v1.0.0');

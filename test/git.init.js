@@ -1,7 +1,6 @@
 const test = require('ava');
 const sh = require('shelljs');
 const Shell = require('../lib/shell');
-const Log = require('../lib/log');
 const Git = require('../lib/plugin/git/Git');
 const { git } = require('../config/release-it.json');
 const {
@@ -116,8 +115,7 @@ test.serial('should honor custom tagName configuration', async t => {
 });
 
 test.serial('should get the latest tag after fetch', async t => {
-  const log = new Log();
-  const shell = new Shell({ container: { log } });
+  const shell = factory(Shell);
   const gitClient = factory(Git, { container: { shell } });
   const { bare, target } = t.context;
   const other = mkTmpDir();
