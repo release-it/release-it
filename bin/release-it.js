@@ -19,7 +19,8 @@ const parseCliArguments = args => {
     boolean: ['dry-run', 'ci'],
     alias: aliases,
     configuration: {
-      'parse-numbers': false
+      'parse-numbers': false,
+      'camel-case-expansion': false
     }
   });
   if (options.V) {
