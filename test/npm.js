@@ -169,26 +169,6 @@ test('should throw if user is not authenticated', async t => {
   exec.restore();
 });
 
-test('should publish public scoped package as public', async t => {
-  const options = { npm: { access: 'public', tag: 'beta' } };
-  const npmClient = factory(npm, { options });
-  npmClient.setContext({ name: '@scoped/pkg' });
-  const exec = sinon.spy(npmClient.shell, 'exec');
-  await npmClient.publish();
-  t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag beta --access public');
-  exec.restore();
-});
-
-test('should publish a private scoped package as private', async t => {
-  const options = { npm: { access: 'restricted', tag: 'beta' } };
-  const npmClient = factory(npm, { options });
-  npmClient.setContext({ name: '@scoped/pkg' });
-  const exec = sinon.spy(npmClient.shell, 'exec');
-  await npmClient.publish();
-  t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag beta --access restricted');
-  exec.restore();
-});
-
 test('should publish a new private scoped package as npm would', async t => {
   const options = { npm: { tag: 'beta' } };
   const npmClient = factory(npm, { options });
@@ -196,16 +176,6 @@ test('should publish a new private scoped package as npm would', async t => {
   const exec = sinon.spy(npmClient.shell, 'exec');
   await npmClient.publish();
   t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag beta');
-  exec.restore();
-});
-
-test('should publish a new public scoped package as public', async t => {
-  const options = { npm: { access: 'public', tag: 'beta' } };
-  const npmClient = factory(npm, { options });
-  npmClient.setContext({ name: '@scoped/pkg' });
-  const exec = sinon.spy(npmClient.shell, 'exec');
-  await npmClient.publish();
-  t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag beta --access public');
   exec.restore();
 });
 
@@ -239,8 +209,8 @@ test('should handle 2FA and publish with OTP', async t => {
 
   t.is(exec.callCount, 3);
   t.is(exec.firstCall.args[0].trim(), 'npm publish . --tag latest');
-  t.is(exec.secondCall.args[0].trim(), 'npm publish . --tag latest  --otp 123');
-  t.is(exec.thirdCall.args[0].trim(), 'npm publish . --tag latest  --otp 123456');
+  t.is(exec.secondCall.args[0].trim(), 'npm publish . --tag latest --otp 123');
+  t.is(exec.thirdCall.args[0].trim(), 'npm publish . --tag latest --otp 123456');
 
   t.is(npmClient.log.warn.callCount, 1);
   t.is(npmClient.log.warn.firstCall.args[0], 'The provided OTP is incorrect or has expired.');

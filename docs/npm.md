@@ -57,7 +57,7 @@ For a pre-release, the default tag is "next". The tag will be derived from the p
 A [scoped package](https://docs.npmjs.com/about-scopes) (e.g. `@user/package`) is either public or private. By default,
 `npm publish` will publish a scoped package as private. Note that scoped packages require a paid account.
 
-In order to publish a public scoped package, specify this in `package.json`:
+In order to publish a scoped package to the public registry, specify this in `package.json`:
 
 ```json
 {
@@ -67,8 +67,7 @@ In order to publish a public scoped package, specify this in `package.json`:
 }
 ```
 
-The default value for private packages is `"restricted"`. Note that setting `npm.access` in the release-it config is
-deprecated.
+The default value for private packages is `"restricted"`.
 
 ## Two-factor authentication
 
