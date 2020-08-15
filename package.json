@@ -78,11 +78,9 @@
     "parse-json": "5.0.1",
     "semver": "7.3.2",
     "shelljs": "0.8.4",
-    "supports-color": "7.1.0",
     "update-notifier": "4.1.0",
     "url-join": "4.0.1",
     "uuid": "8.3.0",
-    "window-size": "1.1.1",
     "yaml": "1.10.0",
     "yargs-parser": "19.0.1"
   },
