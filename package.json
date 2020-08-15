@@ -62,7 +62,6 @@
     "cosmiconfig": "7.0.0",
     "debug": "4.1.1",
     "deprecated-obj": "1.0.1",
-    "detect-repo-changelog": "1.0.1",
     "execa": "4.0.3",
     "find-up": "5.0.0",
     "form-data": "3.0.0",
