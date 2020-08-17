@@ -5,6 +5,11 @@ This document lists breaking changes for each major release.
 See the GitHub Releases page for detailed changelogs:
 [https://github.com/release-it/release-it/releases](https://github.com/release-it/release-it/releases)
 
+## v14
+
+- Removed `global` property from plugins. Use `this.config[key]` instead.
+- Removed deprecated `npm.access` option. Set this in `package.json` instead.
+
 ## v13
 
 - Dropped support for Node v8
