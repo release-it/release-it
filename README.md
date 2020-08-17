@@ -15,8 +15,11 @@
 - Extend with [plugins](#plugins)
 - Release from any [CI/CD environment](./docs/ci.md)
 
+Use release-it for version management and publish to anywhere with its versatile configuration, a powerful plugin
+system, and use hooks to execute any command you need to test, build, and/or publish your project.
+
 [![Action Status](https://github.com/release-it/release-it/workflows/Cross-OS%20Tests/badge.svg)](https://github.com/release-it/release-it/actions)
-[![npm version](https://badge.fury.io/js/release-it.svg)](https://badge.fury.io/js/release-it)
+[![npm version](https://badge.fury.io/js/release-it.svg)](https://www.npmjs.com/package/release-it)
 [![codecov](https://codecov.io/gh/release-it/release-it/branch/master/graph/badge.svg)](https://codecov.io/gh/release-it/release-it)
 
 ## Links
@@ -204,19 +207,22 @@ By using the `--ci` option, the process is fully automated without prompts. The 
 demonstrated in the first animation above. On a Continuous Integration (CI) environment, this non-interactive mode is
 activated automatically.
 
+Use `--only-version` to use a prompt only to determine the version, and automate the rest.
+
 ## Latest version
 
-For projects with a `package.json`, its `version` will be used. Otherwise, release-it uses the latest Git tag to
-determine which version should be released. In any case, as a last resort, `0.0.0` will be used as the latest version.
+How does release-it determine the latest version?
 
-Use `--no-increment` to not increment the version.
+1. For projects with a `package.json`, its `version` will be used (see [npm](./docs/npm.md) to skip this).
+2. Otherwise, release-it uses the latest Git tag to determine which version should be released.
+3. As a last resort, `0.0.0` will be used as the latest version.
 
-Use `--npm.ignoreVersion` to use the latest Git tag.
+Alternatively, a plugin can be used to override this (e.g. to manage a `VERSION` or `composer.json` file):
 
-Use `--no-npm` (or `"npm": false`) to ignore and skip bumping `package.json` and skip `npm publish` altogether.
-
-Alternatively, a plugin can be used to get the version from anywhere else (e.g. a `VERSION` file). Also see
-[plugins](./docs/plugins.md).
+- [@release-it/bumper](https://github.com/release-it/bumper) to read from or bump the version in any file
+- [@release-it/conventional-changelog](https://github.com/release-it/conventional-changelog) to get a recommended bump
+  based on commit messages
+- [release-it-calver-plugin](https://github.com/casmith/release-it-calver-plugin) to use CalVer (Calendar Versioning)
 
 ## Git
 
@@ -230,7 +236,7 @@ remote.
 The "Releases" tab on GitHub projects links to a page to store the changelog cq. release notes. To add
 [GitHub releases](https://help.github.com/articles/creating-releases) in your release-it flow:
 
-- Configure `github.release: true`.
+- Configure `github.release: true`
 - Obtain a [personal access token](https://github.com/settings/tokens) (release-it only needs "repo" access; no "admin"
   or other scopes).
 - Make sure the token is [available as an environment variable](./docs/environment-variables.md).
@@ -241,7 +247,7 @@ The "Releases" tab on GitHub projects links to a page to store the changelog cq.
 
 [GitLab releases](https://docs.gitlab.com/ee/workflow/releases.html#releases) work just like GitHub releases:
 
-- Configure `gitlab.release: true`.
+- Configure `gitlab.release: true`
 - Obtain a [personal access token](https://gitlab.com/profile/personal_access_tokens) (release-it only needs the "api"
   scope).
 - Make sure the token is [available as an environment variable](./docs/environment-variables.md).
@@ -254,8 +260,8 @@ By default, release-it generates a changelog, to show and help select a version 
 changelog serves as the release notes for the GitHub or GitLab release.
 
 The [default command](./config/release-it.json) is based on `git log ...`. This setting (`git.changelog`) can be
-overridden. To customize the release notes for the GitHub or GitLab release, use `github.releaseNotes` or
-`gitlab.releaseNotes`. Make sure any of these commands output the changelog to `stdout`. Topics include:
+overridden. To further customize the release notes for the GitHub or GitLab release, there's `github.releaseNotes` or
+`gitlab.releaseNotes`. Make sure any of these commands output the changelog to `stdout`. Plugins are available for:
 
 - GitHub and GitLab Releases
 - auto-changelog
@@ -330,9 +336,8 @@ available in the `init` hook.
 
 Use `--verbose` to log the output of the commands.
 
-For the sake of verbosity and to not complicate matters further, the above table is not complete. The full list of hooks
-is actually: `init`, `beforeBump`, `bump`, `beforeRelease`, `release` or `afterRelease`. However, hooks like
-`before:beforeRelease` look weird and are usually not useful in practice.
+For the sake of verbosity, the full list of hooks is actually: `init`, `beforeBump`, `bump`, `beforeRelease`, `release`
+or `afterRelease`. However, hooks like `before:beforeRelease` look weird and are usually not useful in practice.
 
 ## Plugins
 
@@ -342,15 +347,17 @@ Since v11, release-it can be extended in many, many ways. Here are some plugins:
 | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
 | [@release-it/bumper](https://github.com/release-it/bumper)                                 | Read & write the version from/to any file                                     |
 | [@release-it/conventional-changelog](https://github.com/release-it/conventional-changelog) | Provides recommended bump, conventional-changelog, and updates `CHANGELOG.md` |
+| [@release-it/keep-a-changelog](https://github.com/release-it/keep-a-changelog)             | Maintain CHANGELOG.md using the Keep a Changelog standards                    |
 | [release-it-lerna-changelog](https://github.com/rwjblue/release-it-lerna-changelog)        | Integrates lerna-changelog into the release-it pipeline                       |
 | [release-it-yarn-workspaces](https://github.com/rwjblue/release-it-yarn-workspaces)        | Releases each of your projects configured workspaces                          |
+| [release-it-calver-plugin](https://github.com/casmith/release-it-calver-plugin)            | Enables Calendar Versioning (calver) with release-it                          |
 | [@grupoboticario/news-fragments](https://github.com/grupoboticario/news-fragments)         | An easy way to generate your changelog file                                   |
 
 Internally, release-it uses its own plugin architecture (for Git, GitHub, GitLab, npm).
 
 → See all [release-it plugins on npm](https://www.npmjs.com/search?q=keywords:release-it-plugin).
 
-→ See [plugins](./docs/plugins.md) for more details.
+→ See [plugins](./docs/plugins.md) for documentation to write plugins.
 
 ## Distribution repository
 
@@ -403,7 +410,8 @@ While mostly used as a CLI tool, release-it can be used as a dependency to integ
 ## Resources
 
 - [semver.org](https://semver.org)
-- [GitHub Help](https://help.github.com) (→ [About Releases](https://help.github.com/articles/about-releases))
+- [GitHub Help](https://docs.github.com) (→
+  [About Releases](https://docs.github.com/en/github/administering-a-repository/about-releases))
 - [npm Blog: Publishing what you mean to publish](https://blog.npmjs.org/post/165769683050/publishing-what-you-mean-to-publish)
 - [npm Documentation: package.json](https://docs.npmjs.com/files/package.json)
 - [Prereleases and npm](https://medium.com/@mbostock/prereleases-and-npm-e778fc5e2420)

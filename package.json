@@ -1,7 +1,7 @@
 {
   "name": "release-it",
   "version": "13.6.7",
-  "description": "CLI release tool for Git repos and npm packages.",
+  "description": "Generic CLI tool to automate versioning and package publishing related tasks.",
   "keywords": [
     "build",
     "changelog",

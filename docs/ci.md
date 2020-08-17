@@ -1,8 +1,8 @@
 # Continuous Integration environments
 
-As release-it is increasingly used from CI/CD environments such as Travis or Circle CI, this page outlines some popular
-ways to configure this. Do you have additional successful integrations, or experiencing issues with the existing ones
-below, feel free to [open a ticket](https://github.com/release-it/release-it/issues).
+As release-it is increasingly used from CI/CD environments such as Travis, Circle CI or GitHub Actions, this page
+outlines some popular ways to configure this. Do you have additional successful integrations, or experiencing issues
+with the existing ones below, feel free to [open a ticket](https://github.com/release-it/release-it/issues).
 
 ## Contents
 

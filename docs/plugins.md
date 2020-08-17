@@ -1,8 +1,7 @@
 # Plugins
 
-Since v11, release-it has evolved into a pluggable task runner. It was previously limited to Git-based repositories,
-GitHub/GitLab releases, and npm packages, but this is no longer the case. If it can either be written in Node.js, or
-executed from the shell, it can be integrated in the release-it process.
+release-it is a pluggable task runner. If it can either be written in Node.js, or executed from the shell, it can be
+integrated in the release-it process.
 
 ## Contents
 

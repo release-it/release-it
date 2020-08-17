@@ -3,6 +3,9 @@
 With a `package.json` in the current directory, release-it will let `npm` bump the version in `package.json` (and
 `package-lock.json` if present), and publish to the npm registry.
 
+If there is a `package.json` but it should be ignored and nothing should be published to npm, use `--no-npm` or
+`"npm": false` in the release-it configuration.
+
 ## Prerequisite checks
 
 First, release-it checks whether the npm registry is up and the user is authenticated with npm to prevent issues later

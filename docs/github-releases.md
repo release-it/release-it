@@ -1,6 +1,6 @@
 # GitHub Releases
 
-The "Releases" tab on GitHub projects links to a page containing the project's history, or changelog. Releases are
+The "releases" page on GitHub projects links to a page containing the project's history, or changelog. Releases are
 attached to an existing Git tag, so make sure the [Git part](./git.md) is configured correctly.
 
 Unsurprisingly, release-it uses this feature extensively:
@@ -83,3 +83,22 @@ Use a different host from what would be derived from the Git url (e.g. when usin
 
 In case release are done from behind a proxy, set `github.proxy` using a string to a proxy address like
 `"http://proxy:8080"`.
+
+## Update the latest release
+
+The latest GitHub release can be updated, e.g. to update the releases notes, add release assets, or toggle the `draft`
+status.
+
+- Use `--no-increment` to skip updating the version.
+- Use `--no-git` to skip Git actions.
+- Use `--no-npm` to skip publishing to npm if there's a `package.json`.
+
+Use the other options to update the release, such as `--github.assets` to add assets. Note that the `draft` and
+`prerelease` options are `false` by default, but can be set explicitly using e.g. `--no-github.draft` or
+`--github.draft`.
+
+Example command to add assets and explicitly toggle the draft status to "published":
+
+```bash
+release-it --no-increment --no-git --github.release --github.assets=*.zip --no-github.draft
+```
