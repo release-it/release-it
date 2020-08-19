@@ -2,7 +2,6 @@ const test = require('ava');
 const sinon = require('sinon');
 const { RequestError } = require('@octokit/request-error');
 const GitHub = require('../lib/plugin/github/GitHub');
-const { GitHubClientError } = require('../lib/errors');
 const { factory, runTasks } = require('./util');
 const {
   interceptAuthentication,
@@ -166,11 +165,11 @@ test('should throw for unauthenticated user', async t => {
   const stub = sinon.stub(github.client.users, 'getAuthenticated');
   stub.throws(new RequestError('Bad credentials', 401, { request: { url: '', headers: {} } }));
 
-  await t.throwsAsync(runTasks(github), {
-    instanceOf: GitHubClientError,
-    message:
-      'Could not authenticate with GitHub using environment variable "GITHUB_TOKEN". Generate a new token at https://github.com/settings/tokens'
-  });
+  await t.throwsAsync(
+    runTasks(github),
+    null,
+    'Could not authenticate with GitHub using environment variable "GITHUB_TOKEN". Generate a new token at https://github.com/settings/tokens'
+  );
 
   t.is(stub.callCount, 1);
   stub.restore();
@@ -183,10 +182,7 @@ test('should throw for non-collaborator', async t => {
   const stub = sinon.stub(github.client.repos, 'checkCollaborator');
   stub.throws(new RequestError('HttpError', 401, { request: { url: '', headers: {} } }));
 
-  await t.throwsAsync(runTasks(github), {
-    instanceOf: GitHubClientError,
-    message: 'User john is not a collaborator for user/repo.'
-  });
+  await t.throwsAsync(runTasks(github), null, 'User john is not a collaborator for user/repo.');
 
   stub.restore();
 });
@@ -219,7 +215,7 @@ test('should handle octokit client error (without retries)', async t => {
   interceptAuthentication();
   interceptCollaborator();
 
-  await t.throwsAsync(runTasks(github), { instanceOf: GitHubClientError, message: '404 (Not found)' });
+  await t.throwsAsync(runTasks(github), null, '404 (Not found)');
 
   t.is(stub.callCount, 1);
   stub.restore();
@@ -233,7 +229,7 @@ test('should handle octokit client error (with retries)', async t => {
   interceptAuthentication();
   interceptCollaborator();
 
-  await t.throwsAsync(runTasks(github), { instanceOf: GitHubClientError, message: '500 (Request failed)' });
+  await t.throwsAsync(runTasks(github), null, '500 (Request failed)');
 
   t.is(stub.callCount, 3);
   stub.restore();
