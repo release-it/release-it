@@ -26,7 +26,7 @@ system, and use hooks to execute any command you need to test, build, and/or pub
 
 - See [CHANGELOG.md](./CHANGELOG.md) for major/breaking updates, and
   [releases](https://github.com/release-it/release-it/releases) for a detailed version history.
-- To **contribute**, please read [CONTRIBUTING.md](./CONTRIBUTING.md) first.
+- To **contribute**, please read [CONTRIBUTING.md](./.github/CONTRIBUTING.md) first.
 - Please [open an issue](https://github.com/release-it/release-it/issues/new) if anything is missing or unclear in this
   documentation.
 

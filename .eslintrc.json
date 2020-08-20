@@ -10,7 +10,10 @@
   "extends": ["eslint:recommended", "plugin:ava/recommended", "prettier"],
   "plugins": ["prettier", "import"],
   "rules": {
-    "prettier/prettier": [2, { "singleQuote": true, "printWidth": 120, "trailingComma": "none", arrowParens: "avoid" }],
+    "prettier/prettier": [
+      2,
+      { "singleQuote": true, "printWidth": 120, "trailingComma": "none", "arrowParens": "avoid" }
+    ],
     "ava/no-ignored-test-files": 0,
     "ava/no-import-test-files": 0,
     "import/no-unresolved": 2,
