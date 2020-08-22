@@ -64,6 +64,34 @@ test('should release and upload assets', async t => {
   exec.restore();
 });
 
+test('should create a pre-release and draft release notes', async t => {
+  const options = {
+    git,
+    github: {
+      pushRepo,
+      tokenRef,
+      release: true,
+      releaseName: 'Release ${tagName}',
+      preRelease: true,
+      draft: true
+    }
+  };
+  const github = factory(GitHub, { options });
+  const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git describe --tags --abbrev=0').resolves('2.0.1');
+
+  interceptAuthentication();
+  interceptCollaborator();
+  interceptCreate({ body: { tag_name: '2.0.2', name: 'Release 2.0.2', body: null, prerelease: true, draft: true } });
+
+  await runTasks(github);
+
+  const { isReleased, releaseUrl } = github.getContext();
+  t.true(isReleased);
+  t.is(releaseUrl, 'https://github.com/user/repo/releases/tag/2.0.2');
+  exec.restore();
+});
+
 test('should update release and upload assets', async t => {
   const asset = 'file1';
   const options = {
