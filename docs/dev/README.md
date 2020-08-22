@@ -3,8 +3,8 @@
 ## GitHub
 
 - [octokit/rest.js](https://github.com/octokit/rest.js)
-- [repos.createRelease](https://octokit.github.io/rest.js/#api-Repos-createRelease)
-- [repos.uploadReleaseAsset](https://octokit.github.io/rest.js/#api-Repos-uploadReleaseAsset)
+- [repos.createRelease](https://octokit.github.io/rest.js/#repos-create-release)
+- [repos.uploadReleaseAsset](https://octokit.github.io/rest.js/#repos-upload-release-asset)
 
 ## GitLab
 

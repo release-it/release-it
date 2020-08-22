@@ -12,9 +12,6 @@ In `.release-it.json` of the source repo:
 
 ```json
 {
-  "increment": "minor",
-  "preRelease": "alpha",
-  "git": { "tagName": "v${version}" },
   "hooks": {
     "before:init": "git clone https://github.com/example/dist-repo .stage",
     "after:release": "cd .stage && npm version ${version} && cd -"
@@ -29,7 +26,7 @@ In `package.json` of dist repo:
   "name": "my-dist-package",
   "version": "1.0.0",
   "scripts": {
-    "version": "echo release-line >> dist-file && git add . --all",
+    "version": "echo copy ../dist/files > ./files && git add . --all",
     "postversion": "git push --follow-tags"
   }
 }
@@ -47,9 +44,9 @@ A single repository, with e.g. a `dist` or `gh-pages` branch. In `package.json`:
   "name": "my-package",
   "version": "1.0.0",
   "release-it": {
-    "increment": "minor",
-    "git": { "tagName": "v${version}" },
-    "npm": { "publish": false },
+    "npm": {
+      "publish": false
+    },
     "hooks": {
       "before:init": "git clone https://github.com/my/my-package -b dist .stage",
       "before:release": "npm run build",

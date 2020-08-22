@@ -7,8 +7,8 @@ release-it process if there are no commits since the latest tag.
 
 It is a good idea to verify things are working properly (e.g. by running tests) before releasing the project. However,
 the check enabled by `git.requireCommits` occurs after `hooks.before:init` (as the former is part of the Git plugin). In
-case time-consuming scripts are defined in `hooks.before:init` and things should be sped up, consider adding a custom
-shell script like this:
+case time-consuming scripts are defined in `hooks.before:init` and things should be sped up, consider either moving the
+scripts to `hooks.after:init`, or adding a custom shell script like this:
 
 ```json
 {

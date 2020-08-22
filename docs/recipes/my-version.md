@@ -1,7 +1,7 @@
 # Example plugin: my-version
 
 This example reads a `VERSION` file, bumps it, and publishes to a package repository. It is only enabled if the
-`./VERSION` actually exists.
+`./VERSION` file actually exists.
 
 ```javascript
 const { Plugin } = require('release-it');
@@ -11,7 +11,7 @@ const path = require('path');
 const prompts = {
   publish: {
     type: 'confirm',
-    message: context => `Publish version ${context.version} of ${context['my-version'].name}?`
+    message: context => `Publish version ${context.version} of ${context.name}?`
   }
 };
 
@@ -19,7 +19,7 @@ class MyVersionPlugin extends Plugin {
   constructor(...args) {
     super(...args);
     this.registerPrompts(prompts);
-    this.versionFile = path.resolve('./VERSION');
+    this.setContext({ versionFile: path.resolve('./VERSION') });
   }
   static isEnabled() {
     try {
@@ -30,17 +30,18 @@ class MyVersionPlugin extends Plugin {
   }
   init() {
     const data = fs.readFileSync(this.versionFile);
-    this.latestVersion = data.toString().trim();
+    const latestVersion = data.toString().trim();
+    this.setContext({ latestVersion });
   }
-  getName() {
-    return this.options.name;
+  getPackageName() {
+    return this.config.getContext('name');
   }
   getLatestVersion() {
-    return this.latestVersion;
+    return this.getContext('latestVersion');
   }
   bump(version) {
-    this.version = version;
-    fs.writeFileSync(this.versionFile, version);
+    this.setContext({ version });
+    fs.writeFileSync(this.getContext('versionFile'), version);
   }
   async release() {
     await this.step({ task: () => this.publish(), label: 'Publish with pkg-manager', prompt: 'publish' });
@@ -51,7 +52,9 @@ class MyVersionPlugin extends Plugin {
   }
   afterRelease() {
     if (this.isReleased) {
-      this.log.log(`🔗 https://example.package-manager.org/${this.getName()}/${this.version}`);
+      const name = this.getPackageName();
+      const { version } = this.getContext();
+      this.log.log(`🔗 https://example.package-manager.org/${name}/${version}`);
     }
   }
 }
@@ -65,7 +68,7 @@ To add this plugin to a project, use this configuration:
 {
   "plugins": {
     "my-version": {
-      "name": "my-pkg"
+      "unused": "option"
     }
   }
 }
