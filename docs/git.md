@@ -50,7 +50,12 @@ In case extra arguments should be provided to Git, these options are available:
 For example, use `"git.commitArgs": ["-S"]` to sign commits (also see
 [#35](https://github.com/release-it/release-it/issues/350)).
 
-Note that `["--follow-tags"]` is the default for `pushArgs`, so add this to the custom array of arguments.
+Note that `["--follow-tags"]` is the default for `pushArgs` (re-add this manually if necessary). Example with multiple
+arguments for `git push`:
+
+```bash
+release-it minor --git.pushArgs=--follow-tags --git.pushArgs=--force
+```
 
 ## Skip Git steps
 
