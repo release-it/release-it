@@ -1,7 +1,7 @@
 {
   "hooks": {},
   "git": {
-    "changelog": "git log --pretty=format:\"* %s (%h)\" ${latestTag}...HEAD",
+    "changelog": "git log --pretty=format:\"* %s (%h)\" ${from}...${to}",
     "requireCleanWorkingDir": true,
     "requireBranch": false,
     "requireUpstream": true,
@@ -22,9 +22,10 @@
     "publish": true,
     "publishPath": ".",
     "tag": null,
-    "access": null,
     "otp": null,
-    "ignoreVersion": false
+    "ignoreVersion": false,
+    "skipChecks": false,
+    "timeout": 10
   },
   "github": {
     "release": false,
@@ -36,7 +37,8 @@
     "assets": null,
     "host": null,
     "timeout": 0,
-    "proxy": null
+    "proxy": null,
+    "skipChecks": false
   },
   "gitlab": {
     "release": false,
@@ -44,6 +46,7 @@
     "releaseNotes": null,
     "tokenRef": "GITLAB_TOKEN",
     "assets": null,
-    "origin": null
+    "origin": null,
+    "skipChecks": false
   }
 }
