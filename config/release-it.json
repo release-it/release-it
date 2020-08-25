@@ -24,7 +24,8 @@
     "tag": null,
     "otp": null,
     "ignoreVersion": false,
-    "skipChecks": false
+    "skipChecks": false,
+    "timeout": 10
   },
   "github": {
     "release": false,
