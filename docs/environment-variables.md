@@ -30,7 +30,7 @@ Prefix the release-it script like so:
 ```json
 {
   "scripts": {
-    "release": "dotenv release-it"
+    "release": "dotenv release-it --"
   }
 }
 ```
