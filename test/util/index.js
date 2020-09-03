@@ -8,8 +8,8 @@ const ShellStub = require('../stub/shell');
 const Spinner = require('../../lib/spinner');
 const Prompt = require('../../lib/prompt');
 
-module.exports.factory = (Definition, { namespace, options = {}, global = {}, container = {} } = {}) => {
-  _.defaults(global, { isCI: true, isVerbose: false, isDryRun: false, isDebug: false });
+module.exports.factory = (Definition, { namespace, options = {}, container = {} } = {}) => {
+  _.defaults(options, { ci: true, verbose: false, 'dry-run': false, debug: false });
 
   const ns = namespace || Definition.name.toLowerCase();
 
@@ -19,14 +19,13 @@ module.exports.factory = (Definition, { namespace, options = {}, global = {}, co
   const spinner = container.spinner || sinon.createStubInstance(Spinner);
   spinner.show.callsFake(({ enabled = true, task }) => (enabled ? task() : () => {}));
   container.spinner = spinner;
-  container.shell = container.shell || new ShellStub({ global, container });
+  container.shell = container.shell || new ShellStub({ container });
   container.prompt = container.prompt || new Prompt({ container });
   container.shell.cache = { set: () => {}, has: () => false };
 
   return new Definition({
     namespace: ns,
     options,
-    global,
     container
   });
 };

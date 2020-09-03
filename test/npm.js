@@ -105,6 +105,10 @@ test('should add registry to commands when specified', async t => {
   const npmClient = factory(npm);
   npmClient.setContext({ publishConfig: { registry: 'registry.example.org' } });
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
+  exec.withArgs('npm whoami --registry registry.example.org').resolves('john');
+  exec
+    .withArgs('npm access ls-collaborators release-it --registry registry.example.org')
+    .resolves(JSON.stringify({ john: ['write'] }));
   await runTasks(npmClient);
   t.is(exec.args[0][0], 'npm ping --registry registry.example.org');
   t.is(exec.args[1][0], 'npm whoami --registry registry.example.org');
@@ -115,6 +119,8 @@ test('should add registry to commands when specified', async t => {
 test('should not throw when executing tasks', async t => {
   const npmClient = factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
+  exec.withArgs('npm whoami').resolves('john');
+  exec.withArgs('npm access ls-collaborators release-it').resolves(JSON.stringify({ john: ['write'] }));
   await t.notThrowsAsync(runTasks(npmClient));
   exec.restore();
 });
@@ -146,6 +152,7 @@ test('should not throw if npm returns 400 for unsupported ping/whoami', async t 
   const whoamiError = 'npm ERR! code E400\nnpm ERR! 400 Bad Request - GET https://npm.example.org/-/whoami';
   exec.withArgs('npm ping').rejects(new Error(pingError));
   exec.withArgs('npm whoami').rejects(new Error(whoamiError));
+  exec.withArgs('npm access ls-collaborators release-it').resolves(JSON.stringify({ john: ['write'] }));
   await runTasks(npmClient);
   t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag latest');
   exec.restore();
@@ -156,6 +163,8 @@ test('should not throw if npm returns 404 for unsupported ping', async t => {
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   const pingError = 'npm ERR!     <title>404 - No content for path /-/ping</title>';
   exec.withArgs('npm ping').rejects(new Error(pingError));
+  exec.withArgs('npm whoami').resolves('john');
+  exec.withArgs('npm access ls-collaborators release-it').resolves(JSON.stringify({ john: ['write'] }));
   await runTasks(npmClient);
   t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag latest');
   exec.restore();
@@ -169,23 +178,27 @@ test('should throw if user is not authenticated', async t => {
   exec.restore();
 });
 
-test('should publish public scoped package as public', async t => {
-  const options = { npm: { access: 'public', tag: 'beta' } };
-  const npmClient = factory(npm, { options });
-  npmClient.setContext({ name: '@scoped/pkg' });
-  const exec = sinon.spy(npmClient.shell, 'exec');
-  await npmClient.publish();
-  t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag beta --access public');
+test('should throw if user is not a collaborator', async t => {
+  const npmClient = factory(npm);
+  const exec = sinon.stub(npmClient.shell, 'exec').resolves();
+  exec.withArgs('npm whoami').resolves('ada');
+  exec.withArgs('npm access ls-collaborators release-it').resolves(JSON.stringify({ john: ['write'] }));
+  await t.throwsAsync(runTasks(npmClient), { message: /User ada is not a collaborator for release-it/ });
   exec.restore();
 });
 
-test('should publish a private scoped package as private', async t => {
-  const options = { npm: { access: 'restricted', tag: 'beta' } };
-  const npmClient = factory(npm, { options });
-  npmClient.setContext({ name: '@scoped/pkg' });
-  const exec = sinon.spy(npmClient.shell, 'exec');
-  await npmClient.publish();
-  t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag beta --access restricted');
+test('should not throw if user is not a collaborator on a new package', async t => {
+  const npmClient = factory(npm);
+  const exec = sinon.stub(npmClient.shell, 'exec').resolves();
+  exec.withArgs('npm whoami').resolves('ada');
+  exec
+    .withArgs('npm access ls-collaborators release-it')
+    .rejects(
+      new Error(
+        'npm ERR! code E404\nnpm ERR! 404 Not Found - GET https://registry.npmjs.org/-/package/release-it/collaborators?format=cli - File not found'
+      )
+    );
+  await t.notThrowsAsync(runTasks(npmClient));
   exec.restore();
 });
 
@@ -196,16 +209,6 @@ test('should publish a new private scoped package as npm would', async t => {
   const exec = sinon.spy(npmClient.shell, 'exec');
   await npmClient.publish();
   t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag beta');
-  exec.restore();
-});
-
-test('should publish a new public scoped package as public', async t => {
-  const options = { npm: { access: 'public', tag: 'beta' } };
-  const npmClient = factory(npm, { options });
-  npmClient.setContext({ name: '@scoped/pkg' });
-  const exec = sinon.spy(npmClient.shell, 'exec');
-  await npmClient.publish();
-  t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag beta --access public');
   exec.restore();
 });
 
@@ -239,8 +242,8 @@ test('should handle 2FA and publish with OTP', async t => {
 
   t.is(exec.callCount, 3);
   t.is(exec.firstCall.args[0].trim(), 'npm publish . --tag latest');
-  t.is(exec.secondCall.args[0].trim(), 'npm publish . --tag latest  --otp 123');
-  t.is(exec.thirdCall.args[0].trim(), 'npm publish . --tag latest  --otp 123456');
+  t.is(exec.secondCall.args[0].trim(), 'npm publish . --tag latest --otp 123');
+  t.is(exec.thirdCall.args[0].trim(), 'npm publish . --tag latest --otp 123456');
 
   t.is(npmClient.log.warn.callCount, 1);
   t.is(npmClient.log.warn.firstCall.args[0], 'The provided OTP is incorrect or has expired.');
@@ -249,6 +252,8 @@ test('should handle 2FA and publish with OTP', async t => {
 test('should publish', async t => {
   const npmClient = factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
+  exec.withArgs('npm whoami').resolves('john');
+  exec.withArgs('npm access ls-collaborators release-it').resolves(JSON.stringify({ john: ['write'] }));
   await runTasks(npmClient);
   t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag latest');
   exec.restore();
@@ -275,6 +280,14 @@ test('should publish to a different/scoped registry', async t => {
   const options = { npm };
   const npmClient = factory(npm, { options });
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
+  exec
+    .withArgs('npm whoami --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/')
+    .resolves('john');
+  exec
+    .withArgs(
+      'npm access ls-collaborators @my-scope/my-pkg --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/'
+    )
+    .resolves(JSON.stringify({ john: ['write'] }));
 
   await runTasks(npmClient);
 
@@ -282,6 +295,7 @@ test('should publish to a different/scoped registry', async t => {
     'npm ping --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
     'npm whoami --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
     'npm show @my-scope/my-pkg@latest version --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
+    'npm access ls-collaborators @my-scope/my-pkg --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
     'npm version 1.0.1 --no-git-tag-version',
     'npm publish . --tag latest'
   ]);

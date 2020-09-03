@@ -30,7 +30,7 @@ test('exec (with args)', async t => {
 });
 
 test('exec (dry-run/read-only)', async t => {
-  const shell = factory(Shell, { global: { isDryRun: true } });
+  const shell = factory(Shell, { options: { 'dry-run': true } });
   {
     const actual = await shell.exec('pwd', { write: false });
     t.is(actual, cwd);
@@ -47,7 +47,7 @@ test('exec (dry-run/read-only)', async t => {
 });
 
 test('exec (verbose)', async t => {
-  const shell = factory(Shell, { global: { isVerbose: true } });
+  const shell = factory(Shell, { options: { verbose: true } });
   const actual = await shell.exec('echo foo');
   t.is(shell.log.exec.firstCall.args[0], 'echo foo');
   t.is(shell.log.verbose.firstCall.args[0], 'foo');
@@ -56,7 +56,7 @@ test('exec (verbose)', async t => {
 
 test('should cache results of command execution', async t => {
   const log = sinon.createStubInstance(Log);
-  const shell = new Shell({ container: { log } });
+  const shell = factory(Shell, { container: { log } });
   const result1 = await shell.exec('echo foo');
   const result2 = await shell.exec('echo foo');
   t.is(result1, result2);

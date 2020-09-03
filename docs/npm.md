@@ -8,8 +8,8 @@ If there is a `package.json` but it should be ignored and nothing should be publ
 
 ## Prerequisite checks
 
-First, release-it checks whether the npm registry is up and the user is authenticated with npm to prevent issues later
-on in the process.
+To prevent issues later in the process, release-it first checks whether the npm registry is up, the user is
+authenticated with npm and is a collaborator for the current package.
 
 Some instances of npm registries, such as Nexus, do not support `npm ping` and/or `npm whoami`. If the error is a `E400`
 or `E404`, release-it will give a warning but continue.
@@ -57,7 +57,7 @@ For a pre-release, the default tag is "next". The tag will be derived from the p
 A [scoped package](https://docs.npmjs.com/about-scopes) (e.g. `@user/package`) is either public or private. By default,
 `npm publish` will publish a scoped package as private. Note that scoped packages require a paid account.
 
-In order to publish a public scoped package, specify this in `package.json`:
+In order to publish a scoped package to the public registry, specify this in `package.json`:
 
 ```json
 {
@@ -67,8 +67,7 @@ In order to publish a public scoped package, specify this in `package.json`:
 }
 ```
 
-The default value for private packages is `"restricted"`. Note that setting `npm.access` in the release-it config is
-deprecated.
+The default value for private packages is `"restricted"`.
 
 ## Two-factor authentication
 

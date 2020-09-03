@@ -1,6 +1,6 @@
 {
   "name": "release-it",
-  "version": "13.7.1",
+  "version": "14.0.0-beta.0",
   "description": "Generic CLI tool to automate versioning and package publishing related tasks.",
   "keywords": [
     "build",
@@ -62,7 +62,6 @@
     "cosmiconfig": "7.0.0",
     "debug": "4.1.1",
     "deprecated-obj": "2.0.0",
-    "detect-repo-changelog": "1.0.1",
     "execa": "4.0.3",
     "find-up": "5.0.0",
     "form-data": "3.0.0",
@@ -79,11 +78,9 @@
     "parse-json": "5.1.0",
     "semver": "7.3.2",
     "shelljs": "0.8.4",
-    "supports-color": "7.2.0",
     "update-notifier": "4.1.1",
     "url-join": "4.0.1",
     "uuid": "8.3.0",
-    "window-size": "1.1.1",
     "yaml": "1.10.0",
     "yargs-parser": "19.0.4"
   },

@@ -129,7 +129,7 @@ test.serial('should use pkg.version (in sub dir) w/o tagging repo', async t => {
   const { stdout } = sh.exec('git describe --tags --abbrev=0');
   t.is(stdout.trim(), '1.0.0');
   const npmArgs = getArgs(exec.args, 'npm');
-  t.is(npmArgs[3], 'npm version 1.3.0 --no-git-tag-version');
+  t.is(npmArgs[4], 'npm version 1.3.0 --no-git-tag-version');
   exec.restore();
 });
 
@@ -175,6 +175,7 @@ test.serial('should release all the things (basic)', async t => {
     'npm ping',
     'npm whoami',
     `npm show ${pkgName}@latest version`,
+    `npm access ls-collaborators ${pkgName}`,
     'npm version 1.0.1 --no-git-tag-version',
     'npm publish . --tag latest'
   ]);
@@ -264,6 +265,7 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
     'npm ping',
     'npm whoami',
     `npm show ${pkgName}@latest version`,
+    `npm access ls-collaborators ${pkgName}`,
     'npm version 1.1.0-alpha.0 --no-git-tag-version',
     'npm publish . --tag alpha'
   ]);
@@ -302,6 +304,7 @@ test.serial('should publish pre-release without pre-id with different npm.tag', 
     'npm ping',
     'npm whoami',
     `npm show ${pkgName}@latest version`,
+    `npm access ls-collaborators ${pkgName}`,
     'npm version 2.0.0-0 --no-git-tag-version',
     'npm publish . --tag next'
   ]);
@@ -348,7 +351,7 @@ test.serial('should initially publish non-private scoped npm package privately',
   await runTasks({}, container);
 
   const npmArgs = getArgs(container.shell.exec.args, 'npm');
-  t.is(npmArgs[4], 'npm publish . --tag latest');
+  t.is(npmArgs[5], 'npm publish . --tag latest');
   exec.restore();
 });
 
@@ -495,68 +498,5 @@ test.serial('should propagate errors', async t => {
     ]);
 
     exec.restore();
-  });
-
-  test.serial('should instantiate plugins and execute all release-cycle methods', async t => {
-    const config = {
-      plugins: {
-        'my-plugin': {
-          name: 'foo'
-        },
-        '/my/plugin': [
-          'named-plugin',
-          {
-            name: 'bar'
-          }
-        ]
-      }
-    };
-    const container = getContainer(config);
-
-    await runTasks({}, container);
-
-    t.is(MyPlugin.firstCall.args[0].namespace, 'my-plugin');
-    t.deepEqual(MyPlugin.firstCall.args[0].options['my-plugin'], { name: 'foo' });
-    t.is(MyLocalPlugin.firstCall.args[0].namespace, 'named-plugin');
-    t.deepEqual(MyLocalPlugin.firstCall.args[0].options['named-plugin'], { name: 'bar' });
-
-    [
-      'init',
-      'getName',
-      'getLatestVersion',
-      'getIncrementedVersionCI',
-      'beforeBump',
-      'bump',
-      'beforeRelease',
-      'release',
-      'afterRelease'
-    ].forEach(method => {
-      t.is(myPlugin[method].callCount, 1);
-      t.is(myLocalPlugin[method].callCount, 1);
-    });
-
-    const incrementBase = { latestVersion: '0.0.0', increment: 'patch', isPreRelease: false, preReleaseId: undefined };
-    t.deepEqual(myPlugin.getIncrementedVersionCI.firstCall.args[0], incrementBase);
-    t.deepEqual(myLocalPlugin.getIncrementedVersionCI.firstCall.args[0], incrementBase);
-    t.is(myPlugin.bump.firstCall.args[0], '0.0.1');
-    t.is(myLocalPlugin.bump.firstCall.args[0], '0.0.1');
-  });
-
-  test.serial('should disable core plugins', async t => {
-    const config = {
-      plugins: {
-        'replace-plugin': {}
-      }
-    };
-    const container = getContainer(config);
-
-    const result = await runTasks({}, container);
-
-    t.deepEqual(result, {
-      changelog: undefined,
-      name: undefined,
-      latestVersion: undefined,
-      version: undefined
-    });
   });
 }
