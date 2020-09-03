@@ -37,6 +37,7 @@ system, and use hooks to execute any command you need to test, build, and/or pub
 
 - [Installation](#installation)
 - [Usage](#usage)
+- [Dry Run](#dry-run)
 - [Configuration](#configuration)
 - [Interactive vs. CI mode](#interactive-vs-ci-mode)
 - [Latest version](#latest-version)
@@ -115,14 +116,17 @@ Release a new version:
 release-it
 ```
 
-You will be prompted to select the new version, and more questions will follow based on your setup. For a "dry run" (to
-show the interactivity and the commands it _would_ execute):
+You will be prompted to select the new version, and more questions will follow based on your setup.
+
+## Dry Run
+
+To show the interactivity and the commands it _would_ execute:
 
 ```bash
 release-it --dry-run
 ```
 
-Note: read-only commands are still executed (`$ ...`), while the rest is not (`! ...`):
+Note: read-only commands are still executed (`$ ...`), while potentially writing/mutating commands are not (`! ...`):
 
 ```bash
 $ git rev-parse --git-dir
@@ -352,6 +356,7 @@ Since v11, release-it can be extended in many, many ways. Here are some plugins:
 | [release-it-yarn-workspaces](https://github.com/rwjblue/release-it-yarn-workspaces)        | Releases each of your projects configured workspaces                          |
 | [release-it-calver-plugin](https://github.com/casmith/release-it-calver-plugin)            | Enables Calendar Versioning (calver) with release-it                          |
 | [@grupoboticario/news-fragments](https://github.com/grupoboticario/news-fragments)         | An easy way to generate your changelog file                                   |
+| [@j-ulrich/release-it-regex-bumper](https://github.com/j-ulrich/release-it-regex-bumper)   | Regular expression based version read/write plugin for release-it             |
 
 Internally, release-it uses its own plugin architecture (for Git, GitHub, GitLab, npm).
 
@@ -380,7 +385,7 @@ Use `--disable-metrics` to opt-out of sending some anonymous statistical data to
 - With `release-it -VV`, release-it also prints every internal command and its output.
 - Prepend `DEBUG=release-it:* release-it [...]` to print configuration and more error details.
 
-Use `verbose: 2` to have the equivalent of `-VV` on the command line in a configuration file.
+Use `verbose: 2` in a configuration file to have the equivalent of `-VV` on the command line.
 
 ## Use release-it programmatically
 
