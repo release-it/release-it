@@ -20,6 +20,12 @@ To add [GitHub releases](https://help.github.com/articles/creating-releases/) in
 Do not put the actual token in the release-it configuration. It will be read from the `GITHUB_TOKEN` environment
 variable. You can change this variable name by setting the `github.tokenRef` option to something else.
 
+## Git
+
+A GitHub Release requires the corresponding Git tag to be present on the remote (release-it creates and pushes this tag
+automatically). Thus, in addition to the `GITHUB_TOKEN`, a public SSH key is required to push the Git tag to the remote
+repository. See [Git remotes](./git.md#git-remotes) (and [CI: Git](./ci.md#git)) for more information.
+
 ## Prerequisite checks
 
 First, release-it will check whether the `GITHUB_TOKEN` environment variable is set. Otherwise it will throw an error

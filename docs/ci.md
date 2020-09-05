@@ -22,9 +22,9 @@ When using an `SSH` url (such as `git@github.com:user/repo.git`), add the public
 
 ### HTTPS
 
-When using an `HTTPS` url (such as `https://github.com/user/project.git`), things are slightly more complicated. Add the
-token (e.g. `GITHUB_TOKEN`) to the CI/CD environment. Then make sure to add this token as a password in the origin url
-before running release-it. E.g. add this to a .travis.yml` script section:
+When using an `HTTPS` url (such as `https://github.com/user/project.git`), things are slightly more complicated. For
+GitHub, add the `GITHUB_TOKEN` token to the CI/CD environment. Then make sure to add this token as a password in the
+origin url before running release-it. An example is this `.travis.yml` section:
 
 ```yaml
 script:
@@ -33,7 +33,7 @@ script:
   - git symbolic-ref HEAD refs/heads/master
 ```
 
-Replace `[user]` and `[project]` with the correct strings.
+Replace `[user]` and `[project]` with the actual values.
 
 ## npm
 

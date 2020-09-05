@@ -16,17 +16,18 @@ Configure the `[git.*]` options to modify the commands accordingly. See
 
 The minimum required version of Git is v2.0.0.
 
-## SSH keys & Git remotes
+## Git remotes
 
 SSH keys and Git remotes are assumed to be configured correctly. If a manual `git push` from the command line works,
 release-it should be able to do the same.
 
 The following help pages might be useful:
 
-- [SSH](https://help.github.com/articles/connecting-to-github-with-ssh/)
-- [Managing Remotes](https://help.github.com/categories/managing-remotes/) (GitHub)
-- [SSH keys](https://confluence.atlassian.com/bitbucket/ssh-keys-935365775.html) (Bitbucket)
-- [SSH keys](https://gitlab.com/help/ssh/README.md) (GitLab)
+- [Connecting to GitHub with SSH](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh)
+- [Managing remote repositories](https://docs.github.com/en/github/using-git/managing-remote-repositories) (GitHub)
+- [Configure SSH and two-step verification](https://support.atlassian.com/bitbucket-cloud/docs/configure-ssh-and-two-step-verification/)
+  (Bitbucket)
+- [GitLab and SSH keys](https://gitlab.com/help/ssh/README.md)
 
 ## Remote repository
 
