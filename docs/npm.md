@@ -11,8 +11,8 @@ If there is a `package.json` but it should be ignored and nothing should be publ
 To prevent issues later in the process, release-it first checks whether the npm registry is up, the user is
 authenticated with npm and is a collaborator for the current package.
 
-Some instances of npm registries, such as Nexus, do not support `npm ping` and/or `npm whoami`. If the error is a `E400`
-or `E404`, release-it will give a warning but continue.
+Some instances of npm registries, such as Nexus, do not support `npm ping`, `npm whoami` and/or `npm access`. If the
+error is a `E400` or `E404`, release-it will give a warning but continue.
 
 To skip these checks, use `npm.skipChecks`.
 
