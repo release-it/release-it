@@ -51,6 +51,9 @@ One way to achieve this is to set the `NPM_TOKEN` in the CI environment, and fro
 echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
 ```
 
+Since release-it executes `npm whoami` as a [prerequisite check](./npm.md#prerequisite-checks), which does not seem to
+respect the `.npmrc` file, the `--npm.skipChecks` argument can be used.
+
 - [Creating and viewing authentication tokens](https://docs.npmjs.com/creating-and-viewing-authentication-tokens)
 - [Using (private) packages in a CI/CD workflow](https://docs.npmjs.com/using-private-packages-in-a-ci-cd-workflow)
 
