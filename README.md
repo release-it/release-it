@@ -306,8 +306,9 @@ Use the optional `:plugin` part in the middle to hook into a life cycle method e
 
 The core plugins include `version`, `git`, `npm`, `github`, `gitlab`.
 
-See [execution order](./docs/plugins.md#execution-order) for more details on execution order of plugin lifecycle
-methods.
+Note that hooks like `after:git:release` will not run when either the `git push` failed, or when it is configured not to
+be executed (e.g. `git.push: false`). See [execution order](./docs/plugins.md#execution-order) for more details on
+execution order of plugin lifecycle methods.
 
 All commands can use configuration variables (like template strings). An array of commands can also be provided, they
 will run one after another. Some example release-it configuration:
