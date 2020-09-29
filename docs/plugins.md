@@ -331,8 +331,8 @@ Assuming there are two plugins configured, "PluginA" and "PluginB":
 }
 ```
 
-First, the `init` method is executed for `PluginA`, then `PluginB`, and then the core plugins: `npm` → `gitlab` →
-`github` → `git` → `version`.
+First, the `init` method is executed for `PluginA`, then `PluginB`, and then the core plugins: `npm` → `git` → `github`
+→ `gitlab` → `version`.
 
 Then the same for `getName` and `getLatestVersion`. For these getter methods, the value of the first plugin that returns
 something is used throughout the release process. This allows a plugin to be ahead of core plugins.

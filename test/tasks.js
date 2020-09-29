@@ -181,8 +181,8 @@ test.serial('should release all the things (basic)', async t => {
   ]);
 
   t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
-  t.true(log.log.firstCall.args[0].endsWith(`https://github.com/${owner}/${project}/releases/tag/1.0.1`));
-  t.true(log.log.secondCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
+  t.true(log.log.firstCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
+  t.true(log.log.secondCall.args[0].endsWith(`https://github.com/${owner}/${project}/releases/tag/1.0.1`));
 
   exec.restore();
 });
@@ -280,9 +280,9 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
   t.is(tagAnnotation.trim(), `${owner} ${owner}/${project} ${project}`);
 
   t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.1.0-alpha.0)`));
-  t.true(log.log.firstCall.args[0].endsWith(`https://github.com/${owner}/${project}/releases/tag/v1.1.0-alpha.0`));
-  t.true(log.log.secondCall.args[0].endsWith(`${project}/-/releases`));
-  t.true(log.log.thirdCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
+  t.true(log.log.firstCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
+  t.true(log.log.secondCall.args[0].endsWith(`https://github.com/${owner}/${project}/releases/tag/v1.1.0-alpha.0`));
+  t.true(log.log.thirdCall.args[0].endsWith(`${project}/-/releases`));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
 
   exec.restore();
@@ -476,22 +476,22 @@ test.serial('should propagate errors', async t => {
       'echo after:version:beforeRelease',
       'echo after:beforeRelease',
       'echo before:release',
-      'echo before:version:release',
-      'echo after:version:release',
-      'echo before:git:release',
-      'echo after:git:release',
       'echo before:npm:release',
       'echo after:npm:release',
+      'echo before:git:release',
+      'echo after:git:release',
+      'echo before:version:release',
+      'echo after:version:release',
       'echo before:my-plugin:release',
       'echo after:my-plugin:release',
       'echo after:release',
       'echo before:afterRelease',
-      'echo before:version:afterRelease',
-      'echo after:version:afterRelease',
-      'echo before:git:afterRelease',
-      'echo after:git:afterRelease',
       'echo before:npm:afterRelease',
       'echo after:npm:afterRelease',
+      'echo before:git:afterRelease',
+      'echo after:git:afterRelease',
+      'echo before:version:afterRelease',
+      'echo after:version:afterRelease',
       'echo before:my-plugin:afterRelease',
       'echo after:my-plugin:afterRelease',
       'echo after:afterRelease'
