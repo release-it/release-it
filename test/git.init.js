@@ -95,11 +95,12 @@ test.serial('should detect and exclude version prefix (configured)', async t => 
 });
 
 test.serial('should honor custom tagName configuration', async t => {
-  const gitClient = factory(Git, { options: { git: { tagName: 'TAGNAME-v${version}' } } });
+  const gitClient = factory(Git, { options: { git: { tagName: 'TAGNAME-${repo.project}-v${version}' } } });
   sh.exec('git tag 1.0.0');
   await gitClient.init();
   await gitClient.bump('1.0.1');
-  t.is(gitClient.getContext('tagName'), 'TAGNAME-v1.0.1');
+  const { project } = gitClient.getContext('repo');
+  t.is(gitClient.getContext('tagName'), `TAGNAME-${project}-v1.0.1`);
 });
 
 test.serial('should get the latest tag after fetch', async t => {
