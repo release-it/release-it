@@ -88,7 +88,7 @@
     "@octokit/request-error": "2.0.2",
     "ava": "3.13.0",
     "codecov": "3.8.0",
-    "eslint": "7.10.0",
+    "eslint": "7.11.0",
     "eslint-config-prettier": "6.12.0",
     "eslint-plugin-ava": "11.0.0",
     "eslint-plugin-import": "2.22.1",
