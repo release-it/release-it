@@ -13,8 +13,8 @@ See this screenshot for an overview of what release-it automates:
 To add [GitHub releases](https://help.github.com/articles/creating-releases/) in your release-it flow:
 
 - Configure `github.release: true`.
-- Obtain a [personal access token](https://github.com/settings/tokens) (release-it only needs "repo" access; no "admin"
-  or other scopes).
+- Obtain a [personal access token](https://github.com/settings/tokens/new?scopes=repo&description=release-it)
+  (release-it only needs "repo" access; no "admin" or other scopes).
 - Make sure the token is [available as an environment variable](./environment-variables.md).
 
 Do not put the actual token in the release-it configuration. It will be read from the `GITHUB_TOKEN` environment

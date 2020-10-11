@@ -241,8 +241,8 @@ The "Releases" tab on GitHub projects links to a page to store the changelog cq.
 [GitHub releases](https://help.github.com/articles/creating-releases) in your release-it flow:
 
 - Configure `github.release: true`
-- Obtain a [personal access token](https://github.com/settings/tokens) (release-it only needs "repo" access; no "admin"
-  or other scopes).
+- Obtain a [personal access token](https://github.com/settings/tokens/new?scopes=repo&description=release-it)
+  (release-it only needs "repo" access; no "admin" or other scopes).
 - Make sure the token is [available as an environment variable](./docs/environment-variables.md).
 
 → See [GitHub Releases](./docs/github-releases.md) for more details.
