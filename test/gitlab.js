@@ -20,7 +20,9 @@ test.serial('should validate token', async t => {
   const gitlab = factory(GitLab, { options });
   delete process.env[tokenRef];
 
-  await t.throwsAsync(gitlab.init(), null, 'Environment variable "MY_GITLAB_TOKEN" is required for GitLab releases');
+  await t.throwsAsync(gitlab.init(), {
+    message: /^Environment variable "MY_GITLAB_TOKEN" is required for GitLab releases/
+  });
   process.env[tokenRef] = '123'; // eslint-disable-line require-atomic-updates
 
   interceptUser();
@@ -115,11 +117,9 @@ test.serial('should throw for unauthenticated user', async t => {
   const scope = nock(host);
   scope.get(`/api/v4/user`).reply(401);
 
-  await t.throwsAsync(
-    runTasks(gitlab),
-    null,
-    'Could not authenticate with GitLab using environment variable "GITLAB_TOKEN".'
-  );
+  await t.throwsAsync(runTasks(gitlab), {
+    message: /^Could not authenticate with GitLab using environment variable "GITLAB_TOKEN"/
+  });
 });
 
 test.serial('should throw for non-collaborator', async t => {
@@ -131,7 +131,7 @@ test.serial('should throw for non-collaborator', async t => {
   scope.get(`/api/v4/projects/john%2Frepo/members/all/1`).reply(200, { username: 'emma' });
   interceptUser({ owner: 'john' });
 
-  await t.throwsAsync(runTasks(gitlab), null, 'User john is not a collaborator for john/repo.');
+  await t.throwsAsync(runTasks(gitlab), { message: /^User john is not a collaborator for john\/repo/ });
 });
 
 test.serial('should throw for insufficient access level', async t => {
@@ -143,7 +143,7 @@ test.serial('should throw for insufficient access level', async t => {
   scope.get(`/api/v4/projects/john%2Frepo/members/all/1`).reply(200, { username: 'john', access_level: 10 });
   interceptUser({ owner: 'john' });
 
-  await t.throwsAsync(runTasks(gitlab), null, 'User john is not a collaborator for john/repo.');
+  await t.throwsAsync(runTasks(gitlab), { message: /^User john is not a collaborator for john\/repo/ });
 });
 
 test.serial('should fallback for gitlab < v12.4', async t => {

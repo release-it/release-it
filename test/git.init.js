@@ -21,32 +21,32 @@ test.serial('should throw if on wrong branch', async t => {
   const options = { git: { requireBranch: 'dev' } };
   const gitClient = factory(Git, { options });
   sh.exec('git remote remove origin');
-  await t.throwsAsync(gitClient.init(), null, 'Must be on branch dev');
+  await t.throwsAsync(gitClient.init(), { message: /^Must be on branch dev/ });
 });
 
 test.serial('should throw if there is no remote Git url', async t => {
   const gitClient = factory(Git, { options: { git } });
   sh.exec('git remote remove origin');
-  await t.throwsAsync(gitClient.init(), null, 'Could not get remote Git url');
+  await t.throwsAsync(gitClient.init(), { message: /^Could not get remote Git url/ });
 });
 
 test.serial('should throw if working dir is not clean', async t => {
   const gitClient = factory(Git, { options: { git } });
   sh.exec('rm file');
-  await t.throwsAsync(gitClient.init(), { message: /Working dir must be clean/ });
+  await t.throwsAsync(gitClient.init(), { message: /^Working dir must be clean/ });
 });
 
 test.serial('should throw if no upstream is configured', async t => {
   const gitClient = factory(Git, { options: { git } });
   sh.exec('git checkout -b foo');
-  await t.throwsAsync(gitClient.init(), null, 'No upstream configured for current branch');
+  await t.throwsAsync(gitClient.init(), { message: /^No upstream configured for current branch/ });
 });
 
 test.serial('should throw if there are no commits', async t => {
   const options = { git: { requireCommits: true } };
   const gitClient = factory(Git, { options });
   sh.exec('git tag 1.0.0');
-  await t.throwsAsync(gitClient.init(), null, 'There are no commits since the latest tag');
+  await t.throwsAsync(gitClient.init(), { message: /^There are no commits since the latest tag/ });
 });
 
 test.serial('should not throw if there are commits', async t => {
