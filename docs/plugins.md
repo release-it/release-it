@@ -132,6 +132,7 @@ class Plugin {
   init() {}
   getName() {}
   getLatestVersion() {}
+  getIncrement() {}
   getIncrementedVersionCI() {}
   getIncrementedVersion() {}
   beforeBump() {}
@@ -225,6 +226,11 @@ getInitialOptions(options, pluginName) {
 
 The following methods are mostly internal methods that normally should not be implemented in any plugin, but in rare
 cases this might be useful.
+
+##### getIncrement({ latestVersion, increment, isPreRelease, preReleaseId }) → String
+
+Implement `getIncrement` to override the increment used by `getIncrementedVersionCI` by providing `major`, `minor` or 
+`patch`, otherwise staying with Version.js's default logics.
 
 ##### getIncrementedVersionCI({ latestVersion, increment, isPreRelease, preReleaseId }) → SemVer
 
