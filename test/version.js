@@ -38,7 +38,7 @@ test('should increment latest version (coerce)', t => {
 
 test('should increment version (pre-release continuation)', t => {
   const v = factory(Version);
-  t.is(v.incrementVersion({ latestVersion: '1.2.3-alpha.0', increment: 'prepatch' }), '1.2.3-alpha.1');
+  t.is(v.incrementVersion({ latestVersion: '1.2.3-alpha.0', increment: 'prepatch' }), '1.2.4-0');
 });
 
 test('should increment version (prepatch)', t => {
@@ -51,6 +51,27 @@ test('should increment version (normalized)', t => {
   t.is(
     v.incrementVersion({ latestVersion: '1.2.3', increment: 'patch', preReleaseId: 'alpha', isPreRelease: true }),
     '1.2.4-alpha.0'
+  );
+});
+
+test('should increment version (prepatch on prerelease version)', t => {
+  const v = factory(Version);
+  t.is(
+    v.incrementVersion({ latestVersion: '1.2.3-alpha.5', increment: 'prepatch', preReleaseId: 'next' }),
+    '1.2.4-next.0'
+  );
+});
+
+test('should increment version (normalized on prerelease version)', t => {
+  const v = factory(Version);
+  t.is(
+    v.incrementVersion({
+      latestVersion: '1.2.3-alpha.5',
+      increment: 'patch',
+      preReleaseId: 'next',
+      isPreRelease: true
+    }),
+    '1.2.4-next.0'
   );
 });
 
