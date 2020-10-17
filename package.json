@@ -82,14 +82,14 @@
     "url-join": "4.0.1",
     "uuid": "8.3.1",
     "yaml": "1.10.0",
-    "yargs-parser": "20.2.1"
+    "yargs-parser": "20.2.3"
   },
   "devDependencies": {
     "@octokit/request-error": "2.0.2",
     "ava": "3.13.0",
     "codecov": "3.8.0",
     "eslint": "7.11.0",
-    "eslint-config-prettier": "6.12.0",
+    "eslint-config-prettier": "6.13.0",
     "eslint-plugin-ava": "11.0.0",
     "eslint-plugin-import": "2.22.1",
     "eslint-plugin-prettier": "3.1.4",
