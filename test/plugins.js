@@ -107,6 +107,7 @@ test.serial('should instantiate plugins and execute all release-cycle methods', 
   });
 
   const incrementBase = { latestVersion: '0.0.0', increment: 'patch', isPreRelease: false, preReleaseId: undefined };
+  t.deepEqual(myPlugin.getIncrement.firstCall.args[0], incrementBase);
   t.deepEqual(myPlugin.getIncrementedVersionCI.firstCall.args[0], incrementBase);
   t.deepEqual(myLocalPlugin.getIncrementedVersionCI.firstCall.args[0], incrementBase);
   t.is(myPlugin.bump.firstCall.args[0], '0.0.1');
