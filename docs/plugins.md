@@ -42,20 +42,20 @@ Each plugin has a different responsibility, and each enables itself:
 ## Using a plugin
 
 Plugins are local to the project, or external npm packages. Plugin configuration consists of a module name with options.
-This example uses the `release-it-bar` module and is configured in `package.json`:
+This example uses the `release-it-plugin` module and is configured in `package.json`:
 
 ```json
 {
   "devDependencies": {
     "release-it": "*",
-    "release-it-bar": "*"
+    "release-it-plugin": "*"
   },
   "release-it": {
     "github": {
       "release": true
     },
     "plugins": {
-      "release-it-bar": {
+      "release-it-plugin": {
         "key": "value"
       }
     }
@@ -63,12 +63,12 @@ This example uses the `release-it-bar` module and is configured in `package.json
 }
 ```
 
-Alternatively, here's a `foo` plugin as a local module:
+Alternatively, here's a `release-it-plugin` as a local module:
 
 ```json
 {
   "plugins": {
-    "./scripts/foo.js": {
+    "./scripts/release-it-plugin.js": {
       "key": "value"
     }
   }
@@ -78,12 +78,27 @@ Alternatively, here's a `foo` plugin as a local module:
 ## Creating a plugin
 
 To create a plugin, extend the `Plugin` class, and implement one or more release-cycle methods. See the "interface"
-below (where none of the methods is required). Any of these methods can be `async` (except for
-`getIncrementedVersionCI`). If you're interested in writing a plugin, please take a look at
-[the `runTasks` test helper](https://github.com/release-it/release-it/blob/master/test/util/index.js#L33-L54), to see
-how a plugin is integrated in the release process. Also see the
-[base `Plugin` class](https://github.com/release-it/release-it/blob/master/lib/plugin/Plugin.js) where the plugin should
-be extended from.
+below (where none of the methods is required). Any of these methods can be `async`. See this
+[test helper](https://github.com/release-it/release-it/blob/master/test/util/index.js#L54) to get an idea of the methods
+a release-it plugin can implement.
+
+Note that `release-it` should be a `peerDependency` (and probably also a `devDependency` to use its helpers in the
+plugin tests). Here's an example `package.json`:
+
+```json
+{
+  "name": "release-it-plugin",
+  "version": "1.0.0",
+  "description": "My release-it plugin",
+  "main": "index.js",
+  "peerDpendencies": {
+    "release-it": "^14.2.0"
+  },
+  "devDependencies": {
+    "release-it": "^14.2.0"
+  }
+}
+```
 
 ### Example
 
@@ -229,7 +244,7 @@ cases this might be useful.
 
 ##### getIncrement({ latestVersion, increment, isPreRelease, preReleaseId }) → String
 
-Implement `getIncrement` to override the increment used by `getIncrementedVersionCI` by providing `major`, `minor` or 
+Implement `getIncrement` to override the increment used by `getIncrementedVersionCI` by providing `major`, `minor` or
 `patch`, otherwise staying with Version.js's default logics.
 
 ##### getIncrementedVersionCI({ latestVersion, increment, isPreRelease, preReleaseId }) → SemVer
@@ -362,8 +377,4 @@ Here's an example:
 
 - All packages tagged with [`"release-it-plugin"` on npm](https://www.npmjs.com/search?q=keywords:release-it-plugin).
 - Recipe: [my-version](https://github.com/release-it/release-it/blob/master/docs/recipes/my-version.md) - example plugin
-- Internal release-it plugins:
-  - [Git](https://github.com/release-it/release-it/blob/master/lib/plugin/git/Git.js)
-  - [GitHub](https://github.com/release-it/release-it/blob/master/lib/plugin/github/GitHub.js)
-  - [GitLab](https://github.com/release-it/release-it/blob/master/lib/plugin/gitlab/GitLab.js)
-  - [npm](https://github.com/release-it/release-it/blob/master/lib/plugin/npm/npm.js)
+- [Internal release-it plugins](https://github.com/release-it/release-it/tree/master/lib/plugin)
