@@ -30,13 +30,8 @@ module.exports.factory = (Definition, { namespace, options = {}, container = {} 
   });
 };
 
-module.exports.runTasks = async plugin => {
-  await plugin.init();
-
-  const name = (await plugin.getName()) || '__test__';
-  const latestVersion = (await plugin.getLatestVersion()) || '1.0.0';
-  const changelog = (await plugin.getChangelog(latestVersion)) || null;
-  const increment =
+const getIncrement = (plugin, { latestVersion }) => {
+  return (
     plugin.getIncrement({
       latestVersion,
       increment: plugin.options.increment,
@@ -44,13 +39,30 @@ module.exports.runTasks = async plugin => {
       preReleaseId: null
     }) ||
     plugin.getContext('increment') ||
-    plugin.config.getContext('increment');
+    plugin.config.getContext('increment')
+  );
+};
+
+const getVersion = async (plugin, { latestVersion, increment }) => {
+  return (
+    (await plugin.getIncrementedVersionCI({ latestVersion, increment })) ||
+    (await plugin.getIncrementedVersion({ latestVersion, increment })) ||
+    (increment !== false ? semver.inc(latestVersion, increment || 'patch') : latestVersion)
+  );
+};
+
+module.exports.runTasks = async plugin => {
+  await plugin.init();
+
+  const name = (await plugin.getName()) || '__test__';
+  const latestVersion = (await plugin.getLatestVersion()) || '1.0.0';
+  const changelog = (await plugin.getChangelog(latestVersion)) || null;
+  const increment = getIncrement(plugin, { latestVersion });
+
   plugin.config.setContext({ name, latestVersion, latestTag: latestVersion, changelog });
 
-  const version =
-    plugin.getIncrementedVersionCI({ latestVersion, increment }) ||
-    (await plugin.getIncrementedVersion({ latestVersion, increment })) ||
-    (increment !== false ? semver.inc(latestVersion, increment || 'patch') : latestVersion);
+  const version = await getVersion(plugin, { latestVersion, increment });
+
   plugin.config.setContext(parseVersion(version));
 
   await plugin.beforeBump();
