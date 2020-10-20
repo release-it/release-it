@@ -100,6 +100,8 @@ plugin tests). Here's an example `package.json`:
 }
 ```
 
+Or see the [plugin-starterkit](https://github.com/release-it/plugin-starterkit) for a good start.
+
 ### Example
 
 This minimal example reads the current version from a `VERSION` file, and bumps it once the new version is known.
