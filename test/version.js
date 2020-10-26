@@ -15,11 +15,26 @@ test('isPreRelease', t => {
   t.is(v.isPreRelease('1.0.0'), false);
 });
 
+test('getIncrementedVersionCI should default increment to patch if no increment is given', t => {
+  const v = factory(Version);
+  t.is(v.getIncrementedVersionCI({ latestVersion: '2.0.0', increment: null}), '2.0.1');
+});
+
+test('interactive and ci mode should return the same version if no increment is given (prerelease continuation, issue #714)', async t => {
+  const v = factory(Version);
+  const options = { latestVersion: '2.0.0-beta.1', increment: null, preReleaseId: 'rc', isPreRelease: true};
+  const resultInteractiveMode = await v.getIncrementedVersion(options);
+  t.is(resultInteractiveMode, '2.0.0-rc.0');
+  const resultCiMode = v.getIncrementedVersionCI(options);
+  t.is(resultInteractiveMode, resultCiMode);
+});
+
 test('should increment latest version', t => {
   const v = factory(Version);
   const latestVersion = '1.0.0';
   t.is(v.incrementVersion({ latestVersion, increment: false }), '1.0.0');
   t.is(v.incrementVersion({ latestVersion, increment: null }), undefined);
+  t.is(v.incrementVersion({ latestVersion, increment: null }, true), '1.0.1');
   t.is(v.incrementVersion({ latestVersion, increment: 'foo' }), undefined);
   t.is(v.incrementVersion({ latestVersion, increment: 'patsj' }), undefined);
   t.is(v.incrementVersion({ latestVersion, increment: 'a.b.c' }), undefined);
