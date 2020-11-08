@@ -1,3 +1,4 @@
+const path = require('path');
 const test = require('ava');
 const sh = require('shelljs');
 const proxyquire = require('proxyquire');
@@ -130,4 +131,75 @@ test.serial('should disable core plugins', async t => {
     latestVersion: undefined,
     version: undefined
   });
+});
+
+test.serial('should expose context to execute commands', async t => {
+  const { bare } = t.context;
+  const latestVersion = '1.0.0';
+  const project = path.basename(bare);
+  const pkgName = 'plugin-context';
+  const owner = path.basename(path.dirname(bare));
+  gitAdd(`{"name":"${pkgName}","version":"${latestVersion}"}`, 'package.json', 'Add package.json');
+
+  class MyPlugin extends Plugin {
+    init() {
+      this.exec('echo ${version.isPreRelease}');
+    }
+    beforeBump() {
+      const context = this.config.getContext();
+      t.is(context.name, pkgName);
+      this.exec('echo ${name} ${repo.owner} ${repo.project} ${latestVersion} ${version}');
+    }
+    bump() {
+      const repo = this.config.getContext('repo');
+      t.deepEqual(repo, {
+        host: '',
+        owner,
+        project,
+        protocol: 'file',
+        remote: bare,
+        repository: `${owner}/${project}`
+      });
+      this.exec('echo ${name} ${repo.owner} ${repo.project} ${latestVersion} ${version}');
+    }
+    beforeRelease() {
+      const context = this.config.getContext();
+      t.is(context.name, pkgName);
+      this.exec('echo ${name} ${repo.owner} ${repo.project} ${latestVersion} ${version} ${tagName}');
+    }
+    release() {
+      const context = this.config.getContext();
+      t.is(context.latestVersion, latestVersion);
+      t.is(context.version, '1.0.1');
+      this.exec('echo ${name} ${repo.owner} ${repo.project} ${latestVersion} ${version} ${tagName}');
+    }
+    afterRelease() {
+      const context = this.config.getContext();
+      t.is(context.tagName, '1.0.1');
+      this.exec('echo ${name} ${repo.owner} ${repo.project} ${latestVersion} ${version} ${tagName}');
+    }
+  }
+  const statics = { isEnabled: () => true, disablePlugin: () => null };
+  const options = { '@global': true, '@noCallThru': true };
+  const runTasks = proxyquire('../lib/tasks', {
+    'my-plugin': Object.assign(MyPlugin, statics, options)
+  });
+
+  const container = getContainer({ plugins: { 'my-plugin': {} } });
+  const exec = sinon.spy(container.shell, 'execFormattedCommand');
+
+  await runTasks({}, container);
+
+  const pluginExecArgs = exec.args
+    .map(args => args[0])
+    .filter(arg => typeof arg === 'string' && arg.startsWith('echo'));
+
+  t.deepEqual(pluginExecArgs, [
+    'echo false',
+    `echo ${pkgName} ${owner} ${project} ${latestVersion} 1.0.1`,
+    `echo ${pkgName} ${owner} ${project} ${latestVersion} 1.0.1`,
+    `echo ${pkgName} ${owner} ${project} ${latestVersion} 1.0.1 1.0.1`,
+    `echo ${pkgName} ${owner} ${project} ${latestVersion} 1.0.1 1.0.1`,
+    `echo ${pkgName} ${owner} ${project} ${latestVersion} 1.0.1 1.0.1`
+  ]);
 });
