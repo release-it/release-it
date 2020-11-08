@@ -398,22 +398,11 @@ test.serial('should propagate errors', async t => {
 });
 
 {
-  const myPlugin = sandbox.createStubInstance(Plugin);
-  myPlugin.namespace = 'my-plugin';
-  const MyPlugin = sandbox.stub().callsFake(() => myPlugin);
-  const myLocalPlugin = sandbox.createStubInstance(Plugin);
-  const MyLocalPlugin = sandbox.stub().callsFake(() => myLocalPlugin);
-  const replacePlugin = sandbox.createStubInstance(Plugin);
-  const ReplacePlugin = sandbox.stub().callsFake(() => replacePlugin);
-
+  class MyPlugin extends Plugin {}
   const statics = { isEnabled: () => true, disablePlugin: () => null };
   const options = { '@global': true, '@noCallThru': true };
   const runTasks = proxyquire('../lib/tasks', {
-    'my-plugin': Object.assign(MyPlugin, statics, options),
-    '/my/plugin': Object.assign(MyLocalPlugin, statics, options),
-    'replace-plugin': Object.assign(ReplacePlugin, statics, options, {
-      disablePlugin: () => ['version', 'git']
-    })
+    'my-plugin': Object.assign(MyPlugin, statics, options)
   });
 
   test.serial('should run all hooks', async t => {
@@ -421,9 +410,9 @@ test.serial('should propagate errors', async t => {
     const hooks = {};
     ['before', 'after'].forEach(prefix => {
       ['version', 'git', 'npm', 'my-plugin'].forEach(ns => {
-        ['init', 'beforeBump', 'bump', 'beforeRelease', 'release', 'afterRelease'].forEach(lifecycle => {
-          hooks[`${prefix}:${lifecycle}`] = `echo ${prefix}:${lifecycle}`;
-          hooks[`${prefix}:${ns}:${lifecycle}`] = `echo ${prefix}:${ns}:${lifecycle}`;
+        ['init', 'beforeBump', 'bump', 'beforeRelease', 'release', 'afterRelease'].forEach(cycle => {
+          hooks[`${prefix}:${cycle}`] = `echo ${prefix}:${cycle}`;
+          hooks[`${prefix}:${ns}:${cycle}`] = `echo ${prefix}:${ns}:${cycle}`;
         });
       });
     });
