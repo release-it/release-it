@@ -152,14 +152,9 @@ test.serial('should expose context to execute commands', async t => {
     }
     bump() {
       const repo = this.config.getContext('repo');
-      t.deepEqual(repo, {
-        host: '',
-        owner,
-        project,
-        protocol: 'file',
-        remote: bare,
-        repository: `${owner}/${project}`
-      });
+      t.is(repo.owner, owner);
+      t.is(repo.project, project);
+      t.is(repo.repository, `${owner}/${project}`);
       this.exec('echo ${name} ${repo.owner} ${repo.project} ${latestVersion} ${version}');
     }
     beforeRelease() {
