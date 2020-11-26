@@ -1,7 +1,7 @@
 const debug = require('debug')('release-it:shell-stub');
 const Shell = require('../../lib/shell');
 
-module.exports = class ShellStub extends Shell {
+class ShellStub extends Shell {
   exec(command) {
     if (/^(npm (ping|publish|show)|git fetch)/.test(command)) {
       debug(command);
@@ -17,4 +17,6 @@ module.exports = class ShellStub extends Shell {
     }
     return super.exec(...arguments);
   }
-};
+}
+
+module.exports = ShellStub;
