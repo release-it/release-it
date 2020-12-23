@@ -395,31 +395,30 @@ While mostly used as a CLI tool, release-it can be used as a dependency to integ
 
 ## Example projects using release-it
 
-- [react-navigation/react-navigation](https://github.com/react-navigation/react-navigation)
+- [antonmedv/fx](https://github.com/antonmedv/fx)
+- [blockchain/blockchain-wallet-v4-frontend](https://github.com/blockchain/blockchain-wallet-v4-frontend)
+- [callstack/linaria](https://github.com/callstack/linaria) +
+- [ember-cli/ember-cli](https://github.com/ember-cli/ember-cli)
+  [react-native-paper](https://github.com/callstack/react-native-paper)
+- [js-cookie/js-cookie](https://github.com/js-cookie/js-cookie)
+- [mozilla/readability](https://github.com/mozilla/readability)
+- [react-native-community/react-native-tab-view](https://github.com/react-native-community/react-native-tab-view)
+- [shipshapecode/shepherd](https://github.com/shipshapecode/shepherd)
 - [swagger-api/swagger-ui](https://github.com/swagger-api/swagger-ui) +
   [swagger-editor](https://github.com/swagger-api/swagger-editor)
-- [js-cookie/js-cookie](https://github.com/js-cookie/js-cookie)
 - [StevenBlack/hosts](https://github.com/StevenBlack/hosts)
-- [youzan/vant](https://github.com/youzan/vant/search?q=release-it)
-- [antonmedv/fx](https://github.com/antonmedv/fx)
-- [react-native-community/react-native-tab-view](https://github.com/react-native-community/react-native-tab-view)
-- [callstack/linaria](https://github.com/callstack/linaria) +
-  [react-native-paper](https://github.com/callstack/react-native-paper)
 - [tabler/tabler-icons](https://github.com/tabler/tabler-icons)
-- [blockchain/blockchain-wallet-v4-frontend](https://github.com/blockchain/blockchain-wallet-v4-frontend)
-- [ember-cli/ember-cli](https://github.com/ember-cli/ember-cli)
-- [shipshapecode/shepherd](https://github.com/shipshapecode/shepherd)
+- [youzan/vant](https://github.com/youzan/vant/search?q=release-it)
 - [Repositories that depend on release-it](https://github.com/release-it/release-it/network/dependents)
-- GitHub search for
-  [projects with .release-it.json](https://github.com/search?o=desc&q=in%3Apath+.release-it.json&s=indexed&type=Code)
+- GitHub search for [filename:.release-it.json](https://github.com/search?q=filename%3A.release-it.json)
 
 ## Resources
 
 - [semver.org](https://semver.org)
 - [GitHub Help](https://docs.github.com) (→
-  [About Releases](https://docs.github.com/en/github/administering-a-repository/about-releases))
+  [About Releases](https://docs.github.com/free-pro-team@latest/github/administering-a-repository/about-releases))
 - [npm Blog: Publishing what you mean to publish](https://blog.npmjs.org/post/165769683050/publishing-what-you-mean-to-publish)
-- [npm Documentation: package.json](https://docs.npmjs.com/files/package.json)
+- [npm Documentation: package.json](https://docs.npmjs.com/cli/v6/configuring-npm/package-json)
 - [Prereleases and npm](https://medium.com/@mbostock/prereleases-and-npm-e778fc5e2420)
 - [Glob Primer (node-glob)](https://github.com/isaacs/node-glob#glob-primer) (release-it uses
   [globby](https://github.com/sindresorhus/globby#readme))
