@@ -31,8 +31,8 @@ In case you've encountered a bug, please make sure:
 - You are using the [latest version](https://github.com/release-it/release-it/releases).
 - You have read the [documentation](https://github.com/release-it/release-it/blob/master/README.md) first, and
   double-checked your configuration.
-- You have acknowledged from [Troubleshooting & debugging](README.md#troubleshooting--debugging) the errors are likely a
-  bug in this project, and not coming from e.g. your environment or custom scripts/commands.
+- You have acknowledged from [Troubleshooting & debugging](../README.md#troubleshooting--debugging) the errors are
+  likely a bug in this project, and not coming from e.g. your environment or custom scripts/commands.
 - In your issue description, please include:
   - What you expected to see, and what happened instead.
   - Your operating system and other environment information.
