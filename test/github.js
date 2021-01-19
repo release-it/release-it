@@ -109,6 +109,8 @@ test('should update release and upload assets', async t => {
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
+  exec.withArgs('git rev-list 2.0.1 --tags --max-count=1').resolves('71f1812');
+  exec.withArgs('git describe --tags --match=* --abbrev=0 71f1812').resolves('2.0.1');
 
   interceptAuthentication();
   interceptCollaborator();
