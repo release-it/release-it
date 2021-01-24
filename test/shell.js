@@ -50,7 +50,9 @@ test('exec (verbose)', async t => {
   const shell = factory(Shell, { options: { verbose: true } });
   const actual = await shell.exec('echo foo');
   t.is(shell.log.exec.firstCall.args[0], 'echo foo');
+  t.is(shell.log.exec.callCount, 1);
   t.is(shell.log.verbose.firstCall.args[0], 'foo');
+  t.is(shell.log.verbose.callCount, 1);
   t.is(actual, 'foo');
 });
 
