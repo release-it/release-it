@@ -79,7 +79,7 @@ test.serial('should run tasks without package.json', async t => {
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
   t.is(log.warn.callCount, 0);
   {
-    const { stdout } = sh.exec('git describe --tags --abbrev=0');
+    const { stdout } = sh.exec('git describe --tags --match=* --abbrev=0');
     t.is(stdout.trim(), '2.0.0');
   }
 });
@@ -102,7 +102,7 @@ test.serial('should run tasks with minimal config and without any warnings/error
   await runTasks({}, getContainer({ increment: 'patch' }));
   t.true(log.obtrusive.firstCall.args[0].includes('release my-package (1.2.3...1.2.4)'));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-  const { stdout } = sh.exec('git describe --tags --abbrev=0');
+  const { stdout } = sh.exec('git describe --tags --match=* --abbrev=0');
   t.is(stdout.trim(), '1.2.4');
 });
 
@@ -111,7 +111,7 @@ test.serial('should use pkg.version', async t => {
   await runTasks({}, getContainer({ increment: 'minor' }));
   t.true(log.obtrusive.firstCall.args[0].includes('release my-package (1.2.3...1.3.0)'));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-  const { stdout } = sh.exec('git describe --tags --abbrev=0');
+  const { stdout } = sh.exec('git describe --tags --match=* --abbrev=0');
   t.is(stdout.trim(), '1.3.0');
 });
 
@@ -126,7 +126,7 @@ test.serial('should use pkg.version (in sub dir) w/o tagging repo', async t => {
   await runTasks({}, container);
   t.true(log.obtrusive.firstCall.args[0].endsWith('release my-package (1.2.3...1.3.0)'));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-  const { stdout } = sh.exec('git describe --tags --abbrev=0');
+  const { stdout } = sh.exec('git describe --tags --match=* --abbrev=0');
   t.is(stdout.trim(), '1.0.0');
   const npmArgs = getArgs(exec.args, 'npm');
   t.is(npmArgs[4], 'npm version 1.3.0 --no-git-tag-version');
@@ -140,7 +140,7 @@ test.serial('should ignore version in pkg.version and use git tag instead', asyn
   await runTasks({}, getContainer({ increment: 'minor', npm: { ignoreVersion: true } }));
   t.true(log.obtrusive.firstCall.args[0].includes('release my-package (1.1.1...1.2.0)'));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-  const { stdout } = sh.exec('git describe --tags --abbrev=0');
+  const { stdout } = sh.exec('git describe --tags --match=* --abbrev=0');
   t.is(stdout.trim(), '1.2.0');
 });
 
@@ -273,7 +273,7 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
   const { stdout: commitMessage } = sh.exec('git log --oneline --format=%B -n 1 HEAD');
   t.is(commitMessage.trim(), `Release 1.1.0-alpha.0 for ${pkgName} (from 1.0.0)`);
 
-  const { stdout: tagName } = sh.exec('git describe --tags --abbrev=0');
+  const { stdout: tagName } = sh.exec('git describe --tags --match=* --abbrev=0');
   t.is(tagName.trim(), 'v1.1.0-alpha.0');
 
   const { stdout: tagAnnotation } = sh.exec('git for-each-ref refs/tags/v1.1.0-alpha.0 --format="%(contents)"');
@@ -309,7 +309,7 @@ test.serial('should publish pre-release without pre-id with different npm.tag', 
     'npm publish . --tag next'
   ]);
 
-  const { stdout } = sh.exec('git describe --tags --abbrev=0');
+  const { stdout } = sh.exec('git describe --tags --match=* --abbrev=0');
   t.is(stdout.trim(), 'v2.0.0-0');
   t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...2.0.0-0)`));
   t.true(log.log.firstCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));

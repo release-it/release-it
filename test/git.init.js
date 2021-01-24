@@ -118,6 +118,26 @@ test.serial('should get the latest tag after fetch', async t => {
   t.is(gitClient.getContext('latestTagName'), '1.0.0');
 });
 
+test.serial('should get the latest custom tag after fetch when tagName is configured', async t => {
+  const shell = factory(Shell);
+  const gitClient = factory(Git, {
+    options: { git: { tagName: 'TAGNAME-v${version}' } },
+    container: { shell }
+  });
+  const { bare, target } = t.context;
+  const other = mkTmpDir();
+  sh.exec('git push');
+  sh.exec(`git clone ${bare} ${other}`);
+  sh.pushd('-q', other);
+  sh.exec('git tag TAGNAME-OTHER-v2.0.0');
+  sh.exec('git tag TAGNAME-v1.0.0');
+  sh.exec('git tag TAGNAME-OTHER-v2.0.2');
+  sh.exec('git push --tags');
+  sh.pushd('-q', target);
+  await gitClient.init();
+  t.is(gitClient.getContext('latestTagName'), 'TAGNAME-v1.0.0');
+});
+
 test.serial('should generate correct changelog', async t => {
   const gitClient = factory(Git, { options: { git } });
   sh.exec('git tag 1.0.0');
