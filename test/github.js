@@ -179,7 +179,7 @@ test('should release to git.pushRepo', async t => {
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
   exec.withArgs('git describe --tags --abbrev=0').resolves('1.0.0');
-  exec.withArgs('git config --get remote.upstream.url').resolves('https://my-custom-host.org/user/repo');
+  exec.withArgs('git remote get-url upstream').resolves('https://my-custom-host.org/user/repo');
 
   await runTasks(github);
 
