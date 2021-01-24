@@ -1,6 +1,6 @@
 {
   "name": "release-it",
-  "version": "14.3.0-next.0",
+  "version": "14.3.0-next.1",
   "description": "Generic CLI tool to automate versioning and package publishing related tasks.",
   "keywords": [
     "build",
