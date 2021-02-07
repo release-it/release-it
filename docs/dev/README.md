@@ -9,13 +9,13 @@
 ## GitLab
 
 - [GitLab API](https://docs.gitlab.com/ce/api/)
-- [Releases API](https://docs.gitlab.com/ce/api/releases/index.html)
+- [Releases API](https://docs.gitlab.com/ce/api/releases/)
 - [Upload a file](https://docs.gitlab.com/ce/api/projects.html#upload-a-file)
 - [Create a new release](https://docs.gitlab.com/ce/api/tags.html#create-a-new-release)
 
 ### Docker
 
-- [Install GitLab with Docker](https://docs.gitlab.com/ee/install/docker.html)
+- [Install GitLab with Docker](https://docs.gitlab.com/ce/install/docker.html)
 - [GitLab Docker images](https://hub.docker.com/r/gitlab/gitlab-ce/)
 
 To run the nightly build of GitLab:

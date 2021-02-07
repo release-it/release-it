@@ -249,7 +249,7 @@ The "Releases" tab on GitHub projects links to a page to store the changelog cq.
 
 ## GitLab Releases
 
-[GitLab releases](https://docs.gitlab.com/ee/user/project/releases/) work just like GitHub releases:
+[GitLab releases](https://docs.gitlab.com/ce/user/project/releases/) work just like GitHub releases:
 
 - Configure `gitlab.release: true`
 - Obtain a [personal access token](https://gitlab.com/profile/personal_access_tokens) (release-it only needs the "api"
