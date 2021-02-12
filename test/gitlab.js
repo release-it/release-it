@@ -25,9 +25,25 @@ test.serial('should validate token', async t => {
   });
   process.env[tokenRef] = '123'; // eslint-disable-line require-atomic-updates
 
-  interceptUser();
-  interceptCollaborator();
+  interceptUser(undefined, { reqheaders: { 'private-token': '123' } });
+  interceptCollaborator(undefined, { reqheaders: { 'private-token': '123' } });
   await t.notThrowsAsync(gitlab.init());
+});
+
+test.serial('should switch to Job-Token header when CI_JOB_TOKEN is set', async t => {
+  process.env.CI_JOB_TOKEN = 'j0b-t0k3n';
+  const tokenRef = 'GITLAB_TOKEN';
+  const pushRepo = 'https://gitlab.com/user/repo';
+  const options = { git: { pushRepo }, gitlab: { release: true, tokenRef } };
+  const gitlab = factory(GitLab, { options });
+
+  interceptUser(undefined, { reqheaders: { 'job-token': '1' } });
+  interceptCollaborator(undefined, { reqheaders: { 'job-token': '1' } });
+  interceptPublish(undefined, { reqheaders: { 'job-token': '1' } });
+
+  await t.notThrowsAsync(gitlab.init());
+
+  delete process.env.CI_JOB_TOKEN;
 });
 
 test.serial('should upload assets and release', async t => {
@@ -89,8 +105,9 @@ test.serial('should release to self-managed host', async t => {
 
   await runTasks(gitlab);
 
-  t.is(gitlab.origin, host);
-  t.is(gitlab.baseUrl, `${host}/api/v4`);
+  const { origin, baseUrl } = gitlab.getContext();
+  t.is(origin, host);
+  t.is(baseUrl, `${host}/api/v4`);
 });
 
 test.serial('should release to sub-grouped repo', async t => {
