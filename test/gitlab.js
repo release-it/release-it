@@ -11,12 +11,13 @@ const {
 } = require('./stub/gitlab');
 const { factory, runTasks } = require('./util');
 
+const tokenHeader = 'Private-Token';
 const tokenRef = 'GITLAB_TOKEN';
 
 test.serial('should validate token', async t => {
   const tokenRef = 'MY_GITLAB_TOKEN';
   const pushRepo = 'https://gitlab.com/user/repo';
-  const options = { gitlab: { release: true, tokenRef, pushRepo } };
+  const options = { gitlab: { release: true, tokenRef, tokenHeader, pushRepo } };
   const gitlab = factory(GitLab, { options });
   delete process.env[tokenRef];
 
@@ -30,20 +31,19 @@ test.serial('should validate token', async t => {
   await t.notThrowsAsync(gitlab.init());
 });
 
-test.serial('should switch to Job-Token header when CI_JOB_TOKEN is set', async t => {
-  process.env.CI_JOB_TOKEN = 'j0b-t0k3n';
-  const tokenRef = 'GITLAB_TOKEN';
+test.serial('should support CI Job token header', async t => {
+  const tokenRef = 'CI_JOB_TOKEN';
+  const tokenHeader = 'Job-Token';
+  process.env[tokenRef] = 'j0b-t0k3n';
   const pushRepo = 'https://gitlab.com/user/repo';
-  const options = { git: { pushRepo }, gitlab: { release: true, tokenRef } };
+  const options = { git: { pushRepo }, gitlab: { release: true, tokenRef, tokenHeader } };
   const gitlab = factory(GitLab, { options });
 
-  interceptUser(undefined, { reqheaders: { 'job-token': '1' } });
-  interceptCollaborator(undefined, { reqheaders: { 'job-token': '1' } });
   interceptPublish(undefined, { reqheaders: { 'job-token': '1' } });
 
   await t.notThrowsAsync(gitlab.init());
 
-  delete process.env.CI_JOB_TOKEN;
+  delete process.env[tokenRef];
 });
 
 test.serial('should upload assets and release', async t => {

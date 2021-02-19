@@ -45,6 +45,7 @@
     "releaseName": "Release ${version}",
     "releaseNotes": null,
     "tokenRef": "GITLAB_TOKEN",
+    "tokenHeader": "Private-Token",
     "assets": null,
     "origin": null,
     "skipChecks": false
