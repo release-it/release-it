@@ -7,6 +7,7 @@ with the existing ones below, feel free to [open a ticket](https://github.com/re
 ## Contents
 
 - [Git](#git)
+- [GitHub Actions](#github-actions)
 - [npm](#npm)
 - [GitHub & GitLab Releases](#github--gitlab-releases)
 - [GitLab CI](#gitlab-ci)
@@ -34,6 +35,27 @@ script:
 ```
 
 Replace `[user]` and `[project]` with the actual values.
+
+## GitHub Actions
+
+To run release-it from a GitHub Action, here's an example job (fragment) to configure a Git user (to push the release
+commit), and expose the `GITHUB_TOKEN` for the GitHub Release:
+
+```
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: git config
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+      - run: npm install
+      - run: npm run release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
 
 ## npm
 
