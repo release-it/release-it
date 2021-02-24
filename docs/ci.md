@@ -47,6 +47,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: git config
         run: |
           git config user.name "${GITHUB_ACTOR}"
@@ -56,6 +58,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
+
+The `fetch-depth: 0` option is only necessary when the Git history is required e.g. if using a plugin such as
+[@release-it/conventional-changelog](https://github.com/release-it/conventional-changelog).
 
 ## npm
 
