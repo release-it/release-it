@@ -2,7 +2,7 @@
 
 🚀 Generic CLI tool to automate versioning and package publishing related tasks:
 
-<img align="right" src="./docs/assets/release-it.gif?raw=true" height="280">
+<img align="right" src="./docs/assets/release-it.svg?raw=true" height="280">
 
 - Execute test & build commands
 - Bump version (in e.g. `package.json`)
