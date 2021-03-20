@@ -1,6 +1,6 @@
 {
   "name": "release-it",
-  "version": "14.4.1",
+  "version": "14.5.0",
   "description": "Generic CLI tool to automate versioning and package publishing related tasks.",
   "keywords": [
     "build",
@@ -32,7 +32,9 @@
   },
   "homepage": "https://github.com/release-it/release-it#readme",
   "bugs": "https://github.com/release-it/release-it/issues",
-  "bin": "./bin/release-it.js",
+  "bin": {
+    "release-it": "bin/release-it.js"
+  },
   "main": "./lib/index.js",
   "files": [
     "bin",
