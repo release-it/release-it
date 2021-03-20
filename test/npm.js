@@ -262,6 +262,15 @@ test('should publish', async t => {
   exec.restore();
 });
 
+test('should use extra publish arguments ', async t => {
+  const options = { npm: { skipChecks: true, publishArgs: '--registry=http://my-internal-registry.local' } };
+  const npmClient = factory(npm, { options });
+  const exec = sinon.stub(npmClient.shell, 'exec').resolves();
+  await runTasks(npmClient);
+  t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag latest --registry=http://my-internal-registry.local');
+  exec.restore();
+});
+
 test('should skip checks', async t => {
   const options = { npm: { skipChecks: true } };
   const npmClient = factory(npm, { options });
