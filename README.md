@@ -118,6 +118,8 @@ release-it
 
 You will be prompted to select the new version, and more questions will follow based on your setup.
 
+Make sure to run release-it from the root of the project to prevent potential issues.
+
 ## Dry Run
 
 To show the interactivity and the commands it _would_ execute:
