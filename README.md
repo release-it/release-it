@@ -30,36 +30,6 @@ system, and use hooks to execute any command you need to test, build, and/or pub
 - Please [open an issue](https://github.com/release-it/release-it/issues/new) if anything is missing or unclear in this
   documentation.
 
-<details>
-  <summary><strong>Table of Contents</strong> (click to expand)</summary>
-
-<!-- toc -->
-
-- [Installation](#installation)
-- [Usage](#usage)
-- [Dry Run](#dry-run)
-- [Configuration](#configuration)
-- [Interactive vs. CI mode](#interactive-vs-ci-mode)
-- [Latest version](#latest-version)
-- [Git](#git)
-- [GitHub Releases](#github-releases)
-- [GitLab Releases](#gitlab-releases)
-- [Changelog](#changelog)
-- [Publish to npm](#publish-to-npm)
-- [Manage pre-releases](#manage-pre-releases)
-- [Hooks](#hooks)
-- [Plugins](#plugins)
-- [Distribution repository](#distribution-repository)
-- [Metrics](#metrics)
-- [Troubleshooting & debugging](#troubleshooting--debugging)
-- [Use release-it programmatically](#use-release-it-programmatically)
-- [Example projects using release-it](#example-projects-using-release-it)
-- [Resources](#resources)
-
-<!-- tocstop -->
-
-</details>
-
 ## Installation
 
 Although release-it is a **generic** release tool, installation requires npm. A `package.json` file is not required. The
