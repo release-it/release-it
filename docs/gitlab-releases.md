@@ -59,3 +59,19 @@ download from the project's releases page. Example:
 
 The `origin` can be set to a string such as `"http://example.org:3000"` to use a different origin from what would be
 derived from the Git url (e.g. to use `http` over the default `https://${repo.host}`).
+
+## Update the latest release
+
+The latest GitLab release can be updated, e.g. to update the releases notes or add release assets.
+
+- Use `--no-increment` to skip updating the version.
+- Use `--no-git` to skip Git actions.
+- Use `--no-npm` to skip publishing to npm if there's a `package.json`.
+
+Use the other options to update the release, such as `--gitlab.assets` to add assets.
+
+Example command to add assets to the latest release:
+
+```bash
+release-it --no-increment --no-git --gitlab.release --gitlab.assets=*.zip
+```

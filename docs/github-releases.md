@@ -100,7 +100,7 @@ status.
 - Use `--no-npm` to skip publishing to npm if there's a `package.json`.
 
 Use the other options to update the release, such as `--github.assets` to add assets. Note that the `draft` and
-`prerelease` options are `false` by default, but can be set explicitly using e.g. `--no-github.draft` or
+`preRelease` options are `false` by default, but can be set explicitly using e.g. `--no-github.draft` or
 `--github.draft`.
 
 Example command to add assets and explicitly toggle the draft status to "published":
