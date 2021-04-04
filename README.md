@@ -113,12 +113,14 @@ Out of the box, release-it has sane defaults, and [plenty of options](./config/r
 (only) the options to override in a configuration file. This is where release-it looks for configuration:
 
 - `.release-it.json`
-- `.release-it.js` (export the configuration object: `module.exports = {}`)
+- `.release-it.js` (or `.cjs`; export the configuration object: `module.exports = {}`)
 - `.release-it.yaml` (or `.yml`)
 - `.release-it.toml`
 - `package.json` (in the `release-it` property)
 
-Use `--config` to use another path for the configuration file. An example `.release-it.json`:
+Use `--config` to use another path for the configuration file.
+
+An example `.release-it.json`:
 
 ```json
 {
