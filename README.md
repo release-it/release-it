@@ -118,9 +118,7 @@ Out of the box, release-it has sane defaults, and [plenty of options](./config/r
 - `.release-it.toml`
 - `package.json` (in the `release-it` property)
 
-Use `--config` to use another path for the configuration file.
-
-An example `.release-it.json`:
+Use `--config` to use another path for the configuration file. An example `.release-it.json`:
 
 ```json
 {
