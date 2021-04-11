@@ -2,7 +2,7 @@ const { EOL } = require('os');
 const test = require('ava');
 const mockStdIo = require('mock-stdio');
 const stripAnsi = require('strip-ansi');
-const { format, truncateLines, parseGitUrl } = require('../lib/util');
+const { format, truncateLines, parseGitUrl, parseVersion } = require('../lib/util');
 
 test('format', t => {
   t.is(format('release v${version}', { version: '1.0.0' }), 'release v1.0.0');
@@ -55,4 +55,16 @@ test('parseGitUrl', t => {
     remote: '/Users/john/doe/owner/project',
     repository: 'owner/project'
   });
+});
+
+test('parseVersion', t => {
+  t.deepEqual(parseVersion(), { version: undefined, isPreRelease: false, preReleaseId: null });
+  t.deepEqual(parseVersion(0), { version: '0.0.0', isPreRelease: false, preReleaseId: null });
+  t.deepEqual(parseVersion(1), { version: '1.0.0', isPreRelease: false, preReleaseId: null });
+  t.deepEqual(parseVersion('1'), { version: '1.0.0', isPreRelease: false, preReleaseId: null });
+  t.deepEqual(parseVersion('1.0'), { version: '1.0.0', isPreRelease: false, preReleaseId: null });
+  t.deepEqual(parseVersion('1.0.0'), { version: '1.0.0', isPreRelease: false, preReleaseId: null });
+  t.deepEqual(parseVersion('1.0.0-0'), { version: '1.0.0-0', isPreRelease: true, preReleaseId: null });
+  t.deepEqual(parseVersion('1.0.0-next.1'), { version: '1.0.0-next.1', isPreRelease: true, preReleaseId: 'next' });
+  t.deepEqual(parseVersion('21.04.1'), { version: '21.04.1', isPreRelease: false, preReleaseId: null });
 });
