@@ -25,7 +25,13 @@ const interceptListReleases = ({
       {
         id: 1,
         upload_url: `https://uploads.${host}/repos/${owner}/${project}/releases/1/assets{?name,label}`,
-        html_url: `https://${host}/${owner}/${project}/releases/tag/${tag_name}`
+        html_url: `https://${host}/${owner}/${project}/releases/tag/${tag_name}`,
+        tag_name,
+        target_commitish: 'master',
+        name: `Release ${tag_name}`,
+        body: 'Description of the release',
+        draft: false,
+        prerelease: false
       }
     ]);
 

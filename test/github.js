@@ -126,6 +126,38 @@ test('should update release and upload assets', async t => {
   exec.restore();
 });
 
+test('should create new release for unreleased tag', async t => {
+  const options = {
+    increment: false,
+    isUpdate: true,
+    git,
+    github: {
+      pushRepo,
+      tokenRef,
+      release: true,
+      releaseName: 'Release ${tagName}',
+      releaseNotes: 'echo Custom notes'
+    }
+  };
+  const github = factory(GitHub, { options });
+  const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
+  exec.withArgs('git rev-list 2.0.1 --tags --max-count=1').resolves('71f1812');
+  exec.withArgs('git describe --tags --match=* --abbrev=0 71f1812').resolves('2.0.1');
+
+  interceptAuthentication();
+  interceptCollaborator();
+  interceptListReleases({ tag_name: '2.0.0' });
+  interceptCreate({ body: { tag_name: '2.0.1', name: 'Release 2.0.1', body: 'Custom notes' } });
+
+  await runTasks(github);
+
+  const { isReleased, releaseUrl } = github.getContext();
+  t.true(isReleased);
+  t.is(releaseUrl, 'https://github.com/user/repo/releases/tag/2.0.1');
+  exec.restore();
+});
+
 test('should release to enterprise host', async t => {
   const github = factory(GitHub, { options: { git, github: { tokenRef } } });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
