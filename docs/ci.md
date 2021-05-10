@@ -79,7 +79,7 @@ npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
 ```
 
 This will create/update the `.npmrc` file and add the token there. Ideally you should either `.gitignore` this file, 
-otherwise you will end up committing it to your repo if you are using release-it's git options.
+otherwise you might end up committing it to your repo if you are using release-it's `git` options.
 
 Since release-it executes `npm whoami` as a [prerequisite check](./npm.md#prerequisite-checks), which does not seem to
 respect the `.npmrc` file, the `--npm.skipChecks` argument can be used.
