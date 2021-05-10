@@ -113,7 +113,7 @@ jobs:
           command: npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
 ```
 
-During the release process, your project's `package.json` will be updated to bump the version, you will need to setup
+During the release process, your project's `package.json` will be updated to bump the version. You will need to setup
 CircleCI with a non read-only SSH key pair from your Github account if you want it to be able to push that change back
 to the repo.
 
