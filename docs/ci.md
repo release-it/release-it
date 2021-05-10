@@ -75,8 +75,11 @@ package:
 One way to achieve this is to set the `NPM_TOKEN` in the CI environment, and from a script do:
 
 ```bash
-echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
+npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
 ```
+
+This will create/update the `.npmrc` file and add the token there. Ideally you should either `.gitignore` this file, 
+otherwise you might end up committing it to your repo if you are using release-it's `git` options.
 
 Since release-it executes `npm whoami` as a [prerequisite check](./npm.md#prerequisite-checks), which does not seem to
 respect the `.npmrc` file, the `--npm.skipChecks` argument can be used.
@@ -107,8 +110,12 @@ jobs:
           at: ~/repo
       - run:
           name: Authenticate with registry
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+          command: npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
 ```
+
+During the release process, your project's `package.json` will be updated to bump the version. You will need to setup
+CircleCI with a non read-only SSH key pair from your Github account if you want it to be able to push that change back
+to the repo.
 
 See [Publishing npm Packages Using CircleCI](https://circleci.com/blog/publishing-npm-packages-using-circleci-2-0/) for
 more details.
