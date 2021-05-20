@@ -68,7 +68,7 @@ Projects without a `package.json` that need to generate a `CHANGELOG.md` compati
     "changelog": "npx auto-changelog --stdout --commit-limit false --unreleased --template https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs"
   },
   "hooks": {
-    "after:bump": "npx auto-changelog --commit-limit false https://raw.githubusercontent.com/release-it/release-it/master/templates/keepachangelog.hbs"
+    "after:bump": "npx auto-changelog --commit-limit false --template https://raw.githubusercontent.com/release-it/release-it/master/templates/keepachangelog.hbs"
   }
 }
 ```
