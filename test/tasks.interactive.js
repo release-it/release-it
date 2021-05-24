@@ -130,7 +130,6 @@ test.serial('should not run hooks for cancelled release-cycle methods', async t 
   );
 
   const exec = sandbox.stub(container.shell, 'execFormattedCommand').callThrough();
-  exec.withArgs('npm version 1.1.0 --no-git-tag-version').rejects();
 
   await runTasks({}, container);
 
@@ -139,8 +138,8 @@ test.serial('should not run hooks for cancelled release-cycle methods', async t 
   t.true(commands.includes('echo before:init'));
   t.true(commands.includes('echo after:afterRelease'));
   t.true(commands.includes('echo after:git:bump'));
+  t.true(commands.includes('echo after:npm:bump'));
 
-  t.false(commands.includes('echo after:npm:bump'));
   t.false(commands.includes('echo after:git:release'));
   t.false(commands.includes('echo after:github:release'));
   t.false(commands.includes('echo after:gitlab:release'));

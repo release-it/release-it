@@ -55,13 +55,14 @@ test('should use provided (default) tag even for pre-release', async t => {
   exec.restore();
 });
 
-test('should warn when bumping to same version', async t => {
+test('should throw when `npm version` fails', async t => {
   const npmClient = factory(npm);
   const exec = sinon
     .stub(npmClient.shell, 'exec')
-    .rejects('npm ERR! Version not changed, might want --allow-same-version');
-  await npmClient.bump('1.0.0-next.0');
-  t.is(npmClient.log.warn.firstCall.args[0], 'Did not update version in package.json, etc. (already at 1.0.0-next.0).');
+    .rejects(new Error('npm ERR! Version not changed, might want --allow-same-version'));
+
+  await t.throwsAsync(npmClient.bump('1.0.0-next.0'), { message: /Version not changed/ });
+
   exec.restore();
 });
 
@@ -310,6 +311,40 @@ test('should publish to a different/scoped registry', async t => {
     'npm access ls-collaborators @my-scope/my-pkg --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
     'npm version 1.0.1 --no-git-tag-version',
     'npm publish . --tag latest'
+  ]);
+
+  exec.restore();
+});
+
+test('should not publish when `npm version` fails', async t => {
+  delete require.cache[require.resolve('../package.json')];
+  mock({
+    [path.resolve('package.json')]: JSON.stringify({
+      name: '@my-scope/my-pkg',
+      version: '1.0.0'
+    })
+  });
+  const options = { npm };
+  const npmClient = factory(npm, { options });
+  const exec = sinon.stub(npmClient.shell, 'exec').resolves();
+  exec.withArgs('npm whoami').resolves('john');
+  exec.withArgs('npm access ls-collaborators @my-scope/my-pkg').resolves(JSON.stringify({ john: ['write'] }));
+  exec
+    .withArgs('npm version 1.0.1 --no-git-tag-version')
+    .rejects('npm ERR! Version not changed, might want --allow-same-version');
+
+  try {
+    await runTasks(npmClient);
+  } catch (error) {
+    t.regex(error.toString(), /Version not changed/);
+  }
+
+  t.deepEqual(getArgs(exec.args, 'npm'), [
+    'npm ping',
+    'npm whoami',
+    'npm show @my-scope/my-pkg@latest version',
+    'npm access ls-collaborators @my-scope/my-pkg',
+    'npm version 1.0.1 --no-git-tag-version'
   ]);
 
   exec.restore();
