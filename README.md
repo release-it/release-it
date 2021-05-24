@@ -4,19 +4,18 @@
 
 <img align="right" src="./docs/assets/release-it.svg?raw=true" height="280">
 
-- Execute test & build commands
 - Bump version (in e.g. `package.json`)
 - [Git commit, tag, push](#git)
+- Execute any (test or build) commands using [hooks](#hooks)
 - [Create release at GitHub](#github-releases) or [GitLab](#gitlab-releases)
 - [Generate changelog](#changelog)
 - [Publish to npm](#publish-to-npm)
 - [Manage pre-releases](#manage-pre-releases)
-- [Hooks](#hooks)
 - Extend with [plugins](#plugins)
 - Release from any [CI/CD environment](./docs/ci.md)
 
 Use release-it for version management and publish to anywhere with its versatile configuration, a powerful plugin
-system, and use hooks to execute any command you need to test, build, and/or publish your project.
+system, and hooks to execute any command you need to test, build, and/or publish your project.
 
 [![Action Status](https://github.com/release-it/release-it/workflows/Cross-OS%20Tests/badge.svg)](https://github.com/release-it/release-it/actions)
 [![npm version](https://badge.fury.io/js/release-it.svg)](https://www.npmjs.com/package/release-it)
@@ -32,8 +31,9 @@ system, and use hooks to execute any command you need to test, build, and/or pub
 
 ## Installation
 
-Although release-it is a **generic** release tool, installation requires npm. A `package.json` file is not required. The
-recommended way to install release-it also adds basic configuration. Answer one or two questions and it's ready:
+Although release-it is a **generic** release tool, installation requires npm. To use release-it, a `package.json` file
+is not required. The recommended way to install release-it also adds basic configuration. Answer one or two questions
+and it's ready:
 
 ```bash
 npm init release-it
@@ -86,39 +86,26 @@ Release a new version:
 release-it
 ```
 
-You will be prompted to select the new version, and more questions will follow based on your setup.
+You will be prompted to select the new version, and more prompts will follow based on your setup.
 
-Make sure to run release-it from the root of the project to prevent potential issues.
+Run release-it from the root of the project to prevent potential issues.
 
-## Dry Run
+## Dry Runs
 
-To show the interactivity and the commands it _would_ execute:
+Use `--dry-run` to show the interactivity and the commands it _would_ execute.
 
-```bash
-release-it --dry-run
-```
+→ See [Dry Runs](./docs/dry-runs.md) for more details.
 
-Note: read-only commands are still executed (`$ ...`), while potentially writing/mutating commands are not (`! ...`):
-
-```bash
-$ git rev-parse --git-dir
-.git
-! git add package.json
-! git commit --message="Release 0.8.3"
-```
+To print the next version without releasing anything, add the `--release-version` flag.
 
 ## Configuration
 
-Out of the box, release-it has sane defaults, and [plenty of options](./config/release-it.json) to configure it. Put
-(only) the options to override in a configuration file. This is where release-it looks for configuration:
+Out of the box, release-it has sane defaults, and [plenty of options](./config/release-it.json) to configure it. Most
+projects use a `.release-it.json` in the project root, or a `release-it` property in `package.json`.
 
-- `.release-it.json`
-- `.release-it.js` (or `.cjs`; export the configuration object: `module.exports = {}`)
-- `.release-it.yaml` (or `.yml`)
-- `.release-it.toml`
-- `package.json` (in the `release-it` property)
+→ See [Configuration](./docs/configuration.md) for more details.
 
-Use `--config` to use another path for the configuration file. An example `.release-it.json`:
+Here's a quick example `.release-it.json`:
 
 ```json
 {
@@ -129,48 +116,6 @@ Use `--config` to use another path for the configuration file. An example `.rele
     "release": true
   }
 }
-```
-
-Or in a `release-it` property in `package.json`:
-
-```json
-{
-  "name": "my-package",
-  "devDependencies": {
-    "release-it": "*"
-  },
-  "release-it": {
-    "github": {
-      "release": true
-    }
-  }
-}
-```
-
-Or use YAML in `.release-it.yml`:
-
-```yaml
-git:
-  requireCleanWorkingDir: false
-```
-
-Or TOML in `.release-it.toml`:
-
-```toml
-[hooks]
-"before:init" = "npm test"
-```
-
-Any option can also be set on the command-line, and will have highest priority. Example:
-
-```bash
-release-it minor --git.requireBranch=master --github.release
-```
-
-Boolean arguments can be negated by using the `no-` prefix:
-
-```bash
-release-it --no-npm.publish
 ```
 
 ## Interactive vs. CI mode
@@ -199,6 +144,8 @@ Alternatively, a plugin can be used to override this (e.g. to manage a `VERSION`
 - [@release-it/conventional-changelog](https://github.com/release-it/conventional-changelog) to get a recommended bump
   based on commit messages
 - [release-it-calver-plugin](https://github.com/casmith/release-it-calver-plugin) to use CalVer (Calendar Versioning)
+
+Add the `--release-version` flag to print the **next** version without releasing anything.
 
 ## Git
 
@@ -260,6 +207,16 @@ it's not in the stable semver range yet. Often "alpha", "beta", and "rc" (releas
 pre-releases. An example pre-release version is `2.0.0-beta.0`.
 
 → See [Manage pre-releases](./docs/pre-releases.md) for more details.
+
+## Update or re-run existing releases
+
+Use `--no-increment` to not increment the lastest version and update an existing tag/version.
+
+This may be helpful in some cases where the version was already incremented. Here's a few example scenarios:
+
+- To update or publish a draft GitHub Release for an existing Git tag.
+- Publishing to npm succeeded, but pushing the Git tag to the remote failed. Then use
+  `release-it --no-increment --no-npm` to skip the `npm publish` and try pushing the same Git tag again.
 
 ## Hooks
 
@@ -339,13 +296,7 @@ Internally, release-it uses its own plugin architecture (for Git, GitHub, GitLab
 
 ## Distribution repository
 
-Some projects use a distribution repository. Generated files (such as compiled assets or documentation) can be
-distributed to a separate repository. Or to a separate branch, such as a `gh-pages`. Some examples include
-[shim repositories](https://github.com/components) and a separate
-[packaged Angular.js repository](https://github.com/angular/bower-angular) for distribution on npm and Bower.
-
-The `dist.repo` option was removed in v10, but similar setups can still be achieved. Please see the
-[distribution repository](./docs/recipes/distribution-repo.md) recipe for example configurations.
+Deprecated. Please see [distribution repository](./docs/recipes/distribution-repo.md) for more details.
 
 ## Metrics
 
@@ -354,9 +305,9 @@ Use `--disable-metrics` to opt-out of sending some anonymous statistical data to
 
 ## Troubleshooting & debugging
 
-- With `release-it --verbose` (or `-V`), release-it prints every custom script/hook and its output.
-- With `release-it -VV`, release-it also prints every internal command and its output.
-- Prepend `DEBUG=release-it:* release-it [...]` to print configuration and more error details.
+- With `release-it --verbose` (or `-V`), release-it prints the output of every user-defined [hook](#hooks).
+- With `release-it -VV`, release-it also prints the output of every internal command.
+- Use `DEBUG=release-it:* release-it [...]` to print configuration and more error details.
 
 Use `verbose: 2` in a configuration file to have the equivalent of `-VV` on the command line.
 

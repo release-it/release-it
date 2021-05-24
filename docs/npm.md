@@ -90,6 +90,8 @@ For Yarn workspaces, see the [release-it-yarn-workspaces](https://github.com/rwj
 
 ## Miscellaneous
 
+- When `npm version` fails, the release is aborted (except when using
+  [`--no-increment`](../README.md#update-or-re-run-existing-releases)).
 - Learn how to [authenticate and publish from a CI/CD environment](./ci.md#npm).
 - The `"private": true` setting in package.json will be respected, and `release-it` will skip this step.
 - Getting an `ENEEDAUTH` error while a manual `npm publish` works? Please see

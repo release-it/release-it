@@ -1,5 +1,10 @@
 # Distribution repository
 
+Some projects use a distribution repository. Generated files (such as compiled assets or documentation) can be
+distributed to a separate repository. Or to a separate branch, such as a `gh-pages`. Some examples include
+[shim repositories](https://github.com/components) and a separate
+[packaged Angular.js repository](https://github.com/angular/bower-angular) for distribution on npm and Bower.
+
 The `dist.repo` setting is deprecated since [v9.8.0](https://github.com/release-it/release-it/releases/tag/9.8.0), and
 removed in v10. However, publishing a seperate distribution can still be achieved. There are many solutions to this,
 here are some basic examples for inspiration.
