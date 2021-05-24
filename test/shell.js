@@ -70,5 +70,5 @@ test('should cache results of command execution', async t => {
 
 test('should bail out on failed command execution', async t => {
   const shell = new Shell({ container: { log: sinon.createStubInstance(Log) } });
-  await t.throwsAsync(() => shell.exec('foo'));
+  await t.throwsAsync(shell.exec('foo'));
 });
