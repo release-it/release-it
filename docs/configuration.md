@@ -67,3 +67,9 @@ Boolean arguments can be negated by using the `no-` prefix:
 ```bash
 release-it --no-npm.publish
 ```
+
+Also plugin options can be set from the command line:
+
+```bash
+release-it --no-plugins.@release-it/keep-a-changelog.strictLatest
+```
