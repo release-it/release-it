@@ -109,7 +109,7 @@ This minimal example reads the current version from a `VERSION` file, and bumps 
 ```js
 class MyPlugin extends Plugin {
   getLatestVersion() {
-    return fs.readFileSync('./VERSION').trim();
+    return fs.readFileSync('./VERSION', 'utf8').trim();
   }
   bump(version) {
     this.version = version;
