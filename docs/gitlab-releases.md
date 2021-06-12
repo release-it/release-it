@@ -60,6 +60,21 @@ download from the project's releases page. Example:
 The `origin` can be set to a string such as `"http://example.org:3000"` to use a different origin from what would be
 derived from the Git url (e.g. to use `http` over the default `https://${repo.host}`).
 
+## Private CA Authority
+
+If you're running your own GitLab instance with an HTTPS certificate issued by a private certificate Authority, you can
+specify the root CA certificate with `certificateAuthorityFile`, for example:
+
+```json
+{
+  "gitlab": {
+    "release": true,
+    "tokenHeader": "PRIVATE-TOKEN",
+    "certificateAuthorityFile": "./my-root-ca.crt"
+  }
+}
+```
+
 ## Update the latest release
 
 The latest GitLab release can be updated, e.g. to update the releases notes or add release assets.

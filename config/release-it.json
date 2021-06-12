@@ -47,6 +47,7 @@
     "releaseNotes": null,
     "tokenRef": "GITLAB_TOKEN",
     "tokenHeader": "Private-Token",
+    "certificateAuthorityFile": null,
     "assets": null,
     "origin": null,
     "skipChecks": false
