@@ -48,7 +48,6 @@ test.serial('should support CI Job token header', async t => {
 
 test.serial('should upload assets and release', async t => {
   const pushRepo = 'https://gitlab.com/user/repo';
-  const asset = 'file1';
   const options = {
     git: { pushRepo },
     gitlab: {
@@ -56,7 +55,7 @@ test.serial('should upload assets and release', async t => {
       release: true,
       releaseName: 'Release ${version}',
       releaseNotes: 'echo Custom notes',
-      assets: `test/resources/${asset}`
+      assets: 'test/resources/file-v${version}.txt'
     }
   };
   const gitlab = factory(GitLab, { options });
@@ -73,8 +72,8 @@ test.serial('should upload assets and release', async t => {
       assets: {
         links: [
           {
-            name: asset,
-            url: `${pushRepo}/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/${asset}`
+            name: 'file-v2.0.1.txt',
+            url: `${pushRepo}/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/file-v2.0.1.txt`
           }
         ]
       }
@@ -83,7 +82,7 @@ test.serial('should upload assets and release', async t => {
 
   await runTasks(gitlab);
 
-  t.is(gitlab.assets[0].url, `${pushRepo}/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/${asset}`);
+  t.is(gitlab.assets[0].url, `${pushRepo}/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/file-v2.0.1.txt`);
   const { isReleased, releaseUrl } = gitlab.getContext();
   t.true(isReleased);
   t.is(releaseUrl, `${pushRepo}/-/releases`);

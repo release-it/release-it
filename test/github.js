@@ -34,7 +34,6 @@ test.serial('should validate token', async t => {
 });
 
 test('should release and upload assets', async t => {
-  const asset = 'file1';
   const options = {
     git,
     github: {
@@ -43,7 +42,7 @@ test('should release and upload assets', async t => {
       release: true,
       releaseName: 'Release ${tagName}',
       releaseNotes: 'echo Custom notes',
-      assets: `test/resources/${asset}`
+      assets: 'test/resources/file-v${version}.txt'
     }
   };
   const github = factory(GitHub, { options });
@@ -53,7 +52,7 @@ test('should release and upload assets', async t => {
   interceptAuthentication();
   interceptCollaborator();
   interceptCreate({ body: { tag_name: '2.0.2', name: 'Release 2.0.2', body: 'Custom notes' } });
-  interceptAsset({ body: asset });
+  interceptAsset({ body: '*' });
 
   await runTasks(github);
 
