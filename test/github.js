@@ -310,7 +310,7 @@ test('should not call octokit client in dry run', async t => {
   const { isReleased, releaseUrl } = github.getContext();
   t.true(isReleased);
   t.is(releaseUrl, 'https://github.com/user/repo/releases/tag/v1.0.1');
-  spy.restore();
+  spy.get.restore();
   exec.restore();
 });
 

@@ -191,7 +191,7 @@ test('should not make requests in dry run', async t => {
   t.is(gitlab.log.exec.args[2][0], 'gitlab releases#createRelease "R" (1.0.1)');
   t.true(isReleased);
   t.is(releaseUrl, `${pushRepo}/-/releases`);
-  spy.restore();
+  spy.get.restore();
 });
 
 test('should skip checks', async t => {
