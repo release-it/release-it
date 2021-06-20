@@ -16,6 +16,7 @@ const tokenRef = 'GITHUB_TOKEN';
 const pushRepo = 'git://github.com:user/repo';
 const host = 'github.com';
 const git = { changelog: null };
+const requestErrorOptions = { request: { url: '', headers: {} }, response: { headers: {} } };
 
 test.serial('should validate token', async t => {
   const tokenRef = 'MY_GITHUB_TOKEN';
@@ -224,7 +225,7 @@ test('should throw for unauthenticated user', async t => {
   const options = { github: { tokenRef, pushRepo, host } };
   const github = factory(GitHub, { options });
   const stub = sinon.stub(github.client.users, 'getAuthenticated');
-  stub.throws(new RequestError('Bad credentials', 401, { request: { url: '', headers: {} } }));
+  stub.throws(new RequestError('Bad credentials', 401, requestErrorOptions));
 
   await t.throwsAsync(runTasks(github), {
     message: /^Could not authenticate with GitHub using environment variable "GITHUB_TOKEN"/
@@ -239,7 +240,7 @@ test('should throw for non-collaborator', async t => {
   const options = { github: { tokenRef, pushRepo, host } };
   const github = factory(GitHub, { options });
   const stub = sinon.stub(github.client.repos, 'checkCollaborator');
-  stub.throws(new RequestError('HttpError', 401, { request: { url: '', headers: {} } }));
+  stub.throws(new RequestError('HttpError', 401, requestErrorOptions));
 
   await t.throwsAsync(runTasks(github), { message: /^User john is not a collaborator for user\/repo/ });
 
@@ -270,7 +271,7 @@ test.serial('should skip authentication and collaborator checks when running on 
 test('should handle octokit client error (without retries)', async t => {
   const github = factory(GitHub, { options: { github: { tokenRef, pushRepo, host } } });
   const stub = sinon.stub(github.client.repos, 'createRelease');
-  stub.throws(new RequestError('Not found', 404, { request: { url: '', headers: {} } }));
+  stub.throws(new RequestError('Not found', 404, requestErrorOptions));
   interceptAuthentication();
   interceptCollaborator();
 
@@ -284,7 +285,7 @@ test('should handle octokit client error (with retries)', async t => {
   const options = { github: { tokenRef, pushRepo, host, retryMinTimeout: 0 } };
   const github = factory(GitHub, { options });
   const stub = sinon.stub(github.client.repos, 'createRelease');
-  stub.throws(new RequestError('Request failed', 500, { request: { url: '', headers: {} } }));
+  stub.throws(new RequestError('Request failed', 500, requestErrorOptions));
   interceptAuthentication();
   interceptCollaborator();
 
