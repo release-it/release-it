@@ -18,8 +18,12 @@ const gitAdd = (content, file, message) => {
   return match ? match[1] : null;
 };
 
-const getArgs = (args, prefix) =>
-  args.filter(args => typeof args[0] === 'string' && args[0].startsWith(prefix)).map(args => args[0].trim());
+const getArgs = (args, prefix) => {
+  const prefixes = typeof prefix === 'string' ? [prefix] : prefix;
+  return args
+    .filter(args => typeof args[0] === 'string' && prefixes.some(prefix => args[0].startsWith(prefix)))
+    .map(args => args[0].trim());
+};
 
 module.exports = {
   mkTmpDir,

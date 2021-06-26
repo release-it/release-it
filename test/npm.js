@@ -290,8 +290,7 @@ test('should publish to a different/scoped registry', async t => {
       }
     })
   });
-  const options = { npm };
-  const npmClient = factory(npm, { options });
+  const npmClient = factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   exec
     .withArgs('npm whoami --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/')
@@ -324,8 +323,7 @@ test('should not publish when `npm version` fails', async t => {
       version: '1.0.0'
     })
   });
-  const options = { npm };
-  const npmClient = factory(npm, { options });
+  const npmClient = factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   exec.withArgs('npm whoami').resolves('john');
   exec.withArgs('npm access ls-collaborators @my-scope/my-pkg').resolves(JSON.stringify({ john: ['write'] }));

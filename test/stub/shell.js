@@ -3,7 +3,7 @@ const Shell = require('../../lib/shell');
 
 class ShellStub extends Shell {
   exec(command) {
-    if (/^(npm (ping|publish|show)|git fetch)/.test(command)) {
+    if (/^((npm|pnpm|yarn( npm)?) (ping|publish|show)|git fetch)/.test(command)) {
       debug(command);
       return Promise.resolve();
     }

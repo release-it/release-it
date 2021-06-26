@@ -88,6 +88,23 @@ Monorepos do not require extra configuration, but release-it handles only one pa
 
 For Yarn workspaces, see the [release-it-yarn-workspaces](https://github.com/rwjblue/release-it-yarn-workspaces) plugin.
 
+## Yarn
+
+The plugin checks for the present of `yarn.lock` and will automatically use Yarn to publish.
+
+You can disable Yarn by setting `--no-npm.yarn`, or enforce it with `--npm.yarn`.
+
+Note that currently only Yarn v2 (Berry) is supported.
+
+## pnpm
+
+The plugin checks for the present of `pnpm-lock.yaml` and will automatically use pnpm to publish.
+
+Use `--npm.publishArgs="-r"` to add the `-r` argument and recursively publish all the packages that have versions not
+yet published to the registry.
+
+You can disable pnpm by setting `--no-npm.pnpm`, or enforce it with `--npm.pnpm`.
+
 ## Miscellaneous
 
 - When `npm version` fails, the release is aborted (except when using
