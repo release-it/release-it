@@ -1,18 +1,26 @@
 # GitHub Releases
 
+<img align="right" src="./assets/github-release.png?raw=true" width="350" style="border:red;">
+
 The "releases" page on GitHub projects links to a page containing the project's history, or changelog. Releases are
 attached to an existing Git tag, so make sure the [Git part](./git.md) is configured correctly.
 
-Unsurprisingly, release-it uses this feature extensively:
-[release-it's releases page](https://github.com/release-it/release-it/releases).
+Unsurprisingly, release-it uses this feature extensively
+([release-it's releases page](https://github.com/release-it/release-it/releases)).
 
-See this screenshot for an overview of what release-it automates:
+See the screenshot on the right for an overview of what release-it automates.
 
-<img src="./assets/github-release.png?raw=true" width="662" style="border:red;">
+To add [GitHub releases](https://help.github.com/articles/creating-releases/) in your release-it flow, there are two
+options:
 
-To add [GitHub releases](https://help.github.com/articles/creating-releases/) in your release-it flow:
+1. Automated. This requires a personal access token.
+2. Manual. The GitHub web interface will be opened with pre-populated fields.
 
-- Configure `github.release: true`.
+## Automated
+
+To automate the release (using the GitHub REST API), the following needs to be configured:
+
+- Configure `github.release: true`
 - Obtain a [personal access token](https://github.com/settings/tokens/new?scopes=repo&description=release-it)
   (release-it only needs "repo" access; no "admin" or other scopes).
 - Make sure the token is [available as an environment variable](./environment-variables.md).
@@ -20,17 +28,29 @@ To add [GitHub releases](https://help.github.com/articles/creating-releases/) in
 Do not put the actual token in the release-it configuration. It will be read from the `GITHUB_TOKEN` environment
 variable. You can change this variable name by setting the `github.tokenRef` option to something else.
 
+## Manual
+
+In this mode, release-it will open the default browser pointed at the GitHub web interface with the fields pre-populated
+(like the screenshot above). The data can be modified and assets can be uploaded before publishing the release.
+
+- Configure `github.release: true`
+- This mode is enabled automatically when the `GITHUB_TOKEN` environment variable is not set.
+- Set `github.web: true` explicitly to override this `GITHUB_TOKEN` check.
+
+In non-interactive CI mode (using `--ci` or in a CI environment), release-it will not open a browser, but instead print
+the url to the GitHub web interface (including data to pre-ppoulate the fields).
+
 ## Git
 
-A GitHub Release requires the corresponding Git tag to be present on the remote (release-it creates and pushes this tag
+A GitHub release requires the corresponding Git tag to be present on the remote (release-it creates and pushes this tag
 automatically). Thus, in addition to the `GITHUB_TOKEN`, a public SSH key is required to push the Git tag to the remote
 repository. See [Git remotes](./git.md#git-remotes) (and [CI: Git](./ci.md#git)) for more information.
 
 ## Prerequisite checks
 
-First, release-it will check whether the `GITHUB_TOKEN` environment variable is set. Otherwise it will throw an error
-and exit. Then, it will authenticate, and verify whether the current user is a collaborator and authorized to publish a
-release.
+First, release-it will check whether the `GITHUB_TOKEN` environment variable is set. If not, it will fall back to
+[open the web interface](#manual) to publish a release (and skip the next checks). If the token is set, it will
+authenticate, and verify whether the current user is a collaborator and authorized to publish a release.
 
 To skip these checks, use `github.skipChecks`.
 

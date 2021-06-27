@@ -156,19 +156,18 @@ remote.
 
 ## GitHub Releases
 
-The "Releases" tab on GitHub projects links to a page to store the changelog cq. release notes. To add
+GitHub projects can have releases attached to Git tags, containing release notes and assets. There are two ways to add
 [GitHub releases](https://help.github.com/articles/creating-releases) in your release-it flow:
 
-- Configure `github.release: true`
-- Obtain a [personal access token](https://github.com/settings/tokens/new?scopes=repo&description=release-it)
-  (release-it only needs "repo" access; no "admin" or other scopes).
-- Make sure the token is [available as an environment variable](./docs/environment-variables.md).
+1. Automated (requires a `GITHUB_TOKEN`)
+2. Manual (using the GitHub web interface with pre-populated fields)
 
 → See [GitHub Releases](./docs/github-releases.md) for more details.
 
 ## GitLab Releases
 
-[GitLab releases](https://docs.gitlab.com/ce/user/project/releases/) work just like GitHub releases:
+GitLab projects can have releases attached to Git tags, containing release notes and assets. To automate
+[GitLab releases](https://docs.gitlab.com/ce/user/project/releases/):
 
 - Configure `gitlab.release: true`
 - Obtain a [personal access token](https://gitlab.com/profile/personal_access_tokens) (release-it only needs the "api"
