@@ -75,6 +75,8 @@
     "is-ci": "3.0.0",
     "lodash": "4.17.21",
     "mime-types": "2.1.31",
+    "new-github-release-url": "1.0.0",
+    "open": "8.2.1",
     "ora": "5.4.1",
     "os-name": "4.0.0",
     "parse-json": "5.2.0",

@@ -39,7 +39,8 @@
     "host": null,
     "timeout": 0,
     "proxy": null,
-    "skipChecks": false
+    "skipChecks": false,
+    "web": false
   },
   "gitlab": {
     "release": false,
