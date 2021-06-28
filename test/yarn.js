@@ -22,7 +22,7 @@ test('should not throw when executing tasks', async t => {
   const options = { npm: { yarn: true } };
   const yarnClient = factory(npm, { options });
   const exec = sinon.stub(yarnClient.shell, 'exec').resolves();
-  exec.withArgs('npm whoami').resolves('berry');
+  exec.withArgs('yarn npm whoami --publish').resolves('berry');
   exec.withArgs('npm access ls-collaborators release-it').resolves(JSON.stringify({ berry: ['write'] }));
   await t.notThrowsAsync(runTasks(yarnClient));
   exec.restore();
@@ -53,7 +53,7 @@ test('should publish', async t => {
   const options = { npm: { yarn: true } };
   const yarnClient = factory(npm, { options });
   const exec = sinon.stub(yarnClient.shell, 'exec').resolves();
-  exec.withArgs('npm whoami').resolves('berry');
+  exec.withArgs('yarn npm whoami --publish').resolves('berry');
   exec.withArgs('npm access ls-collaborators release-it').resolves(JSON.stringify({ berry: ['write'] }));
   await runTasks(yarnClient);
   t.is(exec.lastCall.args[0].trim(), 'yarn npm publish --tag latest');
@@ -91,9 +91,7 @@ test('should publish to a different/scoped registry', async t => {
   const options = { npm: { yarn: true } };
   const yarnClient = factory(npm, { options });
   const exec = sinon.stub(yarnClient.shell, 'exec').resolves();
-  exec
-    .withArgs('npm whoami --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/')
-    .resolves('john');
+  exec.withArgs('yarn npm whoami --publish').resolves('john');
   exec
     .withArgs(
       'npm access ls-collaborators @my-scope/my-pkg --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/'
@@ -104,7 +102,7 @@ test('should publish to a different/scoped registry', async t => {
 
   t.deepEqual(getArgs(exec.args, ['npm', 'yarn']), [
     'npm ping --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
-    'npm whoami --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
+    'yarn npm whoami --publish',
     'npm show @my-scope/my-pkg@latest version --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
     'npm access ls-collaborators @my-scope/my-pkg --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
     'yarn version 1.0.1 --no-git-tag-version',
@@ -125,7 +123,7 @@ test('should not publish when `npm version` fails', async t => {
   const options = { npm: { yarn: true } };
   const yarnClient = factory(npm, { options });
   const exec = sinon.stub(yarnClient.shell, 'exec').resolves();
-  exec.withArgs('npm whoami').resolves('john');
+  exec.withArgs('yarn npm whoami --publish').resolves('john');
   exec.withArgs('npm access ls-collaborators @my-scope/my-pkg').resolves(JSON.stringify({ john: ['write'] }));
   exec
     .withArgs('yarn version 1.0.1 --no-git-tag-version')
@@ -139,7 +137,7 @@ test('should not publish when `npm version` fails', async t => {
 
   t.deepEqual(getArgs(exec.args, ['npm', 'yarn']), [
     'npm ping',
-    'npm whoami',
+    'yarn npm whoami --publish',
     'npm show @my-scope/my-pkg@latest version',
     'npm access ls-collaborators @my-scope/my-pkg',
     'yarn version 1.0.1 --no-git-tag-version'

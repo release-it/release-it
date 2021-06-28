@@ -7,7 +7,7 @@ class ShellStub extends Shell {
       debug(command);
       return Promise.resolve();
     }
-    if (/^npm whoami/.test(command)) {
+    if (/^(yarn )?npm whoami/.test(command)) {
       debug(command);
       return Promise.resolve('john');
     }
