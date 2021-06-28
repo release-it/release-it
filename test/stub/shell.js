@@ -15,6 +15,10 @@ class ShellStub extends Shell {
       debug(command);
       return Promise.resolve(JSON.stringify({ john: ['write'] }));
     }
+    if (/^yarn version/.test(command)) {
+      debug(command);
+      return Promise.resolve();
+    }
     return super.exec(...arguments);
   }
 }

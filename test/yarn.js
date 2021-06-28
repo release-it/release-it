@@ -60,14 +60,14 @@ test('should publish', async t => {
   exec.restore();
 });
 
-test('should use extra publish arguments ', async t => {
-  const publishArgs = '--registry=http://my-internal-registry.local';
+test('should use extra publish arguments', async t => {
+  const publishArgs = '--tolerate-republish';
   const options = { npm: { yarn: true, skipChecks: true, publishArgs } };
   const yarnClient = factory(npm, { options });
-  const exec = sinon.stub(yarnClient.shell, 'exec').resolves();
+  const spy = sinon.spy(yarnClient.shell, 'exec');
   await runTasks(yarnClient);
-  t.is(exec.lastCall.args[0].trim(), 'yarn npm publish --tag latest --registry=http://my-internal-registry.local');
-  exec.restore();
+  t.is(spy.lastCall.args[0].trim(), 'yarn npm publish --tag latest --tolerate-republish');
+  spy.restore();
 });
 
 test('should skip checks', async t => {
@@ -125,9 +125,7 @@ test('should not publish when `npm version` fails', async t => {
   const exec = sinon.stub(yarnClient.shell, 'exec').resolves();
   exec.withArgs('yarn npm whoami --publish').resolves('john');
   exec.withArgs('npm access ls-collaborators @my-scope/my-pkg').resolves(JSON.stringify({ john: ['write'] }));
-  exec
-    .withArgs('yarn version 1.0.1 --no-git-tag-version')
-    .rejects('npm ERR! Version not changed, might want --allow-same-version');
+  exec.withArgs('yarn version 1.0.1').rejects('npm ERR! Version not changed, might want --allow-same-version');
 
   try {
     await runTasks(yarnClient);

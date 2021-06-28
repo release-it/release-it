@@ -38,7 +38,7 @@ test('should publish', async t => {
   exec.restore();
 });
 
-test('should use extra publish arguments ', async t => {
+test('should use extra publish arguments', async t => {
   const publishArgs = '-r';
   const options = { npm: { pnpm: true, skipChecks: true, publishArgs } };
   const pnpmClient = factory(npm, { options });
