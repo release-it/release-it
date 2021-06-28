@@ -105,7 +105,7 @@ test('should publish to a different/scoped registry', async t => {
     'yarn npm whoami --publish',
     'npm show @my-scope/my-pkg@latest version --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
     'npm access ls-collaborators @my-scope/my-pkg --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
-    'yarn version 1.0.1 --no-git-tag-version',
+    'yarn version 1.0.1',
     'yarn npm publish --tag latest'
   ]);
 
@@ -138,7 +138,7 @@ test('should not publish when `npm version` fails', async t => {
     'yarn npm whoami --publish',
     'npm show @my-scope/my-pkg@latest version',
     'npm access ls-collaborators @my-scope/my-pkg',
-    'yarn version 1.0.1 --no-git-tag-version'
+    'yarn version 1.0.1'
   ]);
 
   exec.restore();
