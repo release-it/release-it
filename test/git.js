@@ -240,7 +240,7 @@ test.serial('should return repo status', async t => {
   sh.ShellString('line').toEnd('file1');
   sh.ShellString('line').toEnd('file2');
   sh.exec('git add file2');
-  t.is(await gitClient.status(), 'M file1\nA  file2');
+  t.is(await gitClient.status(), ' M file1\nA  file2');
 });
 
 test.serial('should reset files', async t => {
