@@ -2,8 +2,10 @@
 
 import updater from 'update-notifier';
 import parseArgs from 'yargs-parser';
-import pkg from '../package.json';
 import release from '../lib/index.js';
+import { readJSON } from '../lib/util';
+
+const pkg = readJSON('../package.json');
 
 const aliases = {
   c: 'config',

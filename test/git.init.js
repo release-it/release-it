@@ -2,9 +2,10 @@ import test from 'ava';
 import sh from 'shelljs';
 import Shell from '../lib/shell';
 import Git from '../lib/plugin/git/Git';
-import { git } from '../config/release-it.json';
-import { factory } from './util';
+import { factory, readJSON } from './util';
 import { mkTmpDir, gitAdd } from './util/helpers';
+
+const { git } = readJSON('../config/release-it.json');
 
 test.serial.beforeEach(t => {
   const bare = mkTmpDir();

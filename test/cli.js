@@ -1,7 +1,9 @@
 import test from 'ava';
 import mockStdIo from 'mock-stdio';
-import pkg from '../package.json';
 import { version, help } from '../lib/cli';
+import { readJSON } from './util';
+
+const pkg = readJSON('../package.json');
 
 test('should print version', t => {
   mockStdIo.start();

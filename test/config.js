@@ -1,7 +1,9 @@
 import test from 'ava';
 import mock from 'mock-fs';
 import Config from '../lib/config';
-import defaultConfig from '../config/release-it.json';
+import { readJSON } from './util';
+
+const defaultConfig = readJSON('../config/release-it.json');
 
 const localConfig = { github: { release: true } };
 
