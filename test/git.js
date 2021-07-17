@@ -2,9 +2,9 @@ import { EOL } from 'os';
 import test from 'ava';
 import sinon from 'sinon';
 import sh from 'shelljs';
-import Git from '../lib/plugin/git/Git';
-import { mkTmpDir, readFile, gitAdd } from './util/helpers';
-import { factory } from './util';
+import Git from '../lib/plugin/git/Git.js';
+import { mkTmpDir, readFile, gitAdd } from './util/helpers.js';
+import { factory } from './util.js';
 
 test.beforeEach(() => {
   const tmp = mkTmpDir();

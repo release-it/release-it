@@ -3,12 +3,12 @@ import test from 'ava';
 import sh from 'shelljs';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
-import Log from '../lib/log';
-import Spinner from '../lib/spinner';
-import Config from '../lib/config';
-import Plugin from '../lib/plugin/Plugin';
-import { mkTmpDir, gitAdd } from './util/helpers';
-import ShellStub from './stub/shell';
+import Log from '../lib/log.js';
+import Spinner from '../lib/spinner.js';
+import Config from '../lib/config.js';
+import Plugin from '../lib/plugin/Plugin.js';
+import { mkTmpDir, gitAdd } from './util/helpers.js';
+import ShellStub from './stub/shell.js';
 
 const noop = Promise.resolve();
 

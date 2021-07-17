@@ -1,7 +1,7 @@
 import test from 'ava';
 import sinon from 'sinon';
 import nock from 'nock';
-import GitLab from '../lib/plugin/gitlab/GitLab';
+import GitLab from '../lib/plugin/gitlab/GitLab.js';
 import {
   interceptUser,
   interceptCollaborator,
@@ -9,7 +9,7 @@ import {
   interceptPublish,
   interceptAsset
 } from './stub/gitlab';
-import { factory, runTasks } from './util';
+import { factory, runTasks } from './util.js';
 
 const tokenHeader = 'Private-Token';
 const tokenRef = 'GITLAB_TOKEN';

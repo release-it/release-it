@@ -2,7 +2,7 @@ import { EOL } from 'os';
 import test from 'ava';
 import mockStdIo from 'mock-stdio';
 import stripAnsi from 'strip-ansi';
-import { format, truncateLines, parseGitUrl, parseVersion } from '../lib/util';
+import { format, truncateLines, parseGitUrl, parseVersion } from '../lib/util.js';
 
 test('format', t => {
   t.is(format('release v${version}', { version: '1.0.0' }), 'release v1.0.0');

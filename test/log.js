@@ -2,7 +2,7 @@ import { EOL } from 'os';
 import test from 'ava';
 import mockStdIo from 'mock-stdio';
 import stripAnsi from 'strip-ansi';
-import Log from '../lib/log';
+import Log from '../lib/log.js';
 
 test('should write to stdout', t => {
   const log = new Log();

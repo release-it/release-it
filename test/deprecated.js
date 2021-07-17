@@ -1,7 +1,7 @@
 import test from 'ava';
 import sinon from 'sinon';
-import deprecated from '../lib/deprecated';
-import Log from '../lib/log';
+import deprecated from '../lib/deprecated.js';
+import Log from '../lib/log.js';
 
 test('should show deprecation warnings and return compliant object', t => {
   const log = sinon.createStubInstance(Log);

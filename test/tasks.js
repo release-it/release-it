@@ -4,13 +4,13 @@ import sh from 'shelljs';
 import proxyquire from 'proxyquire';
 import _ from 'lodash';
 import sinon from 'sinon';
-import Log from '../lib/log';
-import Spinner from '../lib/spinner';
-import Config from '../lib/config';
-import runTasks from '../lib/tasks';
-import Plugin from '../lib/plugin/Plugin';
-import { mkTmpDir, gitAdd, getArgs } from './util/helpers';
-import ShellStub from './stub/shell';
+import Log from '../lib/log.js';
+import Spinner from '../lib/spinner.js';
+import Config from '../lib/config.js';
+import runTasks from '../lib/tasks.js';
+import Plugin from '../lib/plugin/Plugin.js';
+import { mkTmpDir, gitAdd, getArgs } from './util/helpers.js';
+import ShellStub from './stub/shell.js';
 import {
   interceptUser as interceptGitLabUser,
   interceptCollaborator as interceptGitLabCollaborator,

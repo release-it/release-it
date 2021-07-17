@@ -3,15 +3,15 @@ import test from 'ava';
 import sh from 'shelljs';
 import _ from 'lodash';
 import sinon from 'sinon';
-import Log from '../lib/log';
-import Spinner from '../lib/spinner';
-import Prompt from '../lib/prompt';
-import Config from '../lib/config';
-import runTasks from '../lib/tasks';
-import { mkTmpDir, gitAdd } from './util/helpers';
-import ShellStub from './stub/shell';
-import { interceptPublish as interceptGitLabPublish } from './stub/gitlab';
-import { interceptCreate as interceptGitHubCreate } from './stub/github';
+import Log from '../lib/log.js';
+import Spinner from '../lib/spinner.js';
+import Prompt from '../lib/prompt.js';
+import Config from '../lib/config.js';
+import runTasks from '../lib/tasks.js';
+import { mkTmpDir, gitAdd } from './util/helpers.js';
+import ShellStub from './stub/shell.js';
+import { interceptPublish as interceptGitLabPublish } from './stub/gitlab.js';
+import { interceptCreate as interceptGitHubCreate } from './stub/github.js';
 
 const noop = Promise.resolve();
 

@@ -2,9 +2,9 @@ import path from 'path';
 import test from 'ava';
 import sinon from 'sinon';
 import mock from 'mock-fs';
-import npm from '../lib/plugin/npm/npm';
-import { factory, runTasks } from './util';
-import { getArgs } from './util/helpers';
+import npm from '../lib/plugin/npm/npm.js';
+import { factory, runTasks } from './util.js';
+import { getArgs } from './util/helpers.js';
 
 test('should return npm package url', t => {
   const options = { npm: { name: 'my-cool-package' } };

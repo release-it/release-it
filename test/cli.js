@@ -1,7 +1,7 @@
 import test from 'ava';
 import mockStdIo from 'mock-stdio';
-import { version, help } from '../lib/cli';
-import { readJSON } from './util';
+import { version, help } from '../lib/cli.js';
+import { readJSON } from '../lib/util.js';
 
 const pkg = readJSON('../package.json');
 

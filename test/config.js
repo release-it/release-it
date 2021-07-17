@@ -1,7 +1,7 @@
 import test from 'ava';
 import mock from 'mock-fs';
-import Config from '../lib/config';
-import { readJSON } from './util';
+import Config from '../lib/config.js';
+import { readJSON } from '../lib/util.js';
 
 const defaultConfig = readJSON('../config/release-it.json');
 

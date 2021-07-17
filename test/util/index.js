@@ -1,12 +1,12 @@
 import _ from 'lodash';
 import sinon from 'sinon';
 import semver from 'semver';
-import { parseVersion } from '../../lib/util';
-import Log from '../../lib/log';
-import Config from '../../lib/config';
-import ShellStub from '../stub/shell';
-import Spinner from '../../lib/spinner';
-import Prompt from '../../lib/prompt';
+import { parseVersion } from '../../lib/util.js';
+import Log from '../../lib/log.js';
+import Config from '../../lib/config.js';
+import ShellStub from '../stub/shell.js';
+import Spinner from '../../lib/spinner.js';
+import Prompt from '../../lib/prompt.js';
 
 export let factory = (Definition, { namespace, options = {}, container = {} } = {}) => {
   _.defaults(options, { ci: true, verbose: false, 'dry-run': false, debug: false });

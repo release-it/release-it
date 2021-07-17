@@ -1,6 +1,6 @@
 import test from 'ava';
 import sinon from 'sinon';
-import Metrics from '../lib/metrics';
+import Metrics from '../lib/metrics.js';
 
 test('should send metrics', async t => {
   const stub = sinon.stub().resolves();

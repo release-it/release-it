@@ -1,5 +1,5 @@
 import _debug from 'debug';
-import Shell from '../../lib/shell';
+import Shell from '../../lib/shell.js';
 
 const debug = _debug('release-it:shell-stub');
 

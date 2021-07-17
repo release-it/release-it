@@ -1,8 +1,8 @@
 import test from 'ava';
 import sinon from 'sinon';
 import { RequestError } from '@octokit/request-error';
-import GitHub from '../lib/plugin/github/GitHub';
-import { factory, runTasks } from './util';
+import GitHub from '../lib/plugin/github/GitHub.js';
+import { factory, runTasks } from './util.js';
 import {
   interceptAuthentication,
   interceptCollaborator,

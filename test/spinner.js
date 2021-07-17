@@ -1,7 +1,7 @@
 import test from 'ava';
 import sinon from 'sinon';
-import Spinner from '../lib/spinner';
-import Config from '../lib/config';
+import Spinner from '../lib/spinner.js';
+import Config from '../lib/config.js';
 
 test.beforeEach(t => {
   t.context.ora = {

@@ -1,12 +1,12 @@
 import test from 'ava';
 import sinon from 'sinon';
-import Prompt from '../lib/prompt';
-import Config from '../lib/config';
-import git from '../lib/plugin/git/prompts';
-import github from '../lib/plugin/github/prompts';
-import gitlab from '../lib/plugin/gitlab/prompts';
-import npm from '../lib/plugin/npm/prompts';
-import { factory } from './util';
+import Prompt from '../lib/prompt.js';
+import Config from '../lib/config.js';
+import git from '../lib/plugin/git/prompts.js';
+import github from '../lib/plugin/github/prompts.js';
+import gitlab from '../lib/plugin/gitlab/prompts.js';
+import npm from '../lib/plugin/npm/prompts.js';
+import { factory } from './util.js';
 
 const prompts = { git, github, gitlab, npm };
 

@@ -1,9 +1,9 @@
 import test from 'ava';
 import sh from 'shelljs';
 import sinon from 'sinon';
-import Shell from '../lib/shell';
-import Log from '../lib/log';
-import { factory } from './util';
+import Shell from '../lib/shell.js';
+import Log from '../lib/log.js';
+import { factory } from './util.js';
 
 const { stdout } = sh.exec('pwd');
 const cwd = stdout.trim();
