@@ -3,7 +3,7 @@ import sh from 'shelljs';
 import sinon from 'sinon';
 import Shell from '../lib/shell.js';
 import Log from '../lib/log.js';
-import { factory } from './util.js';
+import { factory } from './util/index.js';
 
 const { stdout } = sh.exec('pwd');
 const cwd = stdout.trim();

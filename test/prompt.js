@@ -6,7 +6,7 @@ import git from '../lib/plugin/git/prompts.js';
 import github from '../lib/plugin/github/prompts.js';
 import gitlab from '../lib/plugin/gitlab/prompts.js';
 import npm from '../lib/plugin/npm/prompts.js';
-import { factory } from './util.js';
+import { factory } from './util/index.js';
 
 const prompts = { git, github, gitlab, npm };
 

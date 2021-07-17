@@ -2,7 +2,7 @@ import test from 'ava';
 import sinon from 'sinon';
 import { RequestError } from '@octokit/request-error';
 import GitHub from '../lib/plugin/github/GitHub.js';
-import { factory, runTasks } from './util.js';
+import { factory, runTasks } from './util/index.js';
 import {
   interceptAuthentication,
   interceptCollaborator,
@@ -10,7 +10,7 @@ import {
   interceptCreate,
   interceptUpdate,
   interceptAsset
-} from './stub/github';
+} from './stub/github.js';
 
 const tokenRef = 'GITHUB_TOKEN';
 const pushRepo = 'git://github.com:user/repo';

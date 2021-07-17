@@ -16,13 +16,13 @@ import {
   interceptCollaborator as interceptGitLabCollaborator,
   interceptPublish as interceptGitLabPublish,
   interceptAsset as interceptGitLabAsset
-} from './stub/gitlab';
+} from './stub/gitlab.js';
 import {
   interceptAuthentication as interceptGitHubAuthentication,
   interceptCollaborator as interceptGitHubCollaborator,
   interceptCreate as interceptGitHubCreate,
   interceptAsset as interceptGitHubAsset
-} from './stub/github';
+} from './stub/github.js';
 
 const noop = Promise.resolve();
 

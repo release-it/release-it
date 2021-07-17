@@ -1,7 +1,7 @@
 import test from 'ava';
 import sinon from 'sinon';
 import Version from '../lib/plugin/version/Version.js';
-import { factory, runTasks } from './util.js';
+import { factory, runTasks } from './util/index.js';
 
 test('isValidVersion', t => {
   const v = factory(Version);

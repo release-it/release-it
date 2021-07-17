@@ -2,7 +2,8 @@ import test from 'ava';
 import sh from 'shelljs';
 import Shell from '../lib/shell.js';
 import Git from '../lib/plugin/git/Git.js';
-import { factory, readJSON } from '../lib/util.js';
+import { readJSON } from '../lib/util.js';
+import { factory } from './util/index.js';
 import { mkTmpDir, gitAdd } from './util/helpers.js';
 
 const { git } = readJSON(new URL('../config/release-it.json', import.meta.url));

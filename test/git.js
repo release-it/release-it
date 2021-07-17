@@ -3,8 +3,8 @@ import test from 'ava';
 import sinon from 'sinon';
 import sh from 'shelljs';
 import Git from '../lib/plugin/git/Git.js';
+import { factory } from './util/index.js';
 import { mkTmpDir, readFile, gitAdd } from './util/helpers.js';
-import { factory } from './util.js';
 
 test.beforeEach(() => {
   const tmp = mkTmpDir();
