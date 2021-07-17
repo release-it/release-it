@@ -1,17 +1,17 @@
-const path = require('path');
-const test = require('ava');
-const sh = require('shelljs');
-const _ = require('lodash');
-const sinon = require('sinon');
-const Log = require('../lib/log');
-const Spinner = require('../lib/spinner');
-const Prompt = require('../lib/prompt');
-const Config = require('../lib/config');
-const runTasks = require('../lib/tasks');
-const { mkTmpDir, gitAdd } = require('./util/helpers');
-const ShellStub = require('./stub/shell');
-const { interceptPublish: interceptGitLabPublish } = require('./stub/gitlab');
-const { interceptCreate: interceptGitHubCreate } = require('./stub/github');
+import path from 'path';
+import test from 'ava';
+import sh from 'shelljs';
+import _ from 'lodash';
+import sinon from 'sinon';
+import Log from '../lib/log';
+import Spinner from '../lib/spinner';
+import Prompt from '../lib/prompt';
+import Config from '../lib/config';
+import runTasks from '../lib/tasks';
+import { mkTmpDir, gitAdd } from './util/helpers';
+import ShellStub from './stub/shell';
+import { interceptPublish as interceptGitLabPublish } from './stub/gitlab';
+import { interceptCreate as interceptGitHubCreate } from './stub/github';
 
 const noop = Promise.resolve();
 

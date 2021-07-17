@@ -1,10 +1,10 @@
-const test = require('ava');
-const sh = require('shelljs');
-const Shell = require('../lib/shell');
-const Git = require('../lib/plugin/git/Git');
-const { git } = require('../config/release-it.json');
-const { factory } = require('./util');
-const { mkTmpDir, gitAdd } = require('./util/helpers');
+import test from 'ava';
+import sh from 'shelljs';
+import Shell from '../lib/shell';
+import Git from '../lib/plugin/git/Git';
+import { git } from '../config/release-it.json';
+import { factory } from './util';
+import { mkTmpDir, gitAdd } from './util/helpers';
 
 test.serial.beforeEach(t => {
   const bare = mkTmpDir();

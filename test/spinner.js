@@ -1,7 +1,7 @@
-const test = require('ava');
-const sinon = require('sinon');
-const Spinner = require('../lib/spinner');
-const Config = require('../lib/config');
+import test from 'ava';
+import sinon from 'sinon';
+import Spinner from '../lib/spinner';
+import Config from '../lib/config';
 
 test.beforeEach(t => {
   t.context.ora = {

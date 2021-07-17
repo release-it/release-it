@@ -1,15 +1,9 @@
-const test = require('ava');
-const sinon = require('sinon');
-const nock = require('nock');
-const GitLab = require('../lib/plugin/gitlab/GitLab');
-const {
-  interceptUser,
-  interceptCollaborator,
-  interceptCollaboratorFallback,
-  interceptPublish,
-  interceptAsset
-} = require('./stub/gitlab');
-const { factory, runTasks } = require('./util');
+import test from 'ava';
+import sinon from 'sinon';
+import nock from 'nock';
+import GitLab from '../lib/plugin/gitlab/GitLab';
+import { interceptUser, interceptCollaborator, interceptCollaboratorFallback, interceptPublish, interceptAsset } from './stub/gitlab';
+import { factory, runTasks } from './util';
 
 const tokenHeader = 'Private-Token';
 const tokenRef = 'GITLAB_TOKEN';

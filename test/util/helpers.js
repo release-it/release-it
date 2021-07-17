@@ -1,7 +1,7 @@
-const fs = require('fs').promises;
-const path = require('path');
-const sh = require('shelljs');
-const tmp = require('tmp');
+import { promises as fs } from 'fs';
+import path from 'path';
+import sh from 'shelljs';
+import tmp from 'tmp';
 
 const mkTmpDir = () => {
   const dir = tmp.dirSync({ prefix: 'release-it-' });
@@ -21,9 +21,4 @@ const gitAdd = (content, file, message) => {
 const getArgs = (args, prefix) =>
   args.filter(args => typeof args[0] === 'string' && args[0].startsWith(prefix)).map(args => args[0].trim());
 
-module.exports = {
-  mkTmpDir,
-  readFile,
-  gitAdd,
-  getArgs
-};
+export { mkTmpDir, readFile, gitAdd, getArgs };

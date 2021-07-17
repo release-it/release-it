@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-const updater = require('update-notifier');
-const parseArgs = require('yargs-parser');
-const pkg = require('../package.json');
-const release = require('../lib');
+import updater from 'update-notifier';
+import parseArgs from 'yargs-parser';
+import pkg from '../package.json';
+import release from '../lib/index.js';
 
 const aliases = {
   c: 'config',

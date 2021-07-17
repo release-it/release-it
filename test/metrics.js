@@ -1,6 +1,6 @@
-const test = require('ava');
-const sinon = require('sinon');
-const Metrics = require('../lib/metrics');
+import test from 'ava';
+import sinon from 'sinon';
+import Metrics from '../lib/metrics';
 
 test('should send metrics', async t => {
   const stub = sinon.stub().resolves();

@@ -1,6 +1,6 @@
-const shelljs = require('shelljs');
-const nock = require('nock');
-const test = require('ava');
+import shelljs from 'shelljs';
+import nock from 'nock';
+import test from 'ava';
 
 shelljs.config.silent = true;
 nock.disableNetConnect();

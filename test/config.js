@@ -1,7 +1,7 @@
-const test = require('ava');
-const mock = require('mock-fs');
-const Config = require('../lib/config');
-const defaultConfig = require('../config/release-it.json');
+import test from 'ava';
+import mock from 'mock-fs';
+import Config from '../lib/config';
+import defaultConfig from '../config/release-it.json';
 
 const localConfig = { github: { release: true } };
 

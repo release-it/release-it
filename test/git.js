@@ -1,10 +1,10 @@
-const { EOL } = require('os');
-const test = require('ava');
-const sinon = require('sinon');
-const sh = require('shelljs');
-const Git = require('../lib/plugin/git/Git');
-const { mkTmpDir, readFile, gitAdd } = require('./util/helpers');
-const { factory } = require('./util');
+import { EOL } from 'os';
+import test from 'ava';
+import sinon from 'sinon';
+import sh from 'shelljs';
+import Git from '../lib/plugin/git/Git';
+import { mkTmpDir, readFile, gitAdd } from './util/helpers';
+import { factory } from './util';
 
 test.beforeEach(() => {
   const tmp = mkTmpDir();

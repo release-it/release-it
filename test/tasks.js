@@ -1,28 +1,18 @@
-const path = require('path');
-const test = require('ava');
-const sh = require('shelljs');
-const proxyquire = require('proxyquire');
-const _ = require('lodash');
-const sinon = require('sinon');
-const Log = require('../lib/log');
-const Spinner = require('../lib/spinner');
-const Config = require('../lib/config');
-const runTasks = require('../lib/tasks');
-const Plugin = require('../lib/plugin/Plugin');
-const { mkTmpDir, gitAdd, getArgs } = require('./util/helpers');
-const ShellStub = require('./stub/shell');
-const {
-  interceptUser: interceptGitLabUser,
-  interceptCollaborator: interceptGitLabCollaborator,
-  interceptPublish: interceptGitLabPublish,
-  interceptAsset: interceptGitLabAsset
-} = require('./stub/gitlab');
-const {
-  interceptAuthentication: interceptGitHubAuthentication,
-  interceptCollaborator: interceptGitHubCollaborator,
-  interceptCreate: interceptGitHubCreate,
-  interceptAsset: interceptGitHubAsset
-} = require('./stub/github');
+import path from 'path';
+import test from 'ava';
+import sh from 'shelljs';
+import proxyquire from 'proxyquire';
+import _ from 'lodash';
+import sinon from 'sinon';
+import Log from '../lib/log';
+import Spinner from '../lib/spinner';
+import Config from '../lib/config';
+import runTasks from '../lib/tasks';
+import Plugin from '../lib/plugin/Plugin';
+import { mkTmpDir, gitAdd, getArgs } from './util/helpers';
+import ShellStub from './stub/shell';
+import { interceptUser as interceptGitLabUser, interceptCollaborator as interceptGitLabCollaborator, interceptPublish as interceptGitLabPublish, interceptAsset as interceptGitLabAsset } from './stub/gitlab';
+import { interceptAuthentication as interceptGitHubAuthentication, interceptCollaborator as interceptGitHubCollaborator, interceptCreate as interceptGitHubCreate, interceptAsset as interceptGitHubAsset } from './stub/github';
 
 const noop = Promise.resolve();
 

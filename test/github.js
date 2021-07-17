@@ -1,16 +1,9 @@
-const test = require('ava');
-const sinon = require('sinon');
-const { RequestError } = require('@octokit/request-error');
-const GitHub = require('../lib/plugin/github/GitHub');
-const { factory, runTasks } = require('./util');
-const {
-  interceptAuthentication,
-  interceptCollaborator,
-  interceptListReleases,
-  interceptCreate,
-  interceptUpdate,
-  interceptAsset
-} = require('./stub/github');
+import test from 'ava';
+import sinon from 'sinon';
+import { RequestError } from '@octokit/request-error';
+import GitHub from '../lib/plugin/github/GitHub';
+import { factory, runTasks } from './util';
+import { interceptAuthentication, interceptCollaborator, interceptListReleases, interceptCreate, interceptUpdate, interceptAsset } from './stub/github';
 
 const tokenRef = 'GITHUB_TOKEN';
 const pushRepo = 'git://github.com:user/repo';

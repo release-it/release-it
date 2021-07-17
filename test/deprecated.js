@@ -1,7 +1,7 @@
-const test = require('ava');
-const sinon = require('sinon');
-const deprecated = require('../lib/deprecated');
-const Log = require('../lib/log');
+import test from 'ava';
+import sinon from 'sinon';
+import deprecated from '../lib/deprecated';
+import Log from '../lib/log';
 
 test('should show deprecation warnings and return compliant object', t => {
   const log = sinon.createStubInstance(Log);

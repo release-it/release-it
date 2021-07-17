@@ -1,9 +1,9 @@
-const test = require('ava');
-const sh = require('shelljs');
-const sinon = require('sinon');
-const Shell = require('../lib/shell');
-const Log = require('../lib/log');
-const { factory } = require('./util');
+import test from 'ava';
+import sh from 'shelljs';
+import sinon from 'sinon';
+import Shell from '../lib/shell';
+import Log from '../lib/log';
+import { factory } from './util';
 
 const { stdout } = sh.exec('pwd');
 const cwd = stdout.trim();

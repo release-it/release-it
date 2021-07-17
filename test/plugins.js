@@ -1,14 +1,14 @@
-const path = require('path');
-const test = require('ava');
-const sh = require('shelljs');
-const proxyquire = require('proxyquire');
-const sinon = require('sinon');
-const Log = require('../lib/log');
-const Spinner = require('../lib/spinner');
-const Config = require('../lib/config');
-const Plugin = require('../lib/plugin/Plugin');
-const { mkTmpDir, gitAdd } = require('./util/helpers');
-const ShellStub = require('./stub/shell');
+import path from 'path';
+import test from 'ava';
+import sh from 'shelljs';
+import proxyquire from 'proxyquire';
+import sinon from 'sinon';
+import Log from '../lib/log';
+import Spinner from '../lib/spinner';
+import Config from '../lib/config';
+import Plugin from '../lib/plugin/Plugin';
+import { mkTmpDir, gitAdd } from './util/helpers';
+import ShellStub from './stub/shell';
 
 const noop = Promise.resolve();
 

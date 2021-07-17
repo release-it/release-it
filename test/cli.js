@@ -1,7 +1,7 @@
-const test = require('ava');
-const mockStdIo = require('mock-stdio');
-const pkg = require('../package.json');
-const { version, help } = require('../lib/cli');
+import test from 'ava';
+import mockStdIo from 'mock-stdio';
+import pkg from '../package.json';
+import { version, help } from '../lib/cli';
 
 test('should print version', t => {
   mockStdIo.start();

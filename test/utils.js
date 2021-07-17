@@ -1,8 +1,8 @@
-const { EOL } = require('os');
-const test = require('ava');
-const mockStdIo = require('mock-stdio');
-const stripAnsi = require('strip-ansi');
-const { format, truncateLines, parseGitUrl, parseVersion } = require('../lib/util');
+import { EOL } from 'os';
+import test from 'ava';
+import mockStdIo from 'mock-stdio';
+import stripAnsi from 'strip-ansi';
+import { format, truncateLines, parseGitUrl, parseVersion } from '../lib/util';
 
 test('format', t => {
   t.is(format('release v${version}', { version: '1.0.0' }), 'release v1.0.0');
