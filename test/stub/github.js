@@ -104,4 +104,11 @@ const interceptAsset = ({
       };
     });
 
-export { interceptAuthentication, interceptCollaborator, interceptListReleases, interceptCreate, interceptUpdate, interceptAsset };
+export {
+  interceptAuthentication,
+  interceptCollaborator,
+  interceptListReleases,
+  interceptCreate,
+  interceptUpdate,
+  interceptAsset
+};

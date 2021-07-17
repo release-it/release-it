@@ -11,8 +11,18 @@ import runTasks from '../lib/tasks';
 import Plugin from '../lib/plugin/Plugin';
 import { mkTmpDir, gitAdd, getArgs } from './util/helpers';
 import ShellStub from './stub/shell';
-import { interceptUser as interceptGitLabUser, interceptCollaborator as interceptGitLabCollaborator, interceptPublish as interceptGitLabPublish, interceptAsset as interceptGitLabAsset } from './stub/gitlab';
-import { interceptAuthentication as interceptGitHubAuthentication, interceptCollaborator as interceptGitHubCollaborator, interceptCreate as interceptGitHubCreate, interceptAsset as interceptGitHubAsset } from './stub/github';
+import {
+  interceptUser as interceptGitLabUser,
+  interceptCollaborator as interceptGitLabCollaborator,
+  interceptPublish as interceptGitLabPublish,
+  interceptAsset as interceptGitLabAsset
+} from './stub/gitlab';
+import {
+  interceptAuthentication as interceptGitHubAuthentication,
+  interceptCollaborator as interceptGitHubCollaborator,
+  interceptCreate as interceptGitHubCreate,
+  interceptAsset as interceptGitHubAsset
+} from './stub/github';
 
 const noop = Promise.resolve();
 

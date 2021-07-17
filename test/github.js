@@ -3,7 +3,14 @@ import sinon from 'sinon';
 import { RequestError } from '@octokit/request-error';
 import GitHub from '../lib/plugin/github/GitHub';
 import { factory, runTasks } from './util';
-import { interceptAuthentication, interceptCollaborator, interceptListReleases, interceptCreate, interceptUpdate, interceptAsset } from './stub/github';
+import {
+  interceptAuthentication,
+  interceptCollaborator,
+  interceptListReleases,
+  interceptCreate,
+  interceptUpdate,
+  interceptAsset
+} from './stub/github';
 
 const tokenRef = 'GITHUB_TOKEN';
 const pushRepo = 'git://github.com:user/repo';
