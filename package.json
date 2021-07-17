@@ -35,7 +35,8 @@
   "bin": {
     "release-it": "bin/release-it.js"
   },
-  "main": "./lib/index.js",
+  "type": "module",
+  "exports": "./lib/index.js",
   "files": [
     "bin",
     "config",
@@ -106,6 +107,6 @@
     "strip-ansi": "6.0.0"
   },
   "engines": {
-    "node": ">=10"
+    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
   }
 }
