@@ -3,7 +3,7 @@ import mock from 'mock-fs';
 import Config from '../lib/config.js';
 import { readJSON } from '../lib/util.js';
 
-const defaultConfig = readJSON('../config/release-it.json');
+const defaultConfig = readJSON(new URL('../config/release-it.json', import.meta.url));
 
 const localConfig = { github: { release: true } };
 

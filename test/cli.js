@@ -3,7 +3,7 @@ import mockStdIo from 'mock-stdio';
 import { version, help } from '../lib/cli.js';
 import { readJSON } from '../lib/util.js';
 
-const pkg = readJSON('../package.json');
+const pkg = readJSON(new URL('../package.json', import.meta.url));
 
 test('should print version', t => {
   mockStdIo.start();

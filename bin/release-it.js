@@ -5,7 +5,7 @@ import parseArgs from 'yargs-parser';
 import release from '../lib/index.js';
 import { readJSON } from '../lib/util.js';
 
-const pkg = readJSON('../package.json');
+const pkg = readJSON(new URL('../package.json', import.meta.url));
 
 const aliases = {
   c: 'config',
