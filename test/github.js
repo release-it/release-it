@@ -248,6 +248,8 @@ test('should throw for non-collaborator', async t => {
 });
 
 test.serial('should skip authentication and collaborator checks when running on GitHub Actions', async t => {
+  const GITHUB_ACTIONS = process.env.GITHUB_ACTIONS;
+  const GITHUB_ACTOR = process.env.GITHUB_ACTOR;
   process.env.GITHUB_ACTIONS = 1;
   process.env.GITHUB_ACTOR = 'release-it';
 
@@ -264,8 +266,8 @@ test.serial('should skip authentication and collaborator checks when running on 
 
   authStub.restore();
   collaboratorStub.restore();
-  delete process.env.GITHUB_ACTIONS;
-  delete process.env.GITHUB_ACTOR;
+  process.env.GITHUB_ACTIONS = GITHUB_ACTIONS;
+  process.env.GITHUB_ACTOR = GITHUB_ACTOR;
 });
 
 test('should handle octokit client error (without retries)', async t => {
