@@ -266,8 +266,8 @@ test.serial('should skip authentication and collaborator checks when running on 
 
   authStub.restore();
   collaboratorStub.restore();
-  process.env.GITHUB_ACTIONS = GITHUB_ACTIONS;
-  process.env.GITHUB_ACTOR = GITHUB_ACTOR;
+  process.env.GITHUB_ACTIONS = GITHUB_ACTIONS ?? '';
+  process.env.GITHUB_ACTOR = GITHUB_ACTOR ?? '';
 });
 
 test('should handle octokit client error (without retries)', async t => {

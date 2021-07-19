@@ -44,8 +44,8 @@ test('should set CI mode', t => {
   t.is(config.isCI, true);
 });
 
-test('should detect CI mode', t => {
-  const isCI = require('is-ci');
+test('should detect CI mode', async t => {
+  const { default: isCI } = await import('is-ci');
   const config = new Config();
   t.is(config.options.ci, isCI);
   t.is(config.isCI, isCI);

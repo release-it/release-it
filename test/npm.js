@@ -279,7 +279,6 @@ test('should skip checks', async t => {
 });
 
 test('should publish to a different/scoped registry', async t => {
-  delete require.cache[require.resolve('../package.json')];
   mock({
     [path.resolve('package.json')]: JSON.stringify({
       name: '@my-scope/my-pkg',
@@ -317,7 +316,6 @@ test('should publish to a different/scoped registry', async t => {
 });
 
 test('should not publish when `npm version` fails', async t => {
-  delete require.cache[require.resolve('../package.json')];
   mock({
     [path.resolve('package.json')]: JSON.stringify({
       name: '@my-scope/my-pkg',

@@ -1,14 +1,12 @@
 import path from 'path';
 import test from 'ava';
 import sh from 'shelljs';
-import proxyquire from 'proxyquire';
 import _ from 'lodash';
 import sinon from 'sinon';
 import Log from '../lib/log.js';
 import Spinner from '../lib/spinner.js';
 import Config from '../lib/config.js';
 import runTasks from '../lib/tasks.js';
-import Plugin from '../lib/plugin/Plugin.js';
 import { mkTmpDir, gitAdd, getArgs } from './util/helpers.js';
 import ShellStub from './stub/shell.js';
 import {
@@ -398,15 +396,16 @@ test.serial('should propagate errors', async t => {
 });
 
 {
-  class MyPlugin extends Plugin {}
-  const statics = { isEnabled: () => true, disablePlugin: () => null };
-  const options = { '@global': true, '@noCallThru': true };
-  const runTasks = proxyquire('../lib/tasks', {
-    'my-plugin': Object.assign(MyPlugin, statics, options)
-  });
-
   test.serial('should run all hooks', async t => {
     gitAdd(`{"name":"hooked","version":"1.0.0"}`, 'package.json', 'Add package.json');
+    sh.mkdir('my-plugin');
+    sh.pushd('-q', 'my-plugin');
+    sh.exec('npm init -f');
+    sh.exec('npm link release-it');
+    const plugin = "const { Plugin } = require('release-it'); module.exports = class MyPlugin extends Plugin {};";
+    sh.ShellString(plugin).toEnd('index.js');
+    sh.popd();
+
     const hooks = {};
     ['before', 'after'].forEach(prefix => {
       ['version', 'git', 'npm', 'my-plugin'].forEach(ns => {
