@@ -52,13 +52,15 @@ test.serial('should instantiate plugins and execute all release-cycle methods', 
 
   sh.mkdir('my-plugin');
   sh.pushd('-q', 'my-plugin');
-  sh.exec('npm link release-it');
+  sh.exec('npm init -f');
+  sh.exec('npm install release-it');
   sh.ShellString("const { Plugin } = require('release-it'); module.exports = " + MyPlugin.toString()).toEnd('index.js');
   sh.popd();
 
   sh.mkdir('-p', 'my/plugin');
   sh.pushd('-q', 'my/plugin');
-  sh.exec('npm link release-it');
+  sh.exec('npm init -f');
+  sh.exec('npm install release-it');
   sh.ShellString("const { Plugin } = require('release-it'); module.exports = " + MyPlugin.toString()).toEnd('index.js');
   sh.popd();
 
@@ -67,7 +69,7 @@ test.serial('should instantiate plugins and execute all release-cycle methods', 
       'my-plugin': {
         name: 'foo'
       },
-      './my/plugin': [
+      './my/plugin/index.js': [
         'named-plugin',
         {
           name: 'bar'
@@ -111,7 +113,8 @@ test.serial('should disable core plugins', async t => {
   sh.exec('npm init -f');
   sh.mkdir('replace-plugin');
   sh.pushd('-q', 'replace-plugin');
-  sh.exec('npm link release-it');
+  sh.exec('npm init -f');
+  sh.exec('npm install release-it');
   const content = "const { Plugin } = require('release-it'); module.exports = " + ReplacePlugin.toString();
   sh.ShellString(content).toEnd('index.js');
   sh.popd();
@@ -138,7 +141,7 @@ test.serial('should support ESM-based plugins', async t => {
   sh.mkdir('my-plugin');
   sh.pushd('-q', 'my-plugin');
   sh.ShellString('{"name":"my-plugin","version":"1.0.0","type": "module"}').toEnd('package.json');
-  sh.exec('npm link release-it');
+  sh.exec('npm install release-it@esm');
   const content = "import { Plugin } from 'release-it'; " + MyPlugin.toString() + '; export default MyPlugin;';
   sh.ShellString(content).toEnd('index.js');
   sh.popd();
@@ -166,7 +169,8 @@ test.serial('should expose context to execute commands', async t => {
 
   sh.mkdir('context-plugin');
   sh.pushd('-q', 'context-plugin');
-  sh.exec('npm link release-it');
+  sh.exec('npm init -f');
+  sh.exec('npm install release-it');
   const content = "const { Plugin } = require('release-it'); module.exports = " + ContextPlugin.toString();
   sh.ShellString(content).toEnd('index.js');
   sh.popd();

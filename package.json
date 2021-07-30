@@ -46,7 +46,7 @@
   "scripts": {
     "lint": "eslint lib test",
     "format": "prettier --write \"{lib,test}/**/*.js\"",
-    "test": "ava",
+    "test": "ava --timeout=20m",
     "coverage": "nyc --reporter=lcov --reporter=html --config=config/.codecov.yml npm test",
     "codecov": "nyc --reporter=json --config=config/.codecov.yml npm test && codecov -f coverage/coverage-final.json",
     "readme": "markdown-toc README.md -i --maxdepth=2 --bullets=-",

@@ -401,7 +401,7 @@ test.serial('should propagate errors', async t => {
     sh.mkdir('my-plugin');
     sh.pushd('-q', 'my-plugin');
     sh.exec('npm init -f');
-    sh.exec('npm link release-it');
+    sh.exec('npm install release-it');
     const plugin = "const { Plugin } = require('release-it'); module.exports = class MyPlugin extends Plugin {};";
     sh.ShellString(plugin).toEnd('index.js');
     sh.popd();

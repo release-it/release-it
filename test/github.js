@@ -221,7 +221,9 @@ test('should release to git.pushRepo', async t => {
   exec.restore();
 });
 
-test('should throw for unauthenticated user', async t => {
+const testSkipOnActions = process.env.GITHUB_ACTIONS ? test.skip : test;
+
+testSkipOnActions('should throw for unauthenticated user', async t => {
   const options = { github: { tokenRef, pushRepo, host } };
   const github = factory(GitHub, { options });
   const stub = sinon.stub(github.client.users, 'getAuthenticated');
@@ -235,7 +237,7 @@ test('should throw for unauthenticated user', async t => {
   stub.restore();
 });
 
-test('should throw for non-collaborator', async t => {
+testSkipOnActions('should throw for non-collaborator', async t => {
   interceptAuthentication({ username: 'john' });
   const options = { github: { tokenRef, pushRepo, host } };
   const github = factory(GitHub, { options });
@@ -248,10 +250,11 @@ test('should throw for non-collaborator', async t => {
 });
 
 test.serial('should skip authentication and collaborator checks when running on GitHub Actions', async t => {
-  const GITHUB_ACTIONS = process.env.GITHUB_ACTIONS;
-  const GITHUB_ACTOR = process.env.GITHUB_ACTOR;
-  process.env.GITHUB_ACTIONS = 1;
-  process.env.GITHUB_ACTOR = 'release-it';
+  const { GITHUB_ACTIONS, GITHUB_ACTOR } = process.env;
+  if (!GITHUB_ACTIONS) {
+    process.env.GITHUB_ACTIONS = 1;
+    process.env.GITHUB_ACTOR = 'webpro';
+  }
 
   const options = { github: { tokenRef } };
   const github = factory(GitHub, { options });
@@ -262,12 +265,15 @@ test.serial('should skip authentication and collaborator checks when running on 
 
   t.is(authStub.callCount, 0);
   t.is(collaboratorStub.callCount, 0);
-  t.is(github.getContext('username'), 'release-it');
+  t.is(github.getContext('username'), 'webpro');
 
   authStub.restore();
   collaboratorStub.restore();
-  process.env.GITHUB_ACTIONS = GITHUB_ACTIONS ?? '';
-  process.env.GITHUB_ACTOR = GITHUB_ACTOR ?? '';
+
+  if (!GITHUB_ACTIONS) {
+    process.env.GITHUB_ACTIONS = GITHUB_ACTIONS || '';
+    process.env.GITHUB_ACTOR = GITHUB_ACTOR || '';
+  }
 });
 
 test('should handle octokit client error (without retries)', async t => {
