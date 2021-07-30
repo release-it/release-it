@@ -36,7 +36,10 @@
     "release-it": "bin/release-it.js"
   },
   "type": "module",
-  "exports": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./test/util": "./test/util/index.js"
+  },
   "files": [
     "bin",
     "config",
