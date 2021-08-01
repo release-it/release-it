@@ -12,6 +12,8 @@ import ContextPlugin from './stub/plugin-context.js';
 import { mkTmpDir } from './util/helpers.js';
 import ShellStub from './stub/shell.js';
 
+const rootDir = new URL('..', import.meta.url);
+
 const noop = Promise.resolve();
 
 const sandbox = sinon.createSandbox();
@@ -48,21 +50,23 @@ test.serial.afterEach(() => {
 });
 
 test.serial('should instantiate plugins and execute all release-cycle methods', async t => {
-  sh.exec('npm init -f');
+  sh.ShellString(JSON.stringify({ name: 'project', version: '1.0.0', type: 'module' })).toEnd('package.json');
+  sh.exec(`npm install ${rootDir}`);
 
-  sh.mkdir('my-plugin');
-  sh.pushd('-q', 'my-plugin');
-  sh.exec('npm init -f');
-  sh.exec('npm install release-it');
-  sh.ShellString("const { Plugin } = require('release-it'); module.exports = " + MyPlugin.toString()).toEnd('index.js');
+  const pluginDir = mkTmpDir();
+  sh.pushd('-q', pluginDir);
+  sh.ShellString(JSON.stringify({ name: 'my-plugin', version: '1.0.0', type: 'module' })).toEnd('package.json');
+  sh.exec(`npm install ${rootDir}`);
+  const content = "import { Plugin } from 'release-it'; " + MyPlugin.toString() + '; export default MyPlugin;';
+  sh.ShellString(content).toEnd('index.js');
   sh.popd();
 
   sh.mkdir('-p', 'my/plugin');
   sh.pushd('-q', 'my/plugin');
-  sh.exec('npm init -f');
-  sh.exec('npm install release-it');
-  sh.ShellString("const { Plugin } = require('release-it'); module.exports = " + MyPlugin.toString()).toEnd('index.js');
+  sh.ShellString(content).toEnd('index.js');
   sh.popd();
+
+  sh.exec(`npm install ${pluginDir}`);
 
   const config = {
     plugins: {
@@ -110,18 +114,14 @@ test.serial('should instantiate plugins and execute all release-cycle methods', 
 });
 
 test.serial('should disable core plugins', async t => {
-  sh.exec('npm init -f');
-  sh.mkdir('replace-plugin');
-  sh.pushd('-q', 'replace-plugin');
-  sh.exec('npm init -f');
-  sh.exec('npm install release-it');
+  sh.ShellString(JSON.stringify({ name: 'project', version: '1.0.0' })).toEnd('package.json');
+  sh.exec(`npm install release-it@^14`);
   const content = "const { Plugin } = require('release-it'); module.exports = " + ReplacePlugin.toString();
-  sh.ShellString(content).toEnd('index.js');
-  sh.popd();
+  sh.ShellString(content).toEnd('replace-plugin.js');
 
   const config = {
     plugins: {
-      'replace-plugin': {}
+      './replace-plugin.js': {}
     }
   };
   const container = getContainer(config);
@@ -136,46 +136,17 @@ test.serial('should disable core plugins', async t => {
   });
 });
 
-test.serial('should support ESM-based plugins', async t => {
-  sh.exec('npm init -f');
-  sh.mkdir('my-plugin');
-  sh.pushd('-q', 'my-plugin');
-  sh.ShellString('{"name":"my-plugin","version":"1.0.0","type": "module"}').toEnd('package.json');
-  sh.exec('npm install release-it@esm');
-  const content = "import { Plugin } from 'release-it'; " + MyPlugin.toString() + '; export default MyPlugin;';
-  sh.ShellString(content).toEnd('index.js');
-  sh.popd();
-
-  const config = {
-    plugins: {
-      'my-plugin': {}
-    }
-  };
-  const container = getContainer(config);
-
-  const result = await runTasks({}, container);
-
-  t.deepEqual(result, {
-    changelog: undefined,
-    name: 'new-project-name',
-    latestVersion: '1.2.3',
-    version: '1.3.0'
-  });
-});
-
 test.serial('should expose context to execute commands', async t => {
-  sh.ShellString('{"name":"pkg-name","version":"1.0.0"}').toEnd('package.json');
+  sh.ShellString(JSON.stringify({ name: 'pkg-name', version: '1.0.0', type: 'module' })).toEnd('package.json');
+  sh.exec(`npm install ${rootDir}`);
+
+  const content =
+    "import { Plugin } from 'release-it'; " + ContextPlugin.toString() + '; export default ContextPlugin;';
+  sh.ShellString(content).toEnd('context-plugin.js');
+
   const repo = parseGitUrl('https://github.com/user/pkg');
 
-  sh.mkdir('context-plugin');
-  sh.pushd('-q', 'context-plugin');
-  sh.exec('npm init -f');
-  sh.exec('npm install release-it');
-  const content = "const { Plugin } = require('release-it'); module.exports = " + ContextPlugin.toString();
-  sh.ShellString(content).toEnd('index.js');
-  sh.popd();
-
-  const container = getContainer({ plugins: { 'context-plugin': {} } });
+  const container = getContainer({ plugins: { './context-plugin.js': {} } });
   const exec = sinon.spy(container.shell, 'execFormattedCommand');
 
   container.config.setContext({ repo });

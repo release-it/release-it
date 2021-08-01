@@ -22,6 +22,8 @@ import {
   interceptAsset as interceptGitHubAsset
 } from './stub/github.js';
 
+const rootDir = new URL('..', import.meta.url);
+
 const noop = Promise.resolve();
 
 const sandbox = sinon.createSandbox();
@@ -397,14 +399,10 @@ test.serial('should propagate errors', async t => {
 
 {
   test.serial('should run all hooks', async t => {
-    gitAdd(`{"name":"hooked","version":"1.0.0"}`, 'package.json', 'Add package.json');
-    sh.mkdir('my-plugin');
-    sh.pushd('-q', 'my-plugin');
-    sh.exec('npm init -f');
-    sh.exec('npm install release-it');
-    const plugin = "const { Plugin } = require('release-it'); module.exports = class MyPlugin extends Plugin {};";
-    sh.ShellString(plugin).toEnd('index.js');
-    sh.popd();
+    gitAdd(`{"name":"hooked","version":"1.0.0","type":"module"}`, 'package.json', 'Add package.json');
+    sh.exec(`npm install ${rootDir}`);
+    const plugin = "import { Plugin } from 'release-it'; class MyPlugin extends Plugin {}; export default MyPlugin;";
+    sh.ShellString(plugin).toEnd('my-plugin.js');
 
     const hooks = {};
     ['before', 'after'].forEach(prefix => {
@@ -415,7 +413,11 @@ test.serial('should propagate errors', async t => {
         });
       });
     });
-    const container = getContainer({ plugins: { 'my-plugin': {} }, hooks });
+    const container = getContainer({
+      plugins: { './my-plugin.js': {} },
+      git: { requireCleanWorkingDir: false },
+      hooks
+    });
     const exec = sinon.spy(container.shell, 'execFormattedCommand');
 
     await runTasks({}, container);
