@@ -12,6 +12,7 @@
     "commitArgs": [],
     "tag": true,
     "tagName": null,
+    "tagMatch": null,
     "tagAnnotation": "Release ${version}",
     "tagArgs": [],
     "push": true,

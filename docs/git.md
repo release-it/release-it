@@ -35,10 +35,19 @@ By default, `release-it` uses branch's tracking information, unless there isn't 
 `"origin"` as the remote name to push to. Use `git.pushRepo` to override this with a different remote name, or a
 different git url.
 
-## Tag name
+## Tag Name
 
-The `v` prefix is automatically detected from the latest tag. No need to configure e.g. `git.tagName: "v${version}"`,
-unless you specifically want to override or change this.
+Use `git.tagName` to set a custom tag, not equal to the (prefixed) version. The `v` prefix is automatically detected
+from the latest tag. No need to configure e.g. `git.tagName: "v${version}"`.
+
+Example: `git.tagName=${name}@${version}`
+
+## Tag Match
+
+Use `git.tagMatch` to override the normal matching behavior to find the latest tag. This can be useful when using a
+plugin to determine the next tag.
+
+Example: `git.tagMatch='[0-9][0-9].[0-1][0-9].[0-9]*'`
 
 ## Extra arguments
 
