@@ -210,11 +210,11 @@ pre-releases. An example pre-release version is `2.0.0-beta.0`.
 
 ## Update or re-run existing releases
 
-Use `--no-increment` to not increment the lastest version and update an existing tag/version.
+Use `--no-increment` to not increment the last version, but update the last existing tag/version.
 
-This may be helpful in some cases where the version was already incremented. Here's a few example scenarios:
+This may be helpful in cases where the version was already incremented. Here's a few example scenarios:
 
-- To update or publish a draft GitHub Release for an existing Git tag.
+- To update or publish a (draft) GitHub Release for an existing Git tag.
 - Publishing to npm succeeded, but pushing the Git tag to the remote failed. Then use
   `release-it --no-increment --no-npm` to skip the `npm publish` and try pushing the same Git tag again.
 
