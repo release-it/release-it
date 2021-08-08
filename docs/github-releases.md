@@ -116,8 +116,9 @@ The latest GitHub release can be updated, e.g. to update the releases notes, add
 status.
 
 - Use `--no-increment` to skip updating the version.
-- Use `--no-git` to skip Git actions.
-- Use `--no-npm` to skip publishing to npm if there's a `package.json`.
+- Use `--no-git` to skip Git commit, tag, push (when the tag is already there).
+- Use `--no-npm` to skip publishing to npm (if there's a `package.json`).
+- Use `--github.update` to update the GitHub release.
 
 Use the other options to update the release, such as `--github.assets` to add assets. Note that the `draft` and
 `preRelease` options are `false` by default, but can be set explicitly using e.g. `--no-github.draft` or
@@ -126,5 +127,5 @@ Use the other options to update the release, such as `--github.assets` to add as
 Example command to add assets and explicitly toggle the draft status to "published":
 
 ```bash
-release-it --no-increment --no-git --github.release --github.assets=*.zip --no-github.draft
+release-it --no-increment --no-git --github.release --github.update --github.assets=*.zip --no-github.draft
 ```

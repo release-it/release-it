@@ -103,9 +103,9 @@ test('should update release and upload assets', async t => {
   const asset = 'file1';
   const options = {
     increment: false,
-    isUpdate: true,
     git,
     github: {
+      update: true,
       pushRepo,
       tokenRef,
       release: true,
@@ -137,9 +137,9 @@ test('should update release and upload assets', async t => {
 test('should create new release for unreleased tag', async t => {
   const options = {
     increment: false,
-    isUpdate: true,
     git,
     github: {
+      update: true,
       pushRepo,
       tokenRef,
       release: true,
