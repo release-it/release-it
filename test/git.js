@@ -45,7 +45,7 @@ test.serial('should throw if tag exists', async t => {
   sh.touch('file');
   gitAdd('line', 'file', 'Add file');
   sh.exec('git tag 0.0.2');
-  gitClient.setContext({ latestTagName: '0.0.1', tagName: '0.0.2' });
+  gitClient.config.setContext({ latestTag: '0.0.1', tagName: '0.0.2' });
   const expected = { instanceOf: Error, message: /fatal: tag '0\.0\.2' already exists/ };
   await t.throwsAsync(gitClient.tag({ name: '0.0.2' }), expected);
 });
@@ -57,7 +57,7 @@ test.serial('should only warn if tag exists intentionally', async t => {
   sh.touch('file');
   gitAdd('line', 'file', 'Add file');
   sh.exec('git tag 1.0.0');
-  gitClient.setContext({ latestTagName: '1.0.0', tagName: '1.0.0' });
+  gitClient.config.setContext({ latestTag: '1.0.0', tagName: '1.0.0' });
   await t.notThrowsAsync(gitClient.tag());
   t.is(warn.callCount, 1);
   t.is(warn.firstCall.args[0], 'Tag "1.0.0" already exists');

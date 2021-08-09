@@ -77,7 +77,7 @@ test.serial('should detect and include version prefix ("v")', async t => {
   sh.exec('git tag v1.0.0');
   await gitClient.init();
   await gitClient.bump('1.0.1');
-  t.is(gitClient.getContext('tagName'), 'v1.0.1');
+  t.is(gitClient.config.getContext('tagName'), 'v1.0.1');
 });
 
 test.serial('should detect and exclude version prefix', async t => {
@@ -85,7 +85,7 @@ test.serial('should detect and exclude version prefix', async t => {
   sh.exec('git tag 1.0.0');
   await gitClient.init();
   await gitClient.bump('1.0.1');
-  t.is(gitClient.getContext('tagName'), '1.0.1');
+  t.is(gitClient.config.getContext('tagName'), '1.0.1');
 });
 
 test.serial('should detect and exclude version prefix (configured)', async t => {
@@ -93,7 +93,7 @@ test.serial('should detect and exclude version prefix (configured)', async t => 
   sh.exec('git tag 1.0.0');
   await gitClient.init();
   await gitClient.bump('1.0.1');
-  t.is(gitClient.getContext('tagName'), 'v1.0.1');
+  t.is(gitClient.config.getContext('tagName'), 'v1.0.1');
 });
 
 test.serial('should honor custom tagName configuration', async t => {
@@ -102,7 +102,7 @@ test.serial('should honor custom tagName configuration', async t => {
   await gitClient.init();
   await gitClient.bump('1.0.1');
   const { project } = gitClient.getContext('repo');
-  t.is(gitClient.getContext('tagName'), `TAGNAME-${project}-v1.0.1`);
+  t.is(gitClient.config.getContext('tagName'), `TAGNAME-${project}-v1.0.1`);
 });
 
 test.serial('should get the latest tag after fetch', async t => {
@@ -117,7 +117,7 @@ test.serial('should get the latest tag after fetch', async t => {
   sh.exec('git push --tags');
   sh.pushd('-q', target);
   await gitClient.init();
-  t.is(gitClient.getContext('latestTagName'), '1.0.0');
+  t.is(gitClient.config.getContext('latestTag'), '1.0.0');
 });
 
 test.serial('should get the latest custom tag after fetch when tagName is configured', async t => {
@@ -137,7 +137,7 @@ test.serial('should get the latest custom tag after fetch when tagName is config
   sh.exec('git push --tags');
   sh.pushd('-q', target);
   await gitClient.init();
-  t.is(gitClient.getContext('latestTagName'), 'TAGNAME-v1.0.0');
+  t.is(gitClient.config.getContext('latestTag'), 'TAGNAME-v1.0.0');
 });
 
 test.serial('should get the latest tag based on tagMatch', async t => {
@@ -157,7 +157,7 @@ test.serial('should get the latest tag based on tagMatch', async t => {
   sh.exec('git push --tags');
   sh.pushd('-q', target);
   await gitClient.init();
-  t.is(gitClient.getContext('latestTagName'), '21.04.3');
+  t.is(gitClient.config.getContext('latestTag'), '21.04.3');
 });
 
 test.serial('should generate correct changelog', async t => {
