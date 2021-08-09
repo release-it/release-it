@@ -68,7 +68,8 @@ module.exports.runTasks = async plugin => {
   await plugin.beforeBump();
   await plugin.bump(version);
 
-  plugin.config.setContext({ tagName: version });
+  const tagName = plugin.config.getContext('tagName') || version;
+  plugin.config.setContext({ tagName });
 
   await plugin.beforeRelease();
   await plugin.release();
