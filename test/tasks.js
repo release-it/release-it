@@ -6,7 +6,7 @@ import sinon from 'sinon';
 import Log from '../lib/log.js';
 import Spinner from '../lib/spinner.js';
 import Config from '../lib/config.js';
-import runTasks from '../lib/tasks.js';
+import runTasks from '../lib/index.js';
 import { mkTmpDir, gitAdd, getArgs } from './util/helpers.js';
 import ShellStub from './stub/shell.js';
 import {

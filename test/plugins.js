@@ -5,7 +5,7 @@ import Log from '../lib/log.js';
 import Spinner from '../lib/spinner.js';
 import Config from '../lib/config.js';
 import { parseGitUrl } from '../lib/util.js';
-import runTasks from '../lib/tasks.js';
+import runTasks from '../lib/index.js';
 import MyPlugin from './stub/plugin.js';
 import ReplacePlugin from './stub/plugin-replace.js';
 import ContextPlugin from './stub/plugin-context.js';

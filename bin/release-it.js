@@ -2,7 +2,7 @@
 
 import updater from 'update-notifier';
 import parseArgs from 'yargs-parser';
-import release from '../lib/index.js';
+import release from '../lib/cli.js';
 import { readJSON } from '../lib/util.js';
 
 const pkg = readJSON(new URL('../package.json', import.meta.url));

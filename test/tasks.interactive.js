@@ -7,7 +7,7 @@ import Log from '../lib/log.js';
 import Spinner from '../lib/spinner.js';
 import Prompt from '../lib/prompt.js';
 import Config from '../lib/config.js';
-import runTasks from '../lib/tasks.js';
+import runTasks from '../lib/index.js';
 import { mkTmpDir, gitAdd } from './util/helpers.js';
 import ShellStub from './stub/shell.js';
 import { interceptPublish as interceptGitLabPublish } from './stub/gitlab.js';
