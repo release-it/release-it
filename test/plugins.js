@@ -128,7 +128,7 @@ test.serial('should disable core plugins', async t => {
   t.deepEqual(result, {
     changelog: undefined,
     name: undefined,
-    latestVersion: undefined,
+    latestVersion: '0.0.0',
     version: undefined
   });
 });
