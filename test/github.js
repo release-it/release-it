@@ -117,8 +117,8 @@ test('should update release and upload assets', async t => {
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
-  exec.withArgs('git rev-list 2.0.1 --tags --max-count=1').resolves('71f1812');
-  exec.withArgs('git describe --tags --match=* --abbrev=0 71f1812').resolves('2.0.1');
+  exec.withArgs('git rev-list 2.0.1 --tags --max-count=1').resolves('a123456');
+  exec.withArgs('git describe --tags --abbrev=0 "a123456^"').resolves('2.0.1');
 
   interceptAuthentication();
   interceptCollaborator();
@@ -150,8 +150,8 @@ test('should create new release for unreleased tag', async t => {
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
-  exec.withArgs('git rev-list 2.0.1 --tags --max-count=1').resolves('71f1812');
-  exec.withArgs('git describe --tags --match=* --abbrev=0 71f1812').resolves('2.0.1');
+  exec.withArgs('git rev-list 2.0.1 --tags --max-count=1').resolves('b123456');
+  exec.withArgs('git describe --tags --abbrev=0 "b123456^"').resolves('2.0.1');
 
   interceptAuthentication();
   interceptCollaborator();
