@@ -321,7 +321,7 @@ While mostly used as a CLI tool, release-it can be used as a dependency to integ
 - [blockchain/blockchain-wallet-v4-frontend](https://github.com/blockchain/blockchain-wallet-v4-frontend)
 - [callstack/linaria](https://github.com/callstack/linaria)
 - [ember-cli/ember-cli](https://github.com/ember-cli/ember-cli)
-  [react-native-paper](https://github.com/callstack/react-native-paper)
+- [react-native-paper](https://github.com/callstack/react-native-paper)
 - [js-cookie/js-cookie](https://github.com/js-cookie/js-cookie)
 - [mirumee/saleor](https://github.com/mirumee/saleor)
 - [mozilla/readability](https://github.com/mozilla/readability)
