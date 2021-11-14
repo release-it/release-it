@@ -397,6 +397,47 @@ test.serial('should propagate errors', async t => {
   t.is(log.error.callCount, 1);
 });
 
+test.serial('should use custom changelog command with context', async t => {
+  const { bare } = t.context;
+  const project = path.basename(bare);
+  const owner = path.basename(path.dirname(bare));
+  sh.exec('git tag v1.0.0');
+  gitAdd('line', 'file', 'More file');
+
+  interceptGitHubAuthentication();
+  interceptGitHubCollaborator({ owner, project });
+  interceptGitHubCreate({
+    owner,
+    project,
+    body: {
+      tag_name: 'v1.1.0',
+      name: 'Release 1.1.0',
+      body: 'custom-changelog-generator --from=v1.0.0 --to=v1.1.0',
+      draft: false,
+      prerelease: false
+    }
+  });
+
+  const container = getContainer({
+    increment: 'minor',
+    github: {
+      release: true,
+      releaseNotes: 'echo custom-changelog-generator --from=${latestTag} --to=${tagName}',
+      pushRepo: `https://github.com/${owner}/${project}`
+    }
+  });
+
+  const exec = sinon.spy(container.shell, 'execStringCommand');
+
+  await runTasks({}, container);
+
+  const command = exec.args.find(([command]) => command.includes('custom-changelog-generator'));
+
+  t.is(command[0], 'echo custom-changelog-generator --from=v1.0.0 --to=v1.1.0');
+
+  exec.restore();
+});
+
 {
   class MyPlugin extends Plugin {}
   const statics = { isEnabled: () => true, disablePlugin: () => null };

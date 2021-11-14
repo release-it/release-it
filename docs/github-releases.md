@@ -70,7 +70,7 @@ An example:
 {
   "github": {
     "release": true,
-    "releaseNotes": "generate-release-notes.sh ${latestVersion} ${version}"
+    "releaseNotes": "generate-release-notes.sh --from=${latestTag} --to=${tagName}"
   }
 }
 ```
