@@ -56,7 +56,7 @@ module.exports.runTasks = async plugin => {
 
   const name = (await plugin.getName()) || '__test__';
   const latestVersion = (await plugin.getLatestVersion()) || '1.0.0';
-  const changelog = (await plugin.getChangelog(latestVersion)) || null;
+  const changelog = (await plugin.getChangelog()) || null;
   const increment = getIncrement(plugin, { latestVersion });
 
   plugin.config.setContext({ name, latestVersion, latestTag: latestVersion, changelog });
