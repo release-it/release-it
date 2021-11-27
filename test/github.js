@@ -359,7 +359,6 @@ test('should skip checks', async t => {
 
 test('should generate GitHub web release url', async t => {
   const options = {
-    git,
     github: {
       pushRepo,
       release: true,
@@ -379,6 +378,32 @@ test('should generate GitHub web release url', async t => {
   t.is(
     releaseUrl,
     'https://github.com/user/repo/releases/new?tag=2.0.2&title=Release+2.0.2&body=Custom+notes&prerelease=false'
+  );
+  exec.restore();
+});
+
+test('should generate GitHub web release url for enterprise host', async t => {
+  const options = {
+    github: {
+      pushRepo: 'git://my-custom-host.org:user/repo',
+      release: true,
+      web: true,
+      host: 'my-custom-host.org',
+      releaseName: 'The Launch',
+      releaseNotes: 'echo It happened'
+    }
+  };
+  const github = factory(GitHub, { options });
+  const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
+
+  await runTasks(github);
+
+  const { isReleased, releaseUrl } = github.getContext();
+  t.true(isReleased);
+  t.is(
+    releaseUrl,
+    'https://my-custom-host.org/user/repo/releases/new?tag=2.0.2&title=The+Launch&body=It+happened&prerelease=false'
   );
   exec.restore();
 });
