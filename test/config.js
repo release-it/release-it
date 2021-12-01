@@ -1,5 +1,6 @@
 import test from 'ava';
 import mock from 'mock-fs';
+import isCI from 'is-ci';
 import Config from '../lib/config.js';
 import { readJSON } from '../lib/util.js';
 
@@ -44,8 +45,7 @@ test('should set CI mode', t => {
   t.is(config.isCI, true);
 });
 
-test('should detect CI mode', async t => {
-  const { default: isCI } = await import('is-ci');
+test('should detect CI mode', t => {
   const config = new Config();
   t.is(config.options.ci, isCI);
   t.is(config.isCI, isCI);
