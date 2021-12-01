@@ -56,6 +56,7 @@ test('should release and upload assets', async t => {
   };
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git log --pretty=format:"* %s (%h)" ${from}...${to}').resolves('');
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
 
   interceptAuthentication();
@@ -85,6 +86,7 @@ test('should create a pre-release and draft release notes', async t => {
   };
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git log --pretty=format:"* %s (%h)" ${from}...${to}').resolves('');
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
 
   interceptAuthentication();
@@ -116,6 +118,7 @@ test('should update release and upload assets', async t => {
   };
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git log --pretty=format:"* %s (%h)" ${from}...${to}').resolves('');
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
   exec.withArgs('git rev-list 2.0.1 --tags --max-count=1').resolves('a123456');
   exec.withArgs('git describe --tags --abbrev=0 "a123456^"').resolves('2.0.1');
@@ -149,6 +152,7 @@ test('should create new release for unreleased tag', async t => {
   };
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git log --pretty=format:"* %s (%h)" ${from}...${to}').resolves('');
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
   exec.withArgs('git rev-list 2.0.1 --tags --max-count=1').resolves('b123456');
   exec.withArgs('git describe --tags --abbrev=0 "b123456^"').resolves('2.0.1');
@@ -202,6 +206,7 @@ test('should release to alternative host and proxy', async t => {
   };
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git log --pretty=format:"* %s (%h)" ${from}...${to}').resolves('');
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('1.0.0');
 
   await runTasks(github);
@@ -218,6 +223,7 @@ test('should release to git.pushRepo', async t => {
   const options = { git: { pushRepo: 'upstream', changelog: null }, github: { tokenRef, skipChecks: true } };
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git log --pretty=format:"* %s (%h)" ${from}...${to}').resolves('');
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('1.0.0');
   exec.withArgs('git remote get-url upstream').resolves('https://my-custom-host.org/user/repo');
 
@@ -316,6 +322,7 @@ test('should not call octokit client in dry run', async t => {
   const github = factory(GitHub, { options });
   const spy = sinon.spy(github, 'client', ['get']);
   const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git log --pretty=format:"* %s (%h)" ${from}...${to}').resolves('');
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('v1.0.0');
 
   await runTasks(github);
@@ -348,6 +355,7 @@ test('should generate GitHub web release url', async t => {
   };
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git log --pretty=format:"* %s (%h)" ${from}...${to}').resolves('');
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
 
   await runTasks(github);
@@ -374,6 +382,7 @@ test('should generate GitHub web release url for enterprise host', async t => {
   };
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git log --pretty=format:"* %s (%h)" ${from}...${to}').resolves('');
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
 
   await runTasks(github);
