@@ -18,20 +18,28 @@ const host = 'github.com';
 const git = { changelog: null };
 const requestErrorOptions = { request: { url: '', headers: {} }, response: { headers: {} } };
 
-test.serial('should validate token', async t => {
+test.serial('should check token and perform checks', async t => {
   const tokenRef = 'MY_GITHUB_TOKEN';
   const options = { github: { release: true, tokenRef, pushRepo } };
   const github = factory(GitHub, { options });
-  delete process.env[tokenRef];
 
-  await t.throwsAsync(github.init(), {
-    message: /^Environment variable "MY_GITHUB_TOKEN" is required for GitHub releases/
-  });
   process.env[tokenRef] = '123'; // eslint-disable-line require-atomic-updates
 
   interceptAuthentication();
   interceptCollaborator();
   await t.notThrowsAsync(github.init());
+});
+
+test.serial('should check token and warn', async t => {
+  const tokenRef = 'MY_GITHUB_TOKEN';
+  const options = { github: { release: true, tokenRef, pushRepo } };
+  const github = factory(GitHub, { options });
+  delete process.env[tokenRef];
+
+  await t.notThrowsAsync(github.init());
+
+  t.is(github.log.warn.args[0][0], 'Environment variable "MY_GITHUB_TOKEN" is required for automated GitHub Releases.');
+  t.is(github.log.warn.args[1][0], 'Falling back to web-based GitHub Release.');
 });
 
 test('should release and upload assets', async t => {
@@ -109,8 +117,8 @@ test('should update release and upload assets', async t => {
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
-  exec.withArgs('git rev-list 2.0.1 --tags --max-count=1').resolves('71f1812');
-  exec.withArgs('git describe --tags --match=* --abbrev=0 71f1812').resolves('2.0.1');
+  exec.withArgs('git rev-list 2.0.1 --tags --max-count=1').resolves('a123456');
+  exec.withArgs('git describe --tags --abbrev=0 "a123456^"').resolves('2.0.1');
 
   interceptAuthentication();
   interceptCollaborator();
@@ -142,8 +150,8 @@ test('should create new release for unreleased tag', async t => {
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
-  exec.withArgs('git rev-list 2.0.1 --tags --max-count=1').resolves('71f1812');
-  exec.withArgs('git describe --tags --match=* --abbrev=0 71f1812').resolves('2.0.1');
+  exec.withArgs('git rev-list 2.0.1 --tags --max-count=1').resolves('b123456');
+  exec.withArgs('git describe --tags --abbrev=0 "b123456^"').resolves('2.0.1');
 
   interceptAuthentication();
   interceptCollaborator();
@@ -326,4 +334,55 @@ test('should skip checks', async t => {
   const options = { github: { tokenRef, skipChecks: true } };
   const github = factory(GitHub, { options });
   await t.notThrowsAsync(github.init());
+});
+
+test('should generate GitHub web release url', async t => {
+  const options = {
+    github: {
+      pushRepo,
+      release: true,
+      web: true,
+      releaseName: 'Release ${tagName}',
+      releaseNotes: 'echo Custom notes'
+    }
+  };
+  const github = factory(GitHub, { options });
+  const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
+
+  await runTasks(github);
+
+  const { isReleased, releaseUrl } = github.getContext();
+  t.true(isReleased);
+  t.is(
+    releaseUrl,
+    'https://github.com/user/repo/releases/new?tag=2.0.2&title=Release+2.0.2&body=Custom+notes&prerelease=false'
+  );
+  exec.restore();
+});
+
+test('should generate GitHub web release url for enterprise host', async t => {
+  const options = {
+    github: {
+      pushRepo: 'git://my-custom-host.org:user/repo',
+      release: true,
+      web: true,
+      host: 'my-custom-host.org',
+      releaseName: 'The Launch',
+      releaseNotes: 'echo It happened'
+    }
+  };
+  const github = factory(GitHub, { options });
+  const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
+
+  await runTasks(github);
+
+  const { isReleased, releaseUrl } = github.getContext();
+  t.true(isReleased);
+  t.is(
+    releaseUrl,
+    'https://my-custom-host.org/user/repo/releases/new?tag=2.0.2&title=The+Launch&body=It+happened&prerelease=false'
+  );
+  exec.restore();
 });

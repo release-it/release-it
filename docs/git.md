@@ -156,5 +156,5 @@ In case you need even more customizations, here is some inspiration:
 }
 ```
 
-Since the `after:git:release` hook runs after the Git commands, the `git.push` can be disabled, and replaced by a custom
+Since the `after:release` hook runs after the Git commands, the `git.push` can be disabled, and replaced by a custom
 script.

@@ -69,6 +69,19 @@ In order to publish a scoped package to the public registry, specify this at the
 
 The default value for private packages is `"restricted"`.
 
+## Publish to private registry
+
+The default registry is https://registry.npmjs.org. The publish to another registry, update or set the `publishConfig`
+in `package.json`. For example:
+
+```json
+{
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}
+```
+
 ## Two-factor authentication
 
 In case two-factor authentication (2FA) is enabled for the package, release-it will ask for the one-time password (OTP).
