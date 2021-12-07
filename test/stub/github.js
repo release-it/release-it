@@ -40,10 +40,10 @@ const interceptCreate = ({
   host = 'github.com',
   owner = 'user',
   project = 'repo',
-  body: { tag_name, name = '', body = null, prerelease = false, draft = false }
+  body: { tag_name, name = '', body = null, prerelease = false, draft = false, generate_release_notes = undefined }
 } = {}) =>
   nock(api)
-    .post(`/repos/${owner}/${project}/releases`, { tag_name, name, body, prerelease, draft })
+    .post(`/repos/${owner}/${project}/releases`, { tag_name, name, body, prerelease, draft, generate_release_notes })
     .reply(() => {
       const id = 1;
       const responseBody = {
@@ -53,6 +53,7 @@ const interceptCreate = ({
         body,
         prerelease,
         draft,
+        generate_release_notes,
         upload_url: `https://uploads.${host}/repos/${owner}/${project}/releases/${id}/assets{?name,label}`,
         html_url: `https://${host}/${owner}/${project}/releases/tag/${tag_name}`
       };
