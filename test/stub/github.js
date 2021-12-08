@@ -40,7 +40,7 @@ const interceptCreate = ({
   host = 'github.com',
   owner = 'user',
   project = 'repo',
-  body: { tag_name, name = '', body = null, prerelease = false, draft = false, generate_release_notes = undefined }
+  body: { tag_name, name = '', body = null, prerelease = false, draft = false, generate_release_notes }
 } = {}) =>
   nock(api)
     .post(`/repos/${owner}/${project}/releases`, { tag_name, name, body, prerelease, draft, generate_release_notes })
