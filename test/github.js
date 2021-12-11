@@ -99,6 +99,33 @@ test('should create a pre-release and draft release notes', async t => {
   exec.restore();
 });
 
+test('should create auto generated release notes', async t => {
+  const options = {
+    git,
+    github: {
+      pushRepo,
+      tokenRef,
+      release: true,
+      releaseName: 'Release ${tagName}',
+      autoGenerate: true
+    }
+  };
+  const github = factory(GitHub, { options });
+  const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
+
+  interceptAuthentication();
+  interceptCollaborator();
+  interceptCreate({ body: { tag_name: '2.0.2', name: 'Release 2.0.2', draft: false, prerelease: false, generate_release_notes: true } });
+
+  await runTasks(github);
+
+  const { isReleased, releaseUrl } = github.getContext();
+  t.true(isReleased);
+  t.is(releaseUrl, 'https://github.com/user/repo/releases/tag/2.0.2');
+  exec.restore();
+});
+
 test('should update release and upload assets', async t => {
   const asset = 'file1';
   const options = {
