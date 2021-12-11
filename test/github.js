@@ -116,7 +116,9 @@ test('should create auto generated release notes', async t => {
 
   interceptAuthentication();
   interceptCollaborator();
-  interceptCreate({ body: { tag_name: '2.0.2', name: 'Release 2.0.2', draft: false, prerelease: false, generate_release_notes: true } });
+  interceptCreate({
+    body: { tag_name: '2.0.2', name: 'Release 2.0.2', draft: false, prerelease: false, generate_release_notes: true }
+  });
 
   await runTasks(github);
 

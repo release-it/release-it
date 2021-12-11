@@ -75,6 +75,8 @@ An example:
 }
 ```
 
+Use `--github.autoGenerate` to have GitHub auto-generate the release notes.
+
 See [Changelog](./changelog.md) for more information about generating changelogs/release notes.
 
 ## Attach binary assets

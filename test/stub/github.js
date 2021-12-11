@@ -40,10 +40,17 @@ const interceptCreate = ({
   host = 'github.com',
   owner = 'user',
   project = 'repo',
-  body: { tag_name, name = '', body = null, prerelease = false, draft = false, generate_release_notes }
+  body: { tag_name, name = '', body = null, prerelease = false, draft = false, generate_release_notes = false }
 } = {}) =>
   nock(api)
-    .post(`/repos/${owner}/${project}/releases`, { tag_name, name, body, prerelease, draft, generate_release_notes })
+    .post(`/repos/${owner}/${project}/releases`, {
+      tag_name,
+      name,
+      body,
+      prerelease,
+      draft,
+      generate_release_notes
+    })
     .reply(() => {
       const id = 1;
       const responseBody = {
@@ -65,10 +72,10 @@ const interceptUpdate = ({
   api = 'https://api.github.com',
   owner = 'user',
   project = 'repo',
-  body: { tag_name, name = '', body = null, prerelease = false, draft = false }
+  body: { tag_name, name = '', body = null, prerelease = false, draft = false, generate_release_notes = false }
 } = {}) =>
   nock(api)
-    .patch(`/repos/${owner}/${project}/releases/1`, { tag_name, name, body, draft, prerelease })
+    .patch(`/repos/${owner}/${project}/releases/1`, { tag_name, name, body, draft, prerelease, generate_release_notes })
     .reply(200, {
       id: 1,
       tag_name,
@@ -76,6 +83,7 @@ const interceptUpdate = ({
       body,
       prerelease,
       draft,
+      generate_release_notes,
       upload_url: `https://uploads.${host}/repos/${owner}/${project}/releases/1/assets{?name,label}`,
       html_url: `https://${host}/${owner}/${project}/releases/tag/${tag_name}`
     });
