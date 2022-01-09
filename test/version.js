@@ -148,17 +148,22 @@ test('should run tasks without errors', async t => {
   await runTasks(v);
 
   t.is(getIncrement.callCount, 1);
-  t.deepEqual(getIncrement.firstCall.args[0], {
+  t.deepEqual(getIncrement.firstCall.args[0], { increment: 'minor' });
+  t.is(getIncrementedVersionCI.callCount, 1);
+  t.deepEqual(getIncrementedVersionCI.firstCall.args[0], {
     latestVersion: '1.0.0',
     increment: 'minor',
     isPreRelease: false,
     preReleaseId: null
   });
-  t.is(getIncrementedVersionCI.callCount, 1);
-  t.deepEqual(getIncrementedVersionCI.firstCall.args[0], { latestVersion: '1.0.0', increment: 'minor' });
   t.is(await incrementVersion.firstCall.returnValue, '1.1.0');
   t.is(incrementVersion.callCount, 1);
-  t.deepEqual(incrementVersion.firstCall.args[0], { latestVersion: '1.0.0', increment: 'minor' });
+  t.deepEqual(incrementVersion.firstCall.args[0], {
+    latestVersion: '1.0.0',
+    increment: 'minor',
+    isPreRelease: false,
+    preReleaseId: null
+  });
   t.is(incrementVersion.firstCall.returnValue, '1.1.0');
   const { latestVersion, version, isPreRelease, preReleaseId } = v.config.getContext();
   t.is(latestVersion, '1.0.0');

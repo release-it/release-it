@@ -33,10 +33,11 @@ module.exports.factory = (Definition, { namespace, options = {}, container = {} 
 const getIncrement = plugin =>
   plugin.getIncrement(plugin.options) || plugin.getContext('increment') || plugin.config.getContext('increment');
 
-const getVersion = async (plugin, { latestVersion, increment }) => {
+const getVersion = async (plugin, options) => {
+  const { latestVersion, increment } = options;
   return (
-    (await plugin.getIncrementedVersionCI({ latestVersion, increment })) ||
-    (await plugin.getIncrementedVersion({ latestVersion, increment })) ||
+    (await plugin.getIncrementedVersionCI(options)) ||
+    (await plugin.getIncrementedVersion(options)) ||
     (increment !== false ? semver.inc(latestVersion, increment || 'patch') : latestVersion)
   );
 };
@@ -51,7 +52,10 @@ module.exports.runTasks = async plugin => {
 
   plugin.config.setContext({ name, latestVersion, latestTag: latestVersion, changelog });
 
-  const version = await getVersion(plugin, { latestVersion, increment });
+  const { preRelease } = plugin.config.options;
+  const isPreRelease = Boolean(preRelease);
+  const preReleaseId = typeof preRelease === 'string' ? preRelease : null;
+  const version = await getVersion(plugin, { latestVersion, increment, isPreRelease, preReleaseId });
 
   plugin.config.setContext(parseVersion(version));
 
