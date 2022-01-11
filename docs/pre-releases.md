@@ -13,7 +13,7 @@ release-it major --preRelease=beta
 
 This will tag and release version `2.0.0-beta.0`. Notes:
 
-- A normal installation of `awesome-pkg` will still be at version 1.3.0.
+- A normal `npm install` of `awesome-pkg` will still be at version 1.3.0.
 - The [npm tag](https://docs.npmjs.com/cli/dist-tag) will be "beta", install it using `npm install awesome-pkg@beta`
 - A GitHub release will be marked as a "Pre-release".
 
@@ -42,6 +42,13 @@ release-it major
 ```
 
 <img src="./assets/release-it-prerelease.gif?raw=true" height="524">
+
+Let's go back to when the latest release was `2.0.0-rc.0`. We added new features, which we don't want in the v2 release
+yet, but instead in a later v2.1. A new pre-release id can be made for the minor release after in `2.1.0-alpha.0`:
+
+```bash
+release-it preminor --preRelease=alpha
+```
 
 Notes:
 
