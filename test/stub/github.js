@@ -40,7 +40,7 @@ const interceptCreate = ({
   host = 'github.com',
   owner = 'user',
   project = 'repo',
-  body: { tag_name, name = '', body = null, prerelease = false, draft = false, generate_release_notes = false }
+  body: { tag_name, name = '', body = '', prerelease = false, draft = false, generate_release_notes = false }
 } = {}) =>
   nock(api)
     .post(`/repos/${owner}/${project}/releases`, {
@@ -72,7 +72,7 @@ const interceptUpdate = ({
   api = 'https://api.github.com',
   owner = 'user',
   project = 'repo',
-  body: { tag_name, name = '', body = null, prerelease = false, draft = false, generate_release_notes = false }
+  body: { tag_name, name = '', body = '', prerelease = false, draft = false, generate_release_notes = false }
 } = {}) =>
   nock(api)
     .patch(`/repos/${owner}/${project}/releases/1`, { tag_name, name, body, draft, prerelease, generate_release_notes })
