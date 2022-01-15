@@ -141,7 +141,7 @@ By default, release-it does not check the number of commits upfront to prevent "
 
 Also see the [Require Commits](./recipes/require-commits.md) recipe(s).
 
-## Further custimizations
+## Further customizations
 
 In case you need even more customizations, here is some inspiration:
 
