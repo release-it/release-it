@@ -19,7 +19,6 @@ system, and hooks to execute any command you need to test, build, and/or publish
 
 [![Action Status](https://github.com/release-it/release-it/workflows/Cross-OS%20Tests/badge.svg)](https://github.com/release-it/release-it/actions)
 [![npm version](https://badge.fury.io/js/release-it.svg)](https://www.npmjs.com/package/release-it)
-[![codecov](https://codecov.io/gh/release-it/release-it/branch/master/graph/badge.svg)](https://codecov.io/gh/release-it/release-it)
 
 ## Links
 
