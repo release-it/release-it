@@ -1,4 +1,4 @@
-# External depdencies & APIs
+# External dependencies & APIs
 
 ## GitHub
 

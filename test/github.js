@@ -15,7 +15,7 @@ import {
 const tokenRef = 'GITHUB_TOKEN';
 const pushRepo = 'git://github.com:user/repo';
 const host = 'github.com';
-const git = { changelog: null };
+const git = { changelog: '' };
 const requestErrorOptions = { request: { url: '', headers: {} }, response: { headers: {} } };
 
 test.serial('should check token and perform checks', async t => {
@@ -91,7 +91,36 @@ test('should create a pre-release and draft release notes', async t => {
 
   interceptAuthentication();
   interceptCollaborator();
-  interceptCreate({ body: { tag_name: '2.0.2', name: 'Release 2.0.2', body: null, prerelease: true, draft: true } });
+  interceptCreate({ body: { tag_name: '2.0.2', name: 'Release 2.0.2', body: '', prerelease: true, draft: true } });
+
+  await runTasks(github);
+
+  const { isReleased, releaseUrl } = github.getContext();
+  t.true(isReleased);
+  t.is(releaseUrl, 'https://github.com/user/repo/releases/tag/2.0.2');
+  exec.restore();
+});
+
+test('should create auto generated release notes', async t => {
+  const options = {
+    git,
+    github: {
+      pushRepo,
+      tokenRef,
+      release: true,
+      releaseName: 'Release ${tagName}',
+      autoGenerate: true
+    }
+  };
+  const github = factory(GitHub, { options });
+  const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
+
+  interceptAuthentication();
+  interceptCollaborator();
+  interceptCreate({
+    body: { tag_name: '2.0.2', name: 'Release 2.0.2', draft: false, prerelease: false, generate_release_notes: true }
+  });
 
   await runTasks(github);
 
@@ -220,7 +249,7 @@ test('should release to alternative host and proxy', async t => {
 test('should release to git.pushRepo', async t => {
   const remote = { api: 'https://my-custom-host.org/api/v3', host: 'my-custom-host.org' };
   interceptCreate(Object.assign({ body: { tag_name: '1.0.1' } }, remote));
-  const options = { git: { pushRepo: 'upstream', changelog: null }, github: { tokenRef, skipChecks: true } };
+  const options = { git: { pushRepo: 'upstream', changelog: '' }, github: { tokenRef, skipChecks: true } };
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
   exec.withArgs('git log --pretty=format:"* %s (%h)" ${from}...${to}').resolves('');
@@ -371,6 +400,7 @@ test('should generate GitHub web release url', async t => {
 
 test('should generate GitHub web release url for enterprise host', async t => {
   const options = {
+    git,
     github: {
       pushRepo: 'git://my-custom-host.org:user/repo',
       release: true,

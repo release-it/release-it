@@ -1,16 +1,19 @@
 import nock from 'nock';
 
-const interceptAuthentication = ({ api = 'https://api.github.com', username = 'john' } = {}) =>
+const interceptAuthentication = ({ api = 'https://api.github.com', username = 'john' } = {}) => {
   nock(api).get('/user').reply(200, {
     login: username
   });
+};
 
 const interceptCollaborator = ({
   api = 'https://api.github.com',
   owner = 'user',
   project = 'repo',
   username = 'john'
-} = {}) => nock(api).get(`/repos/${owner}/${project}/collaborators/${username}`).reply(204);
+} = {}) => {
+  nock(api).get(`/repos/${owner}/${project}/collaborators/${username}`).reply(204);
+};
 
 const interceptListReleases = ({
   host = 'github.com',
@@ -18,7 +21,7 @@ const interceptListReleases = ({
   owner = 'user',
   project = 'repo',
   tag_name
-} = {}) =>
+} = {}) => {
   nock(api)
     .get(`/repos/${owner}/${project}/releases?per_page=1&page=1`)
     .reply(200, [
@@ -34,16 +37,24 @@ const interceptListReleases = ({
         prerelease: false
       }
     ]);
+};
 
 const interceptCreate = ({
   api = 'https://api.github.com',
   host = 'github.com',
   owner = 'user',
   project = 'repo',
-  body: { tag_name, name = '', body = null, prerelease = false, draft = false }
-} = {}) =>
+  body: { tag_name, name = '', body = '', prerelease = false, draft = false, generate_release_notes = false }
+} = {}) => {
   nock(api)
-    .post(`/repos/${owner}/${project}/releases`, { tag_name, name, body, prerelease, draft })
+    .post(`/repos/${owner}/${project}/releases`, {
+      tag_name,
+      name,
+      body,
+      prerelease,
+      draft,
+      generate_release_notes
+    })
     .reply(() => {
       const id = 1;
       const responseBody = {
@@ -53,21 +64,23 @@ const interceptCreate = ({
         body,
         prerelease,
         draft,
+        generate_release_notes,
         upload_url: `https://uploads.${host}/repos/${owner}/${project}/releases/${id}/assets{?name,label}`,
         html_url: `https://${host}/${owner}/${project}/releases/tag/${tag_name}`
       };
       return [200, responseBody, { location: `${api}/repos/${owner}/${project}/releases/${id}` }];
     });
+};
 
 const interceptUpdate = ({
   host = 'github.com',
   api = 'https://api.github.com',
   owner = 'user',
   project = 'repo',
-  body: { tag_name, name = '', body = null, prerelease = false, draft = false }
-} = {}) =>
+  body: { tag_name, name = '', body = '', prerelease = false, draft = false, generate_release_notes = false }
+} = {}) => {
   nock(api)
-    .patch(`/repos/${owner}/${project}/releases/1`, { tag_name, name, body, draft, prerelease })
+    .patch(`/repos/${owner}/${project}/releases/1`, { tag_name, name, body, draft, prerelease, generate_release_notes })
     .reply(200, {
       id: 1,
       tag_name,
@@ -75,9 +88,11 @@ const interceptUpdate = ({
       body,
       prerelease,
       draft,
+      generate_release_notes,
       upload_url: `https://uploads.${host}/repos/${owner}/${project}/releases/1/assets{?name,label}`,
       html_url: `https://${host}/${owner}/${project}/releases/tag/${tag_name}`
     });
+};
 
 const interceptAsset = ({
   api = 'https://api.github.com',
@@ -86,7 +101,7 @@ const interceptAsset = ({
   project = 'repo',
   tagName,
   body = {}
-} = {}) =>
+} = {}) => {
   nock(`https://uploads.${host}`)
     .post(`/repos/${owner}/${project}/releases/1/assets`, body)
     .query(true)
@@ -103,6 +118,7 @@ const interceptAsset = ({
         browser_download_url: `https://${host}/${owner}/${project}/releases/download/${tagName}/${name}`
       };
     });
+};
 
 export {
   interceptAuthentication,

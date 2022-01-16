@@ -33,6 +33,7 @@
     "release": false,
     "releaseName": "Release ${version}",
     "releaseNotes": null,
+    "autoGenerate": false,
     "preRelease": false,
     "draft": false,
     "tokenRef": "GITHUB_TOKEN",
