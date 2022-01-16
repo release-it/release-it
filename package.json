@@ -61,7 +61,6 @@
     "chalk": "4.1.2",
     "cosmiconfig": "7.0.1",
     "debug": "4.3.3",
-    "deprecated-obj": "2.0.0",
     "execa": "5.1.1",
     "form-data": "4.0.0",
     "git-url-parse": "11.6.0",
