@@ -89,7 +89,7 @@ test('should create a pre-release and draft release notes', async t => {
 
   interceptAuthentication();
   interceptCollaborator();
-  interceptCreate({ body: { tag_name: '2.0.2', name: 'Release 2.0.2', body: '', prerelease: true, draft: true } });
+  interceptCreate({ body: { tag_name: '2.0.2', name: 'Release 2.0.2', prerelease: true, draft: true } });
 
   await runTasks(github);
 
@@ -99,7 +99,7 @@ test('should create a pre-release and draft release notes', async t => {
   exec.restore();
 });
 
-test('should create auto generated release notes', async t => {
+test('should create auto-generated release notes', async t => {
   const options = {
     git,
     github: {
@@ -116,9 +116,7 @@ test('should create auto generated release notes', async t => {
 
   interceptAuthentication();
   interceptCollaborator();
-  interceptCreate({
-    body: { tag_name: '2.0.2', name: 'Release 2.0.2', draft: false, prerelease: false, generate_release_notes: true }
-  });
+  interceptCreate({ body: { tag_name: '2.0.2', name: 'Release 2.0.2', generate_release_notes: true, body: '' } });
 
   await runTasks(github);
 
