@@ -323,7 +323,7 @@ While mostly used as a CLI tool, release-it can be used as a dependency to integ
 - [metalsmith/metalsmith](https://github.com/metalsmith/metalsmith)
 - [react-native-paper](https://github.com/callstack/react-native-paper)
 - [js-cookie/js-cookie](https://github.com/js-cookie/js-cookie)
-- [mirumee/saleor](https://github.com/mirumee/saleor)
+- [saleor/saleor](https://github.com/saleor/saleor)
 - [mozilla/readability](https://github.com/mozilla/readability)
 - [redis/node-redis](https://github.com/redis/node-redis)
 - [shipshapecode/shepherd](https://github.com/shipshapecode/shepherd)
