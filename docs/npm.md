@@ -96,7 +96,8 @@ value is the current (root) folder (`"."`).
 
 ## Allow same version
 
-Use `npm.allowSameVersion` to prevent throwing error when setting the new version to the same value as the current version.
+Use `npm.allowSameVersion` to prevent throwing error when setting the new version to the same value as the current
+version.
 
 ## Monorepos
 

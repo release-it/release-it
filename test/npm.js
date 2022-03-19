@@ -349,3 +349,12 @@ test('should not publish when `npm version` fails', async t => {
 
   exec.restore();
 });
+
+test('should add allow-same-version argument', async t => {
+  const options = { npm: { skipChecks: true, allowSameVersion: true } };
+  const npmClient = factory(npm, { options });
+  const exec = sinon.stub(npmClient.shell, 'exec').resolves();
+  await runTasks(npmClient);
+  const version = exec.args.filter(arg => arg[0].startsWith('npm version'));
+  t.regex(version[0][0], / --allow-same-version/);
+});
