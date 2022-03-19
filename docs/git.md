@@ -96,7 +96,7 @@ This is disabled by default, but release-it can exit the process when the curren
 }
 ```
 
-Use an array to allow releases from more branch names.
+Use an array to allow releases from more branch names. Wildcards are also allowed (e.g. `release/*`).
 
 ### Clean working directory
 
