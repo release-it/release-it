@@ -13,9 +13,9 @@ test('should return npm package url', t => {
 });
 
 test('should return npm package url (custom registry)', t => {
-  const options = { npm: { name: 'my-cool-package', publishConfig: { registry: 'https://my-registry.com/' } } };
+  const options = { npm: { name: 'my-cool-package', publishConfig: { registry: 'https://registry.example.org/' } } };
   const npmClient = factory(npm, { options });
-  t.is(npmClient.getPackageUrl(), 'https://my-registry.com/package/my-cool-package');
+  t.is(npmClient.getPackageUrl(), 'https://registry.example.org/package/my-cool-package');
 });
 
 test('should return default tag', async t => {

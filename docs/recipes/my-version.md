@@ -54,7 +54,7 @@ class MyVersionPlugin extends Plugin {
     if (this.isReleased) {
       const name = this.getPackageName();
       const { version } = this.getContext();
-      this.log.log(`🔗 https://example.package-manager.org/${name}/${version}`);
+      this.log.log(`🔗 https://registry.example.org/${name}/${version}`);
     }
   }
 }

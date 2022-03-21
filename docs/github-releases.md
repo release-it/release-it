@@ -107,8 +107,8 @@ In case the release should not be made public yet, set `github.draft: true`.
 
 Use a different host from what would be derived from the Git url (e.g. when using GitHub Enterprise).
 
-By default, the GitHub API host is https://api.github.com. Setting `github.host` to `"private.source.com"` would result
-in release-it using https://private.source.com/api/v3.
+By default, the GitHub API host is https://api.github.com. Setting `github.host` to `"private.example.org"` would result
+in release-it using https://private.example.org/api/v3.
 
 ## Proxy
 
