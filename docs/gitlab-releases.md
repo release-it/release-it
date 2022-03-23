@@ -40,6 +40,20 @@ An example:
 
 See [Changelog](./changelog.md) for more information about generating changelogs/release notes.
 
+## Milestones
+
+To associate one or more milestones with a GitLab release, set the `gitlab.milestones` option to an array of the
+titles of the corresponding milestones, for example:
+
+```json
+{
+  "gitlab": {
+    "release": true,
+    "milestones": ["${version}"]
+  }
+}
+```
+
 ## Attach binary assets
 
 To upload binary release assets with a GitLab release (such as compiled executables, minified scripts, documentation),

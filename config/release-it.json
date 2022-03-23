@@ -49,6 +49,7 @@
     "release": false,
     "releaseName": "Release ${version}",
     "releaseNotes": null,
+    "milestones": [],
     "tokenRef": "GITLAB_TOKEN",
     "tokenHeader": "Private-Token",
     "certificateAuthorityFile": null,

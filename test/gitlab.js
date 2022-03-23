@@ -55,7 +55,8 @@ test.serial('should upload assets and release', async t => {
       release: true,
       releaseName: 'Release ${version}',
       releaseNotes: 'echo Custom notes',
-      assets: 'test/resources/file-v${version}.txt'
+      assets: 'test/resources/file-v${version}.txt',
+      milestones: ['${version}', '${latestVersion} UAT']
     }
   };
   const gitlab = factory(GitLab, { options });
@@ -76,7 +77,8 @@ test.serial('should upload assets and release', async t => {
             url: `${pushRepo}/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/file-v2.0.1.txt`
           }
         ]
-      }
+      },
+      milestones: ['2.0.1', '2.0.0 UAT']
     }
   });
 
