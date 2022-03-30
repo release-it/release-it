@@ -54,6 +54,9 @@ titles of the corresponding milestones, for example:
 }
 ```
 
+Note that creating a GitLab release will fail if one of the given milestones does not exist. release-it will check this
+before doing the release. To skip this check, use `gitlab.skipChecks`.
+
 ## Attach binary assets
 
 To upload binary release assets with a GitLab release (such as compiled executables, minified scripts, documentation),

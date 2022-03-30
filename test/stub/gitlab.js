@@ -19,6 +19,22 @@ module.exports.interceptCollaboratorFallback = (
     .get(`/api/v4/projects/${group ? `${group}%2F` : ''}${owner}%2F${project}/members/${userId}`)
     .reply(200, { id: userId, username: owner, access_level: 30 });
 
+module.exports.interceptMilestones = (
+  { host = 'https://gitlab.com', owner = 'user', project = 'repo', query = {}, milestones = [] } = {},
+  options
+) =>
+  nock(host, options)
+    .get(`/api/v4/projects/${owner}%2F${project}/milestones`)
+    .query(
+      Object.assign(
+        {
+          include_parent_milestones: true
+        },
+        query
+      )
+    )
+    .reply(200, JSON.stringify(milestones));
+
 module.exports.interceptPublish = (
   { host = 'https://gitlab.com', owner = 'user', project = 'repo', body } = {},
   options
