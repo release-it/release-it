@@ -7,7 +7,8 @@ const {
   interceptCollaborator,
   interceptCollaboratorFallback,
   interceptPublish,
-  interceptAsset
+  interceptAsset,
+  interceptMilestones
 } = require('./stub/gitlab');
 const { factory, runTasks } = require('./util');
 
@@ -55,7 +56,8 @@ test.serial('should upload assets and release', async t => {
       release: true,
       releaseName: 'Release ${version}',
       releaseNotes: 'echo Custom notes',
-      assets: 'test/resources/file-v${version}.txt'
+      assets: 'test/resources/file-v${version}.txt',
+      milestones: ['${version}', '${latestVersion} UAT']
     }
   };
   const gitlab = factory(GitLab, { options });
@@ -63,6 +65,26 @@ test.serial('should upload assets and release', async t => {
 
   interceptUser();
   interceptCollaborator();
+  interceptMilestones({
+    query: { title: '2.0.1' },
+    milestones: [
+      {
+        id: 17,
+        iid: 3,
+        title: '2.0.1'
+      }
+    ]
+  });
+  interceptMilestones({
+    query: { title: '2.0.0 UAT' },
+    milestones: [
+      {
+        id: 42,
+        iid: 4,
+        title: '2.0.0 UAT'
+      }
+    ]
+  });
   interceptAsset();
   interceptPublish({
     body: {
@@ -76,7 +98,8 @@ test.serial('should upload assets and release', async t => {
             url: `${pushRepo}/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/file-v2.0.1.txt`
           }
         ]
-      }
+      },
+      milestones: ['2.0.1', '2.0.0 UAT']
     }
   });
 
@@ -86,6 +109,41 @@ test.serial('should upload assets and release', async t => {
   const { isReleased, releaseUrl } = gitlab.getContext();
   t.true(isReleased);
   t.is(releaseUrl, `${pushRepo}/-/releases`);
+});
+
+test.serial('should throw when release milestone is missing', async t => {
+  const pushRepo = 'https://gitlab.com/user/repo';
+  const options = {
+    git: { pushRepo },
+    gitlab: {
+      tokenRef,
+      release: true,
+      milestones: ['${version}', '${latestVersion} UAT']
+    }
+  };
+  const gitlab = factory(GitLab, { options });
+  sinon.stub(gitlab, 'getLatestVersion').resolves('2.0.0');
+
+  interceptUser();
+  interceptCollaborator();
+  interceptMilestones({
+    query: { title: '2.0.1' },
+    milestones: [
+      {
+        id: 17,
+        iid: 3,
+        title: '2.0.1'
+      }
+    ]
+  });
+  interceptMilestones({
+    query: { title: '2.0.0 UAT' },
+    milestones: []
+  });
+
+  await t.throwsAsync(runTasks(gitlab), {
+    message: /^Missing one or more milestones in GitLab. Creating a GitLab release will fail./
+  });
 });
 
 test.serial('should release to self-managed host', async t => {
@@ -195,7 +253,14 @@ test('should not make requests in dry run', async t => {
 });
 
 test('should skip checks', async t => {
-  const options = { gitlab: { tokenRef, skipChecks: true } };
+  const options = { gitlab: { tokenRef, skipChecks: true, release: true, milestones: ['v1.0.0'] } };
   const gitlab = factory(GitLab, { options });
+  const spy = sinon.spy(gitlab, 'client', ['get']);
+
   await t.notThrowsAsync(gitlab.init());
+  await t.notThrowsAsync(gitlab.beforeRelease());
+
+  t.is(spy.get.callCount, 0);
+
+  t.is(gitlab.log.exec.args.filter(entry => /checkReleaseMilestones/.test(entry[0])).length, 0);
 });
