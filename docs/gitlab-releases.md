@@ -42,8 +42,8 @@ See [Changelog](./changelog.md) for more information about generating changelogs
 
 ## Milestones
 
-To associate one or more milestones with a GitLab release, set the `gitlab.milestones` option to an array of the
-titles of the corresponding milestones, for example:
+To associate one or more milestones with a GitLab release, set the `gitlab.milestones` option to an array of the titles
+of the corresponding milestones, for example:
 
 ```json
 {
