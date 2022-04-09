@@ -39,6 +39,7 @@ const getContainer = options => {
 };
 
 test.serial.before(t => {
+  t.timeout(60 * 1000);
   sh.exec('npm link');
 });
 
