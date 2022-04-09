@@ -277,6 +277,8 @@ Note that arguments need to be quoted properly when used from the command line:
 release-it --'hooks.after:release="echo Successfully released ${name} v${version} to ${repo.repository}."'
 ```
 
+Using Inquirer.js inside custom hook scripts might cause issues (since release-it also uses this itself).
+
 ## Plugins
 
 Since v11, release-it can be extended in many, many ways. Here are some plugins:
