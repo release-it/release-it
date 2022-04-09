@@ -49,7 +49,7 @@
   "scripts": {
     "lint": "eslint lib test",
     "format": "prettier --write \"{lib,test}/**/*.js\"",
-    "test": "ava",
+    "test": "ava --no-worker-threads",
     "readme": "markdown-toc README.md -i --maxdepth=2 --bullets=-",
     "release": "./bin/release-it.js"
   },
