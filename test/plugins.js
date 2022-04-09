@@ -1,3 +1,4 @@
+import { join } from 'path';
 import test from 'ava';
 import sh from 'shelljs';
 import sinon from 'sinon';
@@ -11,8 +12,6 @@ import ReplacePlugin from './stub/plugin-replace.js';
 import ContextPlugin from './stub/plugin-context.js';
 import { mkTmpDir } from './util/helpers.js';
 import ShellStub from './stub/shell.js';
-
-const rootDir = new URL('..', import.meta.url);
 
 const noop = Promise.resolve();
 
@@ -39,6 +38,10 @@ const getContainer = options => {
   };
 };
 
+test.serial.before(t => {
+  sh.exec('npm link');
+});
+
 test.serial.beforeEach(t => {
   const dir = mkTmpDir();
   sh.pushd('-q', dir);
@@ -50,23 +53,28 @@ test.serial.afterEach(() => {
 });
 
 test.serial('should instantiate plugins and execute all release-cycle methods', async t => {
-  sh.ShellString(JSON.stringify({ name: 'project', version: '1.0.0', type: 'module' })).toEnd('package.json');
-  sh.exec(`npm install ${rootDir}`);
+  const { dir } = t.context;
 
   const pluginDir = mkTmpDir();
   sh.pushd('-q', pluginDir);
-  sh.ShellString(JSON.stringify({ name: 'my-plugin', version: '1.0.0', type: 'module' })).toEnd('package.json');
-  sh.exec(`npm install ${rootDir}`);
+  sh.ShellString(JSON.stringify({ name: 'my-plugin', version: '1.0.0', type: 'module' })).toEnd(
+    join(pluginDir, 'package.json')
+  );
+  sh.exec(`npm link release-it`);
   const content = "import { Plugin } from 'release-it'; " + MyPlugin.toString() + '; export default MyPlugin;';
-  sh.ShellString(content).toEnd('index.js');
-  sh.popd();
+  sh.ShellString(content).toEnd(join(pluginDir, 'index.js'));
 
+  sh.pushd('-q', dir);
   sh.mkdir('-p', 'my/plugin');
   sh.pushd('-q', 'my/plugin');
-  sh.ShellString(content).toEnd('index.js');
-  sh.popd();
+  sh.ShellString(content).toEnd(join(dir, 'my', 'plugin', 'index.js'));
 
+  sh.pushd('-q', dir);
+  sh.ShellString(JSON.stringify({ name: 'project', version: '1.0.0', type: 'module' })).toEnd(
+    join(dir, 'package.json')
+  );
   sh.exec(`npm install ${pluginDir}`);
+  sh.exec(`npm link release-it`);
 
   const config = {
     plugins: {
@@ -114,14 +122,16 @@ test.serial('should instantiate plugins and execute all release-cycle methods', 
 });
 
 test.serial('should disable core plugins', async t => {
-  sh.ShellString(JSON.stringify({ name: 'project', version: '1.0.0' })).toEnd('package.json');
-  sh.exec(`npm install release-it@^14`);
-  const content = "const { Plugin } = require('release-it'); module.exports = " + ReplacePlugin.toString();
-  sh.ShellString(content).toEnd('replace-plugin.js');
+  const { dir } = t.context;
+  sh.ShellString(JSON.stringify({ name: 'project', version: '1.0.0' })).toEnd(join(dir, 'package.json'));
+  const content =
+    "import { Plugin } from 'release-it'; " + ReplacePlugin.toString() + '; export default ReplacePlugin;';
+  sh.ShellString(content).toEnd(join(dir, 'replace-plugin.mjs'));
+  sh.exec(`npm link release-it`);
 
   const config = {
     plugins: {
-      './replace-plugin.js': {}
+      './replace-plugin.mjs': {}
     }
   };
   const container = getContainer(config);
@@ -137,12 +147,14 @@ test.serial('should disable core plugins', async t => {
 });
 
 test.serial('should expose context to execute commands', async t => {
-  sh.ShellString(JSON.stringify({ name: 'pkg-name', version: '1.0.0', type: 'module' })).toEnd('package.json');
-  sh.exec(`npm install ${rootDir}`);
-
+  const { dir } = t.context;
+  sh.ShellString(JSON.stringify({ name: 'pkg-name', version: '1.0.0', type: 'module' })).toEnd(
+    join(dir, 'package.json')
+  );
   const content =
     "import { Plugin } from 'release-it'; " + ContextPlugin.toString() + '; export default ContextPlugin;';
-  sh.ShellString(content).toEnd('context-plugin.js');
+  sh.ShellString(content).toEnd(join(dir, 'context-plugin.js'));
+  sh.exec(`npm link release-it`);
 
   const repo = parseGitUrl('https://github.com/user/pkg');
 
