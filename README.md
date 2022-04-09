@@ -271,6 +271,12 @@ Use `--verbose` to log the output of the commands.
 For the sake of verbosity, the full list of hooks is actually: `init`, `beforeBump`, `bump`, `beforeRelease`, `release`
 or `afterRelease`. However, hooks like `before:beforeRelease` look weird and are usually not useful in practice.
 
+Note that arguments need to be quoted properly when used from the command line:
+
+```bash
+release-it --'hooks.after:release="echo Successfully released ${name} v${version} to ${repo.repository}."'
+```
+
 ## Plugins
 
 Since v11, release-it can be extended in many, many ways. Here are some plugins:
