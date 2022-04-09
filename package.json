@@ -67,7 +67,7 @@
     "globby": "11.0.4",
     "got": "11.8.3",
     "import-cwd": "3.0.0",
-    "inquirer": "8.2.2",
+    "inquirer": "8.2.0",
     "is-ci": "3.0.1",
     "lodash": "4.17.21",
     "mime-types": "2.1.35",
