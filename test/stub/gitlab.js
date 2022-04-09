@@ -22,6 +22,22 @@ export let interceptCollaboratorFallback = (
 export let interceptPublish = ({ host = 'https://gitlab.com', owner = 'user', project = 'repo', body } = {}, options) =>
   nock(host, options).post(`/api/v4/projects/${owner}%2F${project}/releases`, body).reply(200, {});
 
+export let interceptMilestones = (
+  { host = 'https://gitlab.com', owner = 'user', project = 'repo', query = {}, milestones = [] } = {},
+  options
+) =>
+  nock(host, options)
+    .get(`/api/v4/projects/${owner}%2F${project}/milestones`)
+    .query(
+      Object.assign(
+        {
+          include_parent_milestones: true
+        },
+        query
+      )
+    )
+    .reply(200, JSON.stringify(milestones));
+
 export let interceptAsset = ({ host = 'https://gitlab.com', owner = 'user', project = 'repo' } = {}) =>
   nock(host)
     .post(`/api/v4/projects/${owner}%2F${project}/uploads`)

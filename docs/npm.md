@@ -94,6 +94,11 @@ basically defeats the purpose of 2FA (also, the OTP expires after a short period
 Use `npm.publishPath` to publish only a specific folder. For example, set `npm.publishPath` to `"dist"`. The default
 value is the current (root) folder (`"."`).
 
+## Allow same version
+
+Use `npm.allowSameVersion` to prevent throwing error when setting the new version to the same value as the current
+version.
+
 ## Monorepos
 
 Monorepos do not require extra configuration, but release-it handles only one package at a time. Also see how

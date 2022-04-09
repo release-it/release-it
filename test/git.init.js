@@ -26,6 +26,19 @@ test.serial('should throw if on wrong branch', async t => {
   await t.throwsAsync(gitClient.init(), { message: /^Must be on branch dev/ });
 });
 
+test.serial('should not throw if required branch matches', async t => {
+  const options = { git: { requireBranch: 'ma?*' } };
+  const gitClient = factory(Git, { options });
+  await t.notThrowsAsync(gitClient.init());
+});
+
+test.serial('should not throw if one of required branch matches', async t => {
+  const options = { git: { requireBranch: ['release/*', 'hotfix/*'] } };
+  const gitClient = factory(Git, { options });
+  sh.exec('git checkout -b release/v1');
+  await t.notThrowsAsync(gitClient.init());
+});
+
 test.serial('should throw if there is no remote Git url', async t => {
   const gitClient = factory(Git, { options: { git } });
   sh.exec('git remote remove origin');

@@ -358,7 +358,7 @@ test.serial('should initially publish non-private scoped npm package privately',
 test.serial('should use pkg.publishConfig.registry', async t => {
   const { target } = t.context;
   const pkgName = path.basename(target);
-  const registry = 'https://my-registry.com';
+  const registry = 'https://my-registry.example.org';
 
   gitAdd(
     JSON.stringify({

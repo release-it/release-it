@@ -228,7 +228,10 @@ test.serial('should push to remote name (not "origin")', async t => {
     gitAdd('line', 'file', 'Add file');
     await gitClient.push();
     t.deepEqual(spy.lastCall.args[0], ['git', 'push', '--set-upstream', 'upstream', 'foo']);
-    t.regex(await spy.lastCall.returnValue, /Branch .?foo.? set up to track remote branch .?foo.? from .?upstream.?/);
+    t.regex(
+      await spy.lastCall.returnValue,
+      /branch .?foo.? set up to track (remote branch .?foo.? from .?upstream.?|.?upstream\/foo.?)/i
+    );
   }
   spy.restore();
 });

@@ -19,7 +19,6 @@ system, and hooks to execute any command you need to test, build, and/or publish
 
 [![Action Status](https://github.com/release-it/release-it/workflows/Cross-OS%20Tests/badge.svg)](https://github.com/release-it/release-it/actions)
 [![npm version](https://badge.fury.io/js/release-it.svg)](https://www.npmjs.com/package/release-it)
-[![codecov](https://codecov.io/gh/release-it/release-it/branch/master/graph/badge.svg)](https://codecov.io/gh/release-it/release-it)
 
 ## Links
 
@@ -272,6 +271,14 @@ Use `--verbose` to log the output of the commands.
 For the sake of verbosity, the full list of hooks is actually: `init`, `beforeBump`, `bump`, `beforeRelease`, `release`
 or `afterRelease`. However, hooks like `before:beforeRelease` look weird and are usually not useful in practice.
 
+Note that arguments need to be quoted properly when used from the command line:
+
+```bash
+release-it --'hooks.after:release="echo Successfully released ${name} v${version} to ${repo.repository}."'
+```
+
+Using Inquirer.js inside custom hook scripts might cause issues (since release-it also uses this itself).
+
 ## Plugins
 
 Since v11, release-it can be extended in many, many ways. Here are some plugins:
@@ -324,7 +331,7 @@ While mostly used as a CLI tool, release-it can be used as a dependency to integ
 - [metalsmith/metalsmith](https://github.com/metalsmith/metalsmith)
 - [react-native-paper](https://github.com/callstack/react-native-paper)
 - [js-cookie/js-cookie](https://github.com/js-cookie/js-cookie)
-- [mirumee/saleor](https://github.com/mirumee/saleor)
+- [saleor/saleor](https://github.com/saleor/saleor)
 - [mozilla/readability](https://github.com/mozilla/readability)
 - [redis/node-redis](https://github.com/redis/node-redis)
 - [shipshapecode/shepherd](https://github.com/shipshapecode/shepherd)

@@ -26,6 +26,7 @@
     "tag": null,
     "otp": null,
     "ignoreVersion": false,
+    "allowSameVersion": false,
     "skipChecks": false,
     "timeout": 10
   },
@@ -48,6 +49,7 @@
     "release": false,
     "releaseName": "Release ${version}",
     "releaseNotes": null,
+    "milestones": [],
     "tokenRef": "GITLAB_TOKEN",
     "tokenHeader": "Private-Token",
     "certificateAuthorityFile": null,

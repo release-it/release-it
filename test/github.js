@@ -91,7 +91,7 @@ test('should create a pre-release and draft release notes', async t => {
 
   interceptAuthentication();
   interceptCollaborator();
-  interceptCreate({ body: { tag_name: '2.0.2', name: 'Release 2.0.2', body: '', prerelease: true, draft: true } });
+  interceptCreate({ body: { tag_name: '2.0.2', name: 'Release 2.0.2', prerelease: true, draft: true } });
 
   await runTasks(github);
 
@@ -101,7 +101,7 @@ test('should create a pre-release and draft release notes', async t => {
   exec.restore();
 });
 
-test('should create auto generated release notes', async t => {
+test('should create auto-generated release notes', async t => {
   const options = {
     git,
     github: {
@@ -118,9 +118,7 @@ test('should create auto generated release notes', async t => {
 
   interceptAuthentication();
   interceptCollaborator();
-  interceptCreate({
-    body: { tag_name: '2.0.2', name: 'Release 2.0.2', draft: false, prerelease: false, generate_release_notes: true }
-  });
+  interceptCreate({ body: { tag_name: '2.0.2', name: 'Release 2.0.2', generate_release_notes: true, body: '' } });
 
   await runTasks(github);
 
@@ -220,7 +218,7 @@ test('should release to enterprise host', async t => {
 });
 
 test('should release to alternative host and proxy', async t => {
-  const remote = { api: 'https://my-custom-host.org/api/v3', host: 'my-custom-host.org' };
+  const remote = { api: 'https://custom.example.org/api/v3', host: 'custom.example.org' };
   interceptAuthentication(remote);
   interceptCollaborator(remote);
   interceptCreate(Object.assign({ body: { tag_name: '1.0.1' } }, remote));
@@ -228,8 +226,8 @@ test('should release to alternative host and proxy', async t => {
     git,
     github: {
       tokenRef,
-      pushRepo: `git://my-custom-host.org:user/repo`,
-      host: 'my-custom-host.org',
+      pushRepo: `git://custom.example.org:user/repo`,
+      host: 'custom.example.org',
       proxy: 'http://proxy:8080'
     }
   };
@@ -242,25 +240,25 @@ test('should release to alternative host and proxy', async t => {
 
   const { isReleased, releaseUrl } = github.getContext();
   t.true(isReleased);
-  t.is(releaseUrl, `https://my-custom-host.org/user/repo/releases/tag/1.0.1`);
+  t.is(releaseUrl, `https://custom.example.org/user/repo/releases/tag/1.0.1`);
   exec.restore();
 });
 
 test('should release to git.pushRepo', async t => {
-  const remote = { api: 'https://my-custom-host.org/api/v3', host: 'my-custom-host.org' };
+  const remote = { api: 'https://custom.example.org/api/v3', host: 'custom.example.org' };
   interceptCreate(Object.assign({ body: { tag_name: '1.0.1' } }, remote));
   const options = { git: { pushRepo: 'upstream', changelog: '' }, github: { tokenRef, skipChecks: true } };
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
   exec.withArgs('git log --pretty=format:"* %s (%h)" ${from}...${to}').resolves('');
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('1.0.0');
-  exec.withArgs('git remote get-url upstream').resolves('https://my-custom-host.org/user/repo');
+  exec.withArgs('git remote get-url upstream').resolves('https://custom.example.org/user/repo');
 
   await runTasks(github);
 
   const { isReleased, releaseUrl } = github.getContext();
   t.true(isReleased);
-  t.is(releaseUrl, 'https://my-custom-host.org/user/repo/releases/tag/1.0.1');
+  t.is(releaseUrl, 'https://custom.example.org/user/repo/releases/tag/1.0.1');
   exec.restore();
 });
 
@@ -402,10 +400,10 @@ test('should generate GitHub web release url for enterprise host', async t => {
   const options = {
     git,
     github: {
-      pushRepo: 'git://my-custom-host.org:user/repo',
+      pushRepo: 'git://custom.example.org:user/repo',
       release: true,
       web: true,
-      host: 'my-custom-host.org',
+      host: 'custom.example.org',
       releaseName: 'The Launch',
       releaseNotes: 'echo It happened'
     }
@@ -421,7 +419,7 @@ test('should generate GitHub web release url for enterprise host', async t => {
   t.true(isReleased);
   t.is(
     releaseUrl,
-    'https://my-custom-host.org/user/repo/releases/new?tag=2.0.2&title=The+Launch&body=It+happened&prerelease=false'
+    'https://custom.example.org/user/repo/releases/new?tag=2.0.2&title=The+Launch&body=It+happened&prerelease=false'
   );
   exec.restore();
 });
