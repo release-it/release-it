@@ -1,14 +1,14 @@
-import { promises as fs } from 'fs';
+import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import sh from 'shelljs';
-import tmp from 'tmp';
 
 const mkTmpDir = () => {
-  const dir = tmp.dirSync({ prefix: 'release-it-' });
-  return dir.name;
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'release-it-'));
+  return dir;
 };
 
-const readFile = file => fs.readFile(path.resolve(file), 'utf8');
+const readFile = file => fs.promises.readFile(path.resolve(file), 'utf8');
 
 const gitAdd = (content, file, message) => {
   sh.ShellString(content).toEnd(file);
