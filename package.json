@@ -106,5 +106,8 @@
   },
   "engines": {
     "node": ">=10"
+  },
+  "resolutions": {
+    "lru-cache": "6.0.0"
   }
 }
