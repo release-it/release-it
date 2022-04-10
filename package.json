@@ -89,7 +89,7 @@
   "devDependencies": {
     "@octokit/request-error": "2.1.0",
     "ava": "3.15.0",
-    "eslint": "7.32.0",
+    "eslint": "8.13.0",
     "eslint-config-prettier": "8.5.0",
     "eslint-plugin-ava": "13.2.0",
     "eslint-plugin-import": "2.26.0",
