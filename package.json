@@ -77,6 +77,7 @@
     "os-name": "4.0.1",
     "parse-json": "5.2.0",
     "promise.allsettled": "1.0.5",
+    "proxy-agent": "5.0.0",
     "semver": "7.3.5",
     "shelljs": "0.8.5",
     "update-notifier": "5.1.0",
