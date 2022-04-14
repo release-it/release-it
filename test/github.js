@@ -236,6 +236,7 @@ test('should release to alternative host and proxy', async t => {
   const { isReleased, releaseUrl } = github.getContext();
   t.true(isReleased);
   t.is(releaseUrl, `https://custom.example.org/user/repo/releases/tag/1.0.1`);
+  t.is(github.options.proxy, 'http://proxy:8080');
   exec.restore();
 });
 
@@ -405,35 +406,5 @@ test('should generate GitHub web release url for enterprise host', async t => {
     releaseUrl,
     'https://custom.example.org/user/repo/releases/new?tag=2.0.2&title=The+Launch&body=It+happened&prerelease=false'
   );
-  exec.restore();
-});
-
-test('should generate Github web release when proxy is set', async t => {
-  const options = {
-    git,
-    github: {
-      pushRepo: 'git://custom.example.org:user/repo',
-      release: true,
-      web: true,
-      host: 'custom.example.org',
-      releaseName: 'The Launch',
-      releaseNotes: 'echo It happened',
-      proxy: 'http://proxy.example.org:8181'
-    }
-  };
-
-  const github = factory(GitHub, { options });
-  const exec = sinon.stub(github.shell, 'exec').callThrough();
-  exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
-
-  await runTasks(github);
-
-  const { isReleased, releaseUrl } = github.getContext();
-  t.true(isReleased);
-  t.is(
-    releaseUrl,
-    'https://custom.example.org/user/repo/releases/new?tag=2.0.2&title=The+Launch&body=It+happened&prerelease=false'
-  );
-  t.is(github.options.proxy, 'http://proxy.example.org:8181');
   exec.restore();
 });
