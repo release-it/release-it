@@ -154,19 +154,13 @@ test.serial('should get the latest custom tag after fetch when tagName is config
 test.serial('should get the latest tag based on tagMatch', async t => {
   const shell = factory(Shell);
   const gitClient = factory(Git, {
-    options: { git: { tagMatch: '[0-9][0-9].[0-1][0-9].[0-9]*' } },
+    options: { git: { tagMatch: '[0-9][0-9]\\.[0-1][0-9]\\.[0-9]*' } },
     container: { shell }
   });
-  const { bare, target } = t.context;
-  const other = mkTmpDir();
-  sh.exec('git push');
-  sh.exec(`git clone ${bare} ${other}`);
-  sh.pushd('-q', other);
   sh.exec('git tag 1.0.0');
   sh.exec('git tag 21.04.3');
   sh.exec('git tag 1.0.1');
   sh.exec('git push --tags');
-  sh.pushd('-q', target);
   await gitClient.init();
   t.is(gitClient.config.getContext('latestTag'), '21.04.3');
 });
@@ -179,4 +173,22 @@ test.serial('should generate correct changelog', async t => {
   await gitClient.init();
   const changelog = await gitClient.getChangelog();
   t.regex(changelog, /\* Add file \(\w{7}\)\n\* Add file \(\w{7}\)/);
+});
+
+test.serial.only('should get the full changelog since latest major tag', async t => {
+  const shell = factory(Shell);
+  const gitClient = factory(Git, {
+    options: { git: { tagMatch: '[0-9]\\.[0-9]\\.[0-9]', changelog: git.changelog } },
+    container: { shell }
+  });
+  sh.exec('git tag 1.0.0');
+  gitAdd('line', 'file', 'Add file');
+  sh.exec('git tag 2.0.0-rc.0');
+  gitAdd('line', 'file', 'Add file');
+  sh.exec('git tag 2.0.0-rc.1');
+  gitAdd('line', 'file', 'Add file');
+  await gitClient.init();
+  t.is(gitClient.config.getContext('latestTag'), '1.0.0');
+  const changelog = await gitClient.getChangelog();
+  t.regex(changelog, /\* Add file \(\w{7}\)\n\* Add file \(\w{7}\)\n\* Add file \(\w{7}\)/);
 });
