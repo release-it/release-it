@@ -43,6 +43,14 @@ release-it major
 
 <img src="./assets/release-it-prerelease.gif?raw=true" height="524">
 
+When all commits since the latest major tag should be added to the changelog, use `--git.tagMatch`:
+
+```bash
+release-it major --git.tagMatch='[0-9]+\\.[0-9]+\\.[0-9]+'
+```
+
+This will find the latest major matching tag, skipping the pre-release tags.
+
 Let's go back to when the latest release was `2.0.0-rc.0`. We added new features, which we don't want in the v2 release
 yet, but instead in a later v2.1. A new pre-release id can be made for the minor release after in `2.1.0-alpha.0`:
 
