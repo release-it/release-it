@@ -314,7 +314,7 @@ Use template variables to render replacements. For instance, the command `git lo
 `git log v1.2.3...HEAD` before being executed. The replacements are all configuration options (with the default values
 in [config/release-it.json](../config/release-it.json)), plus the following additional variables:
 
-```
+```text
 version
 latestVersion
 latestTag

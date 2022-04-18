@@ -241,6 +241,7 @@ test('should release to alternative host and proxy', async t => {
   const { isReleased, releaseUrl } = github.getContext();
   t.true(isReleased);
   t.is(releaseUrl, `https://custom.example.org/user/repo/releases/tag/1.0.1`);
+  t.is(github.options.proxy, 'http://proxy:8080');
   exec.restore();
 });
 

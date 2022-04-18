@@ -41,7 +41,7 @@ Replace `[user]` and `[project]` with the actual values.
 To run release-it from a GitHub Action, here's an example job (fragment) to configure a Git user (to push the release
 commit), and expose the `GITHUB_TOKEN` for the GitHub Release:
 
-```
+```yaml
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -68,7 +68,7 @@ To publish a package to the (or any) npm registry from within a CI or CD environ
 `NPM_TOKEN` available in the `.npmrc` file. This file should look like this before release-it attempts to publish the
 package:
 
-```
+```text
 //registry.npmjs.org/:_authToken=$NPM_TOKEN
 ```
 
@@ -78,7 +78,7 @@ One way to achieve this is to set the `NPM_TOKEN` in the CI environment, and fro
 npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
 ```
 
-This will create/update the `.npmrc` file and add the token there. Ideally you should either `.gitignore` this file, 
+This will create/update the `.npmrc` file and add the token there. Ideally you should either `.gitignore` this file,
 otherwise you might end up committing it to your repo if you are using release-it's `git` options.
 
 Since release-it executes `npm whoami` as a [prerequisite check](./npm.md#prerequisite-checks), which does not seem to

@@ -40,14 +40,18 @@ different git url.
 Use `git.tagName` to set a custom tag, not strictly equal to the (prefixed) version. When the latest tag has the `v`
 prefix, it will be used again. No need to configure `git.tagName: "v${version}"` in this case.
 
-Example: `git.tagName=${name}@${version}`
+Example: `--git.tagName=${name}@${version}`
 
 ## Tag Match
 
-Use `git.tagMatch` to override the normal matching behavior to find the latest tag. This can be useful when using a
-plugin to determine the next tag.
+Use `git.tagMatch` to override the normal matching behavior to find the latest tag. For instance, when doing a major
+release to find and set the latest major tag, and include all commits in the changelog since this matching tag.
 
-Example: `git.tagMatch='[0-9][0-9].[0-1][0-9].[0-9]*'`
+Example: `git.tagMatch: "[0-9]+\\.[0-9]+\\.[0-9]+"`
+
+This can be useful when using a plugin to determine the next tag:
+
+Example: `git.tagMatch: "[0-9][0-9].[0-1][0-9].[0-9]*"`
 
 ## Extra arguments
 
@@ -102,7 +106,7 @@ Use an array to allow releases from more branch names. Wildcards are also allowe
 
 The working directory should be clean (i.e. `git status` should say something like this:
 
-```
+```bash
 $ git status
 On branch master
 Your branch is up to date with 'origin/master'.

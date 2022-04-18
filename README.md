@@ -255,7 +255,7 @@ will run one after another. Some example release-it configuration:
 The variables can be found in the [default configuration](./config/release-it.json). Additionally, the following
 variables are exposed:
 
-```
+```text
 version
 latestVersion
 changelog
