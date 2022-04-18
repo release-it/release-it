@@ -78,7 +78,6 @@
     "open": "8.4.0",
     "ora": "6.1.0",
     "os-name": "5.0.1",
-    "parse-json": "5.2.0",
     "promise.allsettled": "1.0.5",
     "proxy-agent": "5.0.0",
     "semver": "7.3.7",
@@ -87,7 +86,6 @@
     "url-join": "5.0.0",
     "uuid": "8.3.2",
     "wildcard-match": "5.1.2",
-    "yaml": "1.10.2",
     "yargs-parser": "21.0.1"
   },
   "devDependencies": {
