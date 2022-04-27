@@ -312,7 +312,7 @@ In release-it v15, anonymous metrics have been removed from the codebase and no 
 
 - With `release-it --verbose` (or `-V`), release-it prints the output of every user-defined [hook](#hooks).
 - With `release-it -VV`, release-it also prints the output of every internal command.
-- Use `DEBUG=release-it:* release-it [...]` to print configuration and more error details.
+- Use `NODE_DEBUG=release-it:* release-it [...]` to print configuration and more error details.
 
 Use `verbose: 2` in a configuration file to have the equivalent of `-VV` on the command line.
 

@@ -1,7 +1,7 @@
-import _debug from 'debug';
+import util from 'node:util';
 import Shell from '../../lib/shell.js';
 
-const debug = _debug('release-it:shell-stub');
+const debug = util.debug('release-it:shell-stub');
 
 class ShellStub extends Shell {
   exec(command) {

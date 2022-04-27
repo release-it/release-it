@@ -334,8 +334,8 @@ this.exec('git log', { options: { write: false } });
 
 #### this.debug() → void
 
-Insert `this.debug(...)` statements to log interesting details when `DEBUG=release-it:* release-it ...` is used. The
-output is namespaced automatically (e.g. `release-it:foo My log output`).
+Insert `this.debug(...)` statements to log interesting details when `NODE_DEBUG=release-it:* release-it ...` is used.
+The output is namespaced automatically (e.g. `release-it:foo My log output`).
 
 #### this.log() → void
 
