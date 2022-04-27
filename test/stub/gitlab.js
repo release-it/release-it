@@ -11,14 +11,6 @@ export let interceptCollaborator = (
     .get(`/api/v4/projects/${group ? `${group}%2F` : ''}${owner}%2F${project}/members/all/${userId}`)
     .reply(200, { id: userId, username: owner, access_level: 30 });
 
-export let interceptCollaboratorFallback = (
-  { host = 'https://gitlab.com', owner = 'user', project = 'repo', group, userId = 1 } = {},
-  options
-) =>
-  nock(host, options)
-    .get(`/api/v4/projects/${group ? `${group}%2F` : ''}${owner}%2F${project}/members/${userId}`)
-    .reply(200, { id: userId, username: owner, access_level: 30 });
-
 export let interceptPublish = ({ host = 'https://gitlab.com', owner = 'user', project = 'repo', body } = {}, options) =>
   nock(host, options).post(`/api/v4/projects/${owner}%2F${project}/releases`, body).reply(200, {});
 
