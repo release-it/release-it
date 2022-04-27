@@ -50,7 +50,6 @@
     "lint": "eslint lib test",
     "format": "prettier --write \"{lib,test}/**/*.js\"",
     "test": "ava --no-worker-threads",
-    "readme": "markdown-toc README.md -i --maxdepth=2 --bullets=-",
     "release": "./bin/release-it.js"
   },
   "author": {
@@ -95,7 +94,6 @@
     "eslint-plugin-ava": "13.2.0",
     "eslint-plugin-import": "2.26.0",
     "eslint-plugin-prettier": "4.0.0",
-    "markdown-toc": "1.2.0",
     "mock-fs": "5.1.2",
     "mock-stdio": "1.0.3",
     "nock": "13.2.4",
