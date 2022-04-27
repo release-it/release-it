@@ -306,8 +306,7 @@ Deprecated. Please see [distribution repository](./docs/recipes/distribution-rep
 
 ## Metrics
 
-Use `--disable-metrics` to opt-out of sending some anonymous statistical data to Google Analytics. For details, refer to
-[lib/metrics.js](./lib/metrics.js). Please consider to not opt-out: more data means more support for future development.
+In release-it v15, anonymous metrics have been removed from the codebase and no data is sent or stored anywhere.
 
 ## Troubleshooting & debugging
 

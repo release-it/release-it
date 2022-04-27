@@ -19,8 +19,7 @@ const sandbox = sinon.createSandbox();
 
 const testConfig = {
   ci: true,
-  config: false,
-  'disable-metrics': true
+  config: false
 };
 
 const log = sandbox.createStubInstance(Log);

@@ -10,8 +10,7 @@ test.beforeEach(t => {
 const getConfig = options => {
   const testConfig = {
     ci: false,
-    config: false,
-    'disable-metrics': true
+    config: false
   };
   return new Config(Object.assign({}, testConfig, options));
 };
