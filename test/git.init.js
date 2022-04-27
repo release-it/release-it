@@ -177,7 +177,7 @@ test.serial('should generate correct changelog', async t => {
   t.regex(changelog, /\* Add file \(\w{7}\)\n\* Add file \(\w{7}\)/);
 });
 
-test.serial.only('should get the full changelog since latest major tag', async t => {
+test.serial('should get the full changelog since latest major tag', async t => {
   const shell = factory(Shell);
   const gitClient = factory(Git, {
     options: { git: { tagMatch: '[0-9]\\.[0-9]\\.[0-9]', changelog: git.changelog } },
