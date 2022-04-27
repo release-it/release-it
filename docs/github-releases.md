@@ -10,8 +10,8 @@ Unsurprisingly, release-it uses this feature extensively
 
 See the screenshot on the right for an overview of what release-it automates.
 
-To add [GitHub releases](https://help.github.com/articles/creating-releases/) in your release-it flow, there are two
-options:
+To add [GitHub releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) in your
+release-it flow, there are two options:
 
 1. Automated. This requires a personal access token.
 2. Manual. The GitHub web interface will be opened with pre-populated fields.

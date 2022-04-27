@@ -44,7 +44,7 @@ In case you've encountered a bug, please make sure:
 
 Pull requests are welcome! If you never created a pull request before, here are some tutorials:
 
-- [Creating a pull request](https://help.github.com/articles/creating-a-pull-request/)
+- [Creating a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
 - [How to Contribute to an Open Source Project on GitHub](https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github)
 
 Please keep the following in mind:
@@ -57,7 +57,8 @@ Please keep the following in mind:
 
 Unsure about whether you should open a pull request? Feel free to discuss it first in a ticket.
 
-[Fork](https://help.github.com/articles/fork-a-repo/) the repository to get started, and set it up on your machine:
+[Fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the repository to get started, and set it up on
+your machine:
 
 ```bash
 git clone https://github.com/<your-github-username>/release-it

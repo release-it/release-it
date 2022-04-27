@@ -156,7 +156,8 @@ remote.
 ## GitHub Releases
 
 GitHub projects can have releases attached to Git tags, containing release notes and assets. There are two ways to add
-[GitHub releases](https://help.github.com/articles/creating-releases) in your release-it flow:
+[GitHub releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) in your
+release-it flow:
 
 1. Automated (requires a `GITHUB_TOKEN`)
 2. Manual (using the GitHub web interface with pre-populated fields)
