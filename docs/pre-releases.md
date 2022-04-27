@@ -46,7 +46,7 @@ release-it major
 When all commits since the latest major tag should be added to the changelog, use `--git.tagMatch`:
 
 ```bash
-release-it major --git.tagMatch='[0-9]+\\.[0-9]+\\.[0-9]+'
+release-it major --git.tagMatch='[0-9]*\\.[0-9]*\\.[0-9]*'
 ```
 
 This will find the latest major matching tag, skipping the pre-release tags.

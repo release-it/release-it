@@ -46,11 +46,15 @@ Example: `--git.tagName=${name}@${version}`
 ## Tag Match
 
 Use `git.tagMatch` to override the normal matching behavior to find the latest tag. For instance, when doing a major
-release to find and set the latest major tag, and include all commits in the changelog since this matching tag.
+release to find and set the latest major tag, and include all commits in the changelog since this matching tag. Note
+that this represents a glob (not a regex):
 
-Example: `git.tagMatch: "[0-9]+\\.[0-9]+\\.[0-9]+"`
+Example: `git.tagMatch: "[0-9]*\.[0-9]*\.[0-9]*"`
 
-This can be useful when using a plugin to determine the next tag:
+Or only `"[!-]*"`, as this would match everything that excludes a hyphen, which is normally used excusively in
+pre-releaseses.
+
+This could also be useful when using a plugin to determine the next tag:
 
 Example: `git.tagMatch: "[0-9][0-9].[0-1][0-9].[0-9]*"`
 
