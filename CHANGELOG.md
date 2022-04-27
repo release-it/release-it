@@ -5,6 +5,14 @@ This document lists breaking changes for each major release.
 See the GitHub Releases page for detailed changelogs:
 [https://github.com/release-it/release-it/releases](https://github.com/release-it/release-it/releases)
 
+## v15
+
+- Removed support for Node.js v10 and v12.
+- Removed support for GitLab v12.4 and lower.
+- Removed anonymous metrics (and the option to disable it).
+
+Use release-it v14 in legacy environments.
+
 ## v14
 
 - Removed `global` property from plugins. Use `this.config[key]` instead.
