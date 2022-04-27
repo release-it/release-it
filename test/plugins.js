@@ -1,4 +1,4 @@
-import { join } from 'path';
+import { join } from 'node:path';
 import test from 'ava';
 import sh from 'shelljs';
 import sinon from 'sinon';

@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 import test from 'ava';
 import sh from 'shelljs';
 import _ from 'lodash';

@@ -1,4 +1,4 @@
-import { EOL } from 'os';
+import { EOL } from 'node:os';
 import test from 'ava';
 import mockStdIo from 'mock-stdio';
 import stripAnsi from 'strip-ansi';

@@ -1,4 +1,4 @@
-import { EOL } from 'os';
+import { EOL } from 'node:os';
 import test from 'ava';
 import sinon from 'sinon';
 import sh from 'shelljs';
