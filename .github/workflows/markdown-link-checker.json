@@ -5,6 +5,9 @@
     },
     {
       "pattern": "gitlab.com/profile"
+    },
+    {
+      "pattern": "docs.github.com"
     }
   ]
 }
