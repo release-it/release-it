@@ -1,28 +1,28 @@
-const path = require('path');
-const test = require('ava');
-const sh = require('shelljs');
-const proxyquire = require('proxyquire');
-const _ = require('lodash');
-const sinon = require('sinon');
-const Log = require('../lib/log');
-const Spinner = require('../lib/spinner');
-const Config = require('../lib/config');
-const runTasks = require('../lib/tasks');
-const Plugin = require('../lib/plugin/Plugin');
-const { mkTmpDir, gitAdd, getArgs } = require('./util/helpers');
-const ShellStub = require('./stub/shell');
-const {
-  interceptUser: interceptGitLabUser,
-  interceptCollaborator: interceptGitLabCollaborator,
-  interceptPublish: interceptGitLabPublish,
-  interceptAsset: interceptGitLabAsset
-} = require('./stub/gitlab');
-const {
-  interceptAuthentication: interceptGitHubAuthentication,
-  interceptCollaborator: interceptGitHubCollaborator,
-  interceptCreate: interceptGitHubCreate,
-  interceptAsset: interceptGitHubAsset
-} = require('./stub/github');
+import path from 'node:path';
+import test from 'ava';
+import sh from 'shelljs';
+import _ from 'lodash';
+import sinon from 'sinon';
+import Log from '../lib/log.js';
+import Spinner from '../lib/spinner.js';
+import Config from '../lib/config.js';
+import runTasks from '../lib/index.js';
+import { mkTmpDir, gitAdd, getArgs } from './util/helpers.js';
+import ShellStub from './stub/shell.js';
+import {
+  interceptUser as interceptGitLabUser,
+  interceptCollaborator as interceptGitLabCollaborator,
+  interceptPublish as interceptGitLabPublish,
+  interceptAsset as interceptGitLabAsset
+} from './stub/gitlab.js';
+import {
+  interceptAuthentication as interceptGitHubAuthentication,
+  interceptCollaborator as interceptGitHubCollaborator,
+  interceptCreate as interceptGitHubCreate,
+  interceptAsset as interceptGitHubAsset
+} from './stub/github.js';
+
+const rootDir = new URL('..', import.meta.url);
 
 const noop = Promise.resolve();
 
@@ -30,8 +30,7 @@ const sandbox = sinon.createSandbox();
 
 const testConfig = {
   ci: true,
-  config: false,
-  'disable-metrics': true
+  config: false
 };
 
 const log = sandbox.createStubInstance(Log);
@@ -439,15 +438,12 @@ test.serial('should use custom changelog command with context', async t => {
 });
 
 {
-  class MyPlugin extends Plugin {}
-  const statics = { isEnabled: () => true, disablePlugin: () => null };
-  const options = { '@global': true, '@noCallThru': true };
-  const runTasks = proxyquire('../lib/tasks', {
-    'my-plugin': Object.assign(MyPlugin, statics, options)
-  });
-
   test.serial('should run all hooks', async t => {
-    gitAdd(`{"name":"hooked","version":"1.0.0"}`, 'package.json', 'Add package.json');
+    gitAdd(`{"name":"hooked","version":"1.0.0","type":"module"}`, 'package.json', 'Add package.json');
+    sh.exec(`npm install ${rootDir}`);
+    const plugin = "import { Plugin } from 'release-it'; class MyPlugin extends Plugin {}; export default MyPlugin;";
+    sh.ShellString(plugin).toEnd('my-plugin.js');
+
     const hooks = {};
     ['before', 'after'].forEach(prefix => {
       ['version', 'git', 'npm', 'my-plugin'].forEach(ns => {
@@ -457,7 +453,11 @@ test.serial('should use custom changelog command with context', async t => {
         });
       });
     });
-    const container = getContainer({ plugins: { 'my-plugin': {} }, hooks });
+    const container = getContainer({
+      plugins: { './my-plugin.js': {} },
+      git: { requireCleanWorkingDir: false },
+      hooks
+    });
     const exec = sinon.spy(container.shell, 'execFormattedCommand');
 
     await runTasks({}, container);

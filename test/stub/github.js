@@ -1,4 +1,4 @@
-const nock = require('nock');
+import nock from 'nock';
 
 const interceptAuthentication = ({ api = 'https://api.github.com', username = 'john' } = {}) => {
   nock(api).get('/user').reply(200, {
@@ -120,7 +120,7 @@ const interceptAsset = ({
     });
 };
 
-module.exports = {
+export {
   interceptAuthentication,
   interceptCollaborator,
   interceptListReleases,

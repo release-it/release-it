@@ -20,6 +20,11 @@ system, and hooks to execute any command you need to test, build, and/or publish
 [![Action Status](https://github.com/release-it/release-it/workflows/Cross-OS%20Tests/badge.svg)](https://github.com/release-it/release-it/actions)
 [![npm version](https://badge.fury.io/js/release-it.svg)](https://www.npmjs.com/package/release-it)
 
+## Announcement
+
+The latest major version is v15, supporting Node.js 14 and up (as Node.js v12 is EOL). Use release-it v14 for
+environments running Node.js v10 and v12. Also see [CHANGELOG.md](./CHANGELOG.md).
+
 ## Links
 
 - See [CHANGELOG.md](./CHANGELOG.md) for major/breaking updates, and
@@ -307,14 +312,13 @@ Deprecated. Please see [distribution repository](./docs/recipes/distribution-rep
 
 ## Metrics
 
-Use `--disable-metrics` to opt-out of sending some anonymous statistical data to Google Analytics. For details, refer to
-[lib/metrics.js](./lib/metrics.js). Please consider to not opt-out: more data means more support for future development.
+In release-it v15, anonymous metrics have been removed from the codebase and no data is sent or stored anywhere.
 
 ## Troubleshooting & debugging
 
 - With `release-it --verbose` (or `-V`), release-it prints the output of every user-defined [hook](#hooks).
 - With `release-it -VV`, release-it also prints the output of every internal command.
-- Use `DEBUG=release-it:* release-it [...]` to print configuration and more error details.
+- Use `NODE_DEBUG=release-it:* release-it [...]` to print configuration and more error details.
 
 Use `verbose: 2` in a configuration file to have the equivalent of `-VV` on the command line.
 

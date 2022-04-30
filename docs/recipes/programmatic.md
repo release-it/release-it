@@ -3,7 +3,7 @@
 From Node.js scripts, release-it can also be used as a dependency:
 
 ```js
-const release = require('release-it');
+import release from 'release-it';
 
 release(options).then(output => {
   console.log(output);

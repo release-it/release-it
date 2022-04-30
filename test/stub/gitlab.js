@@ -1,9 +1,9 @@
-const nock = require('nock');
+import nock from 'nock';
 
-module.exports.interceptUser = ({ host = 'https://gitlab.com', owner = 'user' } = {}, options) =>
+export let interceptUser = ({ host = 'https://gitlab.com', owner = 'user' } = {}, options) =>
   nock(host, options).get('/api/v4/user').reply(200, { id: 1, username: owner });
 
-module.exports.interceptCollaborator = (
+export let interceptCollaborator = (
   { host = 'https://gitlab.com', owner = 'user', project = 'repo', group, userId = 1 } = {},
   options
 ) =>
@@ -11,15 +11,10 @@ module.exports.interceptCollaborator = (
     .get(`/api/v4/projects/${group ? `${group}%2F` : ''}${owner}%2F${project}/members/all/${userId}`)
     .reply(200, { id: userId, username: owner, access_level: 30 });
 
-module.exports.interceptCollaboratorFallback = (
-  { host = 'https://gitlab.com', owner = 'user', project = 'repo', group, userId = 1 } = {},
-  options
-) =>
-  nock(host, options)
-    .get(`/api/v4/projects/${group ? `${group}%2F` : ''}${owner}%2F${project}/members/${userId}`)
-    .reply(200, { id: userId, username: owner, access_level: 30 });
+export let interceptPublish = ({ host = 'https://gitlab.com', owner = 'user', project = 'repo', body } = {}, options) =>
+  nock(host, options).post(`/api/v4/projects/${owner}%2F${project}/releases`, body).reply(200, {});
 
-module.exports.interceptMilestones = (
+export let interceptMilestones = (
   { host = 'https://gitlab.com', owner = 'user', project = 'repo', query = {}, milestones = [] } = {},
   options
 ) =>
@@ -35,12 +30,7 @@ module.exports.interceptMilestones = (
     )
     .reply(200, JSON.stringify(milestones));
 
-module.exports.interceptPublish = (
-  { host = 'https://gitlab.com', owner = 'user', project = 'repo', body } = {},
-  options
-) => nock(host, options).post(`/api/v4/projects/${owner}%2F${project}/releases`, body).reply(200, {});
-
-module.exports.interceptAsset = ({ host = 'https://gitlab.com', owner = 'user', project = 'repo' } = {}) =>
+export let interceptAsset = ({ host = 'https://gitlab.com', owner = 'user', project = 'repo' } = {}) =>
   nock(host)
     .post(`/api/v4/projects/${owner}%2F${project}/uploads`)
     .query(true)

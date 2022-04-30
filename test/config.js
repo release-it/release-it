@@ -1,27 +1,30 @@
-const test = require('ava');
-const mock = require('mock-fs');
-const Config = require('../lib/config');
-const defaultConfig = require('../config/release-it.json');
+import test from 'ava';
+import isCI from 'is-ci';
+import Config from '../lib/config.js';
+import { readJSON } from '../lib/util.js';
+
+const defaultConfig = readJSON(new URL('../config/release-it.json', import.meta.url));
+const projectConfig = readJSON(new URL('../.release-it.json', import.meta.url));
 
 const localConfig = { github: { release: true } };
 
-test.afterEach(() => mock.restore()); // eslint-disable-line ava/no-inline-assertions
-
-test('should contain default values', t => {
-  mock({ '../.release-it.json': JSON.stringify(localConfig) });
+test("should read this project's own configuration", t => {
   const config = new Config();
   t.deepEqual(config.constructorConfig, {});
+  t.deepEqual(config.localConfig, projectConfig);
+  t.deepEqual(config.defaultConfig, defaultConfig);
+});
+
+test('should contain default values', t => {
+  const config = new Config({ configDir: './test/stub/config/default' });
+  t.deepEqual(config.constructorConfig, { configDir: './test/stub/config/default' });
   t.deepEqual(config.localConfig, localConfig);
   t.deepEqual(config.defaultConfig, defaultConfig);
-  mock.restore();
 });
 
 test('should merge provided options', t => {
-  mock({
-    'package.json': JSON.stringify({ 'release-it': { git: { push: false } } }),
-    '../.release-it.json': JSON.stringify(localConfig)
-  });
   const config = new Config({
+    configDir: './test/stub/config/merge',
     increment: '1.0.0',
     verbose: true,
     github: {
@@ -34,7 +37,6 @@ test('should merge provided options', t => {
   t.is(options.increment, '1.0.0');
   t.is(options.git.push, false);
   t.is(options.github.release, true);
-  mock.restore();
 });
 
 test('should set CI mode', t => {
@@ -43,7 +45,6 @@ test('should set CI mode', t => {
 });
 
 test('should detect CI mode', t => {
-  const isCI = require('is-ci');
   const config = new Config();
   t.is(config.options.ci, isCI);
   t.is(config.isCI, isCI);
@@ -55,24 +56,18 @@ test('should override --no-npm.publish', t => {
 });
 
 test('should read YAML config', t => {
-  mock({ '.release-it.yaml': 'foo:\n  bar: 1' });
-  const config = new Config({ config: '.release-it.yaml' });
+  const config = new Config({ configDir: './test/stub/config/yaml' });
   t.deepEqual(config.options.foo, { bar: 1 });
-  mock.restore();
 });
 
 test('should read YML config', t => {
-  mock({ '.release-it.yml': 'foo:\n  bar: 1' });
-  const config = new Config({ config: '.release-it.yml' });
+  const config = new Config({ configDir: './test/stub/config/yml' });
   t.deepEqual(config.options.foo, { bar: 1 });
-  mock.restore();
 });
 
 test('should read TOML config', t => {
-  mock({ '.release-it.toml': '[foo]\nbar=1' });
-  const config = new Config({ config: '.release-it.toml' });
+  const config = new Config({ configDir: './test/stub/config/toml' });
   t.deepEqual(config.options.foo, { bar: 1 });
-  mock.restore();
 });
 
 test('should throw if provided config file is not found', t => {
@@ -80,15 +75,15 @@ test('should throw if provided config file is not found', t => {
 });
 
 test('should throw if provided config file is invalid (cosmiconfig exception)', t => {
-  mock({ 'invalid-config-txt': 'foo\nbar\baz' });
-  t.throws(() => new Config({ config: 'invalid-config-txt' }), { message: /Invalid configuration file at/ });
-  mock.restore();
+  t.throws(() => new Config({ config: './test/stub/config/invalid-config-txt' }), {
+    message: /Invalid configuration file at/
+  });
 });
 
 test('should throw if provided config file is invalid (no object)', t => {
-  mock({ 'invalid-config-rc': 'foo=bar' });
-  t.throws(() => new Config({ config: 'invalid-config-rc' }), { message: /Invalid configuration file at/ });
-  mock.restore();
+  t.throws(() => new Config({ config: './test/stub/config/invalid-config-rc' }), {
+    message: /Invalid configuration file at/
+  });
 });
 
 test('should not set default increment (for CI mode)', t => {

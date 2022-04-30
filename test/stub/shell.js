@@ -1,5 +1,7 @@
-const debug = require('debug')('release-it:shell-stub');
-const Shell = require('../../lib/shell');
+import util from 'node:util';
+import Shell from '../../lib/shell.js';
+
+const debug = util.debug('release-it:shell-stub');
 
 class ShellStub extends Shell {
   exec(command) {
@@ -19,4 +21,4 @@ class ShellStub extends Shell {
   }
 }
 
-module.exports = ShellStub;
+export default ShellStub;

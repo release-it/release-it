@@ -1,16 +1,15 @@
-const test = require('ava');
-const sinon = require('sinon');
-const nock = require('nock');
-const GitLab = require('../lib/plugin/gitlab/GitLab');
-const {
+import test from 'ava';
+import sinon from 'sinon';
+import nock from 'nock';
+import GitLab from '../lib/plugin/gitlab/GitLab.js';
+import { factory, runTasks } from './util/index.js';
+import {
   interceptUser,
   interceptCollaborator,
-  interceptCollaboratorFallback,
   interceptPublish,
   interceptAsset,
   interceptMilestones
-} = require('./stub/gitlab');
-const { factory, runTasks } = require('./util');
+} from './stub/gitlab.js';
 
 const tokenHeader = 'Private-Token';
 const tokenRef = 'GITLAB_TOKEN';
@@ -218,19 +217,6 @@ test.serial('should throw for insufficient access level', async t => {
   interceptUser({ owner: 'john' });
 
   await t.throwsAsync(runTasks(gitlab), { message: /^User john is not a collaborator for john\/repo/ });
-});
-
-test.serial('should fallback for gitlab < v12.4', async t => {
-  const host = 'https://gitlab.com';
-  const pushRepo = `${host}/user/repo`;
-  const options = { gitlab: { tokenRef, pushRepo, host } };
-  const gitlab = factory(GitLab, { options });
-  const scope = nock(host);
-  scope.get(`/api/v4/projects/user%2Frepo/members/all/1`).reply(404);
-  interceptUser();
-  interceptCollaboratorFallback();
-
-  await t.notThrowsAsync(gitlab.init());
 });
 
 test('should not make requests in dry run', async t => {

@@ -1,14 +1,14 @@
-const fs = require('fs').promises;
-const path = require('path');
-const sh = require('shelljs');
-const tmp = require('tmp');
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import sh from 'shelljs';
 
 const mkTmpDir = () => {
-  const dir = tmp.dirSync({ prefix: 'release-it-' });
-  return dir.name;
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'release-it-'));
+  return dir;
 };
 
-const readFile = file => fs.readFile(path.resolve(file), 'utf8');
+const readFile = file => fs.promises.readFile(path.resolve(file), 'utf8');
 
 const gitAdd = (content, file, message) => {
   sh.ShellString(content).toEnd(file);
@@ -21,9 +21,4 @@ const gitAdd = (content, file, message) => {
 const getArgs = (args, prefix) =>
   args.filter(args => typeof args[0] === 'string' && args[0].startsWith(prefix)).map(args => args[0].trim());
 
-module.exports = {
-  mkTmpDir,
-  readFile,
-  gitAdd,
-  getArgs
-};
+export { mkTmpDir, readFile, gitAdd, getArgs };

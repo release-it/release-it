@@ -1,16 +1,16 @@
-const test = require('ava');
-const sinon = require('sinon');
-const { RequestError } = require('@octokit/request-error');
-const GitHub = require('../lib/plugin/github/GitHub');
-const { factory, runTasks } = require('./util');
-const {
+import test from 'ava';
+import sinon from 'sinon';
+import { RequestError } from '@octokit/request-error';
+import GitHub from '../lib/plugin/github/GitHub.js';
+import { factory, runTasks } from './util/index.js';
+import {
   interceptAuthentication,
   interceptCollaborator,
   interceptListReleases,
   interceptCreate,
   interceptUpdate,
   interceptAsset
-} = require('./stub/github');
+} from './stub/github.js';
 
 const tokenRef = 'GITHUB_TOKEN';
 const pushRepo = 'git://github.com:user/repo';
@@ -56,6 +56,7 @@ test('should release and upload assets', async t => {
   };
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git log --pretty=format:"* %s (%h)" ${from}...${to}').resolves('');
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
 
   interceptAuthentication();
@@ -85,6 +86,7 @@ test('should create a pre-release and draft release notes', async t => {
   };
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git log --pretty=format:"* %s (%h)" ${from}...${to}').resolves('');
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
 
   interceptAuthentication();
@@ -143,6 +145,7 @@ test('should update release and upload assets', async t => {
   };
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git log --pretty=format:"* %s (%h)" ${from}...${to}').resolves('');
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
   exec.withArgs('git rev-list 2.0.1 --tags --max-count=1').resolves('a123456');
   exec.withArgs('git describe --tags --abbrev=0 "a123456^"').resolves('2.0.1');
@@ -176,6 +179,7 @@ test('should create new release for unreleased tag', async t => {
   };
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git log --pretty=format:"* %s (%h)" ${from}...${to}').resolves('');
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
   exec.withArgs('git rev-list 2.0.1 --tags --max-count=1').resolves('b123456');
   exec.withArgs('git describe --tags --abbrev=0 "b123456^"').resolves('2.0.1');
@@ -229,6 +233,7 @@ test('should release to alternative host and proxy', async t => {
   };
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git log --pretty=format:"* %s (%h)" ${from}...${to}').resolves('');
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('1.0.0');
 
   await runTasks(github);
@@ -246,6 +251,7 @@ test('should release to git.pushRepo', async t => {
   const options = { git: { pushRepo: 'upstream', changelog: '' }, github: { tokenRef, skipChecks: true } };
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git log --pretty=format:"* %s (%h)" ${from}...${to}').resolves('');
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('1.0.0');
   exec.withArgs('git remote get-url upstream').resolves('https://custom.example.org/user/repo');
 
@@ -257,7 +263,9 @@ test('should release to git.pushRepo', async t => {
   exec.restore();
 });
 
-test('should throw for unauthenticated user', async t => {
+const testSkipOnActions = process.env.GITHUB_ACTIONS ? test.skip : test;
+
+testSkipOnActions('should throw for unauthenticated user', async t => {
   const options = { github: { tokenRef, pushRepo, host } };
   const github = factory(GitHub, { options });
   const stub = sinon.stub(github.client.users, 'getAuthenticated');
@@ -271,7 +279,7 @@ test('should throw for unauthenticated user', async t => {
   stub.restore();
 });
 
-test('should throw for non-collaborator', async t => {
+testSkipOnActions('should throw for non-collaborator', async t => {
   interceptAuthentication({ username: 'john' });
   const options = { github: { tokenRef, pushRepo, host } };
   const github = factory(GitHub, { options });
@@ -284,8 +292,11 @@ test('should throw for non-collaborator', async t => {
 });
 
 test.serial('should skip authentication and collaborator checks when running on GitHub Actions', async t => {
-  process.env.GITHUB_ACTIONS = 1;
-  process.env.GITHUB_ACTOR = 'release-it';
+  const { GITHUB_ACTIONS, GITHUB_ACTOR } = process.env;
+  if (!GITHUB_ACTIONS) {
+    process.env.GITHUB_ACTIONS = 1;
+    process.env.GITHUB_ACTOR = 'webpro';
+  }
 
   const options = { github: { tokenRef } };
   const github = factory(GitHub, { options });
@@ -296,12 +307,15 @@ test.serial('should skip authentication and collaborator checks when running on 
 
   t.is(authStub.callCount, 0);
   t.is(collaboratorStub.callCount, 0);
-  t.is(github.getContext('username'), 'release-it');
+  t.is(github.getContext('username'), 'webpro');
 
   authStub.restore();
   collaboratorStub.restore();
-  delete process.env.GITHUB_ACTIONS;
-  delete process.env.GITHUB_ACTOR;
+
+  if (!GITHUB_ACTIONS) {
+    process.env.GITHUB_ACTIONS = GITHUB_ACTIONS || '';
+    process.env.GITHUB_ACTOR = GITHUB_ACTOR || '';
+  }
 });
 
 test('should handle octokit client error (without retries)', async t => {
@@ -336,6 +350,7 @@ test('should not call octokit client in dry run', async t => {
   const github = factory(GitHub, { options });
   const spy = sinon.spy(github, 'client', ['get']);
   const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git log --pretty=format:"* %s (%h)" ${from}...${to}').resolves('');
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('v1.0.0');
 
   await runTasks(github);
@@ -358,7 +373,6 @@ test('should skip checks', async t => {
 
 test('should generate GitHub web release url', async t => {
   const options = {
-    git,
     github: {
       pushRepo,
       release: true,
@@ -369,6 +383,7 @@ test('should generate GitHub web release url', async t => {
   };
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git log --pretty=format:"* %s (%h)" ${from}...${to}').resolves('');
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
 
   await runTasks(github);
@@ -396,6 +411,7 @@ test('should generate GitHub web release url for enterprise host', async t => {
   };
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git log --pretty=format:"* %s (%h)" ${from}...${to}').resolves('');
   exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
 
   await runTasks(github);

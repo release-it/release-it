@@ -1,12 +1,12 @@
-const test = require('ava');
-const sinon = require('sinon');
-const Prompt = require('../lib/prompt');
-const Config = require('../lib/config');
-const git = require('../lib/plugin/git/prompts');
-const github = require('../lib/plugin/github/prompts');
-const gitlab = require('../lib/plugin/gitlab/prompts');
-const npm = require('../lib/plugin/npm/prompts');
-const { factory } = require('./util');
+import test from 'ava';
+import sinon from 'sinon';
+import Prompt from '../lib/prompt.js';
+import Config from '../lib/config.js';
+import git from '../lib/plugin/git/prompts.js';
+import github from '../lib/plugin/github/prompts.js';
+import gitlab from '../lib/plugin/gitlab/prompts.js';
+import npm from '../lib/plugin/npm/prompts.js';
+import { factory } from './util/index.js';
 
 const prompts = { git, github, gitlab, npm };
 

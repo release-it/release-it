@@ -1,8 +1,8 @@
-const { EOL } = require('os');
-const test = require('ava');
-const mockStdIo = require('mock-stdio');
-const stripAnsi = require('strip-ansi');
-const Log = require('../lib/log');
+import { EOL } from 'node:os';
+import test from 'ava';
+import mockStdIo from 'mock-stdio';
+import stripAnsi from 'strip-ansi';
+import Log from '../lib/log.js';
 
 test('should write to stdout', t => {
   const log = new Log();

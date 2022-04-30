@@ -1,17 +1,17 @@
-const path = require('path');
-const test = require('ava');
-const sh = require('shelljs');
-const _ = require('lodash');
-const sinon = require('sinon');
-const Log = require('../lib/log');
-const Spinner = require('../lib/spinner');
-const Prompt = require('../lib/prompt');
-const Config = require('../lib/config');
-const runTasks = require('../lib/tasks');
-const { mkTmpDir, gitAdd } = require('./util/helpers');
-const ShellStub = require('./stub/shell');
-const { interceptPublish: interceptGitLabPublish } = require('./stub/gitlab');
-const { interceptCreate: interceptGitHubCreate } = require('./stub/github');
+import path from 'node:path';
+import test from 'ava';
+import sh from 'shelljs';
+import _ from 'lodash';
+import sinon from 'sinon';
+import Log from '../lib/log.js';
+import Spinner from '../lib/spinner.js';
+import Prompt from '../lib/prompt.js';
+import Config from '../lib/config.js';
+import runTasks from '../lib/index.js';
+import { mkTmpDir, gitAdd } from './util/helpers.js';
+import ShellStub from './stub/shell.js';
+import { interceptPublish as interceptGitLabPublish } from './stub/gitlab.js';
+import { interceptCreate as interceptGitHubCreate } from './stub/github.js';
 
 const noop = Promise.resolve();
 
@@ -19,8 +19,7 @@ const sandbox = sinon.createSandbox();
 
 const testConfig = {
   ci: false,
-  config: false,
-  'disable-metrics': true
+  config: false
 };
 
 const log = sandbox.createStubInstance(Log);

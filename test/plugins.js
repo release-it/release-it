@@ -1,14 +1,17 @@
-const path = require('path');
-const test = require('ava');
-const sh = require('shelljs');
-const proxyquire = require('proxyquire');
-const sinon = require('sinon');
-const Log = require('../lib/log');
-const Spinner = require('../lib/spinner');
-const Config = require('../lib/config');
-const Plugin = require('../lib/plugin/Plugin');
-const { mkTmpDir, gitAdd } = require('./util/helpers');
-const ShellStub = require('./stub/shell');
+import { join } from 'node:path';
+import test from 'ava';
+import sh from 'shelljs';
+import sinon from 'sinon';
+import Log from '../lib/log.js';
+import Spinner from '../lib/spinner.js';
+import Config from '../lib/config.js';
+import { parseGitUrl } from '../lib/util.js';
+import runTasks from '../lib/index.js';
+import MyPlugin from './stub/plugin.js';
+import ReplacePlugin from './stub/plugin-replace.js';
+import ContextPlugin from './stub/plugin-context.js';
+import { mkTmpDir } from './util/helpers.js';
+import ShellStub from './stub/shell.js';
 
 const noop = Promise.resolve();
 
@@ -16,8 +19,7 @@ const sandbox = sinon.createSandbox();
 
 const testConfig = {
   ci: true,
-  config: false,
-  'disable-metrics': true
+  config: false
 };
 
 const log = sandbox.createStubInstance(Log);
@@ -35,46 +37,51 @@ const getContainer = options => {
   };
 };
 
+test.serial.before(t => {
+  t.timeout(60 * 1000);
+  sh.exec('npm link');
+});
+
 test.serial.beforeEach(t => {
-  const bare = mkTmpDir();
-  const target = mkTmpDir();
-  sh.pushd('-q', bare);
-  sh.exec(`git init --bare .`);
-  sh.exec(`git clone ${bare} ${target}`);
-  sh.pushd('-q', target);
-  gitAdd('line', 'file', 'Add file');
-  t.context = { bare, target };
+  const dir = mkTmpDir();
+  sh.pushd('-q', dir);
+  t.context = { dir };
 });
 
 test.serial.afterEach(() => {
   sandbox.resetHistory();
 });
 
-const myPlugin = sandbox.createStubInstance(Plugin);
-myPlugin.namespace = 'my-plugin';
-const MyPlugin = sandbox.stub().callsFake(() => myPlugin);
-const myLocalPlugin = sandbox.createStubInstance(Plugin);
-const MyLocalPlugin = sandbox.stub().callsFake(() => myLocalPlugin);
-const replacePlugin = sandbox.createStubInstance(Plugin);
-const ReplacePlugin = sandbox.stub().callsFake(() => replacePlugin);
-
-const staticMembers = { isEnabled: () => true, disablePlugin: () => null };
-const options = { '@global': true, '@noCallThru': true };
-const runTasks = proxyquire('../lib/tasks', {
-  'my-plugin': Object.assign(MyPlugin, staticMembers, options),
-  '/my/plugin': Object.assign(MyLocalPlugin, staticMembers, options),
-  'replace-plugin': Object.assign(ReplacePlugin, staticMembers, options, {
-    disablePlugin: () => ['version', 'git']
-  })
-});
-
 test.serial('should instantiate plugins and execute all release-cycle methods', async t => {
+  const { dir } = t.context;
+
+  const pluginDir = mkTmpDir();
+  sh.pushd('-q', pluginDir);
+  sh.ShellString(JSON.stringify({ name: 'my-plugin', version: '1.0.0', type: 'module' })).toEnd(
+    join(pluginDir, 'package.json')
+  );
+  sh.exec(`npm link release-it`);
+  const content = "import { Plugin } from 'release-it'; " + MyPlugin.toString() + '; export default MyPlugin;';
+  sh.ShellString(content).toEnd(join(pluginDir, 'index.js'));
+
+  sh.pushd('-q', dir);
+  sh.mkdir('-p', 'my/plugin');
+  sh.pushd('-q', 'my/plugin');
+  sh.ShellString(content).toEnd(join(dir, 'my', 'plugin', 'index.js'));
+
+  sh.pushd('-q', dir);
+  sh.ShellString(JSON.stringify({ name: 'project', version: '1.0.0', type: 'module' })).toEnd(
+    join(dir, 'package.json')
+  );
+  sh.exec(`npm install ${pluginDir}`);
+  sh.exec(`npm link release-it`);
+
   const config = {
     plugins: {
       'my-plugin': {
         name: 'foo'
       },
-      '/my/plugin': [
+      './my/plugin/index.js': [
         'named-plugin',
         {
           name: 'bar'
@@ -84,41 +91,47 @@ test.serial('should instantiate plugins and execute all release-cycle methods', 
   };
   const container = getContainer(config);
 
-  await runTasks({}, container);
+  const result = await runTasks({}, container);
 
-  t.is(MyPlugin.firstCall.args[0].namespace, 'my-plugin');
-  t.deepEqual(MyPlugin.firstCall.args[0].options['my-plugin'], { name: 'foo' });
-  t.is(MyLocalPlugin.firstCall.args[0].namespace, 'named-plugin');
-  t.deepEqual(MyLocalPlugin.firstCall.args[0].options['named-plugin'], { name: 'bar' });
+  t.deepEqual(container.log.info.args, [
+    ['my-plugin:foo:init'],
+    ['named-plugin:bar:init'],
+    ['my-plugin:foo:getName'],
+    ['my-plugin:foo:getLatestVersion'],
+    ['my-plugin:foo:getIncrement'],
+    ['my-plugin:foo:getIncrementedVersionCI'],
+    ['named-plugin:bar:getIncrementedVersionCI'],
+    ['my-plugin:foo:beforeBump'],
+    ['named-plugin:bar:beforeBump'],
+    ['my-plugin:foo:bump:1.3.0'],
+    ['named-plugin:bar:bump:1.3.0'],
+    ['my-plugin:foo:beforeRelease'],
+    ['named-plugin:bar:beforeRelease'],
+    ['my-plugin:foo:release'],
+    ['named-plugin:bar:release'],
+    ['my-plugin:foo:afterRelease'],
+    ['named-plugin:bar:afterRelease']
+  ]);
 
-  [
-    'init',
-    'getName',
-    'getLatestVersion',
-    'getIncrement',
-    'getIncrementedVersionCI',
-    'beforeBump',
-    'bump',
-    'beforeRelease',
-    'release',
-    'afterRelease'
-  ].forEach(method => {
-    t.is(myPlugin[method].callCount, 1);
-    t.is(myLocalPlugin[method].callCount, 1);
+  t.deepEqual(result, {
+    changelog: undefined,
+    name: 'new-project-name',
+    latestVersion: '1.2.3',
+    version: '1.3.0'
   });
-
-  const incrementBase = { latestVersion: '0.0.0', increment: undefined, isPreRelease: false, preReleaseId: undefined };
-  t.deepEqual(myPlugin.getIncrement.firstCall.args[0], incrementBase);
-  t.deepEqual(myPlugin.getIncrementedVersionCI.firstCall.args[0], incrementBase);
-  t.deepEqual(myLocalPlugin.getIncrementedVersionCI.firstCall.args[0], incrementBase);
-  t.is(myPlugin.bump.firstCall.args[0], '0.0.1');
-  t.is(myLocalPlugin.bump.firstCall.args[0], '0.0.1');
 });
 
 test.serial('should disable core plugins', async t => {
+  const { dir } = t.context;
+  sh.ShellString(JSON.stringify({ name: 'project', version: '1.0.0' })).toEnd(join(dir, 'package.json'));
+  const content =
+    "import { Plugin } from 'release-it'; " + ReplacePlugin.toString() + '; export default ReplacePlugin;';
+  sh.ShellString(content).toEnd(join(dir, 'replace-plugin.mjs'));
+  sh.exec(`npm link release-it`);
+
   const config = {
     plugins: {
-      'replace-plugin': {}
+      './replace-plugin.mjs': {}
     }
   };
   const container = getContainer(config);
@@ -134,54 +147,22 @@ test.serial('should disable core plugins', async t => {
 });
 
 test.serial('should expose context to execute commands', async t => {
-  const { bare } = t.context;
-  const latestVersion = '1.0.0';
-  const project = path.basename(bare);
-  const pkgName = 'plugin-context';
-  const owner = path.basename(path.dirname(bare));
-  gitAdd(`{"name":"${pkgName}","version":"${latestVersion}"}`, 'package.json', 'Add package.json');
+  const { dir } = t.context;
+  sh.ShellString(JSON.stringify({ name: 'pkg-name', version: '1.0.0', type: 'module' })).toEnd(
+    join(dir, 'package.json')
+  );
+  const content =
+    "import { Plugin } from 'release-it'; " + ContextPlugin.toString() + '; export default ContextPlugin;';
+  sh.ShellString(content).toEnd(join(dir, 'context-plugin.js'));
+  sh.exec(`npm link release-it`);
 
-  class MyPlugin extends Plugin {
-    init() {
-      this.exec('echo ${version.isPreRelease}');
-    }
-    beforeBump() {
-      const context = this.config.getContext();
-      t.is(context.name, pkgName);
-      this.exec('echo ${name} ${repo.owner} ${repo.project} ${latestVersion} ${version}');
-    }
-    bump() {
-      const repo = this.config.getContext('repo');
-      t.is(repo.owner, owner);
-      t.is(repo.project, project);
-      t.is(repo.repository, `${owner}/${project}`);
-      this.exec('echo ${name} ${repo.owner} ${repo.project} ${latestVersion} ${version}');
-    }
-    beforeRelease() {
-      const context = this.config.getContext();
-      t.is(context.name, pkgName);
-      this.exec('echo ${name} ${repo.owner} ${repo.project} ${latestVersion} ${version} ${tagName}');
-    }
-    release() {
-      const context = this.config.getContext();
-      t.is(context.latestVersion, latestVersion);
-      t.is(context.version, '1.0.1');
-      this.exec('echo ${name} ${repo.owner} ${repo.project} ${latestVersion} ${version} ${tagName}');
-    }
-    afterRelease() {
-      const context = this.config.getContext();
-      t.is(context.tagName, '1.0.1');
-      this.exec('echo ${name} ${repo.owner} ${repo.project} ${latestVersion} ${version} ${tagName}');
-    }
-  }
-  const statics = { isEnabled: () => true, disablePlugin: () => null };
-  const options = { '@global': true, '@noCallThru': true };
-  const runTasks = proxyquire('../lib/tasks', {
-    'my-plugin': Object.assign(MyPlugin, statics, options)
-  });
+  const repo = parseGitUrl('https://github.com/user/pkg');
 
-  const container = getContainer({ plugins: { 'my-plugin': {} } });
+  const container = getContainer({ plugins: { './context-plugin.js': {} } });
   const exec = sinon.spy(container.shell, 'execFormattedCommand');
+
+  container.config.setContext({ repo });
+  container.config.setContext({ tagName: '1.0.1' });
 
   await runTasks({}, container);
 
@@ -191,10 +172,16 @@ test.serial('should expose context to execute commands', async t => {
 
   t.deepEqual(pluginExecArgs, [
     'echo false',
-    `echo ${pkgName} ${owner} ${project} ${latestVersion} 1.0.1`,
-    `echo ${pkgName} ${owner} ${project} ${latestVersion} 1.0.1`,
-    `echo ${pkgName} ${owner} ${project} ${latestVersion} 1.0.1 1.0.1`,
-    `echo ${pkgName} ${owner} ${project} ${latestVersion} 1.0.1 1.0.1`,
-    `echo ${pkgName} ${owner} ${project} ${latestVersion} 1.0.1 1.0.1`
+    'echo false',
+    `echo pkg-name user 1.0.0 1.0.1`,
+    `echo pkg-name user 1.0.0 1.0.1`,
+    `echo user pkg user/pkg 1.0.1`,
+    `echo user pkg user/pkg 1.0.1`,
+    `echo user pkg user/pkg 1.0.1`,
+    `echo user pkg user/pkg 1.0.1`,
+    `echo pkg 1.0.0 1.0.1 1.0.1`,
+    `echo pkg 1.0.0 1.0.1 1.0.1`,
+    `echo pkg 1.0.0 1.0.1 1.0.1`,
+    `echo pkg 1.0.0 1.0.1 1.0.1`
   ]);
 });

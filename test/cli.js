@@ -1,7 +1,9 @@
-const test = require('ava');
-const mockStdIo = require('mock-stdio');
-const pkg = require('../package.json');
-const { version, help } = require('../lib/cli');
+import test from 'ava';
+import mockStdIo from 'mock-stdio';
+import { version, help } from '../lib/cli.js';
+import { readJSON } from '../lib/util.js';
+
+const pkg = readJSON(new URL('../package.json', import.meta.url));
 
 test('should print version', t => {
   mockStdIo.start();

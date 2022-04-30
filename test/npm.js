@@ -1,10 +1,10 @@
-const path = require('path');
-const test = require('ava');
-const sinon = require('sinon');
-const mock = require('mock-fs');
-const npm = require('../lib/plugin/npm/npm');
-const { factory, runTasks } = require('./util');
-const { getArgs } = require('./util/helpers');
+import path from 'node:path';
+import test from 'ava';
+import sinon from 'sinon';
+import mock from 'mock-fs';
+import npm from '../lib/plugin/npm/npm.js';
+import { factory, runTasks } from './util/index.js';
+import { getArgs } from './util/helpers.js';
 
 test('should return npm package url', t => {
   const options = { npm: { name: 'my-cool-package' } };
@@ -279,7 +279,6 @@ test('should skip checks', async t => {
 });
 
 test('should publish to a different/scoped registry', async t => {
-  delete require.cache[require.resolve('../package.json')];
   mock({
     [path.resolve('package.json')]: JSON.stringify({
       name: '@my-scope/my-pkg',
@@ -317,7 +316,6 @@ test('should publish to a different/scoped registry', async t => {
 });
 
 test('should not publish when `npm version` fails', async t => {
-  delete require.cache[require.resolve('../package.json')];
   mock({
     [path.resolve('package.json')]: JSON.stringify({
       name: '@my-scope/my-pkg',
