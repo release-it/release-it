@@ -68,7 +68,7 @@
     "git-url-parse": "11.6.0",
     "globby": "13.1.1",
     "got": "12.0.4",
-    "inquirer": "8.2.3",
+    "inquirer": "8.2.4",
     "is-ci": "3.0.1",
     "lodash": "4.17.21",
     "mime-types": "2.1.35",
