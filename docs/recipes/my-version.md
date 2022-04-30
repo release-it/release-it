@@ -4,9 +4,9 @@ This example reads a `VERSION` file, bumps it, and publishes to a package reposi
 `./VERSION` file actually exists.
 
 ```javascript
-const { Plugin } = require('release-it');
-const fs = require('fs');
-const path = require('path');
+import { Plugin } from 'release-it';
+import fs from 'fs';
+import path from 'path';
 
 const prompts = {
   publish: {
@@ -59,7 +59,7 @@ class MyVersionPlugin extends Plugin {
   }
 }
 
-module.exports = MyVersionPlugin;
+export default MyVersionPlugin;
 ```
 
 To add this plugin to a project, use this configuration:

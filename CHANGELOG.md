@@ -5,20 +5,21 @@ This document lists breaking changes for each major release.
 See the GitHub Releases page for detailed changelogs:
 [https://github.com/release-it/release-it/releases](https://github.com/release-it/release-it/releases)
 
-## v15
+## v15 (2022-04-30)
 
 - Removed support for Node.js v10 and v12.
 - Removed support for GitLab v12.4 and lower.
 - Removed anonymous metrics (and the option to disable it).
+- Programmatic usage and plugins only through ES Module syntax (`import`)
 
 Use release-it v14 in legacy environments.
 
-## v14
+## v14 (2020-09-03)
 
 - Removed `global` property from plugins. Use `this.config[key]` instead.
 - Removed deprecated `npm.access` option. Set this in `package.json` instead.
 
-## v13
+## v13 (2020-03-07)
 
 - Dropped support for Node v8
 - Dropped support for GitLab v11.6 and lower.
@@ -26,7 +27,7 @@ Use release-it v14 in legacy environments.
 - Removed deprecated `--non-interactive` (`-n`) argument. Use `--ci` instead.
 - Removed old `%s` and `[REV_RANGE]` syntax in command substitutions. Use `${version}` and `${latestTag}` instead.
 
-## v12
+## v12 (2019-05-03)
 
 - The `--follow-tags` argument for `git push` has been moved to the default configuration. This is only a breaking
   change if `git.pushArgs` was not empty (it was empty by default).

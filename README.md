@@ -20,6 +20,11 @@ system, and hooks to execute any command you need to test, build, and/or publish
 [![Action Status](https://github.com/release-it/release-it/workflows/Cross-OS%20Tests/badge.svg)](https://github.com/release-it/release-it/actions)
 [![npm version](https://badge.fury.io/js/release-it.svg)](https://www.npmjs.com/package/release-it)
 
+## Announcement
+
+The latest major version is v15, supporting Node.js 14 and up (as Node.js v12 is EOL). Use release-it v14 for
+environments running Node.js v10 and v12. Also see [CHANGELOG.md](./CHANGELOG.md).
+
 ## Links
 
 - See [CHANGELOG.md](./CHANGELOG.md) for major/breaking updates, and
