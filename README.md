@@ -35,9 +35,8 @@ environments running Node.js v10 and v12. Also see [CHANGELOG.md](./CHANGELOG.md
 
 ## Installation
 
-Although release-it is a **generic** release tool, installation requires npm. To use release-it, a `package.json` file
-is not required. The recommended way to install release-it also adds basic configuration. Answer one or two questions
-and it's ready:
+Although release-it is a **generic** release tool, most projects use it for projects with npm packages. The recommended
+way to install release-it uses npm and adds some minimal configuration to get started:
 
 ```bash
 npm init release-it
@@ -46,7 +45,7 @@ npm init release-it
 Alternatively, install it manually, and add the `release` script to `package.json`:
 
 ```bash
-npm install --save-dev release-it
+npm install -D release-it
 ```
 
 ```json
@@ -62,24 +61,33 @@ npm install --save-dev release-it
 }
 ```
 
-Now you can run `npm run release` from the command line (any release-it arguments behind the `--`):
+Now you can run `npm run release` from the command line (put release-it arguments behind the `-- `):
 
 ```bash
 npm run release
 npm run release -- minor --ci
 ```
 
-### Global usage
+### Global Installation
 
-Use release-it in any (non-npm) project, take it for a test drive, or install it globally:
+#### Using npx or npm
+
+Use npx to run release-it directly from anywhere:
 
 ```bash
-# Run release-it from anywhere (without installation)
 npx release-it
+```
 
-# Install globally and run from anywhere
-npm install --global release-it
-release-it
+Or use npm to install and run release-it globally:
+
+```bash
+npm install -g release-it
+```
+
+#### Using Homebrew
+
+```bash
+brew install release-it
 ```
 
 ## Usage
@@ -90,7 +98,7 @@ Release a new version:
 release-it
 ```
 
-You will be prompted to select the new version, and more prompts will follow based on your setup.
+You will be prompted to select the new version, and more prompts will follow based on your configuration.
 
 Run release-it from the root of the project to prevent potential issues.
 
