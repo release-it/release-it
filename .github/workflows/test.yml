@@ -6,6 +6,9 @@ env:
   GITHUB_TOKEN: 1
   GITLAB_TOKEN: 1
 
+permissions:
+  contents: read
+
 jobs:
   test:
     strategy:
