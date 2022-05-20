@@ -59,6 +59,10 @@ const getHooks = plugins => {
   return hooks;
 };
 
+test.before(t => {
+  t.timeout(60 * 1000);
+});
+
 test.serial.beforeEach(t => {
   const bare = mkTmpDir();
   const target = mkTmpDir();
