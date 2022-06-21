@@ -140,24 +140,17 @@ test.serial('should commit, tag and push with extra args', async t => {
   stub.restore();
 });
 
-test.serial('should commit without message if not provided', async t => {
+test.serial('should amend commit without message if not provided', async t => {
   const bare = mkTmpDir();
   sh.exec(`git init --bare ${bare}`);
   sh.exec(`git clone ${bare} .`);
   gitAdd('line', 'file', 'Add file');
-  const options = {
-    git: { commitArgs: ['--amend', '--no-edit', '--no-verify'], tagArgs: ['-T', 'foo'], pushArgs: ['-U', 'bar', '-V'] }
-  };
+  const options = { git: { commitArgs: ['--amend', '--no-edit', '--no-verify'] } };
   const gitClient = factory(Git, { options });
   const stub = sinon.stub(gitClient.shell, 'exec').resolves();
   await gitClient.stage('package.json');
   await gitClient.commit();
-  await gitClient.tag({ name: 'v1.2.4', annotation: 'Release v1.2.4' });
-  await gitClient.push();
   t.deepEqual(stub.secondCall.args[0], ['git', 'commit', '--amend', '--no-edit', '--no-verify']);
-  t.is(stub.thirdCall.args[0][5], '-T');
-  t.is(stub.thirdCall.args[0][6], 'foo');
-  t.true(stub.lastCall.args[0].join(' ').includes('-U bar -V'));
   stub.restore();
 });
 
