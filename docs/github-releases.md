@@ -38,7 +38,7 @@ In this mode, release-it will open the default browser pointed at the GitHub web
 - Set `github.web: true` explicitly to override this `GITHUB_TOKEN` check.
 
 In non-interactive CI mode (using `--ci` or in a CI environment), release-it will not open a browser, but instead print
-the url to the GitHub web interface (including data to pre-ppoulate the fields).
+the url to the GitHub web interface (including data to pre-populate the fields).
 
 ## Git
 
