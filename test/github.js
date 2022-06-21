@@ -198,7 +198,8 @@ test('should create new release for unreleased tag', async t => {
 });
 
 test('should release to enterprise host', async t => {
-  const github = factory(GitHub, { options: { git, github: { tokenRef } } });
+  const options = { git, github: { tokenRef, pushRepo: 'git://github.example.org:user/repo' } };
+  const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
   exec.withArgs('git remote get-url origin').resolves(`https://github.example.org/user/repo`);
   exec.withArgs('git config --get remote.origin.url').resolves(`https://github.example.org/user/repo`);
