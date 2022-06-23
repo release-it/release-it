@@ -308,7 +308,7 @@ test.serial('should skip authentication and collaborator checks when running on 
 
   t.is(authStub.callCount, 0);
   t.is(collaboratorStub.callCount, 0);
-  t.is(github.getContext('username'), 'webpro');
+  t.is(github.getContext('username'), process.env.GITHUB_ACTOR);
 
   authStub.restore();
   collaboratorStub.restore();
