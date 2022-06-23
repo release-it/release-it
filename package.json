@@ -80,7 +80,7 @@
     "proxy-agent": "5.0.0",
     "semver": "7.3.7",
     "shelljs": "0.8.5",
-    "update-notifier": "5.1.0",
+    "update-notifier": "6.0.0",
     "url-join": "5.0.0",
     "wildcard-match": "5.1.2",
     "yargs-parser": "21.0.1"
