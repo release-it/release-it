@@ -38,7 +38,7 @@
   "type": "module",
   "exports": {
     ".": "./lib/index.js",
-    "./test/util": "./test/util/index.js"
+    "./test/util.js": "./test/util/index.js"
   },
   "files": [
     "bin",
