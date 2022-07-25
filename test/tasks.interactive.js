@@ -60,7 +60,7 @@ const getHooks = plugins => {
 };
 
 test.before(t => {
-  t.timeout(60 * 1000);
+  t.timeout(90 * 1000);
 });
 
 test.serial.beforeEach(t => {
