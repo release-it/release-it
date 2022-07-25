@@ -122,6 +122,8 @@ test.serial('should instantiate plugins and execute all release-cycle methods', 
 });
 
 test.serial('should instantiate plugins and execute all release-cycle methods for scoped plugins', async t => {
+  const { dir } = t.context;
+
   const pluginDir = mkTmpDir();
   sh.pushd('-q', pluginDir);
   sh.ShellString(JSON.stringify({ name: '@scoped/my-plugin', version: '1.0.0', type: 'module' })).toEnd(
@@ -131,6 +133,10 @@ test.serial('should instantiate plugins and execute all release-cycle methods fo
   const content = "import { Plugin } from 'release-it'; " + MyPlugin.toString() + '; export default MyPlugin;';
   sh.ShellString(content).toEnd(join(pluginDir, 'index.js'));
 
+  sh.pushd('-q', dir);
+  sh.ShellString(JSON.stringify({ name: 'project', version: '1.0.0', type: 'module' })).toEnd(
+    join(dir, 'package.json')
+  );
   sh.exec(`npm install ${pluginDir}`);
   sh.exec(`npm link release-it`);
 
