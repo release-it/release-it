@@ -297,16 +297,16 @@ Using Inquirer.js inside custom hook scripts might cause issues (since release-i
 
 Since v11, release-it can be extended in many, many ways. Here are some plugins:
 
-| Plugin                                                                                     | Description                                                                   |
-| ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
-| [@release-it/bumper](https://github.com/release-it/bumper)                                 | Read & write the version from/to any file                                     |
-| [@release-it/conventional-changelog](https://github.com/release-it/conventional-changelog) | Provides recommended bump, conventional-changelog, and updates `CHANGELOG.md` |
-| [@release-it/keep-a-changelog](https://github.com/release-it/keep-a-changelog)             | Maintain CHANGELOG.md using the Keep a Changelog standards                    |
-| [@release-it-plugins/lerna-changelog](https://github.com/@release-it-plugins/lerna-changelog)| Integrates lerna-changelog into the release-it pipeline                       |
-| [@release-it-plugins/workspaces](https://github.com/@release-it-plugins/workspaces)        | Releases each of your projects configured workspaces                          |
-| [release-it-calver-plugin](https://github.com/casmith/release-it-calver-plugin)            | Enables Calendar Versioning (calver) with release-it                          |
-| [@grupoboticario/news-fragments](https://github.com/grupoboticario/news-fragments)         | An easy way to generate your changelog file                                   |
-| [@j-ulrich/release-it-regex-bumper](https://github.com/j-ulrich/release-it-regex-bumper)   | Regular expression based version read/write plugin for release-it             |
+| Plugin                                                                                       | Description                                                                   |
+| -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| [@release-it/bumper](https://github.com/release-it/bumper)                                   | Read & write the version from/to any file                                     |
+| [@release-it/conventional-changelog](https://github.com/release-it/conventional-changelog)   | Provides recommended bump, conventional-changelog, and updates `CHANGELOG.md` |
+| [@release-it/keep-a-changelog](https://github.com/release-it/keep-a-changelog)               | Maintain CHANGELOG.md using the Keep a Changelog standards                    |
+| [@release-it-plugins/lerna-changelog](https://github.com/release-it-plugins/lerna-changelog) | Integrates lerna-changelog into the release-it pipeline                       |
+| [@release-it-plugins/workspaces](https://github.com/release-it-plugins/workspaces)           | Releases each of your projects configured workspaces                          |
+| [release-it-calver-plugin](https://github.com/casmith/release-it-calver-plugin)              | Enables Calendar Versioning (calver) with release-it                          |
+| [@grupoboticario/news-fragments](https://github.com/grupoboticario/news-fragments)           | An easy way to generate your changelog file                                   |
+| [@j-ulrich/release-it-regex-bumper](https://github.com/j-ulrich/release-it-regex-bumper)     | Regular expression based version read/write plugin for release-it             |
 
 Internally, release-it uses its own plugin architecture (for Git, GitHub, GitLab, npm).
 
