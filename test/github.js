@@ -13,7 +13,7 @@ import {
 } from './stub/github.js';
 
 const tokenRef = 'GITHUB_TOKEN';
-const pushRepo = 'git://github.com:user/repo';
+const pushRepo = 'git://github.com/user/repo';
 const host = 'github.com';
 const git = { changelog: '' };
 const requestErrorOptions = { request: { url: '', headers: {} }, response: { headers: {} } };
@@ -198,7 +198,7 @@ test('should create new release for unreleased tag', async t => {
 });
 
 test('should release to enterprise host', async t => {
-  const options = { git, github: { tokenRef, pushRepo: 'git://github.example.org:user/repo' } };
+  const options = { git, github: { tokenRef, pushRepo: 'git://github.example.org/user/repo' } };
   const github = factory(GitHub, { options });
   const exec = sinon.stub(github.shell, 'exec').callThrough();
   exec.withArgs('git remote get-url origin').resolves(`https://github.example.org/user/repo`);
@@ -227,7 +227,7 @@ test('should release to alternative host and proxy', async t => {
     git,
     github: {
       tokenRef,
-      pushRepo: `git://custom.example.org:user/repo`,
+      pushRepo: `git://custom.example.org/user/repo`,
       host: 'custom.example.org',
       proxy: 'http://proxy:8080'
     }
@@ -402,7 +402,7 @@ test('should generate GitHub web release url for enterprise host', async t => {
   const options = {
     git,
     github: {
-      pushRepo: 'git://custom.example.org:user/repo',
+      pushRepo: 'git@custom.example.org:user/repo',
       release: true,
       web: true,
       host: 'custom.example.org',
