@@ -1,6 +1,11 @@
 name: Cross-OS Tests
 
-on: [push, pull_request]
+on:
+  push:
+    tags-ignore:
+      - '**'
+  pull_request:
+  workflow_dispatch:
 
 env:
   GITHUB_TOKEN: 1
