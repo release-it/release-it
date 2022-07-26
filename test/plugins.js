@@ -121,6 +121,57 @@ test.serial('should instantiate plugins and execute all release-cycle methods', 
   });
 });
 
+test.serial('should instantiate plugins and execute all release-cycle methods for scoped plugins', async t => {
+  const { dir } = t.context;
+
+  const pluginDir = mkTmpDir();
+  sh.pushd('-q', pluginDir);
+  sh.ShellString(JSON.stringify({ name: '@scoped/my-plugin', version: '1.0.0', type: 'module' })).toEnd(
+    join(pluginDir, 'package.json')
+  );
+  sh.exec(`npm link release-it`);
+  const content = "import { Plugin } from 'release-it'; " + MyPlugin.toString() + '; export default MyPlugin;';
+  sh.ShellString(content).toEnd(join(pluginDir, 'index.js'));
+
+  sh.pushd('-q', dir);
+  sh.ShellString(JSON.stringify({ name: 'project', version: '1.0.0', type: 'module' })).toEnd(
+    join(dir, 'package.json')
+  );
+  sh.exec(`npm install ${pluginDir}`);
+  sh.exec(`npm link release-it`);
+
+  const config = {
+    plugins: {
+      '@scoped/my-plugin': {
+        name: 'foo'
+      }
+    }
+  };
+  const container = getContainer(config);
+
+  const result = await runTasks({}, container);
+
+  t.deepEqual(container.log.info.args, [
+    ['@scoped/my-plugin:foo:init'],
+    ['@scoped/my-plugin:foo:getName'],
+    ['@scoped/my-plugin:foo:getLatestVersion'],
+    ['@scoped/my-plugin:foo:getIncrement'],
+    ['@scoped/my-plugin:foo:getIncrementedVersionCI'],
+    ['@scoped/my-plugin:foo:beforeBump'],
+    ['@scoped/my-plugin:foo:bump:1.3.0'],
+    ['@scoped/my-plugin:foo:beforeRelease'],
+    ['@scoped/my-plugin:foo:release'],
+    ['@scoped/my-plugin:foo:afterRelease']
+  ]);
+
+  t.deepEqual(result, {
+    changelog: undefined,
+    name: 'new-project-name',
+    latestVersion: '1.2.3',
+    version: '1.3.0'
+  });
+});
+
 test.serial('should disable core plugins', async t => {
   const { dir } = t.context;
   sh.ShellString(JSON.stringify({ name: 'project', version: '1.0.0' })).toEnd(join(dir, 'package.json'));
