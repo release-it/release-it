@@ -38,6 +38,7 @@
   "type": "module",
   "exports": {
     ".": "./lib/index.js",
+    "./package.json": "./package.json",
     "./test/util/index.js": "./test/util/index.js"
   },
   "files": [
