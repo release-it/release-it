@@ -74,7 +74,7 @@
     "lodash": "4.17.21",
     "mime-types": "2.1.35",
     "new-github-release-url": "2.0.0",
-    "node-fetch": "3.2.9",
+    "node-fetch": "3.2.10",
     "open": "8.4.0",
     "ora": "6.1.2",
     "os-name": "5.0.1",
