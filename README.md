@@ -110,6 +110,8 @@ Use `--dry-run` to show the interactivity and the commands it _would_ execute.
 
 To print the next version without releasing anything, add the `--release-version` flag.
 
+To print the changelog without releasing anything, add the `--changelog` flag.
+
 ## Configuration
 
 Out of the box, release-it has sane defaults, and [plenty of options](./config/release-it.json) to configure it. Most
@@ -275,6 +277,7 @@ latestVersion
 changelog
 name
 repo.remote, repo.protocol, repo.host, repo.owner, repo.repository, repo.project
+branchName
 ```
 
 All variables are available in all hooks. The only exception is that the additional variables listed above are not yet
