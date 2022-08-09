@@ -294,8 +294,8 @@ test.serial('should roll back when cancelled', async t => {
   await gitClient.tag();
   await gitClient.rollbackOnce();
 
-  t.is(exec.args[10][0], 'git tag --delete v1.2.4');
-  t.is(exec.args[11][0], 'git reset --hard HEAD~1');
+  t.is(exec.args[11][0], 'git tag --delete v1.2.4');
+  t.is(exec.args[12][0], 'git reset --hard HEAD~1');
 });
 
 test.serial('should not touch existing history when rolling back', async t => {

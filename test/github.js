@@ -357,7 +357,7 @@ test('should not call octokit client in dry run', async t => {
   await runTasks(github);
 
   t.is(spy.get.callCount, 0);
-  t.is(github.log.exec.args[0][0], 'octokit repos.createRelease "R 1.0.1" (v1.0.1)');
+  t.is(github.log.exec.args[1][0], 'octokit repos.createRelease "R 1.0.1" (v1.0.1)');
   t.is(github.log.exec.lastCall.args[0], 'octokit repos.uploadReleaseAssets');
   const { isReleased, releaseUrl } = github.getContext();
   t.true(isReleased);

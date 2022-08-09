@@ -231,8 +231,8 @@ test('should not make requests in dry run', async t => {
 
   const { isReleased, releaseUrl } = gitlab.getContext();
   t.is(spy.get.callCount, 0);
-  t.is(gitlab.log.exec.args[1][0], 'gitlab releases#uploadAssets');
-  t.is(gitlab.log.exec.args[2][0], 'gitlab releases#createRelease "R" (1.0.1)');
+  t.is(gitlab.log.exec.args[2][0], 'gitlab releases#uploadAssets');
+  t.is(gitlab.log.exec.args[3][0], 'gitlab releases#createRelease "R" (1.0.1)');
   t.true(isReleased);
   t.is(releaseUrl, `${pushRepo}/-/releases`);
   spy.get.restore();

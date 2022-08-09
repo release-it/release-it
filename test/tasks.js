@@ -186,6 +186,42 @@ test.serial('should release all the things (basic)', async t => {
   exec.restore();
 });
 
+test.serial('should release with correct tag name', async t => {
+  const { bare, target } = t.context;
+  const project = path.basename(bare);
+  const pkgName = path.basename(target);
+  const owner = path.basename(path.dirname(bare));
+  const { stdout } = sh.exec('git rev-parse --abbrev-ref HEAD');
+  const branchName = stdout.trim();
+  gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
+  sh.exec(`git tag ${branchName}-1.0.0`);
+  const sha = gitAdd('line', 'file', 'More file');
+
+  interceptGitHubCreate({
+    owner,
+    project,
+    body: { tag_name: `${branchName}-1.0.1`, name: 'Release 1.0.1', body: `* More file (${sha})`, prerelease: false }
+  });
+
+  const container = getContainer({
+    git: { tagName: '${branchName}-${version}' },
+    github: { release: true, skipChecks: true, pushRepo: `https://github.com/${owner}/${project}` }
+  });
+
+  const exec = sinon.spy(container.shell, 'exec');
+
+  await runTasks({}, container);
+
+  const gitArgs = getArgs(container.shell.exec.args, 'git');
+
+  t.true(gitArgs.includes(`git tag --annotate --message Release 1.0.1 ${branchName}-1.0.1`));
+  t.true(
+    log.log.secondCall.args[0].endsWith(`https://github.com/${owner}/${project}/releases/tag/${branchName}-1.0.1`)
+  );
+
+  exec.restore();
+});
+
 test.serial('should release all the things (pre-release, github, gitlab)', async t => {
   const { bare, target } = t.context;
   const project = path.basename(bare);

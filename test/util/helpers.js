@@ -19,6 +19,9 @@ const gitAdd = (content, file, message) => {
 };
 
 const getArgs = (args, prefix) =>
-  args.filter(args => typeof args[0] === 'string' && args[0].startsWith(prefix)).map(args => args[0].trim());
+  args
+    .map(args => (typeof args[0] !== 'string' ? args[0].join(' ') : args[0]))
+    .filter(cmd => cmd.startsWith(prefix))
+    .map(cmd => cmd.trim());
 
 export { mkTmpDir, readFile, gitAdd, getArgs };
