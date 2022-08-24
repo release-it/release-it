@@ -41,7 +41,11 @@ different git url.
 Use `git.tagName` to set a custom tag, not strictly equal to the (prefixed) version. When the latest tag has the `v`
 prefix, it will be used again. No need to configure `git.tagName: "v${version}"` in this case.
 
-Example: `--git.tagName=${name}@${version}`
+Examples:
+
+- `--git.tagName=${branchName}-${version}`
+- `--git.tagName=${repo.project}-${version}`
+- `--git.tagName=${npm.name}@${version}`
 
 ## Tag Match
 
