@@ -2,8 +2,10 @@ name: Cross-OS Tests
 
 on:
   push:
-    tags-ignore:
+    branches:
       - '**'
+    tags:
+      - '!**'
   pull_request:
   workflow_dispatch:
 
