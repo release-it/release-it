@@ -47,12 +47,39 @@ test('parseGitUrl', t => {
     repository: 'org/sub-group/repo-in-sub-group'
   });
 
-  t.deepEqual(parseGitUrl('/Users/john/doe/owner/project'), {
-    host: '',
+  t.deepEqual(parseGitUrl('git@github.com:org/example.com.git'), {
+    host: 'github.com',
+    owner: 'org',
+    project: 'example.com',
+    protocol: 'ssh',
+    remote: 'git@github.com:org/example.com.git',
+    repository: 'org/example.com'
+  });
+
+  t.deepEqual(parseGitUrl('file://Users/john/doe/owner/project'), {
+    host: 'users',
     owner: 'owner',
     project: 'project',
     protocol: 'file',
-    remote: '/Users/john/doe/owner/project',
+    remote: 'file://users/john/doe/owner/project',
+    repository: 'owner/project'
+  });
+
+  t.deepEqual(parseGitUrl('/Users/john/doe/owner/project'), {
+    host: 'users',
+    owner: 'owner',
+    project: 'project',
+    protocol: 'file',
+    remote: 'file://users/john/doe/owner/project',
+    repository: 'owner/project'
+  });
+
+  t.deepEqual(parseGitUrl('C:\\\\Users\\john\\doe\\owner\\project'), {
+    host: 'users',
+    owner: 'owner',
+    project: 'project',
+    protocol: 'file',
+    remote: 'file://users/john/doe/owner/project',
     repository: 'owner/project'
   });
 });

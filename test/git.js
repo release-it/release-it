@@ -274,7 +274,7 @@ test.serial('should reset files', async t => {
 
 test.serial('should roll back when cancelled', async t => {
   sh.exec('git init');
-  sh.exec(`git remote add origin foo`);
+  sh.exec(`git remote add origin file://foo`);
   const version = '1.2.3';
   gitAdd(`{"version":"${version}"}`, 'package.json', 'Add package.json');
   const options = { git: { requireCleanWorkingDir: true, commit: true, tag: true, tagName: 'v${version}' } };
