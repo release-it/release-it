@@ -100,7 +100,7 @@
     "nock": "13.2.9",
     "nyc": "15.1.0",
     "prettier": "2.7.1",
-    "sinon": "14.0.0",
+    "sinon": "14.0.1",
     "strip-ansi": "7.0.1"
   },
   "engines": {
