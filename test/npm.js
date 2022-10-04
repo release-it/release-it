@@ -356,3 +356,12 @@ test('should add allow-same-version argument', async t => {
   const version = exec.args.filter(arg => arg[0].startsWith('npm version'));
   t.regex(version[0][0], / --allow-same-version/);
 });
+
+test('should add version arguments', async t => {
+  const options = { npm: { skipChecks: true, versionArgs: ['--workspaces-update=false', '--allow-same-version'] } };
+  const npmClient = factory(npm, { options });
+  const exec = sinon.stub(npmClient.shell, 'exec').resolves();
+  await runTasks(npmClient);
+  const version = exec.args.filter(arg => arg[0].startsWith('npm version'));
+  t.regex(version[0][0], / --workspaces-update=false --allow-same-version/);
+});

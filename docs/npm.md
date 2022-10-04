@@ -94,10 +94,22 @@ basically defeats the purpose of 2FA (also, the OTP expires after a short period
 Use `npm.publishPath` to publish only a specific folder. For example, set `npm.publishPath` to `"dist"`. The default
 value is the current (root) folder (`"."`).
 
-## Allow same version
+## Extra arguments
+
+Use `npm.versionArgs` and/or `npm.publishArgs` to pass extra arguments to `npm version` and `npm publish`, respectively.
+Example:
+
+```json
+{
+  "npm": {
+    "versionArgs": ["--allow-same-version", "--workspaces-update=false"],
+    "publishArgs": ["--include-workspace-root"]
+  }
+}
+```
 
 Use `npm.allowSameVersion` to prevent throwing error when setting the new version to the same value as the current
-version.
+version. This option may become deprecated, it is recommended to use `versionArgs` for this.
 
 ## Monorepos
 

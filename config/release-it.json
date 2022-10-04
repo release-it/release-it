@@ -27,6 +27,7 @@
     "otp": null,
     "ignoreVersion": false,
     "allowSameVersion": false,
+    "versionArgs": [],
     "skipChecks": false,
     "timeout": 10
   },
