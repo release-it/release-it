@@ -51,7 +51,8 @@
     "lint": "eslint lib test",
     "format": "prettier --write \"{lib,test}/**/*.js\"",
     "test": "ava --no-worker-threads",
-    "release": "./bin/release-it.js"
+    "release": "./bin/release-it.js",
+    "knip": "knip"
   },
   "author": {
     "email": "lars@webpro.nl",
@@ -95,6 +96,7 @@
     "eslint-plugin-ava": "13.2.0",
     "eslint-plugin-import": "2.26.0",
     "eslint-plugin-prettier": "4.2.1",
+    "knip": "0.2.0",
     "mock-fs": "5.1.4",
     "mock-stdio": "1.0.3",
     "nock": "13.2.9",

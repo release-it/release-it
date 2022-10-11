@@ -1,0 +1,8 @@
+{
+  "entryFiles": ["bin/release-it.js"],
+  "projectFiles": ["bin/release-it.js", "lib/**/*.js"],
+  "dev": {
+    "entryFiles": ["bin/release-it.js", "test/*.js"],
+    "projectFiles": ["bin/release-it.js", "lib/**/*.js", "test/**/*.js"]
+  }
+}
