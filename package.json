@@ -65,7 +65,6 @@
     "chalk": "5.1.2",
     "cosmiconfig": "8.0.0",
     "execa": "6.1.0",
-    "form-data": "4.0.0",
     "git-url-parse": "13.1.0",
     "globby": "13.1.2",
     "got": "12.5.3",
