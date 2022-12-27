@@ -128,7 +128,7 @@ test.serial('should use pkg.version (in sub dir) w/o tagging repo', async t => {
   const { stdout } = sh.exec('git describe --tags --match=* --abbrev=0');
   t.is(stdout.trim(), '1.0.0');
   const npmArgs = getArgs(exec.args, 'npm');
-  t.is(npmArgs[4], 'npm version 1.3.0 --no-git-tag-version');
+  t.is(npmArgs[5], 'npm version 1.3.0 --no-git-tag-version');
   exec.restore();
 });
 
@@ -174,6 +174,7 @@ test.serial('should release all the things (basic)', async t => {
     'npm ping',
     'npm whoami',
     `npm show ${pkgName}@latest version`,
+    'npm --version',
     `npm access ls-collaborators ${pkgName}`,
     'npm version 1.0.1 --no-git-tag-version',
     'npm publish . --tag latest'
@@ -307,6 +308,7 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
     'npm ping',
     'npm whoami',
     `npm show ${pkgName}@latest version`,
+    'npm --version',
     `npm access ls-collaborators ${pkgName}`,
     'npm version 1.1.0-alpha.0 --no-git-tag-version',
     'npm publish . --tag alpha'
@@ -346,6 +348,7 @@ test.serial('should publish pre-release without pre-id with different npm.tag', 
     'npm ping',
     'npm whoami',
     `npm show ${pkgName}@latest version`,
+    'npm --version',
     `npm access ls-collaborators ${pkgName}`,
     'npm version 2.0.0-0 --no-git-tag-version',
     'npm publish . --tag next'
@@ -393,7 +396,7 @@ test.serial('should initially publish non-private scoped npm package privately',
   await runTasks({}, container);
 
   const npmArgs = getArgs(container.shell.exec.args, 'npm');
-  t.is(npmArgs[5], 'npm publish . --tag latest');
+  t.is(npmArgs[6], 'npm publish . --tag latest');
   exec.restore();
 });
 

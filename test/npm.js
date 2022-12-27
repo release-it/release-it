@@ -182,10 +182,21 @@ test('should throw if user is not authenticated', async t => {
   exec.restore();
 });
 
-test('should throw if user is not a collaborator', async t => {
+test('should throw if user is not a collaborator (v9)', async t => {
   const npmClient = factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   exec.withArgs('npm whoami').resolves('ada');
+  exec.withArgs('npm --version').resolves('9.2.0');
+  exec.withArgs('npm access list collaborators --json release-it').resolves(JSON.stringify({ john: ['write'] }));
+  await t.throwsAsync(runTasks(npmClient), { message: /^User ada is not a collaborator for release-it/ });
+  exec.restore();
+});
+
+test('should throw if user is not a collaborator (v8)', async t => {
+  const npmClient = factory(npm);
+  const exec = sinon.stub(npmClient.shell, 'exec').resolves();
+  exec.withArgs('npm whoami').resolves('ada');
+  exec.withArgs('npm --version').resolves('8.2.0');
   exec.withArgs('npm access ls-collaborators release-it').resolves(JSON.stringify({ john: ['write'] }));
   await t.throwsAsync(runTasks(npmClient), { message: /^User ada is not a collaborator for release-it/ });
   exec.restore();
@@ -307,7 +318,7 @@ test('should publish to a different/scoped registry', async t => {
     'npm ping --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
     'npm whoami --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
     'npm show @my-scope/my-pkg@latest version --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
-    'npm access ls-collaborators @my-scope/my-pkg --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
+    'npm --version',
     'npm version 1.0.1 --no-git-tag-version',
     'npm publish . --tag latest'
   ]);
@@ -341,7 +352,7 @@ test('should not publish when `npm version` fails', async t => {
     'npm ping',
     'npm whoami',
     'npm show @my-scope/my-pkg@latest version',
-    'npm access ls-collaborators @my-scope/my-pkg',
+    'npm --version',
     'npm version 1.0.1 --no-git-tag-version'
   ]);
 
