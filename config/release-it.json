@@ -11,6 +11,7 @@
     "commitMessage": "Release ${version}",
     "commitArgs": [],
     "tag": true,
+    "tagExclude": null,
     "tagName": null,
     "tagMatch": null,
     "tagAnnotation": "Release ${version}",

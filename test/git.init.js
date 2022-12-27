@@ -167,6 +167,23 @@ test.serial('should get the latest tag based on tagMatch', async t => {
   t.is(gitClient.config.getContext('latestTag'), '21.04.3');
 });
 
+test.serial('should get the latest tag based on tagExclude', async t => {
+  const shell = factory(Shell);
+  const gitClient = factory(Git, {
+    options: { git: { tagExclude: '*[-]*' } },
+    container: { shell }
+  });
+  sh.exec('git tag 1.0.0');
+  sh.exec('git commit --allow-empty -m "commit 1"');
+  sh.exec('git tag 1.0.1-rc.0');
+  sh.exec('git tag 1.0.1');
+  sh.exec('git commit --allow-empty -m "commit 2"');
+  sh.exec('git tag 1.1.0-rc.0');
+  sh.exec('git push --tags');
+  await gitClient.init();
+  t.is(gitClient.config.getContext('latestTag'), '1.0.1');
+});
+
 test.serial('should generate correct changelog', async t => {
   const gitClient = factory(Git, { options: { git } });
   sh.exec('git tag 1.0.0');
