@@ -340,9 +340,8 @@ While mostly used as a CLI tool, release-it can be used as a dependency to integ
 
 ## Example projects using release-it
 
-- [antonmedv/fx](https://github.com/antonmedv/fx)
+- [axios/axios](https://github.com/axios/axios)
 - [blockchain/blockchain-wallet-v4-frontend](https://github.com/blockchain/blockchain-wallet-v4-frontend)
-- [callstack/linaria](https://github.com/callstack/linaria)
 - [callstack/react-native-paper](https://github.com/callstack/react-native-paper)
 - [ember-cli/ember-cli](https://github.com/ember-cli/ember-cli)
 - [js-cookie/js-cookie](https://github.com/js-cookie/js-cookie)
