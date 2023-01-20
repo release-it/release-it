@@ -40,12 +40,18 @@ way to install release-it uses npm and adds some minimal configuration to get st
 
 ```bash
 npm init release-it
+# or with yarn 1.x
+yarn create release-it
+# or with yarn 2.x
+yarn dlx create-release-it
 ```
 
 Alternatively, install it manually, and add the `release` script to `package.json`:
 
 ```bash
 npm install -D release-it
+# or with yarn (1.x and 2.x)
+yarn add -D release-it
 ```
 
 ```json
