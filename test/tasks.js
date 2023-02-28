@@ -51,6 +51,10 @@ const getContainer = options => {
   };
 };
 
+test.before(t => {
+  t.timeout(90 * 1000);
+});
+
 test.serial.beforeEach(t => {
   const bare = mkTmpDir();
   const target = mkTmpDir();
