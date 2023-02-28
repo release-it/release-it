@@ -72,6 +72,22 @@ test.serial('should not throw if there are commits', async t => {
   await t.notThrowsAsync(gitClient.init());
 });
 
+test.serial('should throw if there are no commits in specified path', async t => {
+  const options = { git: { requireCommits: true, commitsPath: 'dir' } };
+  const gitClient = factory(Git, { options });
+  sh.mkdir('dir');
+  sh.exec('git tag 1.0.0');
+  await t.throwsAsync(gitClient.init(), { message: /^There are no commits since the latest tag/ });
+});
+
+test.serial('should not throw if there are commits in specified path', async t => {
+  const options = { git: { requireCommits: true, commitsPath: 'dir' } };
+  const gitClient = factory(Git, { options });
+  sh.exec('git tag 1.0.0');
+  gitAdd('line', 'dir/file', 'Add file');
+  await t.notThrowsAsync(gitClient.init());
+});
+
 test.serial('should not throw if there are no tags', async t => {
   const options = { git: { requireCommits: true } };
   const gitClient = factory(Git, { options });
