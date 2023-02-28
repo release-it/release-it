@@ -116,6 +116,9 @@ version. This option may become deprecated, it is recommended to use `versionArg
 Monorepos do not require extra configuration, but release-it handles only one package at a time. Also see how
 [Git steps can be skipped](#skip-git-steps). This is useful if, for instance, tagging the Git repo should be skipped.
 
+To bump multiple `package.json` files in a monorepo to the same version, use the
+[@release-it/bumper](https://github.com/release-it/bumper) plugin.
+
 For Yarn workspaces, see the [release-it-yarn-workspaces](https://github.com/rwjblue/release-it-yarn-workspaces) plugin.
 
 ## Miscellaneous
