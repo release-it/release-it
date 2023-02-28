@@ -175,7 +175,7 @@ test.serial('should release all the things (basic)', async t => {
     'npm whoami',
     `npm show ${pkgName}@latest version`,
     'npm --version',
-    `npm access ls-collaborators ${pkgName}`,
+    `npm access list collaborators --json ${pkgName}`,
     'npm version 1.0.1 --no-git-tag-version',
     'npm publish . --tag latest'
   ]);
@@ -309,7 +309,7 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
     'npm whoami',
     `npm show ${pkgName}@latest version`,
     'npm --version',
-    `npm access ls-collaborators ${pkgName}`,
+    `npm access list collaborators --json ${pkgName}`,
     'npm version 1.1.0-alpha.0 --no-git-tag-version',
     'npm publish . --tag alpha'
   ]);
@@ -349,7 +349,7 @@ test.serial('should publish pre-release without pre-id with different npm.tag', 
     'npm whoami',
     `npm show ${pkgName}@latest version`,
     'npm --version',
-    `npm access ls-collaborators ${pkgName}`,
+    `npm access list collaborators --json ${pkgName}`,
     'npm version 2.0.0-0 --no-git-tag-version',
     'npm publish . --tag next'
   ]);
