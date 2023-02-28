@@ -108,7 +108,7 @@ test('should add registry to commands when specified', async t => {
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   exec.withArgs('npm whoami --registry registry.example.org').resolves('john');
   exec
-    .withArgs('npm access ls-collaborators release-it --registry registry.example.org')
+    .withArgs(/npm access (list collaborators --json|ls-collaborators) release-it --registry registry.example.org/)
     .resolves(JSON.stringify({ john: ['write'] }));
   await runTasks(npmClient);
   t.is(exec.args[0][0], 'npm ping --registry registry.example.org');
@@ -121,7 +121,9 @@ test('should not throw when executing tasks', async t => {
   const npmClient = factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   exec.withArgs('npm whoami').resolves('john');
-  exec.withArgs('npm access ls-collaborators release-it').resolves(JSON.stringify({ john: ['write'] }));
+  exec
+    .withArgs(/npm access (list collaborators --json|ls-collaborators) release-it/)
+    .resolves(JSON.stringify({ john: ['write'] }));
   await t.notThrowsAsync(runTasks(npmClient));
   exec.restore();
 });
@@ -168,7 +170,9 @@ test('should not throw if npm returns 404 for unsupported ping', async t => {
   const pingError = 'npm ERR!     <title>404 - No content for path /-/ping</title>';
   exec.withArgs('npm ping').rejects(new Error(pingError));
   exec.withArgs('npm whoami').resolves('john');
-  exec.withArgs('npm access ls-collaborators release-it').resolves(JSON.stringify({ john: ['write'] }));
+  exec
+    .withArgs(/npm access (list collaborators --json|ls-collaborators) release-it/)
+    .resolves(JSON.stringify({ john: ['write'] }));
   await runTasks(npmClient);
   t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag latest');
   exec.restore();
@@ -197,7 +201,9 @@ test('should throw if user is not a collaborator (v8)', async t => {
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   exec.withArgs('npm whoami').resolves('ada');
   exec.withArgs('npm --version').resolves('8.2.0');
-  exec.withArgs('npm access ls-collaborators release-it').resolves(JSON.stringify({ john: ['write'] }));
+  exec
+    .withArgs(/npm access (list collaborators --json|ls-collaborators) release-it/)
+    .resolves(JSON.stringify({ john: ['write'] }));
   await t.throwsAsync(runTasks(npmClient), { message: /^User ada is not a collaborator for release-it/ });
   exec.restore();
 });
@@ -207,7 +213,7 @@ test('should not throw if user is not a collaborator on a new package', async t 
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   exec.withArgs('npm whoami').resolves('ada');
   exec
-    .withArgs('npm access ls-collaborators release-it')
+    .withArgs(/npm access (list collaborators --json|ls-collaborators) release-it/)
     .rejects(
       new Error(
         'npm ERR! code E404\nnpm ERR! 404 Not Found - GET https://registry.npmjs.org/-/package/release-it/collaborators?format=cli - File not found'
@@ -268,7 +274,9 @@ test('should publish', async t => {
   const npmClient = factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   exec.withArgs('npm whoami').resolves('john');
-  exec.withArgs('npm access ls-collaborators release-it').resolves(JSON.stringify({ john: ['write'] }));
+  exec
+    .withArgs(/npm access (list collaborators --json|ls-collaborators) release-it/)
+    .resolves(JSON.stringify({ john: ['write'] }));
   await runTasks(npmClient);
   t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag latest');
   exec.restore();
@@ -308,7 +316,7 @@ test('should publish to a different/scoped registry', async t => {
     .resolves('john');
   exec
     .withArgs(
-      'npm access ls-collaborators @my-scope/my-pkg --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/'
+      /npm access (list collaborators --json|ls-collaborators) @my-scope\/my-pkg --registry https:\/\/gitlab\.com\/api\/v4\/projects\/my-scope%2Fmy-pkg\/packages\/npm\//
     )
     .resolves(JSON.stringify({ john: ['write'] }));
 
@@ -337,7 +345,9 @@ test('should not publish when `npm version` fails', async t => {
   const npmClient = factory(npm, { options });
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   exec.withArgs('npm whoami').resolves('john');
-  exec.withArgs('npm access ls-collaborators @my-scope/my-pkg').resolves(JSON.stringify({ john: ['write'] }));
+  exec
+    .withArgs(/npm access (list collaborators --json|ls-collaborators) @my-scope\/my-pkg/)
+    .resolves(JSON.stringify({ john: ['write'] }));
   exec
     .withArgs('npm version 1.0.1 --no-git-tag-version')
     .rejects('npm ERR! Version not changed, might want --allow-same-version');

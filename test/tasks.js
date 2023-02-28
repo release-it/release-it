@@ -1,5 +1,6 @@
 import path from 'node:path';
 import test from 'ava';
+import semver from 'semver';
 import sh from 'shelljs';
 import _ from 'lodash';
 import sinon from 'sinon';
@@ -27,6 +28,8 @@ const rootDir = new URL('..', import.meta.url);
 const noop = Promise.resolve();
 
 const sandbox = sinon.createSandbox();
+
+const npmMajorVersion = semver.major(process.env.npm_config_user_agent.match(/npm\/([^ ]+)/)[1]);
 
 const testConfig = {
   ci: true,
@@ -175,7 +178,7 @@ test.serial('should release all the things (basic)', async t => {
     'npm whoami',
     `npm show ${pkgName}@latest version`,
     'npm --version',
-    `npm access ls-collaborators ${pkgName}`,
+    `npm access ${npmMajorVersion >= 9 ? 'list collaborators --json' : 'ls-collaborators'} ${pkgName}`,
     'npm version 1.0.1 --no-git-tag-version',
     'npm publish . --tag latest'
   ]);
@@ -309,7 +312,7 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
     'npm whoami',
     `npm show ${pkgName}@latest version`,
     'npm --version',
-    `npm access ls-collaborators ${pkgName}`,
+    `npm access ${npmMajorVersion >= 9 ? 'list collaborators --json' : 'ls-collaborators'} ${pkgName}`,
     'npm version 1.1.0-alpha.0 --no-git-tag-version',
     'npm publish . --tag alpha'
   ]);
@@ -349,7 +352,7 @@ test.serial('should publish pre-release without pre-id with different npm.tag', 
     'npm whoami',
     `npm show ${pkgName}@latest version`,
     'npm --version',
-    `npm access ls-collaborators ${pkgName}`,
+    `npm access ${npmMajorVersion >= 9 ? 'list collaborators --json' : 'ls-collaborators'} ${pkgName}`,
     'npm version 2.0.0-0 --no-git-tag-version',
     'npm publish . --tag next'
   ]);
