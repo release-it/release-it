@@ -6,6 +6,7 @@
     "requireBranch": false,
     "requireUpstream": true,
     "requireCommits": false,
+    "requireCommitsFail": true,
     "addUntrackedFiles": false,
     "commit": true,
     "commitMessage": "Release ${version}",
