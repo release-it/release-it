@@ -91,7 +91,7 @@ plugin tests). Here's an example `package.json`:
   "version": "1.0.0",
   "description": "My release-it plugin",
   "main": "index.js",
-  "peerDpendencies": {
+  "peerDependencies": {
     "release-it": "^14.2.0"
   },
   "devDependencies": {
