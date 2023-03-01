@@ -38,5 +38,5 @@ const options = parseCliArguments([].slice.call(process.argv, 2));
 updater({ pkg: pkg }).notify();
 release(options).then(
   () => process.exit(0),
-  () => process.exit(1)
+  ({ code }) => process.exit(Number.isInteger(code) ? code : 1)
 );

@@ -6,6 +6,7 @@
     "requireBranch": false,
     "requireUpstream": true,
     "requireCommits": false,
+    "requireCommitsFail": true,
     "commitsPath": "",
     "addUntrackedFiles": false,
     "commit": true,
