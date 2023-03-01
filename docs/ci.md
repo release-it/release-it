@@ -31,7 +31,7 @@ origin url before running release-it. An example is this `.travis.yml` section:
 script:
   - git remote rm origin
   - git remote add origin https://[user]:${GITHUB_TOKEN}@github.com/[user]/[project].git
-  - git symbolic-ref HEAD refs/heads/master
+  - git symbolic-ref HEAD refs/heads/main
 ```
 
 Replace `[user]` and `[project]` with the actual values.

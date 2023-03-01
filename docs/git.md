@@ -61,8 +61,8 @@ Example: `git.tagMatch: "[0-9][0-9].[0-1][0-9].[0-9]*"`
 
 ## Tag Exclude
 
-Use `git.tagExclude` to override the normal behavior to find the latest tag. For example whendoing a major release and 
-you want to exclude any sort of pre-releases, use `*[-]*`, as this would exclude everything with a hyphen, which is 
+Use `git.tagExclude` to override the normal behavior to find the latest tag. For example whendoing a major release and
+you want to exclude any sort of pre-releases, use `*[-]*`, as this would exclude everything with a hyphen, which is
 normally used exclusively in pre-releases.
 
 Example: `git.tagExclude: *[-]*`
@@ -109,7 +109,7 @@ This is disabled by default, but release-it can exit the process when the curren
 ```json
 {
   "git": {
-    "requireBranch": "master"
+    "requireBranch": "main"
   }
 }
 ```
@@ -122,8 +122,8 @@ The working directory should be clean (i.e. `git status` should say something li
 
 ```bash
 $ git status
-On branch master
-Your branch is up to date with 'origin/master'.
+On branch main
+Your branch is up to date with 'origin/main'.
 
 nothing to commit, working tree clean
 ```
@@ -145,8 +145,8 @@ Configure `pushRepo` with either a remote name or a Git url to push the release 
 
 Disabling `git.requireUpstream` is useful when releasing from a different branch (that is not yet tracking cq present on
 a remote). Or similar, when releasing a (new) project that did not push to the remote before. Please note that in
-general you should not need this, as it is considered a best practice to release from the `master` branch only. Here is
-an example use case and how it can be handled using release-it:
+general you should not need this, as it is considered a best practice to release from the `main` branch only. Here is an
+example use case and how it can be handled using release-it:
 
 - After a major release (v2), a bug is found and a fix released in v2.0.1.
 - The fix should be backported to v1, so a branch "v1" is made and the fix is cherry-picked.

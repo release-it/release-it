@@ -3,7 +3,7 @@ name: Check Markdown links
 on:
   push:
     branches:
-      - master
+      - main
     tags:
       - '!**'
   schedule:
@@ -13,7 +13,7 @@ jobs:
   markdown-link-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@main
       - uses: gaurav-nelson/github-action-markdown-link-check@v1
         with:
           config-file: .github/workflows/markdown-link-checker.json

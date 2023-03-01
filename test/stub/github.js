@@ -30,7 +30,7 @@ const interceptListReleases = ({
         upload_url: `https://uploads.${host}/repos/${owner}/${project}/releases/1/assets{?name,label}`,
         html_url: `https://${host}/${owner}/${project}/releases/tag/${tag_name}`,
         tag_name,
-        target_commitish: 'master',
+        target_commitish: 'main',
         name: `Release ${tag_name}`,
         body: 'Description of the release',
         draft: false,

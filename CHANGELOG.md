@@ -36,7 +36,7 @@ Use release-it v14 in legacy environments.
 
 - The custom `conventional-changelog` increment (e.g. `"increment": "conventional:angular"`) with additional script
   configuration is replaced with a plugin. Please see
-  [conventional changelog](https://github.com/release-it/release-it/blob/master/docs/changelog.md#conventional-changelog)
+  [conventional changelog](https://github.com/release-it/release-it/blob/main/docs/changelog.md#conventional-changelog)
   how to use this plugin.
 - The `pkgFiles` option has been removed. If there's a need to bump other files than what `npm version` bumps, it should
   be (part of) a plugin.
@@ -49,7 +49,7 @@ Use release-it v14 in legacy environments.
 
 - Dropped support for Node v6
 - Deprecated options from v9 are removed, the `dist.repo` config in particular (also see
-  [distribution repository](https://github.com/release-it/release-it/blob/master/docs/recipes/distribution-repo.md) for
+  [distribution repository](https://github.com/release-it/release-it/blob/main/docs/recipes/distribution-repo.md) for
   alternatives).
 - Drop the `--debug` flag. `DEBUG=release-it:* ...` still works.
 

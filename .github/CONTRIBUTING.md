@@ -29,7 +29,7 @@ context as possible.
 In case you've encountered a bug, please make sure:
 
 - You are using the [latest version](https://github.com/release-it/release-it/releases).
-- You have read the [documentation](https://github.com/release-it/release-it/blob/master/README.md) first, and
+- You have read the [documentation](https://github.com/release-it/release-it/blob/main/README.md) first, and
   double-checked your configuration.
 - You have acknowledged from [Troubleshooting & debugging](../README.md#troubleshooting--debugging) the errors are
   likely a bug in this project, and not coming from e.g. your environment or custom scripts/commands.

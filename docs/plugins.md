@@ -79,8 +79,8 @@ Alternatively, here's a `release-it-plugin` as a local module:
 
 To create a plugin, extend the `Plugin` class, and implement one or more release-cycle methods. See the "interface"
 below (where none of the methods is required). Any of these methods can be `async`. See this
-[test helper](https://github.com/release-it/release-it/blob/master/test/util/index.js#L54) to get an idea of the methods
-a release-it plugin can implement.
+[test helper](https://github.com/release-it/release-it/blob/main/test/util/index.js#L54) to get an idea of the methods a
+release-it plugin can implement.
 
 Note that `release-it` should be a `peerDependency` (and probably also a `devDependency` to use its helpers in the
 plugin tests). Here's an example `package.json`:
@@ -378,5 +378,5 @@ Here's an example:
 ## Available & example plugins
 
 - All packages tagged with [`"release-it-plugin"` on npm](https://www.npmjs.com/search?q=keywords:release-it-plugin).
-- Recipe: [my-version](https://github.com/release-it/release-it/blob/master/docs/recipes/my-version.md) - example plugin
-- [Internal release-it plugins](https://github.com/release-it/release-it/tree/master/lib/plugin)
+- Recipe: [my-version](https://github.com/release-it/release-it/blob/main/docs/recipes/my-version.md) - example plugin
+- [Internal release-it plugins](https://github.com/release-it/release-it/tree/main/lib/plugin)

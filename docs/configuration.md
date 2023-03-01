@@ -59,7 +59,7 @@ TOML is also supported in `.release-it.toml`:
 Any option can also be set on the command-line, and will have highest priority. Example:
 
 ```bash
-release-it minor --git.requireBranch=master --github.release
+release-it minor --git.requireBranch=main --github.release
 ```
 
 Boolean arguments can be negated by using the `no-` prefix:
