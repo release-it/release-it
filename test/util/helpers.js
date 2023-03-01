@@ -10,9 +10,14 @@ const mkTmpDir = () => {
 
 const readFile = file => fs.promises.readFile(path.resolve(file), 'utf8');
 
-const gitAdd = (content, file, message) => {
-  sh.ShellString(content).toEnd(file);
-  sh.exec(`git add ${file}`);
+const gitAdd = (content, filePath, message) => {
+  const pathSegments = filePath.split('/').filter(Boolean);
+  pathSegments.pop();
+  if (pathSegments.length) {
+    sh.mkdir('-p', pathSegments.join('/'));
+  }
+  sh.ShellString(content).toEnd(filePath);
+  sh.exec(`git add ${filePath}`);
   const { stdout } = sh.exec(`git commit -m "${message}"`);
   const match = stdout.match(/\[.+([a-z0-9]{7})\]/);
   return match ? match[1] : null;
