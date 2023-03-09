@@ -36,6 +36,7 @@ In this mode, release-it will open the default browser pointed at the GitHub web
 - Configure `github.release: true`
 - This mode is enabled automatically when the `GITHUB_TOKEN` environment variable is not set.
 - Set `github.web: true` explicitly to override this `GITHUB_TOKEN` check.
+- Use `github.autoGenerate: true` to let GitHub generate release notes.
 
 In non-interactive CI mode (using `--ci` or in a CI environment), release-it will not open a browser, but instead print
 the url to the GitHub web interface (including data to pre-populate the fields).
