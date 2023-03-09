@@ -425,3 +425,33 @@ test('should generate GitHub web release url for enterprise host', async t => {
   );
   exec.restore();
 });
+
+test('should truncate long body', async t => {
+  const releaseNotes = 'a'.repeat(125001);
+  const body = 'a'.repeat(124000) + '...';
+  const options = {
+    git,
+    github: {
+      pushRepo,
+      tokenRef,
+      release: true,
+      releaseName: 'Release ${tagName}',
+      releaseNotes: 'echo ' + releaseNotes
+    }
+  };
+  const github = factory(GitHub, { options });
+  const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git log --pretty=format:"* %s (%h)" ${from}...${to}').resolves('');
+  exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
+
+  interceptAuthentication();
+  interceptCollaborator();
+  interceptCreate({ body: { tag_name: '2.0.2', name: 'Release 2.0.2', body } });
+
+  await runTasks(github);
+
+  const { isReleased, releaseUrl } = github.getContext();
+  t.true(isReleased);
+  t.is(releaseUrl, 'https://github.com/user/repo/releases/tag/2.0.2');
+  exec.restore();
+});
