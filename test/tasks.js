@@ -384,7 +384,7 @@ test.serial('should handle private package correctly, bump lockfile', async t =>
   const npmArgs = getArgs(container.shell.exec.args, 'npm');
   t.deepEqual(npmArgs, ['npm version 1.0.1 --no-git-tag-version']);
   t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
-  t.is(log.warn.lastCall.args[0], 'Skip publish: package is private.');
+  t.is(log.warn.length, 0);
   t.regex(log.log.firstCall.args[0], /Done \(in [0-9]+s\.\)/);
 
   exec.restore();
