@@ -26,7 +26,12 @@ To skip these checks, use `gitlab.skipChecks`.
 
 By default, the output of `git.changelog` is used for the GitLab release notes. This is the printed `Changelog: ...`
 when release-it boots. This can be overridden with the `gitlab.releaseNotes` option to customize the release notes for
-the GitLab release. This script will run just before the actual GitLab release itself. Make sure it outputs to `stdout`.
+the GitLab release.  This will be invoked just before the actual GitLab release itself.
+
+The value can either be a string or a function but a function is only supported when configuring release-it using
+`.release-it.js` or `.release-it.cjs` file.
+
+When the value is a string, it's executed as a shell script. Make sure it outputs to `stdout`.
 An example:
 
 ```json
@@ -34,6 +39,22 @@ An example:
   "gitlab": {
     "release": true,
     "releaseNotes": "generate-release-notes.sh ${latestVersion} ${version}"
+  }
+}
+```
+
+When the value is a function, it's executed with a single `context` parameter that contains the plugin context.
+The function can also be `async`. Make sure that it returns a string value.
+An example:
+
+```js
+{
+  gitlab: {
+    release: true,
+    releaseNotes(context) {
+      // Remove the first, redundant line with version and date.
+      return context.changelog.split('\n').slice(1).join('\n');
+    }
   }
 }
 ```

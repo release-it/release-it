@@ -64,7 +64,12 @@ command-line directly: `--github.releaseName="Arcade Silver"`.
 
 By default, the output of `git.changelog` is used for the GitHub release notes. This is the printed `Changelog: ...`
 when release-it boots. This can be overridden with the `github.releaseNotes` option to customize the release notes for
-the GitHub release. This script will run just before the actual GitHub release itself. Make sure it outputs to `stdout`.
+the GitHub release. This will be invoked just before the actual GitHub release itself.
+
+The value can either be a string or a function but a function is only supported when configuring release-it using
+`.release-it.js` or `.release-it.cjs` file.
+
+When the value is a string, it's executed as a shell script. Make sure it outputs to `stdout`.
 An example:
 
 ```json
@@ -72,6 +77,22 @@ An example:
   "github": {
     "release": true,
     "releaseNotes": "generate-release-notes.sh --from=${latestTag} --to=${tagName}"
+  }
+}
+```
+
+When the value is a function, it's executed with a single `context` parameter that contains the plugin context.
+The function can also be `async`. Make sure that it returns a string value.
+An example:
+
+```js
+{
+  github: {
+    release: true,
+    releaseNotes(context) {
+      // Remove the first, redundant line with version and date.
+      return context.changelog.split('\n').slice(1).join('\n');
+    }
   }
 }
 ```
