@@ -347,8 +347,11 @@ While mostly used as a CLI tool, release-it can be used as a dependency to integ
 - [js-cookie/js-cookie](https://github.com/js-cookie/js-cookie)
 - [metalsmith/metalsmith](https://github.com/metalsmith/metalsmith)
 - [mozilla/readability](https://github.com/mozilla/readability)
+- [pahen/madge](https://github.com/pahen/madge)
 - [redis/node-redis](https://github.com/redis/node-redis)
+- [reduxjs/redux](https://github.com/reduxjs/redux)
 - [saleor/saleor](https://github.com/saleor/saleor)
+- [Semantic-Org/Semantic-UI-React](https://github.com/Semantic-Org/Semantic-UI-React)
 - [shipshapecode/shepherd](https://github.com/shipshapecode/shepherd)
 - [StevenBlack/hosts](https://github.com/StevenBlack/hosts)
 - [swagger-api/swagger-ui](https://github.com/swagger-api/swagger-ui) +
@@ -356,7 +359,7 @@ While mostly used as a CLI tool, release-it can be used as a dependency to integ
 - [tabler/tabler](https://github.com/tabler/tabler) + [tabler-icons](https://github.com/tabler/tabler-icons)
 - [youzan/vant](https://github.com/youzan/vant)
 - [Repositories that depend on release-it](https://github.com/release-it/release-it/network/dependents)
-- GitHub search for [filename:.release-it.json](https://github.com/search?q=filename%3A.release-it.json)
+- GitHub search for [path:\*\*/.release-it.json](https://github.com/search?q=path%3A**%2F.release-it.json&type=code)
 
 ## License
 
