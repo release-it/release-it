@@ -328,7 +328,7 @@ test('should publish to a different/scoped registry', async t => {
     'npm show @my-scope/my-pkg@latest version --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
     'npm --version',
     'npm version 1.0.1 --no-git-tag-version',
-    'npm publish . --tag latest'
+    'npm publish . --tag latest --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/'
   ]);
 
   exec.restore();
