@@ -49,7 +49,6 @@
   ],
   "scripts": {
     "lint": "eslint lib test",
-    "knip": "knip",
     "format": "prettier --write \"{lib,test}/**/*.js\"",
     "test": "ava --no-worker-threads",
     "release": "./bin/release-it.js"
@@ -95,7 +94,6 @@
     "eslint-plugin-ava": "14.0.0",
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-prettier": "4.2.1",
-    "knip": "2.1.1",
     "mock-fs": "5.2.0",
     "mock-stdio": "1.0.3",
     "nock": "13.3.0",

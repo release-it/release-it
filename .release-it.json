@@ -1,6 +1,6 @@
 {
   "hooks": {
-    "after:init": ["npm run lint", "npm run knip", "npm test"]
+    "after:init": ["npm run lint", "npx knip", "npm test"]
   },
   "github": {
     "release": true
