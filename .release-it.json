@@ -1,9 +1,6 @@
 {
   "hooks": {
-    "after:init": ["npm run lint", "npm test"]
-  },
-  "git": {
-    "requireUpstream": false
+    "after:init": ["npm run lint", "npm run knip", "npm test"]
   },
   "github": {
     "release": true
