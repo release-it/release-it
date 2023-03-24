@@ -49,6 +49,7 @@
   ],
   "scripts": {
     "lint": "eslint lib test",
+    "knip": "knip",
     "format": "prettier --write \"{lib,test}/**/*.js\"",
     "test": "ava --no-worker-threads",
     "release": "./bin/release-it.js"
@@ -75,7 +76,7 @@
     "new-github-release-url": "2.0.0",
     "node-fetch": "3.3.1",
     "open": "9.0.0",
-    "ora": "6.2.0",
+    "ora": "6.3.0",
     "os-name": "5.1.0",
     "promise.allsettled": "1.0.6",
     "proxy-agent": "5.0.0",
@@ -94,11 +95,11 @@
     "eslint-plugin-ava": "14.0.0",
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-prettier": "4.2.1",
+    "knip": "2.1.1",
     "mock-fs": "5.2.0",
     "mock-stdio": "1.0.3",
     "nock": "13.3.0",
-    "nyc": "15.1.0",
-    "prettier": "2.8.6",
+    "prettier": "2.8.7",
     "sinon": "15.0.2",
     "strip-ansi": "7.0.1"
   },
