@@ -75,7 +75,7 @@
     "mime-types": "2.1.35",
     "new-github-release-url": "2.0.0",
     "node-fetch": "3.3.1",
-    "open": "9.0.0",
+    "open": "9.1.0",
     "ora": "6.3.0",
     "os-name": "5.1.0",
     "promise.allsettled": "1.0.6",
@@ -90,7 +90,7 @@
   "devDependencies": {
     "@octokit/request-error": "3.0.3",
     "ava": "5.2.0",
-    "eslint": "8.36.0",
+    "eslint": "8.37.0",
     "eslint-config-prettier": "8.8.0",
     "eslint-plugin-ava": "14.0.0",
     "eslint-plugin-import": "2.27.5",
@@ -99,7 +99,7 @@
     "mock-stdio": "1.0.3",
     "nock": "13.3.0",
     "prettier": "2.8.7",
-    "sinon": "15.0.2",
+    "sinon": "15.0.3",
     "strip-ansi": "7.0.1"
   },
   "engines": {
