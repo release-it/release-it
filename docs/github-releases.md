@@ -69,8 +69,7 @@ the GitHub release. This will be invoked just before the actual GitHub release i
 The value can either be a string or a function but a function is only supported when configuring release-it using
 `.release-it.js` or `.release-it.cjs` file.
 
-When the value is a string, it's executed as a shell script. Make sure it outputs to `stdout`.
-An example:
+When the value is a string, it's executed as a shell script. Make sure it outputs to `stdout`. An example:
 
 ```json
 {
@@ -81,9 +80,8 @@ An example:
 }
 ```
 
-When the value is a function, it's executed with a single `context` parameter that contains the plugin context.
-The function can also be `async`. Make sure that it returns a string value.
-An example:
+When the value is a function, it's executed with a single `context` parameter that contains the plugin context. The
+function can also be `async`. Make sure that it returns a string value. An example:
 
 ```js
 {
@@ -156,3 +154,29 @@ Example command to add assets and explicitly toggle the draft status to "publish
 ```bash
 release-it --no-increment --no-git --github.release --github.update --github.assets=*.zip --no-github.draft
 ```
+
+## Comments
+
+To add a comment on each merged pull requests and closed issue that is part of the release, set `github.comments` to
+`true`. Here are the default settings:
+
+```json
+{
+  "github": {
+    "comments": {
+      "submit": false,
+      "issue": ":rocket: _This issue has been resolved in v${version}. See [${releaseName}](${releaseUrl}) for release notes._",
+      "pr": ":rocket: _This pull request is included in v${version}. See [${releaseName}](${releaseUrl}) for release notes._"
+    }
+  }
+}
+```
+
+Example comment:
+
+:rocket: _This issue has been resolved in v15.10.0. See
+[Release 15.10.0](https://github.com/release-it/release-it/releases/tag/15.10.0) for release notes._
+
+This only works with `github.release: true` and not with [manual release via the web interface](#manual).
+
+Since this is an experimental feature, it's disabled by default for now. Set `github.comments: true` to enable.
