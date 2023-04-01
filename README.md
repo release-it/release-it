@@ -20,19 +20,6 @@ system, and hooks to execute any command you need to test, build, and/or publish
 [![Action Status](https://github.com/release-it/release-it/workflows/Cross-OS%20Tests/badge.svg)](https://github.com/release-it/release-it/actions)
 [![npm version](https://badge.fury.io/js/release-it.svg)](https://www.npmjs.com/package/release-it)
 
-## Announcement
-
-The latest major version is v15, supporting Node.js 14 and up (as Node.js v12 is EOL). Use release-it v14 for
-environments running Node.js v10 and v12. Also see [CHANGELOG.md](./CHANGELOG.md).
-
-## Links
-
-- See [CHANGELOG.md](./CHANGELOG.md) for major/breaking updates, and
-  [releases](https://github.com/release-it/release-it/releases) for a detailed version history.
-- To **contribute**, please read [CONTRIBUTING.md](./.github/CONTRIBUTING.md) first.
-- Please [open an issue](https://github.com/release-it/release-it/issues/new) if anything is missing or unclear in this
-  documentation.
-
 ## Installation
 
 Although release-it is a **generic** release tool, most projects use it for projects with npm packages. The recommended
@@ -56,66 +43,37 @@ npm install -D release-it
     "release": "release-it"
   },
   "devDependencies": {
-    "release-it": "*"
+    "release-it": "^15.10.0"
   }
 }
 ```
 
-Now you can run `npm run release` from the command line (put release-it arguments behind the `-- `):
+## Usage
+
+Run release-it from the root of the project using either `npm run` or `npx`:
 
 ```bash
 npm run release
-npm run release -- minor --ci
-```
-
-### Global Installation
-
-#### Using npx or npm
-
-Use npx to run release-it directly from anywhere:
-
-```bash
 npx release-it
-```
-
-Or use npm to install and run release-it globally:
-
-```bash
-npm install -g release-it
-```
-
-#### Using Homebrew
-
-```bash
-brew install release-it
-```
-
-## Usage
-
-Release a new version:
-
-```bash
-release-it
 ```
 
 You will be prompted to select the new version, and more prompts will follow based on your configuration.
 
-Run release-it from the root of the project to prevent potential issues.
+## Yarn
 
-## Dry Runs
+Using Yarn? Please see the [npm section on Yarn](./docs/npm.md#yarn).
 
-Use `--dry-run` to show the interactivity and the commands it _would_ execute.
+## Global Installation
 
-→ See [Dry Runs](./docs/dry-runs.md) for more details.
+Per-project installation as shown above is recommended, but global installs are supported as well:
 
-To print the next version without releasing anything, add the `--release-version` flag.
-
-To print the changelog without releasing anything, add the `--changelog` flag.
+- From npm: `npm install -g release-it`
+- From Homebrew: `brew install release-it`
 
 ## Configuration
 
 Out of the box, release-it has sane defaults, and [plenty of options](./config/release-it.json) to configure it. Most
-projects use a `.release-it.json` in the project root, or a `release-it` property in `package.json`.
+projects use a `.release-it.json` file in the project root, or a `release-it` property in `package.json`.
 
 → See [Configuration](./docs/configuration.md) for more details.
 
@@ -198,7 +156,8 @@ changelog serves as the release notes for the GitHub or GitLab release.
 
 The [default command](./config/release-it.json) is based on `git log ...`. This setting (`git.changelog`) can be
 overridden. To further customize the release notes for the GitHub or GitLab release, there's `github.releaseNotes` or
-`gitlab.releaseNotes`. Make sure any of these commands output the changelog to `stdout`. Plugins are available for:
+`gitlab.releaseNotes`. Make sure any of these commands output the changelog to `stdout`. Note that release-it by default
+is agnostic to commit message conventions. Plugins are available for:
 
 - GitHub and GitLab Releases
 - auto-changelog
@@ -296,6 +255,24 @@ release-it --'hooks.after:release="echo Successfully released ${name} v${version
 
 Using Inquirer.js inside custom hook scripts might cause issues (since release-it also uses this itself).
 
+## Dry Runs
+
+Use `--dry-run` to show the interactivity and the commands it _would_ execute.
+
+→ See [Dry Runs](./docs/dry-runs.md) for more details.
+
+To print the next version without releasing anything, add the `--release-version` flag.
+
+To print the changelog without releasing anything, add the `--changelog` flag.
+
+## Troubleshooting & debugging
+
+- With `release-it --verbose` (or `-V`), release-it prints the output of every user-defined [hook](#hooks).
+- With `release-it -VV`, release-it also prints the output of every internal command.
+- Use `NODE_DEBUG=release-it:* release-it [...]` to print configuration and more error details.
+
+Use `verbose: 2` in a configuration file to have the equivalent of `-VV` on the command line.
+
 ## Plugins
 
 Since v11, release-it can be extended in many, many ways. Here are some plugins:
@@ -316,22 +293,6 @@ Internally, release-it uses its own plugin architecture (for Git, GitHub, GitLab
 → See all [release-it plugins on npm](https://www.npmjs.com/search?q=keywords:release-it-plugin).
 
 → See [plugins](./docs/plugins.md) for documentation to write plugins.
-
-## Distribution repository
-
-Deprecated. Please see [distribution repository](./docs/recipes/distribution-repo.md) for more details.
-
-## Metrics
-
-In release-it v15, anonymous metrics have been removed from the codebase and no data is sent or stored anywhere.
-
-## Troubleshooting & debugging
-
-- With `release-it --verbose` (or `-V`), release-it prints the output of every user-defined [hook](#hooks).
-- With `release-it -VV`, release-it also prints the output of every internal command.
-- Use `NODE_DEBUG=release-it:* release-it [...]` to print configuration and more error details.
-
-Use `verbose: 2` in a configuration file to have the equivalent of `-VV` on the command line.
 
 ## Use release-it programmatically
 
@@ -360,6 +321,19 @@ While mostly used as a CLI tool, release-it can be used as a dependency to integ
 - [youzan/vant](https://github.com/youzan/vant)
 - [Repositories that depend on release-it](https://github.com/release-it/release-it/network/dependents)
 - GitHub search for [path:\*\*/.release-it.json](https://github.com/search?q=path%3A**%2F.release-it.json&type=code)
+
+## Legacy Node.js
+
+The latest major version is v15, supporting Node.js 14 and up (as Node.js v12 is EOL). Use release-it v14 for
+environments running Node.js v10 and v12. Also see [CHANGELOG.md](./CHANGELOG.md).
+
+## Links
+
+- See [CHANGELOG.md](./CHANGELOG.md) for major/breaking updates, and
+  [releases](https://github.com/release-it/release-it/releases) for a detailed version history.
+- To **contribute**, please read [CONTRIBUTING.md](./.github/CONTRIBUTING.md) first.
+- Please [open an issue](https://github.com/release-it/release-it/issues/new) if anything is missing or unclear in this
+  documentation.
 
 ## License
 

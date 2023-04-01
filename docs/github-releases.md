@@ -28,6 +28,9 @@ To automate the release (using the GitHub REST API), the following needs to be c
 Do not put the actual token in the release-it configuration. It will be read from the `GITHUB_TOKEN` environment
 variable. You can change this variable name by setting the `github.tokenRef` option to something else.
 
+Optionally, release-it can automatically [submit comments](#comments) to the merged pull requests and closed tickets to
+notify people in which release the fix or feature is included.
+
 ## Manual
 
 In this mode, release-it will open the default browser pointed at the GitHub web interface with the fields pre-populated
@@ -157,7 +160,7 @@ release-it --no-increment --no-git --github.release --github.update --github.ass
 
 ## Comments
 
-To add a comment on each merged pull requests and closed issue that is part of the release, set `github.comments` to
+To submit a comment to each merged pull requests and closed issue that is part of the release, set `github.comments` to
 `true`. Here are the default settings:
 
 ```json

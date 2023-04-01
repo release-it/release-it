@@ -3,8 +3,9 @@
 With a `package.json` in the current directory, release-it will let `npm` bump the version in `package.json` (and
 `package-lock.json` if present), and publish to the npm registry.
 
-If there is a `package.json` but it should be ignored and nothing should be published to npm, use `--no-npm` or
-`"npm": false` in the release-it configuration.
+- If only the publish step should be skipped, use `npm.publish: false`.
+- If `package.json` should be ignored, its version should not be bumped, and nothing should be published to npm, use
+  `--no-npm` or `"npm": false` in the release-it configuration.
 
 ## Prerequisite checks
 
@@ -78,6 +79,20 @@ in `package.json`. For example:
 {
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
+  }
+}
+```
+
+## Yarn
+
+Using Yarn? It adds or overwrites global environment variable(s), causing authentication issues or not being able to
+publish. Set the `publishConfig.registry` value so release-it will use the `--registry` argument with this value for
+each `npm` command.
+
+```json
+{
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
   }
 }
 ```
