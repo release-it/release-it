@@ -70,6 +70,14 @@ Per-project installation as shown above is recommended, but global installs are 
 - From npm: `npm install -g release-it`
 - From Homebrew: `brew install release-it`
 
+## GitHub Actions
+
+Want to use release-it with GitHub Actions to fully automate the whole process? Enjoy this great walk-through:
+[How to use GitHub Actions & Release-It to Easily Release Your Code](https://www.youtube.com/watch?v=7pBcuT7j_A0) (by
+[David from Kodaps](https://twitter.com/KodapsAcademy)).
+
+→ See [Continuous Integration environments](./docs/ci.md) for more details.
+
 ## Configuration
 
 Out of the box, release-it has sane defaults, and [plenty of options](./config/release-it.json) to configure it. Most

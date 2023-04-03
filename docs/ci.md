@@ -62,6 +62,10 @@ jobs:
 The `fetch-depth: 0` option is only necessary when the Git history is required e.g. if using a plugin such as
 [@release-it/conventional-changelog](https://github.com/release-it/conventional-changelog).
 
+If you enjoy watching a video, [David from Kodaps](https://twitter.com/KodapsAcademy) created a great walk-through
+including setting up npm and GitHub tokens:
+[How to use GitHub Actions & Release-It to Easily Release Your Code](https://www.youtube.com/watch?v=7pBcuT7j_A0)
+
 ## npm
 
 To publish a package to the (or any) npm registry from within a CI or CD environment such as Travis or Circle, make the
