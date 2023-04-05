@@ -83,6 +83,17 @@ When the value is a string, it's executed as a shell script. Make sure it output
 }
 ```
 
+Another example using `--no-merges` to omit merge commits:
+
+```json
+{
+  "github": {
+    "release": true,
+    "releaseNotes": "git log --no-merges --pretty=format:\"* %s %h\" ${latestTag}...main"
+  }
+}
+```
+
 When the value is a function, it's executed with a single `context` parameter that contains the plugin context. The
 function can also be `async`. Make sure that it returns a string value. An example:
 
@@ -98,7 +109,7 @@ function can also be `async`. Make sure that it returns a string value. An examp
 }
 ```
 
-Use `--github.autoGenerate` to have GitHub auto-generate the release notes.
+Use `--github.autoGenerate` to have GitHub auto-generate the release notes (does not work with `web: true`).
 
 See [Changelog](./changelog.md) for more information about generating changelogs/release notes.
 
