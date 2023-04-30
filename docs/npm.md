@@ -133,20 +133,23 @@ can be skipped][3]. This is useful if, for instance, tagging the Git repo should
 
 To bump multiple `package.json` files in a monorepo to the same version, use the [@release-it/bumper][4] plugin.
 
-For Yarn workspaces, see the [release-it-yarn-workspaces][5] plugin.
+Also see this [monorepo recipe][5].
+
+For Yarn workspaces, see the [release-it-yarn-workspaces][6] plugin.
 
 ## Miscellaneous
 
-- When `npm version` fails, the release is aborted (except when using [`--no-increment`][6]).
-- Learn how to [authenticate and publish from a CI/CD environment][7].
+- When `npm version` fails, the release is aborted (except when using [`--no-increment`][7]).
+- Learn how to [authenticate and publish from a CI/CD environment][8].
 - The `"private": true` setting in package.json will be respected, and `release-it` will skip this step.
-- Getting an `ENEEDAUTH` error while a manual `npm publish` works? Please see [#95][8].
+- Getting an `ENEEDAUTH` error while a manual `npm publish` works? Please see [#95][9].
 
 [1]: https://docs.npmjs.com/about-scopes
 [2]: https://registry.npmjs.org
 [3]: #skip-git-steps
 [4]: https://github.com/release-it/bumper
-[5]: https://github.com/release-it-plugins/workspaces
-[6]: ../README.md#update-or-re-run-existing-releases
-[7]: ./ci.md#npm
-[8]: https://github.com/release-it/release-it/issues/95#issuecomment-344919384
+[5]: ./recipes/monorepo.md
+[6]: https://github.com/release-it-plugins/workspaces
+[7]: ../README.md#update-or-re-run-existing-releases
+[8]: ./ci.md#npm
+[9]: https://github.com/release-it/release-it/issues/95#issuecomment-344919384
