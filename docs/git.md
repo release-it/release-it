@@ -2,17 +2,16 @@
 
 The Git plugin in release-it, by default, does the following:
 
-1. [Prerequisite checks](#prerequisite-checks)
-1. [Files may be updated by other plugins and/or user commands/hooks]
-1. `git add . --update`
-1. `git commit -m "[git.commitMessage]"`
-1. `git tag --annotate --message="[git.tagAnnotation]" [git.tagName]`
-1. `git push [git.pushArgs] [git.pushRepo]`
+1.  [Prerequisite checks][1]
+2.  \[Files may be updated by other plugins and/or user commands/hooks]
+3.  `git add . --update`
+4.  `git commit -m "[git.commitMessage]"`
+5.  `git tag --annotate --message="[git.tagAnnotation]" [git.tagName]`
+6.  `git push [git.pushArgs] [git.pushRepo]`
 
 When not in CI mode, release-it will ask for confirmation before each of the commit, tag, and push steps.
 
-Configure the `[git.*]` options to modify the commands accordingly. See
-[all options and their default values](../config/release-it.json).
+Configure the `[git.*]` options to modify the commands accordingly. See [all options and their default values][2].
 
 The minimum required version of Git is v2.0.0.
 
@@ -23,12 +22,10 @@ release-it should be able to do the same.
 
 The following help pages might be useful:
 
-- [Connecting to GitHub with SSH](https://docs.github.com/en/authentication/connecting-to-github-with-ssh)
-- [Managing remote repositories](https://docs.github.com/en/get-started/getting-started-with-git/managing-remote-repositories)
-  (GitHub)
-- [Configure SSH and two-step verification](https://support.atlassian.com/bitbucket-cloud/docs/configure-ssh-and-two-step-verification/)
-  (Bitbucket)
-- [GitLab and SSH keys](https://gitlab.com/help/ssh/README.md)
+- [Connecting to GitHub with SSH][3]
+- [Managing remote repositories][4] (GitHub)
+- [Configure SSH and two-step verification][5] (Bitbucket)
+- [GitLab and SSH keys][6]
 
 ## Remote repository
 
@@ -75,8 +72,7 @@ In case extra arguments should be provided to Git, these options are available:
 - `git.tagArgs`
 - `git.pushArgs`
 
-For example, use `"git.commitArgs": ["-S"]` to sign commits (also see
-[#35](https://github.com/release-it/release-it/issues/350)).
+For example, use `"git.commitArgs": ["-S"]` to sign commits (also see [#35][7]).
 
 Note that `["--follow-tags"]` is the default for `pushArgs` (re-add this manually if necessary). Example with multiple
 arguments for `git push`:
@@ -157,7 +153,7 @@ example use case and how it can be handled using release-it:
 By default, release-it does not check the number of commits upfront to prevent "empty" releases. Configure
 `"git.requireCommits": true` to exit the release-it process if there are no commits since the latest tag.
 
-Also see the [Require Commits](./recipes/require-commits.md) recipe(s).
+Also see the [Require Commits][8] recipe(s).
 
 ## Further customizations
 
@@ -176,3 +172,12 @@ In case you need even more customizations, here is some inspiration:
 
 Since the `after:release` hook runs after the Git commands, the `git.push` can be disabled, and replaced by a custom
 script.
+
+[1]: #prerequisite-checks
+[2]: ../config/release-it.json
+[3]: https://docs.github.com/en/authentication/connecting-to-github-with-ssh
+[4]: https://docs.github.com/en/get-started/getting-started-with-git/managing-remote-repositories
+[5]: https://support.atlassian.com/bitbucket-cloud/docs/configure-ssh-and-two-step-verification/
+[6]: https://gitlab.com/help/ssh/README.md
+[7]: https://github.com/release-it/release-it/issues/350
+[8]: ./recipes/require-commits.md

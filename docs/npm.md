@@ -55,8 +55,8 @@ For a pre-release, the default tag is "next". The tag will be derived from the p
 
 ## Public scoped packages
 
-A [scoped package](https://docs.npmjs.com/about-scopes) (e.g. `@user/package`) is either public or private. By default,
-`npm publish` will publish a scoped package as private. Note that scoped packages require a paid account.
+A [scoped package][1] (e.g. `@user/package`) is either public or private. By default, `npm publish` will publish a
+scoped package as private. Note that scoped packages require a paid account.
 
 In order to publish a scoped package to the public registry, specify this at the root of `package.json`:
 
@@ -72,8 +72,8 @@ The default value for private packages is `"restricted"`.
 
 ## Publish to private registry
 
-The default registry is https://registry.npmjs.org. The publish to another registry, update or set the `publishConfig`
-in `package.json`. For example:
+The default registry is [https://registry.npmjs.org][2]. The publish to another registry, update or set the
+`publishConfig` in `package.json`. For example:
 
 ```json
 {
@@ -128,19 +128,25 @@ version. This option may become deprecated, it is recommended to use `versionArg
 
 ## Monorepos
 
-Monorepos do not require extra configuration, but release-it handles only one package at a time. Also see how
-[Git steps can be skipped](#skip-git-steps). This is useful if, for instance, tagging the Git repo should be skipped.
+Monorepos do not require extra configuration, but release-it handles only one package at a time. Also see how [Git steps
+can be skipped][3]. This is useful if, for instance, tagging the Git repo should be skipped.
 
-To bump multiple `package.json` files in a monorepo to the same version, use the
-[@release-it/bumper](https://github.com/release-it/bumper) plugin.
+To bump multiple `package.json` files in a monorepo to the same version, use the [@release-it/bumper][4] plugin.
 
-For Yarn workspaces, see the [@release-it-plugins/workspaces](https://github.com/release-it-plugins/workspaces).
+For Yarn workspaces, see the [release-it-yarn-workspaces][5] plugin.
 
 ## Miscellaneous
 
-- When `npm version` fails, the release is aborted (except when using
-  [`--no-increment`](../README.md#update-or-re-run-existing-releases)).
-- Learn how to [authenticate and publish from a CI/CD environment](./ci.md#npm).
+- When `npm version` fails, the release is aborted (except when using [`--no-increment`][6]).
+- Learn how to [authenticate and publish from a CI/CD environment][7].
 - The `"private": true` setting in package.json will be respected, and `release-it` will skip this step.
-- Getting an `ENEEDAUTH` error while a manual `npm publish` works? Please see
-  [#95](https://github.com/release-it/release-it/issues/95#issuecomment-344919384).
+- Getting an `ENEEDAUTH` error while a manual `npm publish` works? Please see [#95][8].
+
+[1]: https://docs.npmjs.com/about-scopes
+[2]: https://registry.npmjs.org
+[3]: #skip-git-steps
+[4]: https://github.com/release-it/bumper
+[5]: https://github.com/release-it-plugins/workspaces
+[6]: ../README.md#update-or-re-run-existing-releases
+[7]: ./ci.md#npm
+[8]: https://github.com/release-it/release-it/issues/95#issuecomment-344919384

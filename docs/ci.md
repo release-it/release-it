@@ -2,20 +2,20 @@
 
 As release-it is increasingly used from CI/CD environments such as Travis, Circle CI or GitHub Actions, this page
 outlines some popular ways to configure this. Do you have additional successful integrations, or experiencing issues
-with the existing ones below, feel free to [open a ticket](https://github.com/release-it/release-it/issues).
+with the existing ones below, feel free to [open a ticket][1].
 
 ## Contents
 
-- [Git](#git)
-- [GitHub Actions](#github-actions)
-- [npm](#npm)
-- [GitHub & GitLab Releases](#github--gitlab-releases)
-- [GitLab CI](#gitlab-ci)
+- [Git][2]
+- [GitHub Actions][3]
+- [npm][4]
+- [GitHub & GitLab Releases][5]
+- [GitLab CI][6]
 
 ## Git
 
 In order to push the release commit and tag back to the remote, the CI/CD environment should be authenticated with the
-original host (e.g. GitHub). Also see [Git](./git.md).
+original host (e.g. GitHub). Also see [Git][7].
 
 ### SSH (recommended)
 
@@ -60,11 +60,10 @@ jobs:
 ```
 
 The `fetch-depth: 0` option is only necessary when the Git history is required e.g. if using a plugin such as
-[@release-it/conventional-changelog](https://github.com/release-it/conventional-changelog).
+[@release-it/conventional-changelog][8].
 
-If you enjoy watching a video, [David from Kodaps](https://twitter.com/KodapsAcademy) created a great walk-through
-including setting up npm and GitHub tokens:
-[How to use GitHub Actions & Release-It to Easily Release Your Code](https://www.youtube.com/watch?v=7pBcuT7j_A0)
+If you enjoy watching a video, [David from Kodaps][9] created a great walk-through including setting up npm and GitHub
+tokens: [How to use GitHub Actions & Release-It to Easily Release Your Code][10]
 
 ## npm
 
@@ -85,11 +84,11 @@ npm config set //registry.npmjs.org/:_authToken $NPM_TOKEN
 This will create/update the `.npmrc` file and add the token there. Ideally you should either `.gitignore` this file,
 otherwise you might end up committing it to your repo if you are using release-it's `git` options.
 
-Since release-it executes `npm whoami` as a [prerequisite check](./npm.md#prerequisite-checks), which does not seem to
-respect the `.npmrc` file, the `--npm.skipChecks` argument can be used.
+Since release-it executes `npm whoami` as a [prerequisite check][11], which does not seem to respect the `.npmrc` file,
+the `--npm.skipChecks` argument can be used.
 
-- [Creating and viewing authentication tokens](https://docs.npmjs.com/creating-and-viewing-authentication-tokens)
-- [Using (private) packages in a CI/CD workflow](https://docs.npmjs.com/using-private-packages-in-a-ci-cd-workflow)
+- [Creating and viewing authentication tokens][12]
+- [Using (private) packages in a CI/CD workflow][13]
 
 ### Travis
 
@@ -121,15 +120,12 @@ During the release process, your project's `package.json` will be updated to bum
 CircleCI with a non read-only SSH key pair from your Github account if you want it to be able to push that change back
 to the repo.
 
-See [Publishing npm Packages Using CircleCI](https://circleci.com/blog/publishing-npm-packages-using-circleci-2-0/) for
-more details.
+See [Publishing npm Packages Using CircleCI][14] for more details.
 
 ## GitHub & GitLab Releases
 
 Make sure the `GITHUB_TOKEN` or `GITLAB_TOKEN` environment variable is set in the CI/CD environment to publish (or
-draft) [GitHub](https://github.com/release-it/release-it#github-releases) or
-[GitLab releases](https://github.com/release-it/release-it#gitlab-releases). This works the same as on your local
-machine.
+draft) [GitHub][15] or [GitLab releases][16]. This works the same as on your local machine.
 
 ## GitLab CI
 
@@ -168,8 +164,7 @@ Note: the `git remote set-url` could also be set with the `git.pushRepo` option 
 
 ### Error: tag already exists
 
-Some people have reported an issue when using GitLab CI (in
-[#573](https://github.com/release-it/release-it/issues/573)):
+Some people have reported an issue when using GitLab CI (in [#573][17]):
 
 > ERROR fatal: tag vX.X.X already exists
 
@@ -189,3 +184,21 @@ Specifically, make sure to `fetch` with the `--prune-tags` argument before relea
   }
 }
 ```
+
+[1]: https://github.com/release-it/release-it/issues
+[2]: #git
+[3]: #github-actions
+[4]: #npm
+[5]: #github--gitlab-releases
+[6]: #gitlab-ci
+[7]: ./git.md
+[8]: https://github.com/release-it/conventional-changelog
+[9]: https://twitter.com/KodapsAcademy
+[10]: https://www.youtube.com/watch?v=7pBcuT7j_A0
+[11]: ./npm.md#prerequisite-checks
+[12]: https://docs.npmjs.com/creating-and-viewing-authentication-tokens
+[13]: https://docs.npmjs.com/using-private-packages-in-a-ci-cd-workflow
+[14]: https://circleci.com/blog/publishing-npm-packages-using-circleci-2-0/
+[15]: https://github.com/release-it/release-it#github-releases
+[16]: https://github.com/release-it/release-it#gitlab-releases
+[17]: https://github.com/release-it/release-it/issues/573

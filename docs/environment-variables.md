@@ -11,7 +11,7 @@ In macOS or Linux, this can be added to e.g. `~/.profile`, so it's available eve
 ## dotenv
 
 Another solution, that works in every environment (Windows, macOS, Linux), is to use an `.env` file and a package like
-[dotenv-cli](https://github.com/entropitor/dotenv-cli#readme):
+[dotenv-cli][1]:
 
 In the `.env` file:
 
@@ -56,3 +56,5 @@ Not used often, but this script asks for the token everytime a `npm run release`
   variable. To use something different, use e.g. `github.tokenRef="RELEASE_IT_GITHUB_TOKEN"` (or `gitlab.tokenRef`).
 
 All of the above is the same for `GITLAB_TOKEN`.
+
+[1]: https://github.com/entropitor/dotenv-cli#readme

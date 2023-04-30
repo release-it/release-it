@@ -1,16 +1,14 @@
 # GitLab Releases
 
-For this feature, at least GitLab v11.7 is required. GitLab 11.7 introduces
-[Releases](https://docs.gitlab.com/ce/user/project/releases/) to create release entries (much like GitHub), including
-release assets. Releases are attached to an existing Git tag, so make sure the [Git part](./git.md) is configured
-correctly.
+For this feature, at least GitLab v11.7 is required. GitLab 11.7 introduces [Releases][1] to create release entries
+(much like GitHub), including release assets. Releases are attached to an existing Git tag, so make sure the [Git
+part][2] is configured correctly.
 
-[GitLab releases](https://docs.gitlab.com/ce/user/project/releases/) work just like GitHub releases:
+[GitLab releases][1] work just like GitHub releases:
 
 - Configure `gitlab.release: true`.
-- Obtain a [personal access token](https://gitlab.com/profile/personal_access_tokens) (release-it only needs the "api"
-  scope).
-- Make sure the token is [available as an environment variable](./environment-variables.md).
+- Obtain a [personal access token][3] (release-it only needs the "api" scope).
+- Make sure the token is [available as an environment variable][4].
 
 GitLab Releases do not support pre-releases or drafts.
 
@@ -26,13 +24,12 @@ To skip these checks, use `gitlab.skipChecks`.
 
 By default, the output of `git.changelog` is used for the GitLab release notes. This is the printed `Changelog: ...`
 when release-it boots. This can be overridden with the `gitlab.releaseNotes` option to customize the release notes for
-the GitLab release.  This will be invoked just before the actual GitLab release itself.
+the GitLab release. This will be invoked just before the actual GitLab release itself.
 
 The value can either be a string or a function but a function is only supported when configuring release-it using
 `.release-it.js` or `.release-it.cjs` file.
 
-When the value is a string, it's executed as a shell script. Make sure it outputs to `stdout`.
-An example:
+When the value is a string, it's executed as a shell script. Make sure it outputs to `stdout`. An example:
 
 ```json
 {
@@ -43,9 +40,8 @@ An example:
 }
 ```
 
-When the value is a function, it's executed with a single `context` parameter that contains the plugin context.
-The function can also be `async`. Make sure that it returns a string value.
-An example:
+When the value is a function, it's executed with a single `context` parameter that contains the plugin context. The
+function can also be `async`. Make sure that it returns a string value. An example:
 
 ```js
 {
@@ -59,7 +55,7 @@ An example:
 }
 ```
 
-See [Changelog](./changelog.md) for more information about generating changelogs/release notes.
+See [Changelog][5] for more information about generating changelogs/release notes.
 
 ## Milestones
 
@@ -128,3 +124,9 @@ Example command to add assets to the latest release:
 ```bash
 release-it --no-increment --no-git --gitlab.release --gitlab.assets=*.zip
 ```
+
+[1]: https://docs.gitlab.com/ce/user/project/releases/
+[2]: ./git.md
+[3]: https://gitlab.com/profile/personal_access_tokens
+[4]: ./environment-variables.md
+[5]: ./changelog.md

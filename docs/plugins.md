@@ -5,10 +5,10 @@ integrated in the release-it process.
 
 ## Contents
 
-- [Overview](#overview)
-- [Using a plugin](#using-a-plugin)
-- [Creating a plugin](#creating-a-plugin)
-- [Available & example plugins](#available--example-plugins)
+- [Overview][1]
+- [Using a plugin][2]
+- [Creating a plugin][3]
+- [Available & example plugins][4]
 
 ### Overview
 
@@ -17,11 +17,10 @@ Plugins allow additional and custom actions in the release process, such as:
 - Publish the package to any registry (this is language-agnostic, e.g. Ruby, Python, ...).
 - Implement a different strategy to generate changelogs and/or release notes.
 - Trigger web hooks (e.g. post a message to a Slack channel).
-- Use a different VCS, such as Mercurial (example: [@release-it/mercurial](https://github.com/release-it/mercurial)).
+- Use a different VCS, such as Mercurial (example: [@release-it/mercurial][5]).
 - Use Node.js directly (instead of executing shell scripts configured in `hooks.*`).
-- Replace existing plugins. For instance, integrate with the npm registry using their
-  [programmatic API](https://github.com/npm/libnpm) (as opposed to calling `npm publish` in a child process like
-  release-it itself does).
+- Replace existing plugins. For instance, integrate with the npm registry using their [programmatic API][6] (as opposed
+  to calling `npm publish` in a child process like release-it itself does).
 
 Internally, release-it uses its own plugin architecture and includes the following plugins:
 
@@ -78,9 +77,8 @@ Alternatively, here's a `release-it-plugin` as a local module:
 ## Creating a plugin
 
 To create a plugin, extend the `Plugin` class, and implement one or more release-cycle methods. See the "interface"
-below (where none of the methods is required). Any of these methods can be `async`. See this
-[test helper](https://github.com/release-it/release-it/blob/main/test/util/index.js#L54) to get an idea of the methods a
-release-it plugin can implement.
+below (where none of the methods is required). Any of these methods can be `async`. See this [test helper][7] to get an
+idea of the methods a release-it plugin can implement.
 
 Note that `release-it` should be a `peerDependency` (and probably also a `devDependency` to use its helpers in the
 plugin tests). Here's an example `package.json`:
@@ -100,7 +98,7 @@ plugin tests). Here's an example `package.json`:
 }
 ```
 
-Or see the [plugin-starterkit](https://github.com/release-it/plugin-starterkit) for a good start.
+Or see the [plugin-starterkit][8] for a good start.
 
 ### Example
 
@@ -132,12 +130,12 @@ the `release` and `afterRelease` methods at the end.
 
 ## API
 
-- [Interface overview](#interface-overview)
-- [Static methods](#static-methods)
-- [Release-cycle methods](#release-cycle-methods)
-- [Getter methods](#getter-methods)
-- [Helper methods](#helper-methods)
-- [Execution Order](#execution-order)
+- [Interface overview][9]
+- [Static methods][10]
+- [Release-cycle methods][11]
+- [Getter methods][12]
+- [Helper methods][13]
+- [Execution Order][14]
 
 ### Interface overview
 
@@ -203,7 +201,7 @@ Implement `beforeRelease` to perform tasks that should happen after the bump, an
 
 #### release()
 
-Implement `release` for the main flow of the plugin. This is where the "steps" should be declared (see [step](#step) in
+Implement `release` for the main flow of the plugin. This is where the "steps" should be declared (see [step][15] in
 class API), resulting in prompts (interactive) or spinners (non-interactive) that will execute tasks for confirmed
 steps.
 
@@ -286,8 +284,7 @@ A prompt object looks like this:
 }
 ```
 
-Under the hood, [Inquirer.js](https://github.com/SBoudrias/Inquirer.js) is used. See
-[Inquirer.js/#objects](https://github.com/SBoudrias/Inquirer.js/#objects) for more details.
+Under the hood, [Inquirer.js][16] is used. See [Inquirer.js/#objects][17] for more details.
 
 #### this.step() → Promise
 
@@ -312,7 +309,7 @@ Execute commands in the child process (i.e. the shell). This is used extensively
 
 Use template variables to render replacements. For instance, the command `git log ${latestTag}...HEAD` becomes
 `git log v1.2.3...HEAD` before being executed. The replacements are all configuration options (with the default values
-in [config/release-it.json](../config/release-it.json)), plus the following additional variables:
+in [config/release-it.json][18]), plus the following additional variables:
 
 ```text
 version
@@ -377,6 +374,28 @@ Here's an example:
 
 ## Available & example plugins
 
-- All packages tagged with [`"release-it-plugin"` on npm](https://www.npmjs.com/search?q=keywords:release-it-plugin).
-- Recipe: [my-version](https://github.com/release-it/release-it/blob/main/docs/recipes/my-version.md) - example plugin
-- [Internal release-it plugins](https://github.com/release-it/release-it/tree/main/lib/plugin)
+- All packages tagged with [`"release-it-plugin"` on npm][19].
+- Recipe: [my-version][20] - example plugin
+- [Internal release-it plugins][21]
+
+[1]: #overview
+[2]: #using-a-plugin
+[3]: #creating-a-plugin
+[4]: #available--example-plugins
+[5]: https://github.com/release-it/mercurial
+[6]: https://github.com/npm/libnpm
+[7]: https://github.com/release-it/release-it/blob/main/test/util/index.js#L54
+[8]: https://github.com/release-it/plugin-starterkit
+[9]: #interface-overview
+[10]: #static-methods
+[11]: #release-cycle-methods
+[12]: #getter-methods
+[13]: #helper-methods
+[14]: #execution-order
+[15]: #step
+[16]: https://github.com/SBoudrias/Inquirer.js
+[17]: https://github.com/SBoudrias/Inquirer.js/#objects
+[18]: ../config/release-it.json
+[19]: https://www.npmjs.com/search?q=keywords:release-it-plugin
+[20]: https://github.com/release-it/release-it/blob/main/docs/recipes/my-version.md
+[21]: https://github.com/release-it/release-it/tree/main/lib/plugin

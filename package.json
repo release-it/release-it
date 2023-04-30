@@ -50,6 +50,7 @@
   "scripts": {
     "lint": "eslint lib test",
     "format": "prettier --write \"{lib,test}/**/*.js\"",
+    "docs": "remark README.md 'docs/**/*.md' '.github/*.md' -o",
     "test": "ava --no-worker-threads",
     "release": "./bin/release-it.js"
   },
@@ -99,10 +100,17 @@
     "mock-stdio": "1.0.3",
     "nock": "13.3.0",
     "prettier": "2.8.7",
+    "remark-cli": "11.0.0",
+    "remark-preset-webpro": "0.0.2",
     "sinon": "15.0.3",
     "strip-ansi": "7.0.1"
   },
   "engines": {
     "node": ">=14.9"
+  },
+  "remarkConfig": {
+    "plugins": [
+      "preset-webpro"
+    ]
   }
 }
