@@ -1,6 +1,6 @@
 # Configuration
 
-Out of the box, release-it has sane defaults, and [plenty of options](../config/release-it.json) to configure it.
+Out of the box, release-it has sane defaults, and [plenty of options][1] to configure it.
 
 Put only the options to override in a configuration file. Here is a list of file names where release-it looks for
 configuration in the root of the project:
@@ -73,3 +73,5 @@ Also plugin options can be set from the command line:
 ```bash
 release-it --no-plugins.@release-it/keep-a-changelog.strictLatest
 ```
+
+[1]: ../config/release-it.json

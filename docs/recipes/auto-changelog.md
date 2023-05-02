@@ -1,6 +1,6 @@
 # Auto-changelog
 
-Please refer to [auto-changelog documentation](https://github.com/CookPete/auto-changelog) for more details and usage.
+Please refer to [auto-changelog documentation][1] for more details and usage.
 
 ## Config
 
@@ -25,10 +25,8 @@ Example configuration in the release-it config:
 
 ## Template
 
-This is basically a copy of the
-[default auto-changelog template](https://github.com/CookPete/auto-changelog/blob/master/templates/compact.hbs).
-However, the title is removed, and the `releases` iterator has a `{{#if @first}}` block to only show commits within the
-unreleased tag:
+This is basically a copy of the [default auto-changelog template][2]. However, the title is removed, and the `releases`
+iterator has a `{{#if @first}}` block to only show commits within the unreleased tag:
 
 ```handlebars
 {{#each releases}}
@@ -46,7 +44,7 @@ unreleased tag:
 {{/each}}
 ```
 
-The template above [changelog-compact.hbs](../../templates/changelog-compact.hbs) can also be used directly from here:
+The template above [changelog-compact.hbs][3] can also be used directly from here:
 
 ```json
 {
@@ -59,8 +57,8 @@ The template above [changelog-compact.hbs](../../templates/changelog-compact.hbs
 }
 ```
 
-Projects without a `package.json` that need to generate a `CHANGELOG.md` compatible with
-[https://keepachangelog.com](https://keepachangelog.com) can use this example:
+Projects without a `package.json` that need to generate a `CHANGELOG.md` compatible with [https://keepachangelog.com][4]
+can use this example:
 
 ```json
 {
@@ -72,3 +70,8 @@ Projects without a `package.json` that need to generate a `CHANGELOG.md` compati
   }
 }
 ```
+
+[1]: https://github.com/CookPete/auto-changelog
+[2]: https://github.com/CookPete/auto-changelog/blob/master/templates/compact.hbs
+[3]: ../../templates/changelog-compact.hbs
+[4]: https://keepachangelog.com

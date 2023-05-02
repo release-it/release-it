@@ -1,17 +1,15 @@
 # Distribution repository
 
 Some projects use a distribution repository. Generated files (such as compiled assets or documentation) can be
-distributed to a separate repository. Or to a separate branch, such as a `gh-pages`. Some examples include
-[shim repositories](https://github.com/components) and a separate
-[packaged Angular.js repository](https://github.com/angular/bower-angular) for distribution on npm and Bower.
+distributed to a separate repository. Or to a separate branch, such as a `gh-pages`. Some examples include [shim
+repositories][1] and a separate [packaged Angular.js repository][2] for distribution on npm and Bower.
 
-The `dist.repo` setting is deprecated since [v9.8.0](https://github.com/release-it/release-it/releases/tag/9.8.0), and
-removed in v10. However, publishing a seperate distribution can still be achieved. There are many solutions to this,
-here are some basic examples for inspiration.
+The `dist.repo` setting is deprecated since [v9.8.0][3], and removed in v10. However, publishing a seperate distribution
+can still be achieved. There are many solutions to this, here are some basic examples for inspiration.
 
 ## Separate distribution repo
 
-This technique is largely depending on [npm-version](https://docs.npmjs.com/cli/version.html).
+This technique is largely depending on [npm-version][4].
 
 In `.release-it.json` of the source repo:
 
@@ -64,3 +62,8 @@ A single repository, with e.g. a `dist` or `gh-pages` branch. In `package.json`:
 - Clone itself to `./.stage` while checking out the `dist` branch.
 - Execute `npm run build` to generate distribution files (into `./.stage`)
 - Stage all files, commit and push back to origin.
+
+[1]: https://github.com/components
+[2]: https://github.com/angular/bower-angular
+[3]: https://github.com/release-it/release-it/releases/tag/9.8.0
+[4]: https://docs.npmjs.com/cli/version.html
