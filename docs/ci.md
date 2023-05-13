@@ -151,7 +151,7 @@ before_script:
   - mkdir -p ~/.ssh
   - chmod 700 ~/.ssh
   - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-  - git checkout $CI_BUILD_REF_NAME
+  - git checkout $CI_COMMIT_REF_NAME
   - git remote set-url origin "git@gitlab.com:$CI_PROJECT_PATH.git"
   - git config --global user.name "${CI_USERNAME}"
   - git config --global user.email "${CI_EMAIL}"
@@ -171,7 +171,7 @@ Some people have reported an issue when using GitLab CI (in [#573][17]):
 Here is an example script sequence for GitLab to mitigate the issue:
 
 ```bash
-- git pull origin $CI_BUILD_REF_NAME
+- git pull origin $CI_COMMIT_REF_NAME
 - npm run release
 ```
 
