@@ -2,7 +2,7 @@ import { EOL } from 'node:os';
 import test from 'ava';
 import mockStdIo from 'mock-stdio';
 import stripAnsi from 'strip-ansi';
-import { format, truncateLines, parseGitUrl, parseVersion, deepMerge } from '../lib/util.js';
+import { format, truncateLines, parseGitUrl, parseVersion } from '../lib/util.js';
 
 test('format', t => {
   t.is(format('release v${version}', { version: '1.0.0' }), 'release v1.0.0');
@@ -94,49 +94,4 @@ test('parseVersion', t => {
   t.deepEqual(parseVersion('1.0.0-0'), { version: '1.0.0-0', isPreRelease: true, preReleaseId: null });
   t.deepEqual(parseVersion('1.0.0-next.1'), { version: '1.0.0-next.1', isPreRelease: true, preReleaseId: 'next' });
   t.deepEqual(parseVersion('21.04.1'), { version: '21.04.1', isPreRelease: false, preReleaseId: null });
-});
-
-
-test("deepMerge (case 1)", t => {
-  const target = { a: 1, b: { c: 2, d: { e: 3 } } };
-  const source1 = { b: { c: 4, d: { e: null, f: 5 } }, g: 6 };
-  const source2 = { h: 7 };
-  const expected = { a: 1, b: { c: 2, d: { e: 3, f: 5 } }, g: 6, h: 7 };
-  const merged = deepMerge(target, source1, source2);
-  t.deepEqual(merged, expected);
-});
-test("deepMerge (case 2)", t => {
-  const target = { a: { b: { c: 1 } } };
-  const source1 = { a: { b: { d: 2 } } };
-  const expected = { a: { b: { c: 1, d: 2 } } };
-  const merged = deepMerge(target, source1);
-  t.deepEqual(merged, expected);
-});
-test("deepMerge (case 3)", t => {
-  const target = { a: [1, 2], b: { c: [3, 4] } };
-  const source1 = { a: [5, 6], b: { c: [7, 8] } };
-  const expected = { a: [5, 6], b: { c: [7, 8] } };
-  const merged = deepMerge(target, source1);
-  t.deepEqual(merged, expected);
-});
-test("deepMerge (case 4)", t => {
-  const target = { a: { b: { c: 1 } } };
-  const source1 = { a: { b: { c: undefined, d: 2 } } };
-  const expected = { a: { b: { c: 1, d: 2 } } };
-  const merged = deepMerge(target, source1);
-  t.deepEqual(merged, expected);
-});
-test("deepMerge (case 5)", t => {
-  const target = { a: { b: { c: 1 } } };
-  const source1 = undefined;
-  const expected = { a: { b: { c: 1 } } };
-  const merged = deepMerge(target, source1);
-  t.deepEqual(merged, expected);
-});
-test("deepMerge (case 6)", t => {
-  const target = { a: { b: { c: 1 } } };
-  const source1 = null;
-  const expected = { a: { b: { c: 1 } } };
-  const merged = deepMerge(target, source1);
-  t.deepEqual(merged, expected);
 });
