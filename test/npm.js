@@ -25,7 +25,12 @@ test('should return npm package url (custom publicPath)', t => {
 });
 
 test('should return npm package url (custom registry and publicPath)', t => {
-  const options = { npm: {  publishConfig: { name:'my-cool-package', registry: 'https://registry.example.org/', publicPath: '/custom/public-path'  } } };
+  const options = {
+    npm: {
+      name: 'my-cool-package',
+      publishConfig: { registry: 'https://registry.example.org/', publicPath: '/custom/public-path' }
+    }
+  };
   const npmClient = factory(npm, { options });
   t.is(npmClient.getPackageUrl(), 'https://registry.example.org/custom/public-path/my-cool-package');
 });
