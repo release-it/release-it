@@ -25,9 +25,9 @@ jobs:
           - windows-latest
           - macos-latest
         node:
-          - 14
           - 16
           - 18
+          - 20
 
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.os }} (Node v${{ matrix.node }})
