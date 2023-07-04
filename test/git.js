@@ -322,3 +322,31 @@ test.serial('should not roll back with risky config', async t => {
   await gitClient.beforeRelease();
   t.is('rollbackOnce' in gitClient, false);
 });
+
+test.serial('should return latest tag from default branch (not parent commit)', async t => {
+  const gitClient = factory(Git, {
+    options: { git: { getLatestTagFromAllRefs: true } }
+  });
+  sh.exec('git init');
+  gitAdd('main', 'file', 'Add file in main');
+  const defaultBranchName = await gitClient.getBranchName();
+  const developBranchName = 'develop';
+  const featureBranchPrefix = 'feature';
+  await gitClient.tag({ name: '1.0.0' });
+  sh.exec(`git branch ${developBranchName} ${defaultBranchName}`);
+  sh.exec(`git checkout -b ${featureBranchPrefix}/first ${developBranchName}`);
+  gitAdd('feature/1', 'file', 'Update file in feature branch (1)');
+  sh.exec(`git checkout ${developBranchName}`);
+  sh.exec(`git merge --no-ff ${featureBranchPrefix}/first`);
+  await gitClient.tag({ name: '1.1.0-rc.1' });
+  sh.exec(`git checkout ${defaultBranchName}`);
+  sh.exec(`git merge --no-ff ${developBranchName}`);
+  await gitClient.tag({ name: '1.1.0' });
+  sh.exec(`git checkout -b ${featureBranchPrefix}/second ${developBranchName}`);
+  gitAdd('feature/2', 'file', 'Update file again, in feature branch (2)');
+  sh.exec(`git checkout ${developBranchName}`);
+  sh.exec(`git merge --no-ff ${featureBranchPrefix}/second`);
+  {
+    t.is(await gitClient.getLatestTagName(), '1.1.0');
+  }
+});
