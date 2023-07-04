@@ -58,11 +58,13 @@ Example: `git.tagMatch: "[0-9][0-9].[0-1][0-9].[0-9]*"`
 
 ## Tag Exclude
 
-Use `git.tagExclude` to override the normal behavior to find the latest tag. For example whendoing a major release and
+Use `git.tagExclude` to override the normal behavior to find the latest tag. For example when doing a major release and
 you want to exclude any sort of pre-releases, use `*[-]*`, as this would exclude everything with a hyphen, which is
 normally used exclusively in pre-releases.
 
 Example: `git.tagExclude: *[-]*`
+
+:bulb: N.b. `git.tagExclude` has no effect when `git.getLatestTagFromAllRefs: true` (see '[use all refs to determine latest tag](#use-all-refs-to-determine-latest-tag)').
 
 ## Extra arguments
 
@@ -95,6 +97,16 @@ Use e.g. `git.tag: false` or `--no-git.tag` to skip a single step.
 
 By default, untracked files are not added to the release commit. Use `git.addUntrackedFiles: true` to override this
 behavior.
+
+## Use all refs to determine latest tag
+
+By default, Git determines the latest tag using [`git describe`](https://git-scm.com/docs/git-describe), which finds the most recent tag _that is reachable from a commit._ If you wish to consider all tags, e.g. to include tags that point to sibling commits on different branches, then set `git.getLatestTagFromAllRefs: true` (the default is `false`).
+
+![Determine latest tag from all refs](assets/git-version-from-all-refs.svg)
+
+In the above illustration, releasing from `develop` and incrementing the semver `rc` modifier, when `git.getLatestTagFromAllRefs: false` (the default), the latest tag is `v1.1.0-rc1`, because that is the most recent tag reachable from the current commit (the red circle on `develop`). The version to release will therefore be `v1.1.0-rc2`.
+
+Setting `git.getLatestTagFromAllRefs: true` considers all tags (sorting them by version), whether directly reachable or not. In which case, the latest tag is `v1.1.0` from `main`, and the new version to release is `v1.2.0-rc1`.
 
 ## Prerequisite checks
 

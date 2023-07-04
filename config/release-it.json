@@ -16,6 +16,7 @@
     "tagExclude": null,
     "tagName": null,
     "tagMatch": null,
+    "getLatestTagFromAllRefs": false,
     "tagAnnotation": "Release ${version}",
     "tagArgs": [],
     "push": true,
