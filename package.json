@@ -48,6 +48,7 @@
     "test"
   ],
   "scripts": {
+    "knip": "knip",
     "lint": "eslint lib test",
     "format": "prettier --write \"{lib,test}/**/*.js\"",
     "docs": "remark README.md 'docs/**/*.md' '.github/*.md' -o",
@@ -96,6 +97,7 @@
     "eslint-plugin-ava": "14.0.0",
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-prettier": "4.2.1",
+    "knip": "2.14.3",
     "mock-fs": "5.2.0",
     "mock-stdio": "1.0.3",
     "nock": "13.3.1",
