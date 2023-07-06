@@ -334,8 +334,8 @@ release-it programmatically][45] for example code.
 
 ## Legacy Node.js
 
-The latest major version is v15, supporting Node.js 14 and up (as Node.js v12 is EOL). Use release-it v14 for
-environments running Node.js v10 and v12. Also see [CHANGELOG.md][67].
+The latest major version is v16, supporting Node.js 16 and up (as Node.js v14 is EOL). Use release-it v15 for
+environments running Node.js v14. Also see [CHANGELOG.md][67].
 
 ## Links
 
