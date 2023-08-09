@@ -1,10 +1,20 @@
 import path from 'node:path';
+import { patchFs } from 'fs-monkey';
 import test from 'ava';
 import sinon from 'sinon';
-import mock from 'mock-fs';
+import { vol } from 'memfs';
 import npm from '../lib/plugin/npm/npm.js';
 import { factory, runTasks } from './util/index.js';
 import { getArgs } from './util/helpers.js';
+
+const mockFs = volume => {
+  vol.fromJSON(volume);
+  const unpatch = patchFs(vol);
+  return () => {
+    vol.reset();
+    unpatch();
+  };
+};
 
 test('should return npm package url', t => {
   const options = { npm: { name: 'my-cool-package' } };
@@ -315,7 +325,7 @@ test('should skip checks', async t => {
 });
 
 test('should publish to a different/scoped registry', async t => {
-  mock({
+  const resetFs = mockFs({
     [path.resolve('package.json')]: JSON.stringify({
       name: '@my-scope/my-pkg',
       version: '1.0.0',
@@ -349,10 +359,11 @@ test('should publish to a different/scoped registry', async t => {
   ]);
 
   exec.restore();
+  resetFs();
 });
 
 test('should not publish when `npm version` fails', async t => {
-  mock({
+  const resetFs = mockFs({
     [path.resolve('package.json')]: JSON.stringify({
       name: '@my-scope/my-pkg',
       version: '1.0.0'
@@ -384,6 +395,7 @@ test('should not publish when `npm version` fails', async t => {
   ]);
 
   exec.restore();
+  resetFs();
 });
 
 test('should add allow-same-version argument', async t => {
