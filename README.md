@@ -42,7 +42,7 @@ npm install -D release-it
     "release": "release-it"
   },
   "devDependencies": {
-    "release-it": "^15.10.0"
+    "release-it": "^16.1.0"
   }
 }
 ```
