@@ -33,7 +33,7 @@ jobs:
     name: ${{ matrix.os }} (Node v${{ matrix.node }})
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
