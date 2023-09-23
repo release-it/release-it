@@ -131,3 +131,14 @@ test('should expand pre-release shortcut (including increment and npm.tag)', t =
     preReleaseId: 'rc'
   });
 });
+
+test('should expand pre-release shortcut (snapshot)', t => {
+  const config = new Config({ snapshot: 'feat' });
+  t.deepEqual(config.options.version, {
+    increment: 'prerelease',
+    isPreRelease: true,
+    preReleaseId: 'feat'
+  });
+  t.is(config.options.git.tagMatch, '0.0.0-feat.[0-9]*');
+  t.true(config.options.git.getLatestTagFromAllRefs);
+});

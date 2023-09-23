@@ -26,6 +26,13 @@ test.serial('should throw if on wrong branch', async t => {
   await t.throwsAsync(gitClient.init(), { message: /^Must be on branch dev/ });
 });
 
+test.serial('should throw if on negated branch', async t => {
+  const options = { git: { requireBranch: '!main' } };
+  const gitClient = factory(Git, { options });
+  sh.exec('git checkout -b main');
+  await t.throwsAsync(gitClient.init(), { message: /^Must be on branch !main/ });
+});
+
 test.serial('should not throw if required branch matches', async t => {
   const options = { git: { requireBranch: 'ma?*' } };
   const gitClient = factory(Git, { options });
