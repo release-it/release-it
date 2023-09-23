@@ -252,6 +252,7 @@ changelog
 name
 repo.remote, repo.protocol, repo.host, repo.owner, repo.repository, repo.project
 branchName
+releaseUrl
 ```
 
 All variables are available in all hooks. The only exception is that the additional variables listed above are not yet
