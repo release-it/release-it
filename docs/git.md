@@ -64,16 +64,16 @@ normally used exclusively in pre-releases.
 
 Example: `git.tagExclude: *[-]*`
 
-Note that `git.tagExclude` has no effect when `git.getLatestTagFromAllRefs: true`. See the next section
-[use all refs to determine latest tag](#use-all-refs-to-determine-latest-tag) for more details.
+Note that `git.tagExclude` has no effect when `git.getLatestTagFromAllRefs: true`. See the next section [use all refs to
+determine latest tag][7] for more details.
 
 ## Use all refs to determine latest tag
 
-By default, Git determines the latest tag using [`git describe`](https://git-scm.com/docs/git-describe), which finds the
-most recent tag _that is reachable from a commit._ If you wish to consider all tags, e.g. to include tags that point to
-sibling commits on different branches, then set `git.getLatestTagFromAllRefs: true` (the default is `false`).
+By default, Git determines the latest tag using [`git describe`][8], which finds the most recent tag _that is reachable
+from a commit._ If you wish to consider all tags, e.g. to include tags that point to sibling commits on different
+branches, then set `git.getLatestTagFromAllRefs: true` (the default is `false`).
 
-![Determine latest tag from all refs](assets/git-version-from-all-refs.svg)
+![Determine latest tag from all refs][9]
 
 In the above illustration, releasing from `develop` and incrementing the semver `rc` modifier, when
 `git.getLatestTagFromAllRefs: false` (the default), the latest tag is `v1.1.0-rc1`, because that is the most recent tag
@@ -90,7 +90,7 @@ In case extra arguments should be provided to Git, these options are available:
 - `git.tagArgs`
 - `git.pushArgs`
 
-For example, use `"git.commitArgs": ["-S"]` to sign commits (also see [#35][7]).
+For example, use `"git.commitArgs": ["-S"]` to sign commits (also see [#35][10]).
 
 Note that `["--follow-tags"]` is the default for `pushArgs` (re-add this manually if necessary). Example with multiple
 arguments for `git push`:
@@ -171,7 +171,7 @@ example use case and how it can be handled using release-it:
 By default, release-it does not check the number of commits upfront to prevent "empty" releases. Configure
 `"git.requireCommits": true` to exit the release-it process if there are no commits since the latest tag.
 
-Also see the [Require Commits][8] recipe(s).
+Also see the [Require Commits][11] recipe(s).
 
 ## Further customizations
 
@@ -197,5 +197,8 @@ script.
 [4]: https://docs.github.com/en/get-started/getting-started-with-git/managing-remote-repositories
 [5]: https://support.atlassian.com/bitbucket-cloud/docs/configure-ssh-and-two-step-verification/
 [6]: https://gitlab.com/help/ssh/README.md
-[7]: https://github.com/release-it/release-it/issues/350
-[8]: ./recipes/require-commits.md
+[7]: #use-all-refs-to-determine-latest-tag
+[8]: https://git-scm.com/docs/git-describe
+[9]: assets/git-version-from-all-refs.svg
+[10]: https://github.com/release-it/release-it/issues/350
+[11]: ./recipes/require-commits.md

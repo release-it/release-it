@@ -85,9 +85,9 @@ The default registry is [https://registry.npmjs.org][2]. The publish to another 
 
 ## Config public path of registry
 
-The default public path is `/package`. To customize an alternative path, update or set the
-`publishConfig`. For example, if a third-party tool such as `Verdaccio` is used to build a private server to proxy
- npm registry, then the URL address of the web user interface is `http://{{host}}-/web/detail/{{packageName}}`:
+The default public path is `/package`. To customize an alternative path, update or set the `publishConfig`. For example,
+if a third-party tool such as `Verdaccio` is used to build a private server to proxy npm registry, then the URL address
+of the web user interface is `http://{{host}}-/web/detail/{{packageName}}`:
 
 ```json
 {
