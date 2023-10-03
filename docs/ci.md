@@ -39,7 +39,7 @@ Replace `[user]` and `[project]` with the actual values.
 ## GitHub Actions
 
 To run release-it from a GitHub Action, here's an example job (fragment) to configure a Git user (to push the release
-commit), and expose the `GITHUB_TOKEN` for the GitHub Release:
+commit), and expose `NPM_TOKEN` for publishing to the npm registry and `GITHUB_TOKEN` for the GitHub Release:
 
 ```yaml
 jobs:
@@ -56,6 +56,7 @@ jobs:
       - run: npm install
       - run: npm run release
         env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
