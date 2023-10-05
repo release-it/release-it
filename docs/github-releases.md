@@ -168,7 +168,7 @@ release-it --no-increment --no-git --github.release --github.update --github.ass
 
 ## Comments
 
-To submit a comment to each merged pull requests and closed issue that is part of the release, set `github.comments` to
+To submit a comment to each merged pull requests and closed issue that is part of the release, set `github.comments.submit` to
 `true`. Here are the default settings:
 
 ```json
