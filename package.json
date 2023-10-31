@@ -47,6 +47,7 @@
     "lib",
     "test"
   ],
+  "types": "./types/index.d.ts",
   "scripts": {
     "knip": "knip",
     "lint": "eslint lib test",
