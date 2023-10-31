@@ -295,10 +295,12 @@ Since v11, release-it can be extended in many, many ways. Here are some plugins:
 | [@release-it/conventional-changelog][25]  | Provides recommended bump, conventional-changelog, and updates `CHANGELOG.md` |
 | [@release-it/keep-a-changelog][38]        | Maintain CHANGELOG.md using the Keep a Changelog standards                    |
 | [@release-it-plugins/lerna-changelog][39] | Integrates lerna-changelog into the release-it pipeline                       |
+| [@jcamp-code/release-it-changelogen][72]  | Use [@unjs/changelogen][73] for versioning and changelog                      |
 | [@release-it-plugins/workspaces][40]      | Releases each of your projects configured workspaces                          |
 | [release-it-calver-plugin][26]            | Enables Calendar Versioning (calver) with release-it                          |
 | [@grupoboticario/news-fragments][41]      | An easy way to generate your changelog file                                   |
 | [@j-ulrich/release-it-regex-bumper][42]   | Regular expression based version read/write plugin for release-it             |
+| [@jcamp-code/release-it-dotnet][74]       | Use .csproj or .props file for versioning, automate NuGet publishing          |
 
 Internally, release-it uses its own plugin architecture (for Git, GitHub, GitLab, npm).
 
@@ -419,3 +421,6 @@ environments running Node.js v14. Also see [CHANGELOG.md][67].
 [69]: ./.github/CONTRIBUTING.md
 [70]: https://github.com/release-it/release-it/issues/new
 [71]: ./LICENSE
+[72]: https://github.com/jcamp-code/release-it-changelogen
+[73]: https://github.com/unjs/changelogen
+[74]: https://github.com/jcamp-code/release-it-dotnet
