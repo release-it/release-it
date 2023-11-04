@@ -298,6 +298,35 @@ test.serial('should roll back when cancelled', async t => {
   t.is(exec.args[12][0], 'git reset --hard HEAD~1');
 });
 
+test.serial('should remove remote tag when push to branch failed', async t => {
+  sh.exec('git init');
+  sh.exec(`git remote add origin file://foo`);
+  const version = '1.2.3';
+  gitAdd(`{"version":"${version}"}`, 'package.json', 'Add package.json');
+  const options = { git: { requireCleanWorkingDir: true, commit: true, tag: true, tagName: 'v${version}' } };
+  const gitClient = factory(Git, { options });
+  const exec = sinon.spy(gitClient.shell, 'execFormattedCommand');
+  sh.exec(`git push`);
+  sh.exec(`git checkout HEAD~1`);
+  gitAdd('line', 'file', 'Add file');
+
+  await gitClient.init();
+
+  sh.exec('npm --no-git-tag-version version patch');
+
+  gitClient.bump('1.2.4');
+  await gitClient.beforeRelease();
+  await gitClient.stage('package.json');
+  await gitClient.commit({ message: 'Add this' });
+  await gitClient.tag();
+  try {
+    await gitClient.push();
+  } catch (e) {
+    // push would fail with an error since HEAD is behind origin
+  }
+  t.is(exec.args[15][0], 'git push origin --delete v1.2.4');
+});
+
 test.serial('should not touch existing history when rolling back', async t => {
   sh.exec('git init');
   const version = '1.2.3';
