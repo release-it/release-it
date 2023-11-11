@@ -112,7 +112,7 @@
     "@octokit/plugin-rest-endpoint-methods": "7.2.2"
   },
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "remarkConfig": {
     "plugins": [
