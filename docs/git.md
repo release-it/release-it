@@ -2,12 +2,12 @@
 
 The Git plugin in release-it, by default, does the following:
 
-1.  [Prerequisite checks][1]
-2.  \[Files may be updated by other plugins and/or user commands/hooks]
-3.  `git add . --update`
-4.  `git commit -m "[git.commitMessage]"`
-5.  `git tag --annotate --message="[git.tagAnnotation]" [git.tagName]`
-6.  `git push [git.pushArgs] [git.pushRepo]`
+1. [Prerequisite checks][1]
+2. \[Files may be updated by other plugins and/or user commands/hooks]
+3. `git add . --update`
+4. `git commit -m "[git.commitMessage]"`
+5. `git tag --annotate --message="[git.tagAnnotation]" [git.tagName]`
+6. `git push [git.pushArgs] [git.pushRepo]`
 
 When not in CI mode, release-it will ask for confirmation before each of the commit, tag, and push steps.
 

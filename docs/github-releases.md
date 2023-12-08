@@ -11,8 +11,8 @@ See the screenshot on the right for an overview of what release-it automates.
 
 To add [GitHub releases][3] in your release-it flow, there are two options:
 
-1.  Automated. This requires a personal access token.
-2.  Manual. The GitHub web interface will be opened with pre-populated fields.
+1. Automated. This requires a personal access token.
+2. Manual. The GitHub web interface will be opened with pre-populated fields.
 
 ## Automated
 
@@ -168,8 +168,8 @@ release-it --no-increment --no-git --github.release --github.update --github.ass
 
 ## Comments
 
-To submit a comment to each merged pull requests and closed issue that is part of the release, set `github.comments.submit` to
-`true`. Here are the default settings:
+To submit a comment to each merged pull requests and closed issue that is part of the release, set
+`github.comments.submit` to `true`. Here are the default settings:
 
 ```json
 {
