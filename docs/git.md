@@ -196,7 +196,7 @@ script.
 [3]: https://docs.github.com/en/authentication/connecting-to-github-with-ssh
 [4]: https://docs.github.com/en/get-started/getting-started-with-git/managing-remote-repositories
 [5]: https://support.atlassian.com/bitbucket-cloud/docs/configure-ssh-and-two-step-verification/
-[6]: https://gitlab.com/help/ssh/README.md
+[6]: https://docs.gitlab.com/ce/user/ssh
 [7]: #use-all-refs-to-determine-latest-tag
 [8]: https://git-scm.com/docs/git-describe
 [9]: assets/git-version-from-all-refs.svg

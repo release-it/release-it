@@ -127,6 +127,6 @@ release-it --no-increment --no-git --gitlab.release --gitlab.assets=*.zip
 
 [1]: https://docs.gitlab.com/ce/user/project/releases/
 [2]: ./git.md
-[3]: https://gitlab.com/profile/personal_access_tokens
+[3]: https://docs.gitlab.com/ce/user/profile/personal_access_tokens
 [4]: ./environment-variables.md
 [5]: ./changelog.md
