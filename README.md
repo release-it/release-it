@@ -19,6 +19,8 @@ system, and hooks to execute any command you need to test, build, and/or publish
 
 [![Action Status][11]][10] [![npm version][13]][12]
 
+Are you using release-it at work? Please consider [sponsoring me][14]!
+
 ## Installation
 
 Although release-it is a **generic** release tool, most projects use it for projects with npm packages. The recommended
@@ -60,16 +62,16 @@ You will be prompted to select the new version, and more prompts will follow bas
 
 ## Experimental: knowledge base
 
-You might want to ask your questions in the [Release It! knowledge base][14] (powered by OpenAI and [7-docs][15]). This
+You might want to ask your questions in the [Release It! knowledge base][15] (powered by OpenAI and [7-docs][16]). This
 is an experimental knowledge base, answers may be incorrect.
 
 ## Yarn
 
-Using Yarn? Please see the [npm section on Yarn][16].
+Using Yarn? Please see the [npm section on Yarn][17].
 
 ## Monorepos
 
-Using a monorepo? Please see this [monorepo recipe][17].
+Using a monorepo? Please see this [monorepo recipe][18].
 
 ## Global Installation
 
@@ -82,14 +84,14 @@ Per-project installation as shown above is recommended, but global installs are 
 
 Here's a list of interesting external resources:
 
-- Video: [How to use GitHub Actions & Release-It to Easily Release Your Code][18]
-- Article: [Monorepo Semantic Releases][19] ([repo][20])
+- Video: [How to use GitHub Actions & Release-It to Easily Release Your Code][19]
+- Article: [Monorepo Semantic Releases][20] ([repo][21])
 
 Want to add yours to the list? Just open a pull request!
 
 ## Configuration
 
-Out of the box, release-it has sane defaults, and [plenty of options][21] to configure it. Most projects use a
+Out of the box, release-it has sane defaults, and [plenty of options][22] to configure it. Most projects use a
 `.release-it.json` file in the project root, or a `release-it` property in `package.json`.
 
 Here's a quick example `.release-it.json`:
@@ -105,7 +107,7 @@ Here's a quick example `.release-it.json`:
 }
 ```
 
-→ See [Configuration][22] for more details.
+→ See [Configuration][23] for more details.
 
 ## Interactive vs. CI mode
 
@@ -123,15 +125,15 @@ Use `--only-version` to use a prompt only to determine the version, and automate
 
 How does release-it determine the latest version?
 
-1. For projects with a `package.json`, its `version` will be used (see [npm][23] to skip this).
+1. For projects with a `package.json`, its `version` will be used (see [npm][24] to skip this).
 2. Otherwise, release-it uses the latest Git tag to determine which version should be released.
 3. As a last resort, `0.0.0` will be used as the latest version.
 
 Alternatively, a plugin can be used to override this (e.g. to manage a `VERSION` or `composer.json` file):
 
-- [@release-it/bumper][24] to read from or bump the version in any file
-- [@release-it/conventional-changelog][25] to get a recommended bump based on commit messages
-- [release-it-calver-plugin][26] to use CalVer (Calendar Versioning)
+- [@release-it/bumper][25] to read from or bump the version in any file
+- [@release-it/conventional-changelog][26] to get a recommended bump based on commit messages
+- [release-it-calver-plugin][27] to use CalVer (Calendar Versioning)
 
 Add the `--release-version` flag to print the **next** version without releasing anything.
 
@@ -140,35 +142,35 @@ Add the `--release-version` flag to print the **next** version without releasing
 Git projects are supported well by release-it, automating the tasks to stage, commit, tag and push releases to any Git
 remote.
 
-→ See [Git][27] for more details.
+→ See [Git][28] for more details.
 
 ## GitHub Releases
 
 GitHub projects can have releases attached to Git tags, containing release notes and assets. There are two ways to add
-[GitHub releases][28] in your release-it flow:
+[GitHub releases][29] in your release-it flow:
 
 1. Automated (requires a `GITHUB_TOKEN`)
 2. Manual (using the GitHub web interface with pre-populated fields)
 
-→ See [GitHub Releases][29] for more details.
+→ See [GitHub Releases][30] for more details.
 
 ## GitLab Releases
 
 GitLab projects can have releases attached to Git tags, containing release notes and assets. To automate [GitLab
-releases][30]:
+releases][31]:
 
 - Configure `gitlab.release: true`
-- Obtain a [personal access token][31] (release-it only needs the "api" scope).
-- Make sure the token is [available as an environment variable][32].
+- Obtain a [personal access token][32] (release-it only needs the "api" scope).
+- Make sure the token is [available as an environment variable][33].
 
-→ See [GitLab Releases][33] for more details.
+→ See [GitLab Releases][34] for more details.
 
 ## Changelog
 
 By default, release-it generates a changelog, to show and help select a version for the new release. Additionally, this
 changelog serves as the release notes for the GitHub or GitLab release.
 
-The [default command][21] is based on `git log ...`. This setting (`git.changelog`) can be overridden. To further
+The [default command][22] is based on `git log ...`. This setting (`git.changelog`) can be overridden. To further
 customize the release notes for the GitHub or GitLab release, there's `github.releaseNotes` or `gitlab.releaseNotes`.
 Make sure any of these commands output the changelog to `stdout`. Note that release-it by default is agnostic to commit
 message conventions. Plugins are available for:
@@ -180,14 +182,14 @@ message conventions. Plugins are available for:
 
 To print the changelog without releasing anything, add the `--changelog` flag.
 
-→ See [Changelog][34] for more details.
+→ See [Changelog][35] for more details.
 
 ## Publish to npm
 
 With a `package.json` in the current directory, release-it will let `npm` bump the version in `package.json` (and
 `package-lock.json` if present), and publish to the npm registry.
 
-→ See [Publish to npm][23] for more details.
+→ See [Publish to npm][24] for more details.
 
 ## Manage pre-releases
 
@@ -195,7 +197,7 @@ With release-it, it's easy to create pre-releases: a version of your software th
 it's not in the stable semver range yet. Often "alpha", "beta", and "rc" (release candidate) are used as identifiers for
 pre-releases. An example pre-release version is `2.0.0-beta.0`.
 
-→ See [Manage pre-releases][35] for more details.
+→ See [Manage pre-releases][36] for more details.
 
 ## Update or re-run existing releases
 
@@ -225,7 +227,7 @@ Use the optional `:plugin` part in the middle to hook into a life cycle method e
 The core plugins include `version`, `git`, `npm`, `github`, `gitlab`.
 
 Note that hooks like `after:git:release` will not run when either the `git push` failed, or when it is configured not to
-be executed (e.g. `git.push: false`). See [execution order][36] for more details on execution order of plugin lifecycle
+be executed (e.g. `git.push: false`). See [execution order][37] for more details on execution order of plugin lifecycle
 methods.
 
 All commands can use configuration variables (like template strings). An array of commands can also be provided, they
@@ -243,7 +245,7 @@ will run one after another. Some example release-it configuration:
 }
 ```
 
-The variables can be found in the [default configuration][21]. Additionally, the following variables are exposed:
+The variables can be found in the [default configuration][22]. Additionally, the following variables are exposed:
 
 ```text
 version
@@ -275,7 +277,7 @@ Using Inquirer.js inside custom hook scripts might cause issues (since release-i
 
 Use `--dry-run` to show the interactivity and the commands it _would_ execute.
 
-→ See [Dry Runs][37] for more details.
+→ See [Dry Runs][38] for more details.
 
 ## Troubleshooting & debugging
 
@@ -291,65 +293,66 @@ Since v11, release-it can be extended in many, many ways. Here are some plugins:
 
 | Plugin                                    | Description                                                                   |
 | ----------------------------------------- | ----------------------------------------------------------------------------- |
-| [@release-it/bumper][24]                  | Read & write the version from/to any file                                     |
-| [@release-it/conventional-changelog][25]  | Provides recommended bump, conventional-changelog, and updates `CHANGELOG.md` |
-| [@release-it/keep-a-changelog][38]        | Maintain CHANGELOG.md using the Keep a Changelog standards                    |
-| [@release-it-plugins/lerna-changelog][39] | Integrates lerna-changelog into the release-it pipeline                       |
-| [@jcamp-code/release-it-changelogen][40]  | Use [@unjs/changelogen][41] for versioning and changelog                      |
-| [@release-it-plugins/workspaces][42]      | Releases each of your projects configured workspaces                          |
-| [release-it-calver-plugin][26]            | Enables Calendar Versioning (calver) with release-it                          |
-| [@grupoboticario/news-fragments][43]      | An easy way to generate your changelog file                                   |
-| [@j-ulrich/release-it-regex-bumper][44]   | Regular expression based version read/write plugin for release-it             |
-| [@jcamp-code/release-it-dotnet][45]       | Use .csproj or .props file for versioning, automate NuGet publishing          |
+| [@release-it/bumper][25]                  | Read & write the version from/to any file                                     |
+| [@release-it/conventional-changelog][26]  | Provides recommended bump, conventional-changelog, and updates `CHANGELOG.md` |
+| [@release-it/keep-a-changelog][39]        | Maintain CHANGELOG.md using the Keep a Changelog standards                    |
+| [@release-it-plugins/lerna-changelog][40] | Integrates lerna-changelog into the release-it pipeline                       |
+| [@jcamp-code/release-it-changelogen][41]  | Use [@unjs/changelogen][42] for versioning and changelog                      |
+| [@release-it-plugins/workspaces][43]      | Releases each of your projects configured workspaces                          |
+| [release-it-calver-plugin][27]            | Enables Calendar Versioning (calver) with release-it                          |
+| [@grupoboticario/news-fragments][44]      | An easy way to generate your changelog file                                   |
+| [@j-ulrich/release-it-regex-bumper][45]   | Regular expression based version read/write plugin for release-it             |
+| [@jcamp-code/release-it-dotnet][46]       | Use .csproj or .props file for versioning, automate NuGet publishing          |
 
 Internally, release-it uses its own plugin architecture (for Git, GitHub, GitLab, npm).
 
-→ See all [release-it plugins on npm][46].
+→ See all [release-it plugins on npm][47].
 
-→ See [plugins][47] for documentation to write plugins.
+→ See [plugins][48] for documentation to write plugins.
 
 ## Use release-it programmatically
 
 While mostly used as a CLI tool, release-it can be used as a dependency to integrate in your own scripts. See [use
-release-it programmatically][48] for example code.
+release-it programmatically][49] for example code.
 
 ## Example projects using release-it
 
-- [axios/axios][49]
-- [blockchain/blockchain-wallet-v4-frontend][50]
-- [callstack/react-native-paper][51]
-- [ember-cli/ember-cli][52]
-- [js-cookie/js-cookie][53]
-- [metalsmith/metalsmith][54]
-- [mozilla/readability][55]
-- [pahen/madge][56]
-- [redis/node-redis][57]
-- [reduxjs/redux][58]
-- [saleor/saleor][59]
-- [Semantic-Org/Semantic-UI-React][60]
-- [shipshapecode/shepherd][61]
-- [StevenBlack/hosts][62]
-- [swagger-api/swagger-ui][63] + [swagger-editor][64]
-- [tabler/tabler][65] + [tabler-icons][66]
-- [youzan/vant][67]
-- [Repositories that depend on release-it][68]
-- GitHub search for [path:\*\*/.release-it.json][69]
+- [axios/axios][50]
+- [blockchain/blockchain-wallet-v4-frontend][51]
+- [callstack/react-native-paper][52]
+- [ember-cli/ember-cli][53]
+- [js-cookie/js-cookie][54]
+- [metalsmith/metalsmith][55]
+- [mozilla/readability][56]
+- [pahen/madge][57]
+- [redis/node-redis][58]
+- [reduxjs/redux][59]
+- [saleor/saleor][60]
+- [Semantic-Org/Semantic-UI-React][61]
+- [shipshapecode/shepherd][62]
+- [StevenBlack/hosts][63]
+- [swagger-api/swagger-ui][64] + [swagger-editor][65]
+- [tabler/tabler][66] + [tabler-icons][67]
+- [youzan/vant][68]
+- [Repositories that depend on release-it][69]
+- GitHub search for [path:\*\*/.release-it.json][70]
 
 ## Legacy Node.js
 
 The latest major version is v17, supporting Node.js 18 and up (as Node.js v16 is EOL). The previous major version was
-v16, supporting Node.js 16 and up (as Node.js v14 is EOL). Use release-it v15 for environments running Node.js v14. Also
-see [CHANGELOG.md][70].
+v16, supporting Node.js 16. Use release-it v15 for environments running Node.js v14. Also see [CHANGELOG.md][71].
 
 ## Links
 
-- See [CHANGELOG.md][70] for major/breaking updates, and [releases][71] for a detailed version history.
-- To **contribute**, please read [CONTRIBUTING.md][72] first.
-- Please [open an issue][73] if anything is missing or unclear in this documentation.
+- See [CHANGELOG.md][71] for major/breaking updates, and [releases][72] for a detailed version history.
+- To **contribute**, please read [CONTRIBUTING.md][73] first.
+- Please [open an issue][74] if anything is missing or unclear in this documentation.
 
 ## License
 
-[MIT][74]
+[MIT][75]
+
+Are you using release-it at work? Please consider [sponsoring me][14]!
 
 [1]: #git
 [2]: #hooks
@@ -364,64 +367,65 @@ see [CHANGELOG.md][70].
 [11]: https://github.com/release-it/release-it/workflows/Cross-OS%20Tests/badge.svg
 [12]: https://www.npmjs.com/package/release-it
 [13]: https://badge.fury.io/js/release-it.svg
-[14]: https://release-it.deno.dev
-[15]: https://github.com/7-docs/7-docs
-[16]: ./docs/npm.md#yarn
-[17]: ./docs/recipes/monorepo.md
-[18]: https://www.youtube.com/watch?v=7pBcuT7j_A0
-[19]: https://medium.com/valtech-ch/monorepo-semantic-releases-db114811efa5
-[20]: https://github.com/b12k/monorepo-semantic-releases
-[21]: ./config/release-it.json
-[22]: ./docs/configuration.md
-[23]: ./docs/npm.md
-[24]: https://github.com/release-it/bumper
-[25]: https://github.com/release-it/conventional-changelog
-[26]: https://github.com/casmith/release-it-calver-plugin
-[27]: ./docs/git.md
-[28]: https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases
-[29]: ./docs/github-releases.md
-[30]: https://docs.gitlab.com/ce/user/project/releases/
-[31]: https://gitlab.com/profile/personal_access_tokens
-[32]: ./docs/environment-variables.md
-[33]: ./docs/gitlab-releases.md
-[34]: ./docs/changelog.md
-[35]: ./docs/pre-releases.md
-[36]: ./docs/plugins.md#execution-order
-[37]: ./docs/dry-runs.md
-[38]: https://github.com/release-it/keep-a-changelog
-[39]: https://github.com/release-it-plugins/lerna-changelog
-[40]: https://github.com/jcamp-code/release-it-changelogen
-[41]: https://github.com/unjs/changelogen
-[42]: https://github.com/release-it-plugins/workspaces
-[43]: https://github.com/grupoboticario/news-fragments
-[44]: https://github.com/j-ulrich/release-it-regex-bumper
-[45]: https://github.com/jcamp-code/release-it-dotnet
-[46]: https://www.npmjs.com/search?q=keywords:release-it-plugin
-[47]: ./docs/plugins.md
-[48]: ./docs/recipes/programmatic.md
-[49]: https://github.com/axios/axios
-[50]: https://github.com/blockchain/blockchain-wallet-v4-frontend
-[51]: https://github.com/callstack/react-native-paper
-[52]: https://github.com/ember-cli/ember-cli
-[53]: https://github.com/js-cookie/js-cookie
-[54]: https://github.com/metalsmith/metalsmith
-[55]: https://github.com/mozilla/readability
-[56]: https://github.com/pahen/madge
-[57]: https://github.com/redis/node-redis
-[58]: https://github.com/reduxjs/redux
-[59]: https://github.com/saleor/saleor
-[60]: https://github.com/Semantic-Org/Semantic-UI-React
-[61]: https://github.com/shipshapecode/shepherd
-[62]: https://github.com/StevenBlack/hosts
-[63]: https://github.com/swagger-api/swagger-ui
-[64]: https://github.com/swagger-api/swagger-editor
-[65]: https://github.com/tabler/tabler
-[66]: https://github.com/tabler/tabler-icons
-[67]: https://github.com/youzan/vant
-[68]: https://github.com/release-it/release-it/network/dependents
-[69]: https://github.com/search?q=path%3A**%2F.release-it.json&type=code
-[70]: ./CHANGELOG.md
-[71]: https://github.com/release-it/release-it/releases
-[72]: ./.github/CONTRIBUTING.md
-[73]: https://github.com/release-it/release-it/issues/new
-[74]: ./LICENSE
+[14]: https://github.com/sponsors/webpro
+[15]: https://release-it.deno.dev
+[16]: https://github.com/7-docs/7-docs
+[17]: ./docs/npm.md#yarn
+[18]: ./docs/recipes/monorepo.md
+[19]: https://www.youtube.com/watch?v=7pBcuT7j_A0
+[20]: https://medium.com/valtech-ch/monorepo-semantic-releases-db114811efa5
+[21]: https://github.com/b12k/monorepo-semantic-releases
+[22]: ./config/release-it.json
+[23]: ./docs/configuration.md
+[24]: ./docs/npm.md
+[25]: https://github.com/release-it/bumper
+[26]: https://github.com/release-it/conventional-changelog
+[27]: https://github.com/casmith/release-it-calver-plugin
+[28]: ./docs/git.md
+[29]: https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases
+[30]: ./docs/github-releases.md
+[31]: https://docs.gitlab.com/ce/user/project/releases/
+[32]: https://gitlab.com/profile/personal_access_tokens
+[33]: ./docs/environment-variables.md
+[34]: ./docs/gitlab-releases.md
+[35]: ./docs/changelog.md
+[36]: ./docs/pre-releases.md
+[37]: ./docs/plugins.md#execution-order
+[38]: ./docs/dry-runs.md
+[39]: https://github.com/release-it/keep-a-changelog
+[40]: https://github.com/release-it-plugins/lerna-changelog
+[41]: https://github.com/jcamp-code/release-it-changelogen
+[42]: https://github.com/unjs/changelogen
+[43]: https://github.com/release-it-plugins/workspaces
+[44]: https://github.com/grupoboticario/news-fragments
+[45]: https://github.com/j-ulrich/release-it-regex-bumper
+[46]: https://github.com/jcamp-code/release-it-dotnet
+[47]: https://www.npmjs.com/search?q=keywords:release-it-plugin
+[48]: ./docs/plugins.md
+[49]: ./docs/recipes/programmatic.md
+[50]: https://github.com/axios/axios
+[51]: https://github.com/blockchain/blockchain-wallet-v4-frontend
+[52]: https://github.com/callstack/react-native-paper
+[53]: https://github.com/ember-cli/ember-cli
+[54]: https://github.com/js-cookie/js-cookie
+[55]: https://github.com/metalsmith/metalsmith
+[56]: https://github.com/mozilla/readability
+[57]: https://github.com/pahen/madge
+[58]: https://github.com/redis/node-redis
+[59]: https://github.com/reduxjs/redux
+[60]: https://github.com/saleor/saleor
+[61]: https://github.com/Semantic-Org/Semantic-UI-React
+[62]: https://github.com/shipshapecode/shepherd
+[63]: https://github.com/StevenBlack/hosts
+[64]: https://github.com/swagger-api/swagger-ui
+[65]: https://github.com/swagger-api/swagger-editor
+[66]: https://github.com/tabler/tabler
+[67]: https://github.com/tabler/tabler-icons
+[68]: https://github.com/youzan/vant
+[69]: https://github.com/release-it/release-it/network/dependents
+[70]: https://github.com/search?q=path%3A**%2F.release-it.json&type=code
+[71]: ./CHANGELOG.md
+[72]: https://github.com/release-it/release-it/releases
+[73]: ./.github/CONTRIBUTING.md
+[74]: https://github.com/release-it/release-it/issues/new
+[75]: ./LICENSE

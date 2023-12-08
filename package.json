@@ -32,6 +32,16 @@
   },
   "homepage": "https://github.com/release-it/release-it#readme",
   "bugs": "https://github.com/release-it/release-it/issues",
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/webpro"
+    },
+    {
+      "type": "opencollective",
+      "url": "https://opencollective.com/webpro"
+    }
+  ],
   "bin": {
     "release-it": "bin/release-it.js"
   },
