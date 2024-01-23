@@ -89,7 +89,7 @@
     "node-fetch": "3.3.2",
     "open": "10.0.3",
     "ora": "8.0.1",
-    "os-name": "6.0.0",
+    "os-name": "5.1.0",
     "promise.allsettled": "1.0.7",
     "proxy-agent": "6.3.1",
     "semver": "7.5.4",
@@ -101,7 +101,7 @@
   },
   "devDependencies": {
     "@octokit/request-error": "5.0.1",
-    "ava": "5.3.1",
+    "ava": "6.1.0",
     "eslint": "8.56.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-ava": "14.0.0",
