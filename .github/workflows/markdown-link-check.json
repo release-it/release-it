@@ -6,6 +6,9 @@
     },
     {
       "pattern": "gitlab.com/profile"
+    },
+    {
+      "pattern": "twitter.com/KodapsAcademy"
     }
   ]
 }
