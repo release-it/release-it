@@ -1,6 +1,6 @@
 {
   "name": "release-it",
-  "version": "17.0.3",
+  "version": "17.0.4",
   "description": "Generic CLI tool to automate versioning and package publishing-related tasks.",
   "keywords": [
     "build",
