@@ -60,18 +60,13 @@ npx release-it
 
 You will be prompted to select the new version, and more prompts will follow based on your configuration.
 
-## Experimental: knowledge base
-
-You might want to ask your questions in the [Release It! knowledge base][15] (powered by OpenAI and [7-docs][16]). This
-is an experimental knowledge base, answers may be incorrect.
-
 ## Yarn
 
-Using Yarn? Please see the [npm section on Yarn][17].
+Using Yarn? Please see the [npm section on Yarn][15].
 
 ## Monorepos
 
-Using a monorepo? Please see this [monorepo recipe][18].
+Using a monorepo? Please see this [monorepo recipe][16].
 
 ## Global Installation
 
@@ -79,6 +74,11 @@ Per-project installation as shown above is recommended, but global installs are 
 
 - From npm: `npm install -g release-it`
 - From Homebrew: `brew install release-it`
+
+## Containerized
+
+Use [Release It! - Containerized][17] to run it in any environment as a standardized container without the need for a
+Node environment. Thanks [Juan Carlos][18]!
 
 ## Videos, articles & examples
 
@@ -368,10 +368,10 @@ Are you using release-it at work? Please consider [sponsoring me][14]!
 [12]: https://www.npmjs.com/package/release-it
 [13]: https://badge.fury.io/js/release-it.svg
 [14]: https://github.com/sponsors/webpro
-[15]: https://release-it.deno.dev
-[16]: https://github.com/7-docs/7-docs
-[17]: ./docs/npm.md#yarn
-[18]: ./docs/recipes/monorepo.md
+[15]: ./docs/npm.md#yarn
+[16]: ./docs/recipes/monorepo.md
+[17]: https://github.com/juancarlosjr97/release-it-containerized
+[18]: https://github.com/juancarlosjr97
 [19]: https://www.youtube.com/watch?v=7pBcuT7j_A0
 [20]: https://medium.com/valtech-ch/monorepo-semantic-releases-db114811efa5
 [21]: https://github.com/b12k/monorepo-semantic-releases
