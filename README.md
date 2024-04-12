@@ -291,66 +291,67 @@ Use `verbose: 2` in a configuration file to have the equivalent of `-VV` on the 
 
 Since v11, release-it can be extended in many, many ways. Here are some plugins:
 
-| Plugin                                    | Description                                                                   |
-| ----------------------------------------- | ----------------------------------------------------------------------------- |
-| [@release-it/bumper][25]                  | Read & write the version from/to any file                                     |
-| [@release-it/conventional-changelog][26]  | Provides recommended bump, conventional-changelog, and updates `CHANGELOG.md` |
-| [@release-it/keep-a-changelog][39]        | Maintain CHANGELOG.md using the Keep a Changelog standards                    |
-| [@release-it-plugins/lerna-changelog][40] | Integrates lerna-changelog into the release-it pipeline                       |
-| [@jcamp-code/release-it-changelogen][41]  | Use [@unjs/changelogen][42] for versioning and changelog                      |
-| [@release-it-plugins/workspaces][43]      | Releases each of your projects configured workspaces                          |
-| [release-it-calver-plugin][27]            | Enables Calendar Versioning (calver) with release-it                          |
-| [@grupoboticario/news-fragments][44]      | An easy way to generate your changelog file                                   |
-| [@j-ulrich/release-it-regex-bumper][45]   | Regular expression based version read/write plugin for release-it             |
-| [@jcamp-code/release-it-dotnet][46]       | Use .csproj or .props file for versioning, automate NuGet publishing          |
+| Plugin                                    | Description                                                                                 |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------- |
+| [@release-it/bumper][25]                  | Read & write the version from/to any file                                                   |
+| [@release-it/conventional-changelog][26]  | Provides recommended bump, conventional-changelog, and updates `CHANGELOG.md`               |
+| [@release-it/keep-a-changelog][39]        | Maintain CHANGELOG.md using the Keep a Changelog standards                                  |
+| [@release-it-plugins/lerna-changelog][40] | Integrates lerna-changelog into the release-it pipeline                                     |
+| [@jcamp-code/release-it-changelogen][41]  | Use [@unjs/changelogen][42] for versioning and changelog                                    |
+| [@release-it-plugins/workspaces][43]      | Releases each of your projects configured workspaces                                        |
+| [release-it-calver-plugin][27]            | Enables Calendar Versioning (calver) with release-it                                        |
+| [@grupoboticario/news-fragments][44]      | An easy way to generate your changelog file                                                 |
+| [@j-ulrich/release-it-regex-bumper][45]   | Regular expression based version read/write plugin for release-it                           |
+| [@jcamp-code/release-it-dotnet][46]       | Use .csproj or .props file for versioning, automate NuGet publishing                        |
+| [release-it-pnpm][47]                     | Add basic support for pnpm workspaces, integrates with [bumpp][48] and [changelogithub][49] |
 
 Internally, release-it uses its own plugin architecture (for Git, GitHub, GitLab, npm).
 
-→ See all [release-it plugins on npm][47].
+→ See all [release-it plugins on npm][50].
 
-→ See [plugins][48] for documentation to write plugins.
+→ See [plugins][51] for documentation to write plugins.
 
 ## Use release-it programmatically
 
 While mostly used as a CLI tool, release-it can be used as a dependency to integrate in your own scripts. See [use
-release-it programmatically][49] for example code.
+release-it programmatically][52] for example code.
 
 ## Example projects using release-it
 
-- [axios/axios][50]
-- [blockchain/blockchain-wallet-v4-frontend][51]
-- [callstack/react-native-paper][52]
-- [ember-cli/ember-cli][53]
-- [js-cookie/js-cookie][54]
-- [metalsmith/metalsmith][55]
-- [mozilla/readability][56]
-- [pahen/madge][57]
-- [redis/node-redis][58]
-- [reduxjs/redux][59]
-- [saleor/saleor][60]
-- [Semantic-Org/Semantic-UI-React][61]
-- [shipshapecode/shepherd][62]
-- [StevenBlack/hosts][63]
-- [swagger-api/swagger-ui][64] + [swagger-editor][65]
-- [tabler/tabler][66] + [tabler-icons][67]
-- [youzan/vant][68]
-- [Repositories that depend on release-it][69]
-- GitHub search for [path:\*\*/.release-it.json][70]
+- [axios/axios][53]
+- [blockchain/blockchain-wallet-v4-frontend][54]
+- [callstack/react-native-paper][55]
+- [ember-cli/ember-cli][56]
+- [js-cookie/js-cookie][57]
+- [metalsmith/metalsmith][58]
+- [mozilla/readability][59]
+- [pahen/madge][60]
+- [redis/node-redis][61]
+- [reduxjs/redux][62]
+- [saleor/saleor][63]
+- [Semantic-Org/Semantic-UI-React][64]
+- [shipshapecode/shepherd][65]
+- [StevenBlack/hosts][66]
+- [swagger-api/swagger-ui][67] + [swagger-editor][68]
+- [tabler/tabler][69] + [tabler-icons][70]
+- [youzan/vant][71]
+- [Repositories that depend on release-it][72]
+- GitHub search for [path:\*\*/.release-it.json][73]
 
 ## Legacy Node.js
 
 The latest major version is v17, supporting Node.js 18 and up (as Node.js v16 is EOL). The previous major version was
-v16, supporting Node.js 16. Use release-it v15 for environments running Node.js v14. Also see [CHANGELOG.md][71].
+v16, supporting Node.js 16. Use release-it v15 for environments running Node.js v14. Also see [CHANGELOG.md][74].
 
 ## Links
 
-- See [CHANGELOG.md][71] for major/breaking updates, and [releases][72] for a detailed version history.
-- To **contribute**, please read [CONTRIBUTING.md][73] first.
-- Please [open an issue][74] if anything is missing or unclear in this documentation.
+- See [CHANGELOG.md][74] for major/breaking updates, and [releases][75] for a detailed version history.
+- To **contribute**, please read [CONTRIBUTING.md][76] first.
+- Please [open an issue][77] if anything is missing or unclear in this documentation.
 
 ## License
 
-[MIT][75]
+[MIT][78]
 
 Are you using release-it at work? Please consider [sponsoring me][14]!
 
@@ -400,32 +401,35 @@ Are you using release-it at work? Please consider [sponsoring me][14]!
 [44]: https://github.com/grupoboticario/news-fragments
 [45]: https://github.com/j-ulrich/release-it-regex-bumper
 [46]: https://github.com/jcamp-code/release-it-dotnet
-[47]: https://www.npmjs.com/search?q=keywords:release-it-plugin
-[48]: ./docs/plugins.md
-[49]: ./docs/recipes/programmatic.md
-[50]: https://github.com/axios/axios
-[51]: https://github.com/blockchain/blockchain-wallet-v4-frontend
-[52]: https://github.com/callstack/react-native-paper
-[53]: https://github.com/ember-cli/ember-cli
-[54]: https://github.com/js-cookie/js-cookie
-[55]: https://github.com/metalsmith/metalsmith
-[56]: https://github.com/mozilla/readability
-[57]: https://github.com/pahen/madge
-[58]: https://github.com/redis/node-redis
-[59]: https://github.com/reduxjs/redux
-[60]: https://github.com/saleor/saleor
-[61]: https://github.com/Semantic-Org/Semantic-UI-React
-[62]: https://github.com/shipshapecode/shepherd
-[63]: https://github.com/StevenBlack/hosts
-[64]: https://github.com/swagger-api/swagger-ui
-[65]: https://github.com/swagger-api/swagger-editor
-[66]: https://github.com/tabler/tabler
-[67]: https://github.com/tabler/tabler-icons
-[68]: https://github.com/youzan/vant
-[69]: https://github.com/release-it/release-it/network/dependents
-[70]: https://github.com/search?q=path%3A**%2F.release-it.json&type=code
-[71]: ./CHANGELOG.md
-[72]: https://github.com/release-it/release-it/releases
-[73]: ./.github/CONTRIBUTING.md
-[74]: https://github.com/release-it/release-it/issues/new
-[75]: ./LICENSE
+[47]: https://github.com/hyoban/release-it-pnpm
+[48]: https://github.com/antfu/bumpp
+[49]: https://github.com/antfu/changelogithub
+[50]: https://www.npmjs.com/search?q=keywords:release-it-plugin
+[51]: ./docs/plugins.md
+[52]: ./docs/recipes/programmatic.md
+[53]: https://github.com/axios/axios
+[54]: https://github.com/blockchain/blockchain-wallet-v4-frontend
+[55]: https://github.com/callstack/react-native-paper
+[56]: https://github.com/ember-cli/ember-cli
+[57]: https://github.com/js-cookie/js-cookie
+[58]: https://github.com/metalsmith/metalsmith
+[59]: https://github.com/mozilla/readability
+[60]: https://github.com/pahen/madge
+[61]: https://github.com/redis/node-redis
+[62]: https://github.com/reduxjs/redux
+[63]: https://github.com/saleor/saleor
+[64]: https://github.com/Semantic-Org/Semantic-UI-React
+[65]: https://github.com/shipshapecode/shepherd
+[66]: https://github.com/StevenBlack/hosts
+[67]: https://github.com/swagger-api/swagger-ui
+[68]: https://github.com/swagger-api/swagger-editor
+[69]: https://github.com/tabler/tabler
+[70]: https://github.com/tabler/tabler-icons
+[71]: https://github.com/youzan/vant
+[72]: https://github.com/release-it/release-it/network/dependents
+[73]: https://github.com/search?q=path%3A**%2F.release-it.json&type=code
+[74]: ./CHANGELOG.md
+[75]: https://github.com/release-it/release-it/releases
+[76]: ./.github/CONTRIBUTING.md
+[77]: https://github.com/release-it/release-it/issues/new
+[78]: ./LICENSE
