@@ -62,7 +62,7 @@
     "lint": "eslint lib test",
     "format": "prettier --write \"{lib,test}/**/*.js\"",
     "docs": "remark README.md 'docs/**/*.md' '.github/*.md' -o",
-    "test": "ava --no-worker-threads",
+    "test": "ava --no-worker-threads && installed-check",
     "release": "./bin/release-it.js"
   },
   "author": {
@@ -110,6 +110,7 @@
     "fs-monkey": "1.0.5",
     "knip": "5.0.1",
     "memfs": "4.7.0",
+    "installed-check": "9.3.0",
     "mock-stdio": "1.0.3",
     "nock": "13.5.1",
     "prettier": "3.2.5",
@@ -119,7 +120,7 @@
     "strip-ansi": "7.1.0"
   },
   "engines": {
-    "node": ">=18"
+    "node": "^18.18.0 || ^20.8.0 || ^21.0.0"
   },
   "remarkConfig": {
     "plugins": [
