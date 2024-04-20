@@ -1,3 +1,4 @@
+import { EOL } from 'node:os';
 import test from 'ava';
 import sh from 'shelljs';
 import Shell from '../lib/shell.js';
@@ -65,7 +66,7 @@ test.serial('should throw if no upstream is configured', async t => {
 });
 
 test.serial('should throw if there are no commits', async t => {
-  const options = { git: { requireCommits: true } };
+  const options = { git: { requireCommits: true, requireCommitsFail: true } };
   const gitClient = factory(Git, { options });
   sh.exec('git tag 1.0.0');
   await t.throwsAsync(gitClient.init(), { message: /^There are no commits since the latest tag/ });
@@ -80,7 +81,7 @@ test.serial('should not throw if there are commits', async t => {
 });
 
 test.serial('should fail (exit code 1) if there are no commits', async t => {
-  const options = { git: { requireCommits: true } };
+  const options = { git: { requireCommits: true, requireCommitsFail: true } };
   const gitClient = factory(Git, { options });
   sh.exec('git tag 1.0.0');
   await t.throwsAsync(gitClient.init(), { code: 1 });
@@ -94,7 +95,7 @@ test.serial('should not fail (exit code 0) if there are no commits', async t => 
 });
 
 test.serial('should throw if there are no commits in specified path', async t => {
-  const options = { git: { requireCommits: true, commitsPath: 'dir' } };
+  const options = { git: { requireCommits: true, requireCommitsFail: true, commitsPath: 'dir' } };
   const gitClient = factory(Git, { options });
   sh.mkdir('dir');
   sh.exec('git tag 1.0.0');
