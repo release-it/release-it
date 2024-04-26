@@ -76,7 +76,7 @@ test.serial('should not throw if there are commits', async t => {
   const gitClient = factory(Git, { options });
   sh.exec('git tag 1.0.0');
   gitAdd('line', 'file', 'Add file');
-  await t.notThrowsAsync(gitClient.init());
+  await t.notThrowsAsync(gitClient.init(), 'There are no commits since the latest tag');
 });
 
 test.serial('should fail (exit code 1) if there are no commits', async t => {
