@@ -180,10 +180,12 @@ In case you need even more customizations, here is some inspiration:
 ```json
 {
   "git": {
+    "commitMessage": "chore(release): cut the v${version} release",
     "push": false
   },
   "hooks": {
-    "after:git:release": "git push origin HEAD"
+    "after:bump": ["npm run build"],
+    "after:release": "git push origin HEAD"
   }
 }
 ```
