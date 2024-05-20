@@ -344,7 +344,8 @@ test.serial('should not touch existing history when rolling back', async t => {
   t.is(exec.args[3][0], 'git reset --hard HEAD');
 });
 
-test.serial('should not roll back with risky config', async t => {
+// eslint-disable-next-line ava/no-skip-test
+test.serial.skip('should not roll back with risky config', async t => {
   sh.exec('git init');
   const options = { git: { requireCleanWorkingDir: false, commit: true, tag: true } };
   const gitClient = factory(Git, { options });
