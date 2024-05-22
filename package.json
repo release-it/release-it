@@ -60,7 +60,7 @@
   "scripts": {
     "knip": "knip",
     "lint": "eslint lib test",
-    "format": "prettier --write \"{lib,test}/**/*.js\"",
+    "format": "prettier --write eslint.config.mjs \"{lib,test}/**/*.js\"",
     "docs": "remark README.md 'docs/**/*.md' '.github/*.md' -o",
     "test": "ava --no-worker-threads && installed-check",
     "release": "./bin/release-it.js"
