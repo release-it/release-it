@@ -24,7 +24,7 @@ test.serial('should validate token', async t => {
   await t.throwsAsync(gitlab.init(), {
     message: /^Environment variable "MY_GITLAB_TOKEN" is required for GitLab releases/
   });
-  process.env[tokenRef] = '123'; // eslint-disable-line require-atomic-updates
+  process.env[tokenRef] = '123';
 
   interceptUser(undefined, { reqheaders: { 'private-token': '123' } });
   interceptCollaborator(undefined, { reqheaders: { 'private-token': '123' } });

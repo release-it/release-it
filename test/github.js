@@ -23,7 +23,7 @@ test.serial('should check token and perform checks', async t => {
   const options = { github: { release: true, tokenRef, pushRepo } };
   const github = factory(GitHub, { options });
 
-  process.env[tokenRef] = '123'; // eslint-disable-line require-atomic-updates
+  process.env[tokenRef] = '123';
 
   interceptAuthentication();
   interceptCollaborator();
