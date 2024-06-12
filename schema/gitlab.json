@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "node_modules/release-it/schema/github",
+  "title": "JSON schema for Release-it Github property configuration",
+  "type": "object",
+  "additionalItems": false,
+  "properties": {
+    "release": {
+      "type": "boolean",
+      "default": false
+    },
+    "releaseName": {
+      "type": "string",
+      "default": "Release ${version}"
+    },
+    "releaseNotes": {
+      "default": null
+    },
+    "autoGenerate": {
+      "type": "boolean",
+      "default": false
+    },
+    "preRelease": {
+      "type": "boolean",
+      "default": false
+    },
+    "draft": {
+      "type": "boolean",
+      "default": false
+    },
+    "milesstones": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "tokenRef": {
+      "type": "string",
+      "default": "GITLAB_TOKEN"
+    },
+    "tokenHeader": {
+      "type": "string",
+      "default": "Private-Token"
+    },
+    "certificateAuthorityFile": {
+      "default": null
+    },
+    "assets": {
+      "default": null
+    },
+    "origin": {
+      "type": "string",
+      "default": null
+    },
+    "skipChecks": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

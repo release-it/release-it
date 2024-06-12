@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "node_modules/release-it/schema/npm",
+  "title": "JSON schema for Release-it NPM property configuration",
+  "type": "object",
+  "additionalItems": false,
+  "properties": {
+    "publish": {
+      "type": "boolean",
+      "default": true
+    },
+    "publishPath": {
+      "type": "string",
+      "default": "."
+    },
+    "publishArgs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "tag": {
+      "type": "string",
+      "default": null
+    },
+    "otp": {
+      "type": "string",
+      "default": null
+    },
+    "ignoreVersion": {
+      "type": "boolean",
+      "default": false
+    },
+    "allowSameVersion": {
+      "type": "boolean",
+      "default": false
+    },
+    "versionArgs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "skipChecks": {
+      "type": "boolean",
+      "default": false
+    },
+    "timeout": {
+      "type": "integer",
+      "default": 10
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "node_modules/release-it/schema/release",
+  "title": "JSON schema for Relase-it configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "hooks": {
+      "type": "object",
+      "additionalProperties": true,
+      "patternProperties": {
+        "^(before|after):((version|git|npm|github|gitlab):)?(init|bump|release)$": {
+          "if": {
+            "type": "array"
+          },
+          "then": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "else": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "plugins": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "git": {
+      "$comment": "Can be a boolean or git config object",
+      "if": {
+        "type": "object"
+      },
+      "then": {
+        "$ref": "node_modules/release-it/schema/git.json"
+      },
+      "else": {
+        "type": "boolean",
+        "default": false
+      }
+    },
+    "npm": {
+      "$ref": "node_modules/release-it/schema/release/npm.json"
+    },
+    "github": {
+      "$ref": "node_modules/release-it/schema/release/github.json"
+    },
+    "gitlab": {
+      "$ref": "node_modules/release-it/schema/release/gitlab.json"
+    }
+  }
+}
