@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "node_modules/release-it/schema/github",
+  "$id": "release-it#gitlab",
   "title": "JSON schema for Release-it Github property configuration",
   "type": "object",
   "additionalItems": false,

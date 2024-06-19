@@ -1,6 +1,0 @@
-{
-  "$schema": "file:///C:/Users/KANOMA1/Documents/projects/release-it/schema/release.json",
-  "hooks": {
-    "test:test": "test"
-  }
-}

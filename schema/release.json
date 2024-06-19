@@ -1,10 +1,14 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "node_modules/release-it/schema/release",
+  "$id": "release-it#release",
   "title": "JSON schema for Relase-it configuration",
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "The JSON schema version used to validate this configuration file"
+    },
     "hooks": {
       "type": "object",
       "additionalProperties": true,
@@ -35,7 +39,7 @@
         "type": "object"
       },
       "then": {
-        "$ref": "node_modules/release-it/schema/git.json"
+        "$ref": "git.json"
       },
       "else": {
         "type": "boolean",
@@ -43,13 +47,43 @@
       }
     },
     "npm": {
-      "$ref": "node_modules/release-it/schema/release/npm.json"
+      "$comment": "Can be a boolean or npm config object",
+      "if": {
+        "type": "object"
+      },
+      "then": {
+        "$ref": "npm.json"
+      },
+      "else": {
+        "type": "boolean",
+        "default": false
+      }
     },
     "github": {
-      "$ref": "node_modules/release-it/schema/release/github.json"
+      "$comment": "Can be a boolean or github config object",
+      "if": {
+        "type": "object"
+      },
+      "then": {
+        "$ref": "github.json"
+      },
+      "else": {
+        "type": "boolean",
+        "default": false
+      }
     },
     "gitlab": {
-      "$ref": "node_modules/release-it/schema/release/gitlab.json"
+      "$comment": "Can be a boolean or gitlab config object",
+      "if": {
+        "type": "object"
+      },
+      "then": {
+        "$ref": "gitlab.json"
+      },
+      "else": {
+        "type": "boolean",
+        "default": false
+      }
     }
   }
 }

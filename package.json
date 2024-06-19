@@ -55,7 +55,8 @@
     "bin",
     "config",
     "lib",
-    "test"
+    "test",
+    "schema"
   ],
   "scripts": {
     "knip": "knip",
