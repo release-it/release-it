@@ -2,7 +2,7 @@
 
 🚀 Generic CLI tool to automate versioning and package publishing-related tasks:
 
-<img align="right" src="./docs/assets/release-it.svg?raw=true" height="280">
+<img align="right" src="./docs/assets/release-it.svg?raw=true" height="280" />
 
 - Bump version (in e.g. `package.json`)
 - [Git commit, tag, push][1]
@@ -113,7 +113,7 @@ Here's a quick example `.release-it.json`:
 
 By default, release-it is **interactive** and allows you to confirm each task before execution:
 
-<img src="./docs/assets/release-it-interactive.gif?raw=true" height="290">
+<img src="./docs/assets/release-it-interactive.gif?raw=true" height="290" />
 
 By using the `--ci` option, the process is fully automated without prompts. The configured tasks will be executed as
 demonstrated in the first animation above. In a Continuous Integration (CI) environment, this non-interactive mode is
@@ -316,42 +316,43 @@ Internally, release-it uses its own plugin architecture (for Git, GitHub, GitLab
 While mostly used as a CLI tool, release-it can be used as a dependency to integrate in your own scripts. See [use
 release-it programmatically][52] for example code.
 
-## Example projects using release-it
+## Projects using release-it
 
-- [axios/axios][53]
-- [blockchain/blockchain-wallet-v4-frontend][54]
-- [callstack/react-native-paper][55]
-- [ember-cli/ember-cli][56]
-- [js-cookie/js-cookie][57]
-- [metalsmith/metalsmith][58]
-- [mozilla/readability][59]
-- [pahen/madge][60]
-- [redis/node-redis][61]
-- [reduxjs/redux][62]
-- [saleor/saleor][63]
-- [Semantic-Org/Semantic-UI-React][64]
-- [shipshapecode/shepherd][65]
-- [StevenBlack/hosts][66]
-- [swagger-api/swagger-ui][67] + [swagger-editor][68]
-- [tabler/tabler][69] + [tabler-icons][70]
-- [youzan/vant][71]
-- [Repositories that depend on release-it][72]
-- GitHub search for [path:\*\*/.release-it.json][73]
+- [AdonisJs][53]
+- [Axios][54]
+- [Cal.com][55]
+- [Ember CLI][56]
+- [Halo][57]
+- [hosts][58]
+- [js-cookie][59]
+- [Madge][60]
+- [Metalsmith][61]
+- [Node-Redis][62]
+- [React Native Paper][63]
+- [Readability.js][64]
+- [Redux][65]
+- [Saleor][66]
+- [Semantic UI React][67]
+- [Shepherd][68]
+- [Tabler][69] + [tabler-icons][70]
+- Swagger ([swagger-ui][71] + [swagger-editor][72])
+- [Repositories that depend on release-it][73]
+- GitHub search for [path:\*\*/.release-it.json][74]
 
 ## Legacy Node.js
 
 The latest major version is v17, supporting Node.js 18 and up (as Node.js v16 is EOL). The previous major version was
-v16, supporting Node.js 16. Use release-it v15 for environments running Node.js v14. Also see [CHANGELOG.md][74].
+v16, supporting Node.js 16. Use release-it v15 for environments running Node.js v14. Also see [CHANGELOG.md][75].
 
 ## Links
 
-- See [CHANGELOG.md][74] for major/breaking updates, and [releases][75] for a detailed version history.
-- To **contribute**, please read [CONTRIBUTING.md][76] first.
-- Please [open an issue][77] if anything is missing or unclear in this documentation.
+- See [CHANGELOG.md][75] for major/breaking updates, and [releases][76] for a detailed version history.
+- To **contribute**, please read [CONTRIBUTING.md][77] first.
+- Please [open an issue][78] if anything is missing or unclear in this documentation.
 
 ## License
 
-[MIT][78]
+[MIT][79]
 
 Are you using release-it at work? Please consider [sponsoring me][14]!
 
@@ -407,29 +408,30 @@ Are you using release-it at work? Please consider [sponsoring me][14]!
 [50]: https://www.npmjs.com/search?q=keywords:release-it-plugin
 [51]: ./docs/plugins.md
 [52]: ./docs/recipes/programmatic.md
-[53]: https://github.com/axios/axios
-[54]: https://github.com/blockchain/blockchain-wallet-v4-frontend
-[55]: https://github.com/callstack/react-native-paper
+[53]: https://github.com/adonisjs/core
+[54]: https://github.com/axios/axios
+[55]: https://github.com/calcom/cal.com
 [56]: https://github.com/ember-cli/ember-cli
-[57]: https://github.com/js-cookie/js-cookie
-[58]: https://github.com/metalsmith/metalsmith
-[59]: https://github.com/mozilla/readability
+[57]: https://github.com/halo-dev/halo
+[58]: https://github.com/StevenBlack/hosts
+[59]: https://github.com/js-cookie/js-cookie
 [60]: https://github.com/pahen/madge
-[61]: https://github.com/redis/node-redis
-[62]: https://github.com/reduxjs/redux
-[63]: https://github.com/saleor/saleor
-[64]: https://github.com/Semantic-Org/Semantic-UI-React
-[65]: https://github.com/shipshapecode/shepherd
-[66]: https://github.com/StevenBlack/hosts
-[67]: https://github.com/swagger-api/swagger-ui
-[68]: https://github.com/swagger-api/swagger-editor
+[61]: https://github.com/metalsmith/metalsmith
+[62]: https://github.com/redis/node-redis
+[63]: https://github.com/callstack/react-native-paper
+[64]: https://github.com/mozilla/readability
+[65]: https://github.com/reduxjs/redux
+[66]: https://github.com/saleor/saleor
+[67]: https://github.com/Semantic-Org/Semantic-UI-React
+[68]: https://github.com/shipshapecode/shepherd
 [69]: https://github.com/tabler/tabler
 [70]: https://github.com/tabler/tabler-icons
-[71]: https://github.com/youzan/vant
-[72]: https://github.com/release-it/release-it/network/dependents
-[73]: https://github.com/search?q=path%3A**%2F.release-it.json&type=code
-[74]: ./CHANGELOG.md
-[75]: https://github.com/release-it/release-it/releases
-[76]: ./.github/CONTRIBUTING.md
-[77]: https://github.com/release-it/release-it/issues/new
-[78]: ./LICENSE
+[71]: https://github.com/swagger-api/swagger-ui
+[72]: https://github.com/swagger-api/swagger-editor
+[73]: https://github.com/release-it/release-it/network/dependents
+[74]: https://github.com/search?q=path%3A**%2F.release-it.json&type=code
+[75]: ./CHANGELOG.md
+[76]: https://github.com/release-it/release-it/releases
+[77]: ./.github/CONTRIBUTING.md
+[78]: https://github.com/release-it/release-it/issues/new
+[79]: ./LICENSE
