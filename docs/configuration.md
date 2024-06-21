@@ -6,6 +6,7 @@ Put only the options to override in a configuration file. Here is a list of file
 configuration in the root of the project:
 
 - `.release-it.json`
+- `.release-it.ts`
 - `.release-it.js` (or `.cjs`; export the configuration object: `module.exports = {}`)
 - `.release-it.yaml` (or `.yml`)
 - `.release-it.toml`
@@ -40,6 +41,26 @@ The configuration can also be stored in a `release-it` property in `package.json
     }
   }
 }
+```
+
+Typescript config files are supported, providing typing hints to the config:
+
+```ts
+import type { Config } from 'release-it';
+
+export default {
+  git: {
+    commit: true,
+    tag: true,
+    push: true
+  },
+  github: {
+    release: true
+  },
+  npm: {
+    publish: true
+  }
+} satisfies Config;
 ```
 
 Or, use YAML in `.release-it.yml`:
