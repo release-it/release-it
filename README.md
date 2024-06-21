@@ -60,9 +60,10 @@ npx release-it
 
 You will be prompted to select the new version, and more prompts will follow based on your configuration.
 
-## Yarn
+## Yarn & pnpm
 
-Using Yarn? Please see the [npm section on Yarn][15].
+- Using Yarn? Please see the [npm section on Yarn][15].
+- Using pnpm? Please see [release-it-pnpm][47].
 
 ## Monorepos
 
@@ -98,6 +99,7 @@ Here's a quick example `.release-it.json`:
 
 ```json
 {
+  "$schema": "https://unpkg.com/release-it@17/schema/release-it.json",
   "git": {
     "commitMessage": "chore: release v${version}"
   },

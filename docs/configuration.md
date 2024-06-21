@@ -18,6 +18,7 @@ An example `.release-it.json`:
 
 ```json
 {
+  "$schema": "https://unpkg.com/release-it@17/schema/release-it.json",
   "git": {
     "commitMessage": "chore: release v${version}"
   },
