@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "release-it#git",
+  "title": "JSON schema for Release-it git property configuration",
+  "type": "object",
+  "additionalItems": false,
+  "properties": {
+    "changelog": {
+      "type": "string",
+      "default": "git log --pretty=format:\"* %s (%h)\" ${from}...${to}"
+    },
+    "requireCleanWorkingDir": {
+      "type": "boolean",
+      "default": true
+    },
+    "requireBranch": {
+      "type": "boolean",
+      "default": false
+    },
+    "requireUpstream": {
+      "type": "boolean",
+      "default": true
+    },
+    "requireCommits": {
+      "type": "boolean",
+      "default": false
+    },
+    "requireCommitsFail": {
+      "type": "boolean",
+      "default": true
+    },
+    "commitsPath": {
+      "type": "string",
+      "default": ""
+    },
+    "addUntrackedFiles": {
+      "type": "string",
+      "default": ""
+    },
+    "commit": {
+      "type": "boolean",
+      "default": true
+    },
+    "commitArgs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "tag": {
+      "type": "boolean",
+      "default": true
+    },
+    "tagExclude": {
+      "type": "string",
+      "default": null
+    },
+    "tagMatch": {
+      "type": "string",
+      "default": null
+    },
+    "getLatestTagFromAllRefs": {
+      "type": "boolean",
+      "default": false
+    },
+    "tagAnnotation": {
+      "type": "string",
+      "default": "Release ${version}"
+    },
+    "tagArgs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "push": {
+      "type": "boolean",
+      "default": true
+    },
+    "pushArgs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      },
+      "default": ["--follow-tags"]
+    },
+    "pushRepo": {
+      "type": "string",
+      "default": ""
+    }
+  }
+}
