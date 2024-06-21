@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "release-it#release",
-  "title": "JSON schema for Relase-it configuration",
+  "$id": "release-it#release-it",
+  "title": "JSON schema for release-it configuration",
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -34,12 +34,12 @@
       "additionalProperties": true
     },
     "git": {
-      "$comment": "Can be a boolean or git config object",
+      "$comment": "Boolean or git config object",
       "if": {
         "type": "object"
       },
       "then": {
-        "$ref": "git.json"
+        "$ref": "./git.json"
       },
       "else": {
         "type": "boolean",
@@ -47,12 +47,12 @@
       }
     },
     "npm": {
-      "$comment": "Can be a boolean or npm config object",
+      "$comment": "Boolean or npm config object",
       "if": {
         "type": "object"
       },
       "then": {
-        "$ref": "npm.json"
+        "$ref": "./npm.json"
       },
       "else": {
         "type": "boolean",
@@ -60,12 +60,12 @@
       }
     },
     "github": {
-      "$comment": "Can be a boolean or github config object",
+      "$comment": "Boolean or github config object",
       "if": {
         "type": "object"
       },
       "then": {
-        "$ref": "github.json"
+        "$ref": "./github.json"
       },
       "else": {
         "type": "boolean",
@@ -73,12 +73,12 @@
       }
     },
     "gitlab": {
-      "$comment": "Can be a boolean or gitlab config object",
+      "$comment": "Boolean or gitlab config object",
       "if": {
         "type": "object"
       },
       "then": {
-        "$ref": "gitlab.json"
+        "$ref": "./gitlab.json"
       },
       "else": {
         "type": "boolean",
