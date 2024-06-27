@@ -92,7 +92,6 @@
     "open": "10.1.0",
     "ora": "8.0.1",
     "os-name": "5.1.0",
-    "promise.allsettled": "1.0.7",
     "proxy-agent": "6.4.0",
     "semver": "7.6.2",
     "shelljs": "0.8.5",
