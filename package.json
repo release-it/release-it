@@ -82,7 +82,7 @@
     "git-url-parse": "14.0.0",
     "globby": "14.0.1",
     "got": "13.0.0",
-    "inquirer": "9.2.23",
+    "inquirer": "9.3.0",
     "is-ci": "3.0.1",
     "issue-parser": "7.0.1",
     "lodash": "4.17.21",
