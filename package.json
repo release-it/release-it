@@ -47,7 +47,11 @@
   },
   "type": "module",
   "exports": {
-    ".": "./lib/index.js",
+    ".":{
+      "import": "./lib/index.js",
+      "require": "./lib/index.js",
+      "types": "./types/index.d.ts"
+    },
     "./package.json": "./package.json",
     "./test/util/index.js": "./test/util/index.js"
   },
@@ -56,7 +60,8 @@
     "config",
     "lib",
     "test",
-    "schema"
+    "schema",
+    "types"
   ],
   "types": "./types/index.d.ts",
   "scripts": {
