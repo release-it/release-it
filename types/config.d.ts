@@ -13,7 +13,7 @@ export interface Config {
     requireCleanWorkingDir?: boolean;
 
     /** @default false */
-    requireBranch?: boolean;
+    requireBranch?: false | string;
 
     /** @default true */
     requireUpstream?: boolean;
