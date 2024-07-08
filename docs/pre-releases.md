@@ -58,6 +58,12 @@ yet, but instead in a later v2.1. A new pre-release id can be made for the minor
 release-it preminor --preRelease=alpha
 ```
 
+Use `--preReleaseBase=1` to start counting at `1`. The first example at `1.3.0` will now bump to `2.0.0-beta.1` instead:
+
+```bash
+release-it major --preRelease=beta --preReleaseBase=1
+```
+
 Notes:
 
 - Pre-releases work in tandem with [recommended bumps][2].

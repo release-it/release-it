@@ -138,6 +138,34 @@ test('should increment version (patch release after pre-release)', t => {
   t.is(v.incrementVersion({ latestVersion: '1.2.3-alpha.1', increment: 'patch' }), '1.2.3');
 });
 
+test('should increment version and start at base 1', t => {
+  const v = factory(Version);
+  t.is(
+    v.incrementVersion({
+      latestVersion: '1.3.0',
+      increment: 'major',
+      isPreRelease: true,
+      preReleaseId: 'beta',
+      preReleaseBase: '1'
+    }),
+    '2.0.0-beta.1'
+  );
+});
+
+test('should increment prerelease version and ignore prelease base 1', t => {
+  const v = factory(Version);
+  t.is(
+    v.incrementVersion({
+      latestVersion: '1.2.3-alpha.5',
+      increment: 'prerelease',
+      preReleaseId: 'alpha',
+      isPreRelease: true,
+      preReleaseBase: '1'
+    }),
+    '1.2.3-alpha.6'
+  );
+});
+
 test('should run tasks without errors', async t => {
   const options = { version: { increment: 'minor' } };
   const v = factory(Version, { options });
