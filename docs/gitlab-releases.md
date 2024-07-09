@@ -109,6 +109,23 @@ specify the root CA certificate with `certificateAuthorityFile`, for example:
 }
 ```
 
+Alternatively, if you want to disable the server certificate verication against the list of supplied CAs, you can set
+the `secure` flag to false:
+
+```json
+{
+  "gitlab": {
+    "release": true,
+    "tokenHeader": "PRIVATE-TOKEN",
+    "secure": false
+  }
+}
+```
+
+The `secure` option is passed down to [got](https://github.com/sindresorhus/got), which in turn also forwards it to node's
+[`https.request`](https://nodejs.org/api/https.html#httpsrequestoptions-callback) method as the `rejectUnauthorized` option.
+The default value of `rejectUnauthorized` is `true`.
+
 ## Update the latest release
 
 The latest GitLab release can be updated, e.g. to update the releases notes or add release assets.
