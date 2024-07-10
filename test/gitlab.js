@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import test from 'ava';
 import sinon from 'sinon';
 import nock from 'nock';
@@ -249,4 +250,51 @@ test('should skip checks', async t => {
   t.is(spy.get.callCount, 0);
 
   t.is(gitlab.log.exec.args.filter(entry => /checkReleaseMilestones/.test(entry[0])).length, 0);
+});
+
+test('should handle certificate authority options', t => {
+  const sandbox = sinon.createSandbox();
+  sandbox.stub(fs, 'readFileSync').returns('test certificate');
+
+  {
+    const options = { gitlab: {} };
+    const gitlab = factory(GitLab, { options });
+    t.deepEqual(gitlab.certificateAuthorityOption, {});
+  }
+
+  {
+    const options = { gitlab: { certificateAuthorityFile: 'cert.crt' } };
+    const gitlab = factory(GitLab, { options });
+    t.deepEqual(gitlab.certificateAuthorityOption, { https: { certificateAuthority: 'test certificate' } });
+  }
+
+  {
+    const options = { gitlab: { secure: false } };
+    const gitlab = factory(GitLab, { options });
+    t.deepEqual(gitlab.certificateAuthorityOption, { https: { rejectUnauthorized: false } });
+  }
+
+  {
+    const options = { gitlab: { secure: true } };
+    const gitlab = factory(GitLab, { options });
+    t.deepEqual(gitlab.certificateAuthorityOption, { https: { rejectUnauthorized: true } });
+  }
+
+  {
+    const options = { gitlab: { certificateAuthorityFile: 'cert.crt', secure: true } };
+    const gitlab = factory(GitLab, { options });
+    t.deepEqual(gitlab.certificateAuthorityOption, {
+      https: { certificateAuthority: 'test certificate', rejectUnauthorized: true }
+    });
+  }
+
+  {
+    const options = { gitlab: { certificateAuthorityFile: 'cert.crt', secure: false } };
+    const gitlab = factory(GitLab, { options });
+    t.deepEqual(gitlab.certificateAuthorityOption, {
+      https: { certificateAuthority: 'test certificate', rejectUnauthorized: false }
+    });
+  }
+
+  sandbox.restore();
 });

@@ -170,6 +170,9 @@ export interface Config {
 
     /** @default null */
     certificateAuthorityFile?: any;
+    
+    /** @default null */
+    secure?: boolean;
 
     /** @default null */
     assets?: any;
