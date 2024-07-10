@@ -109,7 +109,7 @@ specify the root CA certificate with `certificateAuthorityFile`, for example:
 }
 ```
 
-Alternatively, if you want to disable the server certificate verication against the list of supplied CAs, you can set
+Alternatively, if you want to disable the server certificate verification against the list of supplied CAs, you can set
 the `secure` flag to false:
 
 ```json
