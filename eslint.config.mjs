@@ -1,5 +1,5 @@
 import prettier from 'eslint-plugin-prettier';
-import _import from 'eslint-plugin-import';
+import _import from 'eslint-plugin-import-x';
 import { fixupConfigRules } from '@eslint/compat';
 import globals from 'globals';
 import path from 'node:path';
