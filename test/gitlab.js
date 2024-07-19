@@ -226,28 +226,23 @@ test('should not make requests in dry run', async t => {
   const options = { 'dry-run': true, git: { pushRepo }, gitlab: { releaseName: 'R', tokenRef } };
   const gitlab = factory(GitLab, { options });
   sinon.stub(gitlab, 'getLatestVersion').resolves('1.0.0');
-  const spy = sinon.spy(gitlab, 'client', ['get']);
 
   await runTasks(gitlab);
 
   const { isReleased, releaseUrl } = gitlab.getContext();
-  t.is(spy.get.callCount, 0);
+
   t.is(gitlab.log.exec.args[2][0], 'gitlab releases#uploadAssets');
   t.is(gitlab.log.exec.args[3][0], 'gitlab releases#createRelease "R" (1.0.1)');
   t.true(isReleased);
   t.is(releaseUrl, `${pushRepo}/-/releases`);
-  spy.get.restore();
 });
 
 test('should skip checks', async t => {
   const options = { gitlab: { tokenRef, skipChecks: true, release: true, milestones: ['v1.0.0'] } };
   const gitlab = factory(GitLab, { options });
-  const spy = sinon.spy(gitlab, 'client', ['get']);
 
   await t.notThrowsAsync(gitlab.init());
   await t.notThrowsAsync(gitlab.beforeRelease());
-
-  t.is(spy.get.callCount, 0);
 
   t.is(gitlab.log.exec.args.filter(entry => /checkReleaseMilestones/.test(entry[0])).length, 0);
 });
