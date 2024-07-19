@@ -27,7 +27,7 @@ jobs:
         node:
           - 18
           - 20
-          - 22
+          - 22.4.1
 
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.os }} (Node v${{ matrix.node }})
