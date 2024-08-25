@@ -14,7 +14,11 @@
       "default": true
     },
     "requireBranch": {
-      "type": "boolean",
+      "oneOf": [
+        { "type": "boolean", "enum": [false] },
+        { "type": "string" },
+        { "type": "array", "items": { "type": "string" } }
+      ],
       "default": false
     },
     "requireUpstream": {
