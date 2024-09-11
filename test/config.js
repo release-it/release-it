@@ -1,5 +1,5 @@
 import test from 'ava';
-import isCI from 'is-ci';
+import { isCI } from 'ci-info';
 import Config from '../lib/config.js';
 import { readJSON } from '../lib/util.js';
 
