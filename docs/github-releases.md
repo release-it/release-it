@@ -166,6 +166,11 @@ Example command to add assets and explicitly toggle the draft status to "publish
 release-it --no-increment --no-git --github.release --github.update --github.assets=*.zip --no-github.draft
 ```
 
+## Project Non-Latest Release
+
+To do a release that isn't the latest release on your GitHub project e.g for support releases, you can set
+`github.makeLatest` to `false`.
+
 ## Comments
 
 To submit a comment to each merged pull requests and closed issue that is part of the release, set

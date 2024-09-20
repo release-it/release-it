@@ -20,6 +20,10 @@
       "type": "boolean",
       "default": false
     },
+    "makeLatest": {
+      "anyOf": [{ "type": "boolean" }, { "const": "legacy" }],
+      "default": true
+    },
     "preRelease": {
       "type": "boolean",
       "default": false

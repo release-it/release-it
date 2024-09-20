@@ -1,4 +1,5 @@
 {
+  "$schema": "./schema/release-it.json",
   "hooks": {
     "after:init": ["npm run lint", "npm run knip", "npm test"]
   },
