@@ -53,7 +53,8 @@ const interceptCreate = ({
       body,
       prerelease,
       draft,
-      generate_release_notes
+      generate_release_notes,
+      make_latest: 'true'
     })
     .reply(() => {
       const id = 1;
@@ -80,7 +81,15 @@ const interceptUpdate = ({
   body: { tag_name, name = '', body = null, prerelease = false, draft = false, generate_release_notes = false }
 } = {}) => {
   nock(api)
-    .patch(`/repos/${owner}/${project}/releases/1`, { tag_name, name, body, draft, prerelease, generate_release_notes })
+    .patch(`/repos/${owner}/${project}/releases/1`, {
+      tag_name,
+      name,
+      body,
+      draft,
+      prerelease,
+      generate_release_notes,
+      make_latest: 'true'
+    })
     .reply(200, {
       id: 1,
       tag_name,

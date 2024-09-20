@@ -132,6 +132,13 @@ export interface Config {
     /** @default null */
     proxy?: any;
 
+    /**
+     * @default true
+     * 'legacy' - Github determines the latest release based on the release creation date and higher semantic version.
+     * See https://docs.github.com/en/rest/releases/releases?apiVersion=latest#create-a-release
+     */
+    makeLatest?: boolean | 'legacy';
+
     /** @default false */
     skipChecks?: boolean;
 
@@ -170,7 +177,7 @@ export interface Config {
 
     /** @default null */
     certificateAuthorityFile?: any;
-    
+
     /** @default null */
     secure?: boolean;
 
