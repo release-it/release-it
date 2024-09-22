@@ -28,7 +28,7 @@
       "type": "boolean",
       "default": false
     },
-    "milesstones": {
+    "milestones": {
       "type": "array",
       "items": {
         "type": "string"
