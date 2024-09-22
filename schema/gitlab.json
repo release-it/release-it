@@ -52,6 +52,10 @@
     "assets": {
       "default": null
     },
+    "useIdsForUrls": {
+      "type": "boolean",
+      "default": false
+    },
     "origin": {
       "type": "string",
       "default": null

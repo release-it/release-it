@@ -39,6 +39,7 @@ export let interceptAsset = ({ host = 'https://gitlab.com', owner = 'user', proj
       return {
         alt: name,
         url: `/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/${name}`,
+        full_path: `/-/project/1234/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/${name}`,
         markdown: `[${name}](/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/${name})`
       };
     });

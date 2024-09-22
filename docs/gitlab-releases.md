@@ -89,6 +89,19 @@ download from the project's releases page. Example:
 }
 ```
 
+Version 17.2 of Gitlab [started enforcing a new URL format](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/156939)
+for uploaded assets. If you are using this version (or later), you should set the `useIdsForUrls` flag to `true`:
+
+```json
+{
+  "gitlab": {
+    "release": true,
+    "useIdsForUrls": true,
+    "assets": ["dist/*.dmg"]
+  }
+}
+```
+
 ## Origin
 
 The `origin` can be set to a string such as `"http://example.org:3000"` to use a different origin from what would be
