@@ -184,6 +184,9 @@ export interface Config {
     /** @default null */
     assets?: any;
 
+    /** @default false */
+    useIdsForUrls?: boolean;
+
     /** @default null */
     origin?: any;
 

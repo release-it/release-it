@@ -111,6 +111,31 @@ test.serial('should upload assets and release', async t => {
   t.is(releaseUrl, `${pushRepo}/-/releases`);
 });
 
+test.serial('should upload assets with ID-based URLs too', async t => {
+  const host = 'https://gitlab.com'
+  const pushRepo = `${host}/user/repo`;
+  const options = {
+    git: { pushRepo },
+    gitlab: {
+      tokenRef,
+      release: true,
+      assets: 'test/resources/file-v${version}.txt',
+      useIdsForUrls: true,
+    }
+  };
+  const gitlab = factory(GitLab, { options });
+  sinon.stub(gitlab, 'getLatestVersion').resolves('2.0.0');
+
+  interceptUser();
+  interceptCollaborator();
+  interceptAsset();
+  interceptPublish();
+
+  await runTasks(gitlab);
+
+  t.is(gitlab.assets[0].url, `${host}/-/project/1234/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/file-v2.0.1.txt`);
+});
+
 test.serial('should throw when release milestone is missing', async t => {
   const pushRepo = 'https://gitlab.com/user/repo';
   const options = {
