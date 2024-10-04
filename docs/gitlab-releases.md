@@ -89,8 +89,8 @@ download from the project's releases page. Example:
 }
 ```
 
-Version 17.2 of Gitlab [started enforcing a new URL format](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/156939)
-for uploaded assets. If you are using this version (or later), you should set the `useIdsForUrls` flag to `true`:
+Version 17.2 of Gitlab [started enforcing a new URL format][6] for uploaded assets. If you are using this version (or
+later), you should set the `useIdsForUrls` flag to `true`:
 
 ```json
 {
@@ -135,9 +135,8 @@ the `secure` flag to false:
 }
 ```
 
-The `secure` option is passed down to [got](https://github.com/sindresorhus/got), which in turn also forwards it to node's
-[`https.request`](https://nodejs.org/api/https.html#httpsrequestoptions-callback) method as the `rejectUnauthorized` option.
-The default value of `rejectUnauthorized` is `true`.
+The `secure` option is passed down to [got][7], which in turn also forwards it to node's [`https.request`][8] method as
+the `rejectUnauthorized` option. The default value of `rejectUnauthorized` is `true`.
 
 ## Update the latest release
 
@@ -160,3 +159,6 @@ release-it --no-increment --no-git --gitlab.release --gitlab.assets=*.zip
 [3]: https://docs.gitlab.com/ce/user/profile/personal_access_tokens
 [4]: ./environment-variables.md
 [5]: ./changelog.md
+[6]: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/156939
+[7]: https://github.com/sindresorhus/got
+[8]: https://nodejs.org/api/https.html#httpsrequestoptions-callback

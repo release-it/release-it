@@ -112,7 +112,7 @@ test.serial('should upload assets and release', async t => {
 });
 
 test.serial('should upload assets with ID-based URLs too', async t => {
-  const host = 'https://gitlab.com'
+  const host = 'https://gitlab.com';
   const pushRepo = `${host}/user/repo`;
   const options = {
     git: { pushRepo },
@@ -120,7 +120,7 @@ test.serial('should upload assets with ID-based URLs too', async t => {
       tokenRef,
       release: true,
       assets: 'test/resources/file-v${version}.txt',
-      useIdsForUrls: true,
+      useIdsForUrls: true
     }
   };
   const gitlab = factory(GitLab, { options });
