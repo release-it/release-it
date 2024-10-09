@@ -33,7 +33,7 @@
       "default": false
     },
     "discussionCategoryName": {
-      "$comment": "Add discussion to the GitHub discussion for the Release",
+      "$comment": "Create discussion of the specified category and link to the GitHub Release",
       "type": "string"
     },
     "tokenRef": {
