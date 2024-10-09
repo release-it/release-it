@@ -84,7 +84,7 @@
     "chalk": "5.3.0",
     "ci-info": "^4.0.0",
     "cosmiconfig": "9.0.0",
-    "execa": "8.0.1",
+    "execa": "8.0.0",
     "git-url-parse": "14.0.0",
     "globby": "14.0.2",
     "inquirer": "9.3.2",
