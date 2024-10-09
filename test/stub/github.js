@@ -51,7 +51,7 @@ const interceptCreate = ({
     body = null,
     prerelease = false,
     draft = false,
-    discussion_category_name = 'announcement'
+    discussion_category_name = false
   }
 } = {}) => {
   nock(api)
@@ -87,15 +87,7 @@ const interceptUpdate = ({
   api = 'https://api.github.com',
   owner = 'user',
   project = 'repo',
-  body: {
-    tag_name,
-    name = '',
-    body = null,
-    prerelease = false,
-    draft = false,
-    generate_release_notes = false,
-    discussion_category_name = false
-  }
+  body: { tag_name, name = '', body = null, prerelease = false, draft = false, generate_release_notes = false }
 } = {}) => {
   nock(api)
     .patch(`/repos/${owner}/${project}/releases/1`, {
@@ -105,8 +97,7 @@ const interceptUpdate = ({
       draft,
       prerelease,
       generate_release_notes,
-      make_latest: 'true',
-      discussion_category_name
+      make_latest: 'true'
     })
     .reply(200, {
       id: 1,

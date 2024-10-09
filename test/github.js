@@ -508,3 +508,40 @@ test('should generate search queries correctly', t => {
     'Each query should not exceed 256 characters after encoding'
   );
 });
+
+test('should create auto-generated discussion', async t => {
+  const options = {
+    git,
+    github: {
+      pushRepo,
+      tokenRef,
+      release: true,
+      releaseName: 'Release ${tagName}',
+      autoGenerate: false,
+      discussionCategoryName: 'Announcement'
+    }
+  };
+  const github = factory(GitHub, { options });
+  const exec = sinon.stub(github.shell, 'exec').callThrough();
+  exec.withArgs('git describe --tags --match=* --abbrev=0').resolves('2.0.1');
+
+  interceptAuthentication();
+  interceptCollaborator();
+  interceptCreate({
+    body: {
+      tag_name: '2.0.2',
+      name: 'Release 2.0.2',
+      generate_release_notes: true,
+      body: '',
+      discussion_category_name: 'Announcement'
+    }
+  });
+
+  await runTasks(github);
+
+  const { isReleased, releaseUrl, discussionUrl } = github.getContext();
+  t.true(isReleased);
+  t.is(releaseUrl, 'https://github.com/user/repo/releases/tag/2.0.2');
+  t.is(discussionUrl, 'https://github.com/user/repo/discussions/1');
+  exec.restore();
+});
