@@ -177,8 +177,6 @@ To auto-create GitHub Discussion for the release on your GitHub project, you can
 
 `github.discussionCategoryName` to `[discussion category name]`
 
-Default value is set as `false`, which will not create any discussion.
-
 ## Comments
 
 To submit a comment to each merged pull requests and closed issue that is part of the release, set

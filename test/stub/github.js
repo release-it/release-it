@@ -76,7 +76,8 @@ const interceptCreate = ({
         draft,
         generate_release_notes,
         upload_url: `https://uploads.${host}/repos/${owner}/${project}/releases/${id}/assets{?name,label}`,
-        html_url: `https://${host}/${owner}/${project}/releases/tag/${tag_name}`
+        html_url: `https://${host}/${owner}/${project}/releases/tag/${tag_name}`,
+        discussion_url: discussion_category_name ? `https://${host}/${owner}/${project}/discussions/${id}` : undefined
       };
       return [200, responseBody, { location: `${api}/repos/${owner}/${project}/releases/${id}` }];
     });

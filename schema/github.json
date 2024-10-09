@@ -34,15 +34,7 @@
     },
     "discussionCategoryName": {
       "$comment": "Add discussion to the GitHub discussion for the Release",
-      "anyOf": [
-        {
-          "type": "boolean"
-        },
-        {
-          "type": "string"
-        }
-      ],
-      "default": false
+      "type": "string"
     },
     "tokenRef": {
       "type": "string",
