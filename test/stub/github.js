@@ -52,7 +52,7 @@ const interceptCreate = ({
     draft = false,
     generate_release_notes = false,
     make_latest = 'true',
-    discussion_category_name = 'false'
+    discussion_category_name = undefined
   }
 } = {}) => {
   nock(api)
@@ -97,7 +97,7 @@ const interceptUpdate = ({
     draft = false,
     generate_release_notes = false,
     make_latest = 'true',
-    discussion_category_name = 'false'
+    discussion_category_name = undefined
   }
 } = {}) => {
   nock(api)
