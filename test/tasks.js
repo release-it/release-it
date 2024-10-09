@@ -333,7 +333,7 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
   t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.1.0-alpha.0)`));
   t.true(log.log.firstCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
   t.true(log.log.secondCall.args[0].endsWith(`https://github.com/${owner}/${project}/releases/tag/v1.1.0-alpha.0`));
-  t.true(log.log.args[3][0].endsWith(`${project}/-/releases`));
+  t.true(log.log.thirdCall.args[0].endsWith(`${project}/-/releases`));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
 
   exec.restore();
@@ -365,7 +365,7 @@ test.serial('should publish pre-release without pre-id with different npm.tag', 
   t.is(stdout.trim(), 'v2.0.0-0');
   t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...2.0.0-0)`));
   t.true(log.log.firstCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
-  t.regex(log.log.args[1][0], /Done \(in [0-9]+s\.\)/);
+  t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
 
   exec.restore();
 });
@@ -385,7 +385,7 @@ test.serial('should handle private package correctly, bump lockfile', async t =>
   t.deepEqual(npmArgs, ['npm version 1.0.1 --no-git-tag-version']);
   t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
   t.is(log.warn.length, 0);
-  t.regex(log.log.args[0][0], /Done \(in [0-9]+s\.\)/);
+  t.regex(log.log.firstCall.args[0], /Done \(in [0-9]+s\.\)/);
 
   exec.restore();
 });
