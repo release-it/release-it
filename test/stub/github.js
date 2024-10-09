@@ -44,7 +44,16 @@ const interceptCreate = ({
   host = 'github.com',
   owner = 'user',
   project = 'repo',
-  body: { tag_name, name = '', generate_release_notes = false, body = null, prerelease = false, draft = false }
+  body: {
+    tag_name,
+    name = '',
+    body = null,
+    prerelease = false,
+    draft = false,
+    generate_release_notes = false,
+    make_latest = 'true',
+    discussion_category_name = false
+  }
 } = {}) => {
   nock(api)
     .post(`/repos/${owner}/${project}/releases`, {
@@ -54,7 +63,8 @@ const interceptCreate = ({
       prerelease,
       draft,
       generate_release_notes,
-      make_latest: 'true'
+      make_latest,
+      discussion_category_name
     })
     .reply(() => {
       const id = 1;
@@ -67,7 +77,8 @@ const interceptCreate = ({
         draft,
         generate_release_notes,
         upload_url: `https://uploads.${host}/repos/${owner}/${project}/releases/${id}/assets{?name,label}`,
-        html_url: `https://${host}/${owner}/${project}/releases/tag/${tag_name}`
+        html_url: `https://${host}/${owner}/${project}/releases/tag/${tag_name}`,
+        discussion_url: discussion_category_name ? `https://${host}/${owner}/${project}/discussions/${id}` : undefined
       };
       return [200, responseBody, { location: `${api}/repos/${owner}/${project}/releases/${id}` }];
     });
@@ -78,7 +89,16 @@ const interceptUpdate = ({
   api = 'https://api.github.com',
   owner = 'user',
   project = 'repo',
-  body: { tag_name, name = '', body = null, prerelease = false, draft = false, generate_release_notes = false }
+  body: {
+    tag_name,
+    name = '',
+    body = null,
+    prerelease = false,
+    draft = false,
+    generate_release_notes = false,
+    make_latest = 'true',
+    discussion_category_name = false
+  }
 } = {}) => {
   nock(api)
     .patch(`/repos/${owner}/${project}/releases/1`, {
@@ -88,7 +108,8 @@ const interceptUpdate = ({
       draft,
       prerelease,
       generate_release_notes,
-      make_latest: 'true'
+      make_latest,
+      discussion_category_name
     })
     .reply(200, {
       id: 1,

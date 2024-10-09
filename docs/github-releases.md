@@ -171,6 +171,12 @@ release-it --no-increment --no-git --github.release --github.update --github.ass
 To do a release that isn't the latest release on your GitHub project e.g for support releases, you can set
 `github.makeLatest` to `false`.
 
+## Create GitHub Discussion
+
+To auto-create GitHub Discussion for the release on your GitHub project, you can set:
+
+`github.discussionCategoryName` to `[discussion category name]`
+
 ## Comments
 
 To submit a comment to each merged pull requests and closed issue that is part of the release, set
