@@ -531,8 +531,8 @@ test('should create auto-generated discussion', async t => {
     body: {
       tag_name: '2.0.2',
       name: 'Release 2.0.2',
-      generate_release_notes: true,
-      body: '',
+      generate_release_notes: false,
+      body: null,
       discussion_category_name: 'Announcement'
     }
   });
