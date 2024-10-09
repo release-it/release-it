@@ -140,6 +140,9 @@ export interface Config {
     makeLatest?: boolean | 'legacy';
 
     /** @default false */
+    discussionCategoryName?: boolean | string;
+
+    /** @default false */
     skipChecks?: boolean;
 
     /** @default false */
