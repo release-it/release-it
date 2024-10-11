@@ -171,7 +171,9 @@ test.serial('should run "after:*:release" plugin hooks', async t => {
     project,
     body: {
       name: 'Release 1.1.0',
+      ref: 'master',
       tag_name: '1.1.0',
+      tag_message: 'Release 1.1.0',
       description: `* More file (${sha})`
     }
   });

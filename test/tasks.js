@@ -270,7 +270,9 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
     project,
     body: {
       name: 'Release 1.1.0-alpha.0',
+      ref: 'master',
       tag_name: 'v1.1.0-alpha.0',
+      tag_message: `${owner} ${owner}/${project} ${project}`,
       description: `Notes for ${pkgName}: ${sha}`,
       assets: {
         links: [
