@@ -116,10 +116,10 @@
     "eslint-plugin-import-x": "4.3.1",
     "eslint-plugin-prettier": "5.2.1",
     "fs-monkey": "1.0.6",
-    "globals": "15.10.0",
+    "globals": "15.11.0",
     "installed-check": "9.3.0",
-    "knip": "5.31.0",
-    "memfs": "4.12.0",
+    "knip": "5.33.3",
+    "memfs": "4.14.0",
     "mock-stdio": "1.0.3",
     "nock": "14.0.0-beta.8",
     "prettier": "3.3.3",
@@ -127,7 +127,7 @@
     "remark-preset-webpro": "1.1.1",
     "sinon": "19.0.2",
     "strip-ansi": "7.1.0",
-    "typescript": "5.6.2"
+    "typescript": "5.6.3"
   },
   "overrides": {
     "pac-resolver": "7.0.1",
