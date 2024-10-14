@@ -8,6 +8,7 @@ import Log from '../lib/log.js';
 import Spinner from '../lib/spinner.js';
 import Config from '../lib/config.js';
 import runTasks from '../lib/index.js';
+import Git from '../lib/plugin/git/Git.js';
 import { mkTmpDir, gitAdd, getArgs } from './util/helpers.js';
 import ShellStub from './stub/shell.js';
 import {
@@ -22,6 +23,7 @@ import {
   interceptCreate as interceptGitHubCreate,
   interceptAsset as interceptGitHubAsset
 } from './stub/github.js';
+import { factory } from './util/index.js';
 
 const rootDir = new URL('..', import.meta.url);
 
@@ -247,6 +249,8 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
   sh.exec('git tag v1.0.0');
   const sha = gitAdd('line', 'file', 'More file');
   sh.exec('git push --follow-tags');
+  const git = factory(Git);
+  const ref = (await git.getBranchName()) ?? 'HEAD';
 
   interceptGitHubAuthentication();
   interceptGitHubCollaborator({ owner, project });
@@ -270,7 +274,7 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
     project,
     body: {
       name: 'Release 1.1.0-alpha.0',
-      ref: 'master',
+      ref,
       tag_name: 'v1.1.0-alpha.0',
       tag_message: `${owner} ${owner}/${project} ${project}`,
       description: `Notes for ${pkgName}: ${sha}`,

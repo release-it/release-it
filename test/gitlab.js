@@ -2,7 +2,6 @@ import fs from 'node:fs';
 import test from 'ava';
 import sinon from 'sinon';
 import nock from 'nock';
-import { isCI } from 'ci-info';
 import Git from '../lib/plugin/git/Git.js';
 import GitLab from '../lib/plugin/gitlab/GitLab.js';
 import { factory, runTasks } from './util/index.js';
@@ -65,8 +64,8 @@ test.serial('should upload assets and release', async t => {
   const gitlab = factory(GitLab, { options });
   sinon.stub(gitlab, 'getLatestVersion').resolves('2.0.0');
 
-  const git = factory(Git, { options });
-  const branchName = await git.getBranchName();
+  const git = factory(Git);
+  const ref = (await git.getBranchName()) ?? 'HEAD';
 
   interceptUser();
   interceptCollaborator();
@@ -94,7 +93,7 @@ test.serial('should upload assets and release', async t => {
   interceptPublish({
     body: {
       name: 'Release 2.0.1',
-      ref: isCI ? 'HEAD' : branchName,
+      ref,
       tag_name: '2.0.1',
       tag_message: 'Release 2.0.1',
       description: 'Custom notes',
