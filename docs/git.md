@@ -48,9 +48,9 @@ Examples:
 
 Use `git.tagMatch` to override the normal matching behavior to find the latest tag. For instance, when doing a major
 release to find and set the latest major tag, and include all commits in the changelog since this matching tag. Note
-that this represents a glob (not a regex):
+that this represents a [glob](https://code.visualstudio.com/docs/editor/glob-patterns) (not a regex):
 
-Example: `git.tagMatch: "[0-9]*\.[0-9]*\.[0-9]*"`
+Example: `git.tagMatch: "[0-9]*.[0-9]*.[0-9]*"`
 
 This could also be useful when using a plugin to determine the next tag:
 
