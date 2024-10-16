@@ -1,6 +1,6 @@
 # Configuration
 
-Out of the box, release-it has sane defaults, and [plenty of options][1] to configure it.
+Out of the box, release-it has sane defaults. See the [configuration options][1] to configure it.
 
 Put only the options to override in a configuration file. Here is a list of file names where release-it looks for
 configuration in the root of the project:
@@ -78,6 +78,19 @@ TOML is also supported in `.release-it.toml`:
 "before:init" = "npm test"
 ```
 
+## Configuration options
+
+Release-it has [plenty of options][2] to configure. See the following tables
+for descriptions of each.
+
+ - [Hooks](./configuration-hooks.md)
+ - [Git](./configuration-git.md)
+ - [npm](./configuration-npm.md)
+ - [GitHub](./configuration-github.md)
+ - [GitLab](./configuration-gitlab.md)
+
+## Setting options via CLI
+
 Any option can also be set on the command-line, and will have highest priority. Example:
 
 ```bash
@@ -96,4 +109,5 @@ Also plugin options can be set from the command line:
 release-it --no-plugins.@release-it/keep-a-changelog.strictLatest
 ```
 
-[1]: ../config/release-it.json
+[1]: #configuration-options
+[2]: ../config/release-it.json
