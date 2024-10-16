@@ -114,7 +114,7 @@ test.serial('should upload assets and release', async t => {
   t.is(gitlab.assets[0].url, `${pushRepo}/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/file-v2.0.1.txt`);
   const { isReleased, releaseUrl } = gitlab.getContext();
   t.true(isReleased);
-  t.is(releaseUrl, `${pushRepo}/-/releases`);
+  t.is(releaseUrl, `${pushRepo}/-/releases/2.0.1`);
 });
 
 test.serial('should upload assets with ID-based URLs too', async t => {
@@ -211,7 +211,7 @@ test.serial('should release to sub-grouped repo', async t => {
 
   const { isReleased, releaseUrl } = gitlab.getContext();
   t.true(isReleased);
-  t.is(releaseUrl, 'https://gitlab.com/group/sub-group/repo/-/releases');
+  t.regex(releaseUrl, /https:\/\/gitlab.com\/group\/sub-group\/repo\/-\/releases\//);
 });
 
 test.serial('should throw for unauthenticated user', async t => {
@@ -265,7 +265,7 @@ test('should not make requests in dry run', async t => {
   t.is(gitlab.log.exec.args[2][0], 'gitlab releases#uploadAssets');
   t.is(gitlab.log.exec.args[3][0], 'gitlab releases#createRelease "R" (1.0.1)');
   t.true(isReleased);
-  t.is(releaseUrl, `${pushRepo}/-/releases`);
+  t.is(releaseUrl, `${pushRepo}/-/releases/1.0.1`);
 });
 
 test('should skip checks', async t => {
