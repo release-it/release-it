@@ -20,13 +20,16 @@
     "tagAnnotation": "Release ${version}",
     "tagArgs": [],
     "push": true,
-    "pushArgs": ["--follow-tags"],
+    "pushArgs": [
+      "--follow-tags"
+    ],
     "pushRepo": ""
   },
   "npm": {
     "publish": true,
     "publishPath": ".",
     "publishArgs": [],
+    "publishPackageManager": "npm",
     "tag": null,
     "otp": null,
     "ignoreVersion": false,
