@@ -12,6 +12,22 @@ part][2] is configured correctly.
 
 GitLab Releases do not support pre-releases or drafts.
 
+## Configuration options
+
+| Option                            | Description                                                         |
+| :-------------------------------- | :------------------------------------------------------------------ |
+| `gitlab.release`                  | Set to `false` to skip the GitLab publish step                      |
+| `gitlab.releaseName`              | Set the release name (default: `Release ${version}`)                |
+| `gitlab.releaseNotes`             | Override the release notes with custom notes                        |
+| `gitlab.milestones`               | Associate one or more milestones with a GitLab release              |
+| `gitlab.tokenRef`                 | GitLab token environment variable name (default: `GITLAB_TOKEN`)    |
+| `gitlab.tokenHeader`              | _TODO_                                                              |
+| `gitlab.certificateAuthorityFile` | _TODO_                                                              |
+| `gitlab.secure`                   | _TODO_                                                              |
+| `gitlab.assets`                   | Glob pattern path to assets to add to the GitLab release            |
+| `gitlab.origin`                   | _TODO_                                                              |
+| `gitlab.skipChecks`               | Skip checks on `GITLAB_TOKEN` environment variable and milestone(s) |
+
 ## Prerequisite checks
 
 First, release-it will check whether the `GITLAB_TOKEN` environment variable is set. Otherwise it will throw an error

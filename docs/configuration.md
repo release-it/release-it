@@ -80,14 +80,12 @@ TOML is also supported in `.release-it.toml`:
 
 ## Configuration options
 
-Release-it has [plenty of options][2] to configure. See the following tables
-for descriptions of each.
+Release-it has [plenty of options][2]. See the following tables for plugin configuration options:
 
- - [Hooks](./configuration-hooks.md)
- - [Git](./configuration-git.md)
- - [npm](./configuration-npm.md)
- - [GitHub](./configuration-github.md)
- - [GitLab](./configuration-gitlab.md)
+- [Git](./git.md#configuration-options)
+- [npm](./npm.md#configuration-options)
+- [GitHub](./github-releases.md#configuration-options)
+- [GitLab](./gitlab-releases.md#configuration-options)
 
 ## Setting options via CLI
 

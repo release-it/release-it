@@ -7,6 +7,21 @@ With a `package.json` in the current directory, release-it will let `npm` bump t
 - If `package.json` should be ignored, its version should not be bumped, and nothing should be published to npm, use
   `--no-npm` or `"npm": false` in the release-it configuration.
 
+## Configuration options
+
+| Option                 | Description                                                                          |
+| :--------------------- | :----------------------------------------------------------------------------------- |
+| `npm.publish`          | Set to `false` to skip the npm publish step                                          |
+| `npm.publishPath`      | Publish only a specific folder (e.g. `dist`)                                         |
+| `npm.publishArgs`      | In case extra arguments should be provided to npm for the publish operation          |
+| `npm.tag`              | Use e.g. `npm.tag=beta` to tag the package in the npm repository                     |
+| `npm.otp`              | The one-time password (OTP) can be provided from the command line (`npm.otp=123456`) |
+| `npm.ignoreVersion`    | When set to `true`, ignore the `version` from `package.json`                         |
+| `npm.allowSameVersion` | Allow new version to be the same value as the current version                        |
+| `npm.versionArgs`      | In case extra arguments should be provided to npm for the versioning operation       |
+| `npm.skipChecks`       | Skip checks on whether the npm registry is up and the user permissions               |
+| `npm.timeout`          | Timeout duration to wait for a response from the npm registry                        |
+
 ## Prerequisite checks
 
 To prevent issues later in the process, release-it first checks whether the npm registry is up, the user is

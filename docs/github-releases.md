@@ -14,6 +14,27 @@ To add [GitHub releases][3] in your release-it flow, there are two options:
 1. Automated. This requires a personal access token.
 2. Manual. The GitHub web interface will be opened with pre-populated fields.
 
+## Configuration options
+
+| Option                   | Description                                                                     |
+| :----------------------- | :------------------------------------------------------------------------------ |
+| `github.release`         | Set to `false` to skip the GitHub publish step                                  |
+| `github.releaseName`     | Set the release name (default: `Release ${version}`)                            |
+| `github.releaseNotes`    | Override the release notes with custom notes                                    |
+| `github.autoGenerate`    | Let GitHub generate release notes                                               |
+| `github.preRelease`      | Set the release to a pre-release status                                         |
+| `github.draft`           | Set the release to a draft status                                               |
+| `github.tokenRef`        | GitHub token environment variable name (default: `GITHUB_TOKEN`)                |
+| `github.assets`          | Glob pattern path to assets to add to the GitHub release                        |
+| `github.host`            | Use a different host from what would be derived from the Git URL                |
+| `github.timeout`         | Timeout duration to wait for a response from the GitHub API                     |
+| `github.proxy`           | If the release is performed behind a proxy, set this to string of the proxy URL |
+| `github.skipChecks`      | Skip checks on `GITHUB_TOKEN` environment variable and user permissions         |
+| `github.web`             | Explicitly override checking if the `GITHUB_TOKEN` is set                       |
+| `github.comments.submit` | Submit a comment to each merged PR and closed issue part of the release         |
+| `github.comments.issue`  | The text to add to the associated closed issues                                 |
+| `github.comments.pr`     | The text to add to the associated merged pull requests                          |
+
 ## Automated
 
 To automate the release (using the GitHub REST API), the following needs to be configured:

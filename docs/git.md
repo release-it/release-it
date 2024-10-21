@@ -15,6 +15,32 @@ Configure the `[git.*]` options to modify the commands accordingly. See [all opt
 
 The minimum required version of Git is v2.0.0.
 
+## Configuration options
+
+| Option                        | Description                                                              |
+| :---------------------------- | :----------------------------------------------------------------------- |
+| `git.changelog`               | Changelog generation command                                             |
+| `git.requireCleanWorkingDir`  | Require that all file changes are committed                              |
+| `git.requireBranch`           | Require that the release is on a particular branch name                  |
+| `git.requireUpstream`         | Require that an upstream remote exists.                                  |
+| `git.requireCommits`          | Stop the process if there are no commits since the previous release      |
+| `git.requireCommitsFail`      | If there are no commits, continue but use exit code `0`                  |
+| `git.commitsPath`             | The path to the directory that should be included in the release changes |
+| `git.addUntrackedFiles`       | Add untracked files to the release commit                                |
+| `git.commit`                  | If `false`, skip the commit release step                                 |
+| `git.commitMessage`           | The message to add to the commit step                                    |
+| `git.commitArgs`              | Provide extra arguments to `git commit`                                  |
+| `git.tag`                     | If `false`, skip the tag release step                                    |
+| `git.tagExclude`              | Override the normal behavior to find the latest tag                      |
+| `git.tagName`                 | Custom tag name, which may not be the same as the (prefixed) version     |
+| `git.tagMatch`                | Override the normal matching behavior to find the latest tag             |
+| `git.getLatestTagFromAllRefs` | Consider all tags (directly reachable or not, sorted by version)         |
+| `git.tagAnnotation`           | Message string for annotating the Git tag                                |
+| `git.tagArgs`                 | Provide extra arguments to `git tag`                                     |
+| `git.push`                    | If `false`, skip the push release step                                   |
+| `git.pushArgs`                | Provided extra arguments to `git push`                                   |
+| `git.pushRepo`                | Remote name or Git URL to push the release to (defaultL `origin`)        |
+
 ## Git remotes
 
 SSH keys and Git remotes are assumed to be configured correctly. If a manual `git push` from the command line works,
