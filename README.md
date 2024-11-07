@@ -181,6 +181,7 @@ message conventions. Plugins are available for:
 - auto-changelog
 - Conventional Changelog
 - Keep A Changelog
+- git-cliff
 
 To print the changelog without releasing anything, add the `--changelog` flag.
 
