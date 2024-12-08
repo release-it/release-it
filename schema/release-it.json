@@ -9,6 +9,10 @@
       "type": "string",
       "description": "The JSON schema version used to validate this configuration file"
     },
+    "extends": {
+      "type": "string",
+      "description": "URL that specifies a configuration to extend"
+    },
     "hooks": {
       "type": "object",
       "additionalProperties": true,
