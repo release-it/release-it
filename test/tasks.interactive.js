@@ -88,6 +88,42 @@ test.serial('should run tasks without throwing errors', async t => {
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
 });
 
+test.serial('should run tasks using extended configuration', async t => {
+  sh.mv('.git', 'foo');
+
+  const validationExtendedConfiguration = "echo 'extended_configuration'";
+
+  const fetchStub = sandbox.stub(global, 'fetch').resolves({
+    ok: true,
+    json: async () => ({
+      hooks: {
+        'before:init': validationExtendedConfiguration
+      }
+    })
+  });
+
+  const config = {
+    $schema: 'https://unpkg.com/release-it@17/schema/release-it.json',
+    extends: 'github>release-it/release-it-configuration'
+  };
+
+  const container = getContainer(config);
+
+  const exec = sandbox.spy(container.shell, 'execFormattedCommand');
+
+  const { name, latestVersion, version } = await runTasks({}, container);
+
+  const commands = _.flatten(exec.args).filter(arg => typeof arg === 'string' && arg.startsWith('echo'));
+
+  t.true(commands.includes(validationExtendedConfiguration));
+
+  t.is(version, '0.0.1');
+  t.true(log.obtrusive.firstCall.args[0].includes(`release ${name} (currently at ${latestVersion})`));
+  t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
+
+  fetchStub.restore();
+});
+
 test.serial('should not run hooks for disabled release-cycle methods', async t => {
   const hooks = getHooks(['version', 'git', 'github', 'gitlab', 'npm']);
 

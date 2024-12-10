@@ -87,6 +87,25 @@ Release-it has [plenty of options][2]. See the following tables for plugin confi
 - [GitHub](./github-releases.md#configuration-options)
 - [GitLab](./gitlab-releases.md#configuration-options)
 
+### Extend Configuration
+
+You can extend a configuration from a remote source using the `extends` option. The following formats are supported:
+
+- `github>owner/repo`
+- `github>owner/repo#tag`
+- `github>owner/repo:file#tag`
+
+For example, to extend a configuration from a GitHub repository:
+
+```json
+{
+  "$schema": "https://unpkg.com/release-it@17/schema/release-it.json",
+  "extends": "github>release-it/release-it-configuration"
+}
+```
+
+Only public GitHub repositories are supported at this time.
+
 ## Setting options via CLI
 
 Any option can also be set on the command-line, and will have highest priority. Example:
