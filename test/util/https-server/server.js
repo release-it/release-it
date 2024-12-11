@@ -2,10 +2,19 @@ import { createServer  } from "node:https";
 import { readFileSync } from "node:fs";
 import { join } from 'node:path';
 import { debug } from 'node:util';
+import {fileURLToPath} from "node:url";
+
+/**
+ * @typedef {import('http').IncomingMessage} IncomingMessage
+ * @typedef {import('http').ServerResponse} ServerResponse
+ * @typedef {ServerResponse & { req: IncomingMessage;}} RequestResponse
+ */
+
+const DIRNAME = getDirname();
 
 const options = {
-  key: readFileSync(join(import.meta.dirname, './server/privkey.pem')),
-  cert: readFileSync(join( import.meta.dirname ,'./server/fullchain.pem'))
+  key: readFileSync(join(DIRNAME, './server/privkey.pem')),
+  cert: readFileSync(join( DIRNAME ,'./server/fullchain.pem'))
 }
 
 /**
@@ -133,8 +142,8 @@ export class GitlabTestServer {
   }
 }
 
-/**
- * @typedef {import('http').IncomingMessage} IncomingMessage
- * @typedef {import('http').ServerResponse} ServerResponse
- * @typedef {ServerResponse & { req: IncomingMessage;}} RequestResponse
- */
+function getDirname() {
+  if (import.meta.dirname) return import.meta.dirname;
+
+  return fileURLToPath(new URL('.', import.meta.url));
+}
