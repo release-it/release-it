@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import test from 'ava';
 import sinon from 'sinon';
 import nock from 'nock';
+import Git from '../lib/plugin/git/Git.js';
 import GitLab from '../lib/plugin/gitlab/GitLab.js';
 import { factory, runTasks } from './util/index.js';
 import {
@@ -63,6 +64,9 @@ test.serial('should upload assets and release', async t => {
   const gitlab = factory(GitLab, { options });
   sinon.stub(gitlab, 'getLatestVersion').resolves('2.0.0');
 
+  const git = factory(Git);
+  const ref = (await git.getBranchName()) ?? 'HEAD';
+
   interceptUser();
   interceptCollaborator();
   interceptMilestones({
@@ -89,7 +93,9 @@ test.serial('should upload assets and release', async t => {
   interceptPublish({
     body: {
       name: 'Release 2.0.1',
+      ref,
       tag_name: '2.0.1',
+      tag_message: 'Release 2.0.1',
       description: 'Custom notes',
       assets: {
         links: [
@@ -108,7 +114,32 @@ test.serial('should upload assets and release', async t => {
   t.is(gitlab.assets[0].url, `${pushRepo}/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/file-v2.0.1.txt`);
   const { isReleased, releaseUrl } = gitlab.getContext();
   t.true(isReleased);
-  t.is(releaseUrl, `${pushRepo}/-/releases`);
+  t.is(releaseUrl, `${pushRepo}/-/releases/2.0.1`);
+});
+
+test.serial('should upload assets with ID-based URLs too', async t => {
+  const host = 'https://gitlab.com';
+  const pushRepo = `${host}/user/repo`;
+  const options = {
+    git: { pushRepo },
+    gitlab: {
+      tokenRef,
+      release: true,
+      assets: 'test/resources/file-v${version}.txt',
+      useIdsForUrls: true
+    }
+  };
+  const gitlab = factory(GitLab, { options });
+  sinon.stub(gitlab, 'getLatestVersion').resolves('2.0.0');
+
+  interceptUser();
+  interceptCollaborator();
+  interceptAsset();
+  interceptPublish();
+
+  await runTasks(gitlab);
+
+  t.is(gitlab.assets[0].url, `${host}/-/project/1234/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/file-v2.0.1.txt`);
 });
 
 test.serial('should throw when release milestone is missing', async t => {
@@ -180,7 +211,7 @@ test.serial('should release to sub-grouped repo', async t => {
 
   const { isReleased, releaseUrl } = gitlab.getContext();
   t.true(isReleased);
-  t.is(releaseUrl, 'https://gitlab.com/group/sub-group/repo/-/releases');
+  t.regex(releaseUrl, /https:\/\/gitlab.com\/group\/sub-group\/repo\/-\/releases\//);
 });
 
 test.serial('should throw for unauthenticated user', async t => {
@@ -234,7 +265,7 @@ test('should not make requests in dry run', async t => {
   t.is(gitlab.log.exec.args[2][0], 'gitlab releases#uploadAssets');
   t.is(gitlab.log.exec.args[3][0], 'gitlab releases#createRelease "R" (1.0.1)');
   t.true(isReleased);
-  t.is(releaseUrl, `${pushRepo}/-/releases`);
+  t.is(releaseUrl, `${pushRepo}/-/releases/1.0.1`);
 });
 
 test('should skip checks', async t => {

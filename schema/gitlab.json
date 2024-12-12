@@ -28,7 +28,7 @@
       "type": "boolean",
       "default": false
     },
-    "milesstones": {
+    "milestones": {
       "type": "array",
       "items": {
         "type": "string"
@@ -51,6 +51,10 @@
     },
     "assets": {
       "default": null
+    },
+    "useIdsForUrls": {
+      "type": "boolean",
+      "default": false
     },
     "origin": {
       "type": "string",

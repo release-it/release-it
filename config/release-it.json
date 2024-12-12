@@ -65,6 +65,7 @@
     "certificateAuthorityFile": null,
     "secure": null,
     "assets": null,
+    "useIdsForUrls": false,
     "origin": null,
     "skipChecks": false
   }

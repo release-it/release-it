@@ -32,6 +32,10 @@
       "type": "boolean",
       "default": false
     },
+    "discussionCategoryName": {
+      "$comment": "Create discussion of the specified category and link to the GitHub Release",
+      "type": "string"
+    },
     "tokenRef": {
       "type": "string",
       "default": "GITHUB_TOKEN"

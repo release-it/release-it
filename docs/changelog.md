@@ -10,6 +10,7 @@ these commands output the changelog to `stdout`.
 - [auto-changelog][3]
 - [Conventional Changelog][4]
 - [Keep A Changelog][5]
+- [git-cliff][14]
 
 Some projects keep their changelog in e.g. `CHANGELOG.md` or `history.md`. To auto-update this file and include this in
 the release commit, the recommended configuration is to do this in the `after:bump` hook (see example below).
@@ -92,6 +93,14 @@ This plugin updates `CHANGELOG.md` file according to
 }
 ```
 
+## Git-cliff
+
+Git-cliff is a customizable changelog generator that follows
+Conventional Commit specifications. Similar to auto-changelog, it can be used
+as a companion to release-it.
+
+See the [git-cliff recipe][15] for an example setup.
+
 [1]: ../config/release-it.json
 [2]: #github-and-gitlab-releases
 [3]: #auto-changelog
@@ -105,3 +114,5 @@ This plugin updates `CHANGELOG.md` file according to
 [11]: https://github.com/release-it/conventional-changelog
 [12]: https://keepachangelog.com
 [13]: https://github.com/release-it/keep-a-changelog
+[14]: https://github.com/orhun/git-cliff
+[15]: ./recipes/git-cliff.md

@@ -8,10 +8,12 @@ import Spinner from '../lib/spinner.js';
 import Prompt from '../lib/prompt.js';
 import Config from '../lib/config.js';
 import runTasks from '../lib/index.js';
+import Git from '../lib/plugin/git/Git.js';
 import { mkTmpDir, gitAdd } from './util/helpers.js';
 import ShellStub from './stub/shell.js';
 import { interceptPublish as interceptGitLabPublish } from './stub/gitlab.js';
 import { interceptCreate as interceptGitHubCreate } from './stub/github.js';
+import { factory } from './util/index.js';
 
 const noop = Promise.resolve();
 
@@ -160,6 +162,9 @@ test.serial('should run "after:*:release" plugin hooks', async t => {
   sh.exec('git tag 1.0.0');
   const sha = gitAdd('line', 'file', 'More file');
 
+  const git = factory(Git);
+  const ref = (await git.getBranchName()) ?? 'HEAD';
+
   interceptGitHubCreate({
     owner,
     project,
@@ -171,7 +176,9 @@ test.serial('should run "after:*:release" plugin hooks', async t => {
     project,
     body: {
       name: 'Release 1.1.0',
+      ref,
       tag_name: '1.1.0',
+      tag_message: 'Release 1.1.0',
       description: `* More file (${sha})`
     }
   });

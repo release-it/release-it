@@ -140,6 +140,9 @@ export interface Config {
     makeLatest?: boolean | 'legacy';
 
     /** @default false */
+    discussionCategoryName?: boolean | string;
+
+    /** @default false */
     skipChecks?: boolean;
 
     /** @default false */
@@ -183,6 +186,9 @@ export interface Config {
 
     /** @default null */
     assets?: any;
+
+    /** @default false */
+    useIdsForUrls?: boolean;
 
     /** @default null */
     origin?: any;

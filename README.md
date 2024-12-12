@@ -181,6 +181,7 @@ message conventions. Plugins are available for:
 - auto-changelog
 - Conventional Changelog
 - Keep A Changelog
+- git-cliff
 
 To print the changelog without releasing anything, add the `--changelog` flag.
 
@@ -328,34 +329,35 @@ release-it programmatically][54] for example code.
 - [Halo][59]
 - [hosts][60]
 - [js-cookie][61]
-- [Madge][62]
-- [Metalsmith][63]
-- [Node-Redis][64]
-- [React Native Paper][65]
-- [Readability.js][66]
-- [Redux][67]
-- [Saleor][68]
-- [Semantic UI React][69]
-- [Shepherd][70]
-- [Tabler][71] + [tabler-icons][72]
-- Swagger ([swagger-ui][73] + [swagger-editor][74])
-- [Repositories that depend on release-it][75]
-- GitHub search for [path:\*\*/.release-it.json][76]
+- [jQuery][62]
+- [Madge][63]
+- [Metalsmith][64]
+- [Node-Redis][65]
+- [React Native Paper][66]
+- [Readability.js][67]
+- [Redux][68]
+- [Saleor][69]
+- [Semantic UI React][70]
+- [Shepherd][71]
+- [Tabler][72] + [tabler-icons][73]
+- Swagger ([swagger-ui][74] + [swagger-editor][75])
+- [Repositories that depend on release-it][76]
+- GitHub search for [path:\*\*/.release-it.json][77]
 
 ## Legacy Node.js
 
 The latest major version is v17, supporting Node.js 18 and up (as Node.js v16 is EOL). The previous major version was
-v16, supporting Node.js 16. Use release-it v15 for environments running Node.js v14. Also see [CHANGELOG.md][77].
+v16, supporting Node.js 16. Use release-it v15 for environments running Node.js v14. Also see [CHANGELOG.md][78].
 
 ## Links
 
-- See [CHANGELOG.md][77] for major/breaking updates, and [releases][78] for a detailed version history.
-- To **contribute**, please read [CONTRIBUTING.md][79] first.
-- Please [open an issue][80] if anything is missing or unclear in this documentation.
+- See [CHANGELOG.md][78] for major/breaking updates, and [releases][79] for a detailed version history.
+- To **contribute**, please read [CONTRIBUTING.md][80] first.
+- Please [open an issue][81] if anything is missing or unclear in this documentation.
 
 ## License
 
-[MIT][81]
+[MIT][82]
 
 Are you using release-it at work? Please consider [sponsoring me][14]!
 
@@ -420,23 +422,24 @@ Are you using release-it at work? Please consider [sponsoring me][14]!
 [59]: https://github.com/halo-dev/halo
 [60]: https://github.com/StevenBlack/hosts
 [61]: https://github.com/js-cookie/js-cookie
-[62]: https://github.com/pahen/madge
-[63]: https://github.com/metalsmith/metalsmith
-[64]: https://github.com/redis/node-redis
-[65]: https://github.com/callstack/react-native-paper
-[66]: https://github.com/mozilla/readability
-[67]: https://github.com/reduxjs/redux
-[68]: https://github.com/saleor/saleor
-[69]: https://github.com/Semantic-Org/Semantic-UI-React
-[70]: https://github.com/shipshapecode/shepherd
-[71]: https://github.com/tabler/tabler
-[72]: https://github.com/tabler/tabler-icons
-[73]: https://github.com/swagger-api/swagger-ui
-[74]: https://github.com/swagger-api/swagger-editor
-[75]: https://github.com/release-it/release-it/network/dependents
-[76]: https://github.com/search?q=path%3A**%2F.release-it.json&type=code
-[77]: ./CHANGELOG.md
-[78]: https://github.com/release-it/release-it/releases
-[79]: ./.github/CONTRIBUTING.md
-[80]: https://github.com/release-it/release-it/issues/new
-[81]: ./LICENSE
+[62]: https://github.com/jquery/jquery
+[63]: https://github.com/pahen/madge
+[64]: https://github.com/metalsmith/metalsmith
+[65]: https://github.com/redis/node-redis
+[66]: https://github.com/callstack/react-native-paper
+[67]: https://github.com/mozilla/readability
+[68]: https://github.com/reduxjs/redux
+[69]: https://github.com/saleor/saleor
+[70]: https://github.com/Semantic-Org/Semantic-UI-React
+[71]: https://github.com/shipshapecode/shepherd
+[72]: https://github.com/tabler/tabler
+[73]: https://github.com/tabler/tabler-icons
+[74]: https://github.com/swagger-api/swagger-ui
+[75]: https://github.com/swagger-api/swagger-editor
+[76]: https://github.com/release-it/release-it/network/dependents
+[77]: https://github.com/search?q=path%3A**%2F.release-it.json&type=code
+[78]: ./CHANGELOG.md
+[79]: https://github.com/release-it/release-it/releases
+[80]: ./.github/CONTRIBUTING.md
+[81]: https://github.com/release-it/release-it/issues/new
+[82]: ./LICENSE

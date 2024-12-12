@@ -12,6 +12,22 @@ part][2] is configured correctly.
 
 GitLab Releases do not support pre-releases or drafts.
 
+## Configuration options
+
+| Option                            | Description                                                         |
+| :-------------------------------- | :------------------------------------------------------------------ |
+| `gitlab.release`                  | Set to `false` to skip the GitLab publish step                      |
+| `gitlab.releaseName`              | Set the release name (default: `Release ${version}`)                |
+| `gitlab.releaseNotes`             | Override the release notes with custom notes                        |
+| `gitlab.milestones`               | Associate one or more milestones with a GitLab release              |
+| `gitlab.tokenRef`                 | GitLab token environment variable name (default: `GITLAB_TOKEN`)    |
+| `gitlab.tokenHeader`              | _TODO_                                                              |
+| `gitlab.certificateAuthorityFile` | _TODO_                                                              |
+| `gitlab.secure`                   | _TODO_                                                              |
+| `gitlab.assets`                   | Glob pattern path to assets to add to the GitLab release            |
+| `gitlab.origin`                   | _TODO_                                                              |
+| `gitlab.skipChecks`               | Skip checks on `GITLAB_TOKEN` environment variable and milestone(s) |
+
 ## Prerequisite checks
 
 First, release-it will check whether the `GITLAB_TOKEN` environment variable is set. Otherwise it will throw an error
@@ -89,6 +105,19 @@ download from the project's releases page. Example:
 }
 ```
 
+Version 17.2 of Gitlab [started enforcing a new URL format][6] for uploaded assets. If you are using this version (or
+later), you should set the `useIdsForUrls` flag to `true`:
+
+```json
+{
+  "gitlab": {
+    "release": true,
+    "useIdsForUrls": true,
+    "assets": ["dist/*.dmg"]
+  }
+}
+```
+
 ## Origin
 
 The `origin` can be set to a string such as `"http://example.org:3000"` to use a different origin from what would be
@@ -122,9 +151,8 @@ the `secure` flag to false:
 }
 ```
 
-The `secure` option is passed down to [got](https://github.com/sindresorhus/got), which in turn also forwards it to node's
-[`https.request`](https://nodejs.org/api/https.html#httpsrequestoptions-callback) method as the `rejectUnauthorized` option.
-The default value of `rejectUnauthorized` is `true`.
+The `secure` option is passed down to [got][7], which in turn also forwards it to node's [`https.request`][8] method as
+the `rejectUnauthorized` option. The default value of `rejectUnauthorized` is `true`.
 
 ## Update the latest release
 
@@ -147,3 +175,6 @@ release-it --no-increment --no-git --gitlab.release --gitlab.assets=*.zip
 [3]: https://docs.gitlab.com/ce/user/profile/personal_access_tokens
 [4]: ./environment-variables.md
 [5]: ./changelog.md
+[6]: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/156939
+[7]: https://github.com/sindresorhus/got
+[8]: https://nodejs.org/api/https.html#httpsrequestoptions-callback
