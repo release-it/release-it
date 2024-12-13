@@ -1,7 +1,7 @@
 import test from 'ava';
 import sinon from 'sinon';
 import nock from 'nock';
-import {Agent} from 'undici';
+import { Agent } from 'undici';
 import Git from '../lib/plugin/git/Git.js';
 import GitLab from '../lib/plugin/gitlab/GitLab.js';
 import { GitlabTestServer } from './util/https-server/server.js';
@@ -280,80 +280,81 @@ test('should skip checks', async t => {
 });
 
 test.serial('should create fetch agent', t => {
-  const options = { gitlab: {}}
+  const options = { gitlab: {} };
   const gitlab = factory(GitLab, { options });
-  
+
   t.is(
     gitlab.certificateAuthorityOption.dispatcher instanceof Agent,
     true,
     "Fetch dispatcher should be an instance of undici's Agent class"
   );
-})
+});
 
 test.serial('should throw for insecure connections to self-hosted instances', async t => {
   const host = 'https://localhost:3000';
-  
+
   const options = {
-    git: { pushRepo: `${host}/user/repo`},
-    gitlab: { host, tokenRef, origin: host },  };
-  const gitlab = factory(GitLab,  { options });
+    git: { pushRepo: `${host}/user/repo` },
+    gitlab: { host, tokenRef, origin: host }
+  };
+  const gitlab = factory(GitLab, { options });
   const server = new GitlabTestServer();
-  
+
   await server.run();
   nock.enableNetConnect();
-  
+
   await t.throwsAsync(gitlab.init(), {
     message: /^Could not authenticate with GitLab using environment variable "GITLAB_TOKEN"/
   });
 
   nock.disableNetConnect();
   await server.stop();
-})
+});
 
 test.serial('should succesfully connect to self-hosted instance with valid CA file', async t => {
   const host = 'https://localhost:3000';
-  
+
   const options = {
-    git: { pushRepo: `${host}/user/repo`},
+    git: { pushRepo: `${host}/user/repo` },
     gitlab: {
       host,
       tokenRef,
       origin: host,
-      certificateAuthorityFile: 'test/util/https-server/client/my-private-root-ca.cert.pem',
-    },
+      certificateAuthorityFile: 'test/util/https-server/client/my-private-root-ca.cert.pem'
+    }
   };
-  const gitlab = factory(GitLab,  { options });
+  const gitlab = factory(GitLab, { options });
   const server = new GitlabTestServer();
 
   await server.run();
   nock.enableNetConnect();
 
   await t.notThrowsAsync(gitlab.init());
-  
+
   nock.disableNetConnect();
   await server.stop();
-})
+});
 
 test.serial('should succesfully connect to self-hosted instance if insecure connection allowed', async t => {
   const host = 'https://localhost:3000';
-  
+
   const options = {
-    git: { pushRepo: `${host}/user/repo`, },
+    git: { pushRepo: `${host}/user/repo` },
     gitlab: {
       host,
       tokenRef,
       origin: host,
       secure: false
-    }, 
+    }
   };
-  const gitlab = factory(GitLab,  { options });
-  
+  const gitlab = factory(GitLab, { options });
+
   const server = new GitlabTestServer();
   await server.run();
   nock.enableNetConnect();
 
   await t.notThrowsAsync(gitlab.init());
-  
+
   nock.disableNetConnect();
-  await server.stop()
-})
+  await server.stop();
+});
