@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import test from 'ava';
 import sinon from 'sinon';
 import nock from 'nock';
@@ -279,8 +280,15 @@ test('should skip checks', async t => {
   t.is(gitlab.log.exec.args.filter(entry => /checkReleaseMilestones/.test(entry[0])).length, 0);
 });
 
-test.serial('should create fetch agent', t => {
+test.serial('should not create fetch agent', t => {
   const options = { gitlab: {} };
+  const gitlab = factory(GitLab, { options });
+
+  t.deepEqual(gitlab.certificateAuthorityOption, {});
+});
+
+test.serial('should create fetch agent if secure == false', t => {
+  const options = { gitlab: { secure: false } };
   const gitlab = factory(GitLab, { options });
 
   t.is(
@@ -288,6 +296,22 @@ test.serial('should create fetch agent', t => {
     true,
     "Fetch dispatcher should be an instance of undici's Agent class"
   );
+});
+
+test.serial('should create fetch agent if certificateAuthorityFile', t => {
+  const sandbox = sinon.createSandbox();
+  sandbox.stub(fs, 'readFileSync').returns('test certificate');
+
+  const options = { gitlab: { certificateAuthorityFile: 'cert.crt' } };
+  const gitlab = factory(GitLab, { options });
+
+  t.is(
+    gitlab.certificateAuthorityOption.dispatcher instanceof Agent,
+    true,
+    "Fetch dispatcher should be an instance of undici's Agent class"
+  );
+
+  sandbox.restore();
 });
 
 test.serial('should throw for insecure connections to self-hosted instances', async t => {
