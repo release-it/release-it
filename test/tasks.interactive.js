@@ -114,9 +114,34 @@ test.serial('should run tasks using extended configuration', async t => {
 
   const { name, latestVersion, version } = await runTasks({}, container);
 
+  t.is(fetchStub.callCount, 1);
+
   const commands = exec.args.flat().filter(arg => typeof arg === 'string' && arg.startsWith('echo'));
 
   t.true(commands.includes(validationExtendedConfiguration));
+
+  t.is(version, '0.0.1');
+  t.true(log.obtrusive.firstCall.args[0].includes(`release ${name} (currently at ${latestVersion})`));
+  t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
+
+  fetchStub.restore();
+});
+
+test.serial('should run tasks not using extended configuration as it is not a string', async t => {
+  renameSync('.git', 'foo');
+
+  const fetchStub = sandbox.stub(global, 'fetch');
+
+  const config = {
+    $schema: 'https://unpkg.com/release-it@17/schema/release-it.json',
+    extends: false
+  };
+
+  const container = getContainer(config);
+
+  const { name, latestVersion, version } = await runTasks({}, container);
+
+  t.is(fetchStub.callCount, 0);
 
   t.is(version, '0.0.1');
   t.true(log.obtrusive.firstCall.args[0].includes(`release ${name} (currently at ${latestVersion})`));
