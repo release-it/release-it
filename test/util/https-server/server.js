@@ -16,7 +16,7 @@ const DIRNAME = getDirname();
 /** @type {ServerOptions} */
 const options = {
   key: readFileSync(join(DIRNAME, './server/privkey.pem')),
-  cert: readFileSync(join(DIRNAME, './server/fullchain.pem')),
+  cert: readFileSync(join(DIRNAME, './server/fullchain.pem'))
 };
 
 /**
