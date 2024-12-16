@@ -290,12 +290,12 @@ test.serial('should not create fetch agent', t => {
 test.serial('should create fetch agent if secure == false', t => {
   const options = { gitlab: { secure: false } };
   const gitlab = factory(GitLab, { options });
+  const { dispatcher } = gitlab.certificateAuthorityOption;
 
-  t.is(
-    gitlab.certificateAuthorityOption.dispatcher instanceof Agent,
-    true,
-    "Fetch dispatcher should be an instance of undici's Agent class"
-  );
+  t.true(dispatcher instanceof Agent, "Fetch dispatcher should be an instance of undici's Agent class");
+
+  const kOptions = Object.getOwnPropertySymbols(dispatcher).find(symbol => symbol.description === 'options');
+  t.deepEqual(dispatcher[kOptions].connect, { rejectUnauthorized: false, ca: undefined });
 });
 
 test.serial('should create fetch agent if certificateAuthorityFile', t => {
@@ -304,12 +304,12 @@ test.serial('should create fetch agent if certificateAuthorityFile', t => {
 
   const options = { gitlab: { certificateAuthorityFile: 'cert.crt' } };
   const gitlab = factory(GitLab, { options });
+  const { dispatcher } = gitlab.certificateAuthorityOption;
 
-  t.is(
-    gitlab.certificateAuthorityOption.dispatcher instanceof Agent,
-    true,
-    "Fetch dispatcher should be an instance of undici's Agent class"
-  );
+  t.true(dispatcher instanceof Agent, "Fetch dispatcher should be an instance of undici's Agent class");
+
+  const kOptions = Object.getOwnPropertySymbols(dispatcher).find(symbol => symbol.description === 'options');
+  t.deepEqual(dispatcher[kOptions].connect, { rejectUnauthorized: undefined, ca: 'test certificate' });
 
   sandbox.restore();
 });
@@ -324,15 +324,17 @@ test.serial('should throw for insecure connections to self-hosted instances', as
   const gitlab = factory(GitLab, { options });
   const server = new GitlabTestServer();
 
+  t.teardown(async () => {
+    nock.disableNetConnect();
+    await server.stop();
+  });
+
   await server.run();
   nock.enableNetConnect();
 
   await t.throwsAsync(gitlab.init(), {
     message: /^Could not authenticate with GitLab using environment variable "GITLAB_TOKEN"/
   });
-
-  nock.disableNetConnect();
-  await server.stop();
 });
 
 test.serial('should succesfully connect to self-hosted instance with valid CA file', async t => {
@@ -350,13 +352,15 @@ test.serial('should succesfully connect to self-hosted instance with valid CA fi
   const gitlab = factory(GitLab, { options });
   const server = new GitlabTestServer();
 
+  t.teardown(async () => {
+    nock.disableNetConnect();
+    await server.stop();
+  });
+
   await server.run();
   nock.enableNetConnect();
 
   await t.notThrowsAsync(gitlab.init());
-
-  nock.disableNetConnect();
-  await server.stop();
 });
 
 test.serial('should succesfully connect to self-hosted instance if insecure connection allowed', async t => {
