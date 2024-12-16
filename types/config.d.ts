@@ -190,6 +190,12 @@ export interface Config {
     /** @default false */
     useIdsForUrls?: boolean;
 
+    /** @default false */
+    useGenericPackageRepositoryForAssets?: boolean;
+
+    /** @default "release-it" */
+    genericPackageRepositoryName?: string;
+
     /** @default null */
     origin?: any;
 
