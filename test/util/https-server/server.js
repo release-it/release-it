@@ -8,13 +8,15 @@ import { fileURLToPath } from 'node:url';
  * @typedef {import('http').IncomingMessage} IncomingMessage
  * @typedef {import('http').ServerResponse} ServerResponse
  * @typedef {ServerResponse & { req: IncomingMessage;}} RequestResponse
+ * @typedef {import('https').ServerOptions} ServerOptions
  */
 
 const DIRNAME = getDirname();
 
+/** @type {ServerOptions} */
 const options = {
   key: readFileSync(join(DIRNAME, './server/privkey.pem')),
-  cert: readFileSync(join(DIRNAME, './server/fullchain.pem'))
+  cert: readFileSync(join(DIRNAME, './server/fullchain.pem')),
 };
 
 /**
