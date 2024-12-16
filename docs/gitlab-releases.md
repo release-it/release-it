@@ -106,13 +106,14 @@ download from the project's releases page. Example:
 ```
 
 Version 17.2 of Gitlab [started enforcing a new URL format][6] for uploaded assets. If you are using this version (or
-later), you should set the `useIdsForUrls` flag to `true`:
+later), you should set the `useIdsForUrls` flag to `true`. You can also set the `projectId` to the ID found in your repository settings. This is auto populated when using GitLab CI. If it isnt found in the Environment it will query Gitlab to get the project id:
 
 ```json
 {
   "gitlab": {
     "release": true,
     "useIdsForUrls": true,
+    "projectId": "1234567890",
     "assets": ["dist/*.dmg"]
   }
 }
@@ -120,7 +121,7 @@ later), you should set the `useIdsForUrls` flag to `true`:
 
 ### Asset Location
 
-By default release assets are uploaded to the project's Markdown uploads API. If you want to use GitLab's Generic packages Repository set `useGenericPackageRepositoryForAssets` flag to true. `useIdsForUrls` is ignored from this API. You can set the package name to be uploaded to using `genericPackageRepositoryName` by default the name is `release-it`:
+By default release assets are uploaded to the project's Markdown uploads API. If you want to use GitLab's Generic packages Repository set `useGenericPackageRepositoryForAssets` flag to true. `useIdsForUrls` is ignored from this API. You can set the package name to be uploaded to using `genericPackageRepositoryName` by default the name is `release-it`.
 
 ```json
 {
@@ -128,6 +129,7 @@ By default release assets are uploaded to the project's Markdown uploads API. If
     "release": true,
     "useGenericPackageRepositoryForAssets": true,
     "genericPackageRepositoryName": "release-it",
+    "projectId": "1234567890",
     "assets": ["dist/*.dmg"]
   }
 }
