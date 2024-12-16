@@ -390,6 +390,13 @@ test.serial('should succesfully connect to self-hosted instance with valid CA fi
   const { dispatcher } = gitlab.certificateAuthorityOption;
   const kOptions = Object.getOwnPropertySymbols(dispatcher).find(symbol => symbol.description === 'options');
   dispatcher[kOptions].connect.family = 4;
+  dispatcher[kOptions].connect.lookup = (hostname, options, callback) => {
+    if (hostname === 'localhost') {
+      return callback(undefined, '127.0.0.1', 4);
+    }
+
+    dns.lookup(hostname, options, callback);
+  };
 
   await t.notThrowsAsync(gitlab.init());
 });
