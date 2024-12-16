@@ -55,7 +55,7 @@ export let interceptAsset = ({ host = 'https://gitlab.com', owner = 'user', proj
 
 export let interceptAssetGeneric = ({ host = 'https://gitlab.com', owner = 'user', project = 'repo' } = {}) =>
   nock(host)
-    .put(`/api/v4/projects/${owner}%2F${project}/packages/generic/release-it/2.0.1/test/resources/file-v2.0.1.txt`)
+    .put(`/api/v4/projects/${owner}%2F${project}/packages/generic/release-it/2.0.1/file-v2.0.1.txt`)
     .reply(200, () => {
       return {
         message: '201 Created'

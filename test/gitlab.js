@@ -166,10 +166,7 @@ test.serial('should upload assets to generic repo', async t => {
 
   await runTasks(gitlab);
 
-  t.is(
-    gitlab.assets[0].url,
-    `${host}/projects/user%2Frepo/packages/generic/release-it/2.0.1/test/resources/file-v2.0.1.txt`
-  );
+  t.is(gitlab.assets[0].url, `${host}/api/v4/projects/user%2Frepo/packages/generic/release-it/2.0.1/file-v2.0.1.txt`);
 });
 
 test.serial('should throw when release milestone is missing', async t => {

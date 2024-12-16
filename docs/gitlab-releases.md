@@ -106,14 +106,13 @@ download from the project's releases page. Example:
 ```
 
 Version 17.2 of Gitlab [started enforcing a new URL format][6] for uploaded assets. If you are using this version (or
-later), you should set the `useIdsForUrls` flag to `true`. You can also set the `projectId` to the ID found in your repository settings. This is auto populated when using GitLab CI. If it isnt found in the Environment it will query Gitlab to get the project id:
+later), you should set the `useIdsForUrls` flag to `true`:
 
 ```json
 {
   "gitlab": {
     "release": true,
     "useIdsForUrls": true,
-    "projectId": "1234567890",
     "assets": ["dist/*.dmg"]
   }
 }
@@ -129,7 +128,6 @@ By default release assets are uploaded to the project's Markdown uploads API. If
     "release": true,
     "useGenericPackageRepositoryForAssets": true,
     "genericPackageRepositoryName": "release-it",
-    "projectId": "1234567890",
     "assets": ["dist/*.dmg"]
   }
 }

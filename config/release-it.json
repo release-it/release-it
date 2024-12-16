@@ -67,7 +67,6 @@
     "assets": null,
     "useIdsForUrls": false,
     "useGenericPackageRepositoryForAssets": false,
-    "projectId": null,
     "genericPackageRepositoryName": "release-it",
     "origin": null,
     "skipChecks": false

@@ -56,10 +56,6 @@
       "type": "boolean",
       "default": false
     },
-    "projectId": {
-      "type": "string",
-      "default": null
-    },
     "useGenericPackageRepositoryForAssets": {
       "type": "boolean",
       "default": false
