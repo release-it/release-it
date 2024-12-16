@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import dns from 'node:dns';
 import test from 'ava';
 import sinon from 'sinon';
 import nock from 'nock';
@@ -339,6 +340,7 @@ test.serial('should throw for insecure connections to self-hosted instances', as
 
 test.serial('should succesfully connect to self-hosted instance if insecure connection allowed', async t => {
   const host = 'https://localhost:3000';
+  const dnsResolutionOrder = dns.getDefaultResultOrder();
 
   const options = {
     git: { pushRepo: `${host}/user/repo` },
@@ -351,10 +353,12 @@ test.serial('should succesfully connect to self-hosted instance if insecure conn
   };
   const gitlab = factory(GitLab, { options });
   const server = new GitlabTestServer();
+  dns.setDefaultResultOrder('ipv4first');
 
   t.teardown(async () => {
     nock.disableNetConnect();
     await server.stop();
+    dns.setDefaultResultOrder(dnsResolutionOrder);
   });
 
   await server.run();
@@ -365,6 +369,7 @@ test.serial('should succesfully connect to self-hosted instance if insecure conn
 
 test.serial('should succesfully connect to self-hosted instance with valid CA file', async t => {
   const host = 'https://localhost:3000';
+  const dnsResolutionOrder = dns.getDefaultResultOrder();
 
   const options = {
     git: { pushRepo: `${host}/user/repo` },
@@ -377,10 +382,12 @@ test.serial('should succesfully connect to self-hosted instance with valid CA fi
   };
   const gitlab = factory(GitLab, { options });
   const server = new GitlabTestServer();
+  dns.setDefaultResultOrder('ipv4first');
 
   t.teardown(async () => {
     nock.disableNetConnect();
     await server.stop();
+    dns.setDefaultResultOrder(dnsResolutionOrder);
   });
 
   await server.run();
