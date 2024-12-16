@@ -337,6 +337,32 @@ test.serial('should throw for insecure connections to self-hosted instances', as
   });
 });
 
+test.serial('should succesfully connect to self-hosted instance if insecure connection allowed', async t => {
+  const host = 'https://localhost:3000';
+
+  const options = {
+    git: { pushRepo: `${host}/user/repo` },
+    gitlab: {
+      host,
+      tokenRef,
+      origin: host,
+      secure: false
+    }
+  };
+  const gitlab = factory(GitLab, { options });
+  const server = new GitlabTestServer();
+
+  t.teardown(async () => {
+    nock.disableNetConnect();
+    await server.stop();
+  });
+
+  await server.run();
+  nock.enableNetConnect();
+
+  await t.notThrowsAsync(gitlab.init());
+});
+
 test.serial('should succesfully connect to self-hosted instance with valid CA file', async t => {
   const host = 'https://localhost:3000';
 
@@ -361,28 +387,4 @@ test.serial('should succesfully connect to self-hosted instance with valid CA fi
   nock.enableNetConnect();
 
   await t.notThrowsAsync(gitlab.init());
-});
-
-test.serial('should succesfully connect to self-hosted instance if insecure connection allowed', async t => {
-  const host = 'https://localhost:3000';
-
-  const options = {
-    git: { pushRepo: `${host}/user/repo` },
-    gitlab: {
-      host,
-      tokenRef,
-      origin: host,
-      secure: false
-    }
-  };
-  const gitlab = factory(GitLab, { options });
-
-  const server = new GitlabTestServer();
-  await server.run();
-  nock.enableNetConnect();
-
-  await t.notThrowsAsync(gitlab.init());
-
-  nock.disableNetConnect();
-  await server.stop();
 });
