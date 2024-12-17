@@ -2,8 +2,10 @@ import fs from 'node:fs';
 import test from 'ava';
 import sinon from 'sinon';
 import nock from 'nock';
+import { Agent } from 'undici';
 import Git from '../lib/plugin/git/Git.js';
 import GitLab from '../lib/plugin/gitlab/GitLab.js';
+import { GitlabTestServer } from './util/https-server/server.js';
 import { factory, runTasks } from './util/index.js';
 import {
   interceptUser,
@@ -278,49 +280,111 @@ test('should skip checks', async t => {
   t.is(gitlab.log.exec.args.filter(entry => /checkReleaseMilestones/.test(entry[0])).length, 0);
 });
 
-test('should handle certificate authority options', t => {
+test.serial('should not create fetch agent', t => {
+  const options = { gitlab: {} };
+  const gitlab = factory(GitLab, { options });
+
+  t.deepEqual(gitlab.certificateAuthorityOption, {});
+});
+
+test.serial('should create fetch agent if secure == false', t => {
+  const options = { gitlab: { secure: false } };
+  const gitlab = factory(GitLab, { options });
+  const { dispatcher } = gitlab.certificateAuthorityOption;
+
+  t.true(dispatcher instanceof Agent, "Fetch dispatcher should be an instance of undici's Agent class");
+
+  const kOptions = Object.getOwnPropertySymbols(dispatcher).find(symbol => symbol.description === 'options');
+  t.deepEqual(dispatcher[kOptions].connect, { rejectUnauthorized: false, ca: undefined });
+});
+
+test.serial('should create fetch agent if certificateAuthorityFile', t => {
   const sandbox = sinon.createSandbox();
   sandbox.stub(fs, 'readFileSync').returns('test certificate');
 
-  {
-    const options = { gitlab: {} };
-    const gitlab = factory(GitLab, { options });
-    t.deepEqual(gitlab.certificateAuthorityOption, {});
-  }
+  const options = { gitlab: { certificateAuthorityFile: 'cert.crt' } };
+  const gitlab = factory(GitLab, { options });
+  const { dispatcher } = gitlab.certificateAuthorityOption;
 
-  {
-    const options = { gitlab: { certificateAuthorityFile: 'cert.crt' } };
-    const gitlab = factory(GitLab, { options });
-    t.deepEqual(gitlab.certificateAuthorityOption, { https: { certificateAuthority: 'test certificate' } });
-  }
+  t.true(dispatcher instanceof Agent, "Fetch dispatcher should be an instance of undici's Agent class");
 
-  {
-    const options = { gitlab: { secure: false } };
-    const gitlab = factory(GitLab, { options });
-    t.deepEqual(gitlab.certificateAuthorityOption, { https: { rejectUnauthorized: false } });
-  }
-
-  {
-    const options = { gitlab: { secure: true } };
-    const gitlab = factory(GitLab, { options });
-    t.deepEqual(gitlab.certificateAuthorityOption, { https: { rejectUnauthorized: true } });
-  }
-
-  {
-    const options = { gitlab: { certificateAuthorityFile: 'cert.crt', secure: true } };
-    const gitlab = factory(GitLab, { options });
-    t.deepEqual(gitlab.certificateAuthorityOption, {
-      https: { certificateAuthority: 'test certificate', rejectUnauthorized: true }
-    });
-  }
-
-  {
-    const options = { gitlab: { certificateAuthorityFile: 'cert.crt', secure: false } };
-    const gitlab = factory(GitLab, { options });
-    t.deepEqual(gitlab.certificateAuthorityOption, {
-      https: { certificateAuthority: 'test certificate', rejectUnauthorized: false }
-    });
-  }
+  const kOptions = Object.getOwnPropertySymbols(dispatcher).find(symbol => symbol.description === 'options');
+  t.deepEqual(dispatcher[kOptions].connect, { rejectUnauthorized: undefined, ca: 'test certificate' });
 
   sandbox.restore();
+});
+
+test.serial('should throw for insecure connections to self-hosted instances', async t => {
+  const host = 'https://localhost:3000';
+
+  const options = {
+    git: { pushRepo: `${host}/user/repo` },
+    gitlab: { host, tokenRef, origin: host }
+  };
+  const gitlab = factory(GitLab, { options });
+  const server = new GitlabTestServer();
+
+  t.teardown(async () => {
+    nock.disableNetConnect();
+    await server.stop();
+  });
+
+  await server.run();
+  nock.enableNetConnect();
+
+  await t.throwsAsync(gitlab.init(), {
+    message: /^Could not authenticate with GitLab using environment variable "GITLAB_TOKEN"/
+  });
+});
+
+test.serial('should succesfully connect to self-hosted instance if insecure connection allowed', async t => {
+  const host = 'https://localhost:3000';
+
+  const options = {
+    git: { pushRepo: `${host}/user/repo` },
+    gitlab: {
+      host,
+      tokenRef,
+      origin: host,
+      secure: false
+    }
+  };
+  const gitlab = factory(GitLab, { options });
+  const server = new GitlabTestServer();
+
+  t.teardown(async () => {
+    nock.disableNetConnect();
+    await server.stop();
+  });
+
+  await server.run();
+  nock.enableNetConnect();
+
+  await t.notThrowsAsync(gitlab.init());
+});
+
+test.serial('should succesfully connect to self-hosted instance with valid CA file', async t => {
+  const host = 'https://localhost:3000';
+
+  const options = {
+    git: { pushRepo: `${host}/user/repo` },
+    gitlab: {
+      host,
+      tokenRef,
+      origin: host,
+      certificateAuthorityFile: 'test/util/https-server/client/my-private-root-ca.cert.pem'
+    }
+  };
+  const gitlab = factory(GitLab, { options });
+  const server = new GitlabTestServer();
+
+  t.teardown(async () => {
+    nock.disableNetConnect();
+    await server.stop();
+  });
+
+  await server.run();
+  nock.enableNetConnect();
+
+  await t.notThrowsAsync(gitlab.init());
 });
