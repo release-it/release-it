@@ -43,7 +43,7 @@ export class GitlabTestServer {
    * @param {string} [host]
    * @returns {Promise<void>}
    */
-  run(port = 3000, host = '127.0.0.1') {
+  run(port = 3000, host) {
     return new Promise((resolve, reject) => {
       if (this.server.listening) {
         resolve();
