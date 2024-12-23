@@ -12,6 +12,7 @@ import {
   interceptCollaborator,
   interceptPublish,
   interceptAsset,
+  interceptAssetGeneric,
   interceptMilestones
 } from './stub/gitlab.js';
 
@@ -142,6 +143,32 @@ test.serial('should upload assets with ID-based URLs too', async t => {
   await runTasks(gitlab);
 
   t.is(gitlab.assets[0].url, `${host}/-/project/1234/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/file-v2.0.1.txt`);
+});
+
+test.serial('should upload assets to generic repo', async t => {
+  const host = 'https://gitlab.com';
+  const pushRepo = `${host}/user/repo`;
+  const options = {
+    git: { pushRepo },
+    gitlab: {
+      tokenRef,
+      release: true,
+      assets: 'test/resources/file-v${version}.txt',
+      useGenericPackageRepositoryForAssets: true,
+      genericPackageRepositoryName: 'release-it'
+    }
+  };
+  const gitlab = factory(GitLab, { options });
+  sinon.stub(gitlab, 'getLatestVersion').resolves('2.0.0');
+
+  interceptUser();
+  interceptCollaborator();
+  interceptAssetGeneric();
+  interceptPublish();
+
+  await runTasks(gitlab);
+
+  t.is(gitlab.assets[0].url, `${host}/api/v4/projects/user%2Frepo/packages/generic/release-it/2.0.1/file-v2.0.1.txt`);
 });
 
 test.serial('should throw when release milestone is missing', async t => {
