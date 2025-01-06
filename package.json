@@ -69,7 +69,7 @@
     "lint": "eslint lib test",
     "format": "prettier --write eslint.config.mjs \"{lib,test}/**/*.js\"",
     "docs": "remark README.md 'docs/**/*.md' '.github/*.md' -o",
-    "test": "ava --no-worker-threads && installed-check",
+    "test": "ava --no-worker-threads && installed-check --ignore ava",
     "release": "./bin/release-it.js"
   },
   "author": {
@@ -135,7 +135,7 @@
     "socks": "2.8.3"
   },
   "engines": {
-    "node": "^20.9.0 || ^22.0.0"
+    "node": "^20.9.0 || >=22.0.0"
   },
   "remarkConfig": {
     "plugins": [
