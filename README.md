@@ -44,7 +44,7 @@ npm install -D release-it
     "release": "release-it"
   },
   "devDependencies": {
-    "release-it": "^16.1.0"
+    "release-it": "^18.0.0"
   }
 }
 ```
@@ -99,7 +99,7 @@ Here's a quick example `.release-it.json`:
 
 ```json
 {
-  "$schema": "https://unpkg.com/release-it@17/schema/release-it.json",
+  "$schema": "https://unpkg.com/release-it@18/schema/release-it.json",
   "git": {
     "commitMessage": "chore: release v${version}"
   },
@@ -344,10 +344,18 @@ release-it programmatically][54] for example code.
 - [Repositories that depend on release-it][76]
 - GitHub search for [path:\*\*/.release-it.json][77]
 
-## Legacy Node.js
+## Node.js version support
 
-The latest major version is v17, supporting Node.js 18 and up (as Node.js v16 is EOL). The previous major version was
-v16, supporting Node.js 16. Use release-it v15 for environments running Node.js v14. Also see [CHANGELOG.md][78].
+The latest major version is v18, supporting Node.js 20 and up:
+
+| release-it | Node.js |
+| :--------: | :-----: |
+|    v18     |   v20   |
+|    v17     |   v18   |
+|    v16     |   v16   |
+|    v15     |   v14   |
+
+Also see [CHANGELOG.md][78] for dates and details.
 
 ## Links
 
