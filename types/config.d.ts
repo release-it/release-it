@@ -106,7 +106,7 @@ export interface Config {
     releaseName?: string;
 
     /** @default null */
-    releaseNotes?: any;
+    releaseNotes?: string | null | (() => string | Promise<string>) | { commit?: string; excludeMatches?: string[] };
 
     /** @default false */
     autoGenerate?: boolean;

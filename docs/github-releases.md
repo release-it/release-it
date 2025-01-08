@@ -112,6 +112,8 @@ Another example using `--no-merges` to omit merge commits:
 }
 ```
 
+### Function
+
 When the value is a function, it's executed with a single `context` parameter that contains the plugin context. The
 function can also be `async`. Make sure that it returns a string value. An example:
 
@@ -130,6 +132,54 @@ function can also be `async`. Make sure that it returns a string value. An examp
 Use `--github.autoGenerate` to have GitHub auto-generate the release notes (does not work with `web: true`).
 
 See [Changelog][10] for more information about generating changelogs/release notes.
+
+### Object
+
+Use an object to switch from the `releaseNotes` as a command string to commits fetched by the GitHub Octokit API and
+rendered using the provided template. Example:
+
+```json
+{
+  "github": {
+    "releaseNotes": {
+      "commit": "* ${commit.subject} (${sha}){ - thanks @${author.login}!}",
+      "excludeMatches": ["webpro"]
+    }
+  }
+}
+```
+
+Placeholders have syntax `${place.holder}`. Blocks surrounded by `{` and `}` are rendered only if each placeholder
+inside is replaced with a value and that value is not in `excludeMatches`.
+
+Here's an excerpt of an example object that is the context of the `releaseNotes.commit` template:
+
+```json
+{
+  "sha": "2e8c8ac65fa9e05fc170d08913d7fbac2b2bd876",
+  "commit": {
+    "author": { "name": "Lars Kappert", "email": "lars@webpro.nl", "date": "2025-01-06T21:15:33Z" },
+    "committer": { "name": "Lars Kappert", "email": "lars@webpro.nl", "date": "2025-01-06T21:15:33Z" },
+    "message": "Add platform-specific entries to metro plugin",
+    "url": "https://api.github.com/repos/webpro-nl/knip/git/commits/2e8c8ac65fa9e05fc170d08913d7fbac2b2bd876",
+    "comment_count": 0,
+    "verification": { "verified": false, "reason": "unsigned", "signature": null, "payload": null, "verified_at": null }
+  },
+  "url": "https://api.github.com/repos/webpro-nl/knip/commits/2e8c8ac65fa9e05fc170d08913d7fbac2b2bd876",
+  "html_url": "https://github.com/webpro-nl/knip/commit/2e8c8ac65fa9e05fc170d08913d7fbac2b2bd876",
+  "comments_url": "https://api.github.com/repos/webpro-nl/knip/commits/2e8c8ac65fa9e05fc170d08913d7fbac2b2bd876/comments",
+  "author": { "login": "webpro", "id": 456426, "html_url": "https://github.com/webpro" },
+  "committer": { "login": "webpro", "id": 456426, "avatar_url": "https://avatars.githubusercontent.com/u/456426?v=4" },
+  "parents": []
+}
+```
+
+The GitHub plugin adds `commit.subject` which is only the first line of `commit.message` (which is potentially multiple
+lines especially for merge commits).
+
+See
+[REST API: Compare two commits](https://docs.github.com/en/rest/commits/commits?apiVersion=2022-11-28#compare-two-commits)
+for the full specs of this object.
 
 ## Attach binary assets
 
