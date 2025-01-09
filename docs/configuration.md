@@ -18,7 +18,7 @@ An example `.release-it.json`:
 
 ```json
 {
-  "$schema": "https://unpkg.com/release-it@17/schema/release-it.json",
+  "$schema": "https://unpkg.com/release-it@18/schema/release-it.json",
   "git": {
     "commitMessage": "chore: release v${version}"
   },
@@ -82,10 +82,10 @@ TOML is also supported in `.release-it.toml`:
 
 Release-it has [plenty of options][2]. See the following tables for plugin configuration options:
 
-- [Git](./git.md#configuration-options)
-- [npm](./npm.md#configuration-options)
-- [GitHub](./github-releases.md#configuration-options)
-- [GitLab](./gitlab-releases.md#configuration-options)
+- [Git][3]
+- [npm][4]
+- [GitHub][5]
+- [GitLab][6]
 
 ## Setting options via CLI
 
@@ -109,3 +109,7 @@ release-it --no-plugins.@release-it/keep-a-changelog.strictLatest
 
 [1]: #configuration-options
 [2]: ../config/release-it.json
+[3]: ./git.md#configuration-options
+[4]: ./npm.md#configuration-options
+[5]: ./github-releases.md#configuration-options
+[6]: ./gitlab-releases.md#configuration-options

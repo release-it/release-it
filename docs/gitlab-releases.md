@@ -120,7 +120,9 @@ later), you should set the `useIdsForUrls` flag to `true`:
 
 ### Asset Location
 
-By default release assets are uploaded to the project's Markdown uploads API. If you want to use GitLab's Generic packages Repository set `useGenericPackageRepositoryForAssets` flag to true. `useIdsForUrls` is ignored from this API. You can set the package name to be uploaded to using `genericPackageRepositoryName` by default the name is `release-it`.
+By default release assets are uploaded to the project's Markdown uploads API. If you want to use GitLab's Generic
+packages Repository set `useGenericPackageRepositoryForAssets` flag to true. `useIdsForUrls` is ignored from this API.
+You can set the package name to be uploaded to using `genericPackageRepositoryName` by default the name is `release-it`.
 
 ```json
 {
