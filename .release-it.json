@@ -6,6 +6,10 @@
   "github": {
     "tokenRef": "GITHUB_TOKEN_RELEASE_IT",
     "release": true,
+    "releaseNotes": {
+      "commit": "* ${commit.message} (${sha}){ - thanks @${author.login}!}",
+      "excludeMatches": ["webpro"]
+    },
     "comments": {
       "submit": true
     }
