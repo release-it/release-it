@@ -1,12 +1,19 @@
 import test from 'ava';
 import { isCI } from 'ci-info';
-import Config from '../lib/config.js';
+import sinon from 'sinon';
+import Config, { getRemoteConfiguration } from '../lib/config.js';
 import { readJSON } from '../lib/util.js';
 
 const defaultConfig = readJSON(new URL('../config/release-it.json', import.meta.url));
 const projectConfig = readJSON(new URL('../.release-it.json', import.meta.url));
 
 const localConfig = { github: { release: true } };
+
+const sandbox = sinon.createSandbox();
+
+test.serial.afterEach(() => {
+  sandbox.restore();
+});
 
 test("should read this project's own configuration", t => {
   const config = new Config();
@@ -156,4 +163,111 @@ test('should expand pre-release shortcut (snapshot)', t => {
   });
   t.is(config.options.git.tagMatch, '0.0.0-feat.[0-9]*');
   t.true(config.options.git.getLatestTagFromAllRefs);
+});
+
+test.serial('should fetch extended configuration with default file and default branch', async t => {
+  const fetchStub = sandbox.stub(global, 'fetch');
+  const config = {
+    extends: 'github>release-it/release-it-configuration'
+  };
+
+  const extendedConfiguration = {
+    git: {
+      commitMessage: 'Released version ${version}'
+    }
+  };
+
+  fetchStub.resolves({
+    ok: true,
+    json: async () => extendedConfiguration
+  });
+
+  const response = await getRemoteConfiguration(config.extends);
+
+  t.is(
+    fetchStub.lastCall.args[0],
+    'https://raw.githubusercontent.com/release-it/release-it-configuration/HEAD/.release-it.json'
+  );
+  t.is(response, extendedConfiguration);
+});
+
+test.serial('should fetch extended configuration with default file and specific tag', async t => {
+  const fetchStub = sandbox.stub(global, 'fetch');
+  const config = {
+    extends: 'github>release-it/release-it-configuration#1.0.0'
+  };
+
+  const extendedConfiguration = {
+    git: {
+      commitMessage: 'Released version ${version}'
+    }
+  };
+
+  fetchStub.resolves({
+    ok: true,
+    json: async () => extendedConfiguration
+  });
+
+  const response = await getRemoteConfiguration(config.extends);
+
+  t.is(
+    fetchStub.lastCall.args[0],
+    'https://raw.githubusercontent.com/release-it/release-it-configuration/refs/tags/1.0.0/.release-it.json'
+  );
+
+  t.is(response, extendedConfiguration);
+});
+
+test.serial('should fetch extended configuration with custom file and specific tag', async t => {
+  const fetchStub = sandbox.stub(global, 'fetch');
+  const config = {
+    extends: 'github>release-it/release-it-configuration:config.json#1.0.0'
+  };
+
+  const extendedConfiguration = {
+    git: {
+      commitMessage: 'Released version ${version}'
+    }
+  };
+
+  fetchStub.resolves({
+    ok: true,
+    json: async () => extendedConfiguration
+  });
+
+  const response = await getRemoteConfiguration(config.extends);
+
+  t.is(
+    fetchStub.lastCall.args[0],
+    'https://raw.githubusercontent.com/release-it/release-it-configuration/refs/tags/1.0.0/config.json'
+  );
+
+  t.is(response, extendedConfiguration);
+});
+
+test.serial('should fetch extended configuration with custom file and default branch', async t => {
+  const fetchStub = sandbox.stub(global, 'fetch');
+  const config = {
+    extends: 'github>release-it/release-it-configuration:config.json'
+  };
+
+  const extendedConfiguration = {
+    git: {
+      commitMessage: 'Released version ${version}'
+    }
+  };
+
+  fetchStub.resolves({
+    ok: true,
+    json: async () => extendedConfiguration
+  });
+
+  const response = await getRemoteConfiguration(config.extends);
+
+  t.is(
+    fetchStub.lastCall.args[0],
+    'https://raw.githubusercontent.com/release-it/release-it-configuration/HEAD/config.json'
+  );
+
+  t.is(response, extendedConfiguration);
 });
