@@ -21,7 +21,7 @@ To add [GitHub releases][3] in your release-it flow, there are two options:
 | `github.release`         | Set to `false` to skip the GitHub publish step                                  |
 | `github.releaseName`     | Set the release name (default: `Release ${version}`)                            |
 | `github.releaseNotes`    | Override the release notes with custom notes                                    |
-| `github.autoGenerate`    | Let GitHub generate release notes                                               |
+| `github.autoGenerate`    | Let GitHub generate release notes (overrides other notes!)                      |
 | `github.preRelease`      | Set the release to a pre-release status                                         |
 | `github.draft`           | Set the release to a draft status                                               |
 | `github.tokenRef`        | GitHub token environment variable name (default: `GITHUB_TOKEN`)                |
