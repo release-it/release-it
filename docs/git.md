@@ -39,7 +39,7 @@ The minimum required version of Git is v2.0.0.
 | `git.tagArgs`                 | Provide extra arguments to `git tag`                                     |
 | `git.push`                    | If `false`, skip the push release step                                   |
 | `git.pushArgs`                | Provided extra arguments to `git push`                                   |
-| `git.pushRepo`                | Remote name or Git URL to push the release to (defaultL `origin`)        |
+| `git.pushRepo`                | Remote name or Git URL to push the release to (default `origin`)         |
 
 ## Git remotes
 
