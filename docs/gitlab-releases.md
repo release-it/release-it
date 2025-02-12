@@ -7,7 +7,7 @@ part][2] is configured correctly.
 [GitLab releases][1] work just like GitHub releases:
 
 - Configure `gitlab.release: true`.
-- Obtain a [personal access token][3] (release-it only needs the "api" scope).
+- Obtain a [personal access token][3] (release-it needs the `api` and `self_rotate` scopes).
 - Make sure the token is [available as an environment variable][4].
 
 GitLab Releases do not support pre-releases or drafts.
