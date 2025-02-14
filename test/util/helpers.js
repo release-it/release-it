@@ -18,7 +18,7 @@ const gitAdd = (content, filePath, message) => {
   }
 
   fs.appendFileSync(filePath, content);
-  sh.exec(`git add ${filePath}`);
+  sh.execSync(`git add ${filePath}`);
   const stdout = sh.execSync(`git commit -m "${message}"`, { encoding: 'utf-8' });
   const match = stdout.match(/\[.+([a-z0-9]{7})\]/);
   return match ? match[1] : null;

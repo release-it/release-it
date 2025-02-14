@@ -70,8 +70,8 @@ test.serial.beforeEach(t => {
   const bare = mkTmpDir();
   const target = mkTmpDir();
   process.chdir(bare);
-  sh.exec(`git init --bare .`);
-  sh.exec(`git clone ${bare} ${target}`);
+  sh.execSync(`git init --bare .`);
+  sh.execSync(`git clone ${bare} ${target}`);
   process.chdir(target);
   gitAdd('line', 'file', 'Add file');
   t.context = { bare, target };
@@ -119,7 +119,7 @@ test.serial('should not run hooks for cancelled release-cycle methods', async t 
   const { target } = t.context;
   const pkgName = path.basename(target);
   gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
-  sh.exec('git tag 1.0.0');
+  sh.execSync('git tag 1.0.0');
 
   const hooks = getHooks(['version', 'git', 'github', 'gitlab', 'npm']);
   const inquirer = { prompt: sandbox.stub().callsFake(([options]) => ({ [options.name]: false })) };
@@ -160,7 +160,7 @@ test.serial('should run "after:*:release" plugin hooks', async t => {
   const pkgName = path.basename(target);
   const owner = path.basename(path.dirname(bare));
   gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
-  sh.exec('git tag 1.0.0');
+  sh.execSync('git tag 1.0.0');
   const sha = gitAdd('line', 'file', 'More file');
 
   const git = factory(Git);

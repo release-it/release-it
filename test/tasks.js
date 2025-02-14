@@ -62,8 +62,8 @@ test.serial.beforeEach(t => {
   const bare = mkTmpDir();
   const target = mkTmpDir();
   process.chdir(bare);
-  sh.exec(`git init --bare .`);
-  sh.exec(`git clone ${bare} ${target}`);
+  sh.execSync(`git init --bare .`);
+  sh.execSync(`git clone ${bare} ${target}`);
   process.chdir(target);
   gitAdd('line', 'file', 'Add file');
   t.context = { bare, target };
@@ -81,7 +81,7 @@ test.serial('should run tasks without throwing errors', async t => {
 });
 
 test.serial('should run tasks without package.json', async t => {
-  sh.exec('git tag 1.0.0');
+  sh.execSync('git tag 1.0.0');
   gitAdd('line', 'file', 'Add file');
   const { name } = await runTasks({}, getContainer({ increment: 'major', git: { commit: false } }));
   t.true(log.obtrusive.firstCall.args[0].includes(`release ${name} (1.0.0...2.0.0)`));
@@ -95,7 +95,7 @@ test.serial('should run tasks without package.json', async t => {
 
 test.serial('should disable plugins', async t => {
   gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
-  sh.exec('git tag 1.2.3');
+  sh.execSync('git tag 1.2.3');
   gitAdd('line', 'file', 'Add file');
   const container = getContainer({ increment: 'minor', git: false, npm: false });
   const { latestVersion, version } = await runTasks({}, container);
@@ -106,7 +106,7 @@ test.serial('should disable plugins', async t => {
 
 test.serial('should run tasks with minimal config and without any warnings/errors', async t => {
   gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
-  sh.exec('git tag 1.2.3');
+  sh.execSync('git tag 1.2.3');
   gitAdd('line', 'file', 'More file');
   await runTasks({}, getContainer({ increment: 'patch' }));
   t.true(log.obtrusive.firstCall.args[0].includes('release my-package (1.2.3...1.2.4)'));
@@ -126,7 +126,7 @@ test.serial('should use pkg.version', async t => {
 
 test.serial('should use pkg.version (in sub dir) w/o tagging repo', async t => {
   gitAdd('{"name":"root-package","version":"1.0.0"}', 'package.json', 'Add package.json');
-  sh.exec('git tag 1.0.0');
+  sh.execSync('git tag 1.0.0');
   fs.mkdirSync('my-package');
   process.chdir('my-package');
   gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
@@ -144,7 +144,7 @@ test.serial('should use pkg.version (in sub dir) w/o tagging repo', async t => {
 
 test.serial('should ignore version in pkg.version and use git tag instead', async t => {
   gitAdd('{"name":"my-package","version":"0.0.0"}', 'package.json', 'Add package.json');
-  sh.exec('git tag 1.1.1');
+  sh.execSync('git tag 1.1.1');
   gitAdd('line', 'file', 'More file');
   await runTasks({}, getContainer({ increment: 'minor', npm: { ignoreVersion: true } }));
   t.true(log.obtrusive.firstCall.args[0].includes('release my-package (1.1.1...1.2.0)'));
@@ -159,7 +159,7 @@ test.serial('should release all the things (basic)', async t => {
   const pkgName = path.basename(target);
   const owner = path.basename(path.dirname(bare));
   gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
-  sh.exec('git tag 1.0.0');
+  sh.execSync('git tag 1.0.0');
   const sha = gitAdd('line', 'file', 'More file');
 
   interceptGitHubAuthentication();
@@ -205,7 +205,7 @@ test.serial('should release with correct tag name', async t => {
   const stdout = sh.execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf-8' });
   const branchName = stdout.trim();
   gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
-  sh.exec(`git tag ${pkgName}-${branchName}-1.0.0`);
+  sh.execSync(`git tag ${pkgName}-${branchName}-1.0.0`);
   const sha = gitAdd('line', 'file', 'More file');
 
   interceptGitHubCreate({
@@ -247,9 +247,9 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
   const owner = path.basename(path.dirname(bare));
   const url = `https://gitlab.com/${owner}/${project}`;
   gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
-  sh.exec('git tag v1.0.0');
+  sh.execSync('git tag v1.0.0');
   const sha = gitAdd('line', 'file', 'More file');
-  sh.exec('git push --follow-tags');
+  sh.execSync('git push --follow-tags');
   const git = factory(Git);
   const ref = (await git.getBranchName()) ?? 'HEAD';
 
@@ -352,7 +352,7 @@ test.serial('should publish pre-release without pre-id with different npm.tag', 
   const { target } = t.context;
   const pkgName = path.basename(target);
   gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
-  sh.exec('git tag v1.0.0');
+  sh.execSync('git tag v1.0.0');
 
   const container = getContainer({ increment: 'major', preRelease: true, npm: { name: pkgName, tag: 'next' } });
   const exec = sinon.spy(container.shell, 'exec');
@@ -462,7 +462,7 @@ test.serial('should use custom changelog command with context', async t => {
   const { bare } = t.context;
   const project = path.basename(bare);
   const owner = path.basename(path.dirname(bare));
-  sh.exec('git tag v1.0.0');
+  sh.execSync('git tag v1.0.0');
   gitAdd('line', 'file', 'More file');
 
   interceptGitHubAuthentication();
@@ -502,7 +502,7 @@ test.serial('should use custom changelog command with context', async t => {
 {
   test.serial('should run all hooks', async t => {
     gitAdd(`{"name":"hooked","version":"1.0.0","type":"module"}`, 'package.json', 'Add package.json');
-    sh.exec(`npm install ${rootDir}`);
+    sh.execSync(`npm install ${rootDir}`);
     const plugin = "import { Plugin } from 'release-it'; class MyPlugin extends Plugin {}; export default MyPlugin;";
 
     fs.appendFileSync('my-plugin.js', plugin);

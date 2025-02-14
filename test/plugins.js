@@ -40,7 +40,7 @@ const getContainer = options => {
 
 test.before(t => {
   t.timeout(60 * 1000);
-  sh.exec('npm link');
+  sh.execSync('npm link');
 });
 
 test.serial.beforeEach(t => {
@@ -63,7 +63,7 @@ test.serial('should instantiate plugins and execute all release-cycle methods', 
     join(pluginDir, 'package.json'),
     JSON.stringify({ name: 'my-plugin', version: '1.0.0', type: 'module' })
   );
-  sh.exec(`npm link release-it`);
+  sh.execSync(`npm link release-it`);
   const content = "import { Plugin } from 'release-it'; " + MyPlugin.toString() + '; export default MyPlugin;';
 
   fs.appendFileSync(join(pluginDir, 'index.js'), content);
@@ -75,8 +75,8 @@ test.serial('should instantiate plugins and execute all release-cycle methods', 
   process.chdir(dir);
 
   fs.appendFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'project', version: '1.0.0', type: 'module' }));
-  sh.exec(`npm install ${pluginDir}`);
-  sh.exec(`npm link release-it`);
+  sh.execSync(`npm install ${pluginDir}`);
+  sh.execSync(`npm link release-it`);
 
   const config = {
     plugins: {
@@ -133,15 +133,15 @@ test.serial('should instantiate plugins and execute all release-cycle methods fo
     join(dir, 'package.json'),
     JSON.stringify({ name: '@scoped/my-plugin', version: '1.0.0', type: 'module' })
   );
-  sh.exec(`npm link release-it`);
+  sh.execSync(`npm link release-it`);
   const content = "import { Plugin } from 'release-it'; " + MyPlugin.toString() + '; export default MyPlugin;';
 
   fs.appendFileSync(join(pluginDir, 'index.js'), content);
   process.chdir(dir);
 
   fs.appendFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'project', version: '1.0.0', type: 'module' }));
-  sh.exec(`npm install ${pluginDir}`);
-  sh.exec(`npm link release-it`);
+  sh.execSync(`npm install ${pluginDir}`);
+  sh.execSync(`npm link release-it`);
 
   const config = {
     plugins: {
@@ -183,7 +183,7 @@ test.serial('should disable core plugins', async t => {
     "import { Plugin } from 'release-it'; " + ReplacePlugin.toString() + '; export default ReplacePlugin;';
 
   fs.appendFileSync(join(dir, 'replace-plugin.mjs'), content);
-  sh.exec(`npm link release-it`);
+  sh.execSync(`npm link release-it`);
 
   const config = {
     plugins: {
@@ -210,7 +210,7 @@ test.serial('should expose context to execute commands', async t => {
     "import { Plugin } from 'release-it'; " + ContextPlugin.toString() + '; export default ContextPlugin;';
 
   fs.appendFileSync(join(dir, 'context-plugin.js'), content);
-  sh.exec(`npm link release-it`);
+  sh.execSync(`npm link release-it`);
 
   const repo = parseGitUrl('https://github.com/user/pkg');
 
