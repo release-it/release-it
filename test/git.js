@@ -1,14 +1,16 @@
 import { EOL } from 'node:os';
+import fs from 'node:fs';
+import sh from 'node:child_process';
 import test from 'ava';
 import sinon from 'sinon';
-import sh from 'shelljs';
 import Git from '../lib/plugin/git/Git.js';
+import { touch } from '../lib/util.js';
 import { factory } from './util/index.js';
 import { mkTmpDir, readFile, gitAdd } from './util/helpers.js';
 
 test.beforeEach(() => {
   const tmp = mkTmpDir();
-  sh.pushd('-q', tmp);
+  process.chdir(tmp);
 });
 
 test.serial('should return whether repo has upstream branch', async t => {
@@ -31,7 +33,7 @@ test.serial('should return whether tag exists and if working dir is clean', asyn
   const gitClient = factory(Git);
   sh.exec('git init');
   t.false(await gitClient.tagExists('1.0.0'));
-  sh.touch('file');
+  touch('file');
   t.false(await gitClient.isWorkingDirClean());
   gitAdd('line', 'file', 'Add file');
   sh.exec('git tag 1.0.0');
@@ -42,7 +44,7 @@ test.serial('should return whether tag exists and if working dir is clean', asyn
 test.serial('should throw if tag exists', async t => {
   const gitClient = factory(Git);
   sh.exec('git init');
-  sh.touch('file');
+  touch('file');
   gitAdd('line', 'file', 'Add file');
   sh.exec('git tag 0.0.2');
   gitClient.config.setContext({ latestTag: '0.0.1', tagName: '0.0.2' });
@@ -54,7 +56,7 @@ test.serial('should only warn if tag exists intentionally', async t => {
   const gitClient = factory(Git);
   const { warn } = gitClient.log;
   sh.exec('git init');
-  sh.touch('file');
+  touch('file');
   gitAdd('line', 'file', 'Add file');
   sh.exec('git tag 1.0.0');
   gitClient.config.setContext({ latestTag: '1.0.0', tagName: '1.0.0' });
@@ -116,8 +118,9 @@ test.serial('should stage, commit, tag and push', async t => {
     await gitClient.tag({ name: 'v1.2.4', annotation: 'Release v1.2.4' });
     t.is(await gitClient.getLatestTagName(), 'v1.2.4');
     await gitClient.push();
-    const status = sh.exec('git status -uno');
-    t.true(status.includes('nothing to commit'));
+    const stdout = sh.execSync('git status -uno', { encoding: 'utf-8' });
+
+    t.true(stdout.includes('nothing to commit'));
   }
 });
 
@@ -161,7 +164,7 @@ test.serial('should commit and tag with quoted characters', async t => {
   const gitClient = factory(Git, {
     options: { git: { commitMessage: 'Release ${version}', tagAnnotation: 'Release ${version}\n\n${changelog}' } }
   });
-  sh.touch('file');
+  touch('file');
   const changelog = `- Foo's${EOL}- "$bar"${EOL}- '$baz'${EOL}- foo`;
   gitClient.config.setContext({ version: '1.0.0', changelog });
 
@@ -170,11 +173,11 @@ test.serial('should commit and tag with quoted characters', async t => {
   await gitClient.tag({ name: '1.0.0' });
   await gitClient.push();
   {
-    const { stdout } = sh.exec('git log -1 --format=%s');
+    const stdout = sh.execSync('git log -1 --format=%s', { encoding: 'utf-8' });
     t.is(stdout.trim(), 'Release 1.0.0');
   }
   {
-    const { stdout } = sh.exec('git tag -n99');
+    const stdout = sh.execSync('git tag -n99', { encoding: 'utf-8' });
     t.is(stdout.trim(), `1.0.0           Release 1.0.0\n    \n    - Foo's\n    - "$bar"\n    - '$baz'\n    - foo`);
   }
 });
@@ -188,8 +191,9 @@ test.serial('should push to origin', async t => {
   const spy = sinon.spy(gitClient.shell, 'exec');
   await gitClient.push();
   t.deepEqual(spy.lastCall.args[0], ['git', 'push']);
-  const actual = sh.exec('git ls-tree -r HEAD --name-only', { cwd: bare });
-  t.is(actual.trim(), 'file');
+  const stdout = sh.execSync('git ls-tree -r HEAD --name-only', { cwd: bare, encoding: 'utf-8' });
+  t.is(stdout.trim(), 'file');
+
   spy.restore();
 });
 
@@ -203,8 +207,9 @@ test.serial('should push to tracked upstream branch', async t => {
   const spy = sinon.spy(gitClient.shell, 'exec');
   await gitClient.push();
   t.deepEqual(spy.lastCall.args[0], ['git', 'push']);
-  const actual = sh.exec('git ls-tree -r HEAD --name-only', { cwd: bare });
-  t.is(actual.trim(), 'file');
+  const stdout = sh.execSync('git ls-tree -r HEAD --name-only', { cwd: bare, encoding: 'utf-8' });
+  t.is(stdout.trim(), 'file');
+
   spy.restore();
 });
 
@@ -235,8 +240,9 @@ test.serial('should push to remote name (not "origin")', async t => {
   const spy = sinon.spy(gitClient.shell, 'exec');
   await gitClient.push();
   t.deepEqual(spy.lastCall.args[0], ['git', 'push', 'upstream']);
-  const actual = sh.exec('git ls-tree -r HEAD --name-only', { cwd: bare });
-  t.is(actual.trim(), 'file');
+  const stdout = sh.execSync('git ls-tree -r HEAD --name-only', { cwd: bare, encoding: 'utf-8' });
+  t.is(stdout.trim(), 'file');
+
   {
     sh.exec(`git checkout -b foo`);
     gitAdd('line', 'file', 'Add file');
@@ -254,8 +260,10 @@ test.serial('should return repo status', async t => {
   const gitClient = factory(Git);
   sh.exec('git init');
   gitAdd('line', 'file1', 'Add file');
-  sh.ShellString('line').toEnd('file1');
-  sh.ShellString('line').toEnd('file2');
+
+  fs.appendFileSync('file1', 'line');
+
+  fs.appendFileSync('file2', 'line');
   sh.exec('git add file2');
   t.is(await gitClient.status(), ' M file1\nA  file2');
 });
@@ -264,7 +272,8 @@ test.serial('should reset files', async t => {
   const gitClient = factory(Git);
   sh.exec('git init');
   gitAdd('line', 'file', 'Add file');
-  sh.ShellString('line').toEnd('file');
+
+  fs.appendFileSync('file', 'line');
   t.regex(await readFile('file'), /^line\s*line\s*$/);
   await gitClient.reset('file');
   t.regex(await readFile('file'), /^line\s*$/);

@@ -1,7 +1,8 @@
 import path from 'node:path';
+import sh from 'node:child_process';
+import fs from 'node:fs';
 import test from 'ava';
 import semver from 'semver';
-import sh from 'shelljs';
 import _ from 'lodash';
 import sinon from 'sinon';
 import Log from '../lib/log.js';
@@ -60,10 +61,10 @@ test.before(t => {
 test.serial.beforeEach(t => {
   const bare = mkTmpDir();
   const target = mkTmpDir();
-  sh.pushd('-q', bare);
+  process.chdir(bare);
   sh.exec(`git init --bare .`);
   sh.exec(`git clone ${bare} ${target}`);
-  sh.pushd('-q', target);
+  process.chdir(target);
   gitAdd('line', 'file', 'Add file');
   t.context = { bare, target };
 });
@@ -73,7 +74,7 @@ test.serial.afterEach(() => {
 });
 
 test.serial('should run tasks without throwing errors', async t => {
-  sh.mv('.git', 'foo');
+  fs.renameSync('.git', 'foo');
   const { name, latestVersion, version } = await runTasks({}, getContainer());
   t.true(log.obtrusive.firstCall.args[0].includes(`release ${name} (${latestVersion}...${version})`));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
@@ -87,7 +88,7 @@ test.serial('should run tasks without package.json', async t => {
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
   t.is(log.warn.callCount, 0);
   {
-    const { stdout } = sh.exec('git describe --tags --match=* --abbrev=0');
+    const stdout = sh.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
     t.is(stdout.trim(), '2.0.0');
   }
 });
@@ -110,7 +111,7 @@ test.serial('should run tasks with minimal config and without any warnings/error
   await runTasks({}, getContainer({ increment: 'patch' }));
   t.true(log.obtrusive.firstCall.args[0].includes('release my-package (1.2.3...1.2.4)'));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-  const { stdout } = sh.exec('git describe --tags --match=* --abbrev=0');
+  const stdout = sh.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
   t.is(stdout.trim(), '1.2.4');
 });
 
@@ -119,22 +120,22 @@ test.serial('should use pkg.version', async t => {
   await runTasks({}, getContainer({ increment: 'minor' }));
   t.true(log.obtrusive.firstCall.args[0].includes('release my-package (1.2.3...1.3.0)'));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-  const { stdout } = sh.exec('git describe --tags --match=* --abbrev=0');
+  const stdout = sh.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
   t.is(stdout.trim(), '1.3.0');
 });
 
 test.serial('should use pkg.version (in sub dir) w/o tagging repo', async t => {
   gitAdd('{"name":"root-package","version":"1.0.0"}', 'package.json', 'Add package.json');
   sh.exec('git tag 1.0.0');
-  sh.mkdir('my-package');
-  sh.pushd('-q', 'my-package');
+  fs.mkdirSync('my-package');
+  process.chdir('my-package');
   gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
   const container = getContainer({ increment: 'minor', git: { tag: false } });
   const exec = sinon.spy(container.shell, 'exec');
   await runTasks({}, container);
   t.true(log.obtrusive.firstCall.args[0].endsWith('release my-package (1.2.3...1.3.0)'));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-  const { stdout } = sh.exec('git describe --tags --match=* --abbrev=0');
+  const stdout = sh.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
   t.is(stdout.trim(), '1.0.0');
   const npmArgs = getArgs(exec.args, 'npm');
   t.is(npmArgs[5], 'npm version 1.3.0 --no-git-tag-version');
@@ -148,7 +149,7 @@ test.serial('should ignore version in pkg.version and use git tag instead', asyn
   await runTasks({}, getContainer({ increment: 'minor', npm: { ignoreVersion: true } }));
   t.true(log.obtrusive.firstCall.args[0].includes('release my-package (1.1.1...1.2.0)'));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-  const { stdout } = sh.exec('git describe --tags --match=* --abbrev=0');
+  const stdout = sh.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
   t.is(stdout.trim(), '1.2.0');
 });
 
@@ -201,7 +202,7 @@ test.serial('should release with correct tag name', async t => {
   const project = path.basename(bare);
   const pkgName = path.basename(target);
   const owner = path.basename(path.dirname(bare));
-  const { stdout } = sh.exec('git rev-parse --abbrev-ref HEAD');
+  const stdout = sh.execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf-8' });
   const branchName = stdout.trim();
   gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
   sh.exec(`git tag ${pkgName}-${branchName}-1.0.0`);
@@ -327,13 +328,15 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
     'npm publish . --tag alpha'
   ]);
 
-  const { stdout: commitMessage } = sh.exec('git log --oneline --format=%B -n 1 HEAD');
+  const commitMessage = sh.execSync('git log --oneline --format=%B -n 1 HEAD', { encoding: 'utf-8' });
   t.is(commitMessage.trim(), `Release 1.1.0-alpha.0 for ${pkgName} (from 1.0.0)`);
 
-  const { stdout: tagName } = sh.exec('git describe --tags --match=* --abbrev=0');
+  const tagName = sh.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
   t.is(tagName.trim(), 'v1.1.0-alpha.0');
 
-  const { stdout: tagAnnotation } = sh.exec('git for-each-ref refs/tags/v1.1.0-alpha.0 --format="%(contents)"');
+  const tagAnnotation = sh.execSync('git for-each-ref refs/tags/v1.1.0-alpha.0 --format="%(contents)"', {
+    encoding: 'utf-8'
+  });
   t.is(tagAnnotation.trim(), `${owner} ${owner}/${project} ${project}`);
 
   t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.1.0-alpha.0)`));
@@ -367,7 +370,7 @@ test.serial('should publish pre-release without pre-id with different npm.tag', 
     'npm publish . --tag next'
   ]);
 
-  const { stdout } = sh.exec('git describe --tags --match=* --abbrev=0');
+  const stdout = sh.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
   t.is(stdout.trim(), 'v2.0.0-0');
   t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...2.0.0-0)`));
   t.true(log.log.firstCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
@@ -501,8 +504,8 @@ test.serial('should use custom changelog command with context', async t => {
     gitAdd(`{"name":"hooked","version":"1.0.0","type":"module"}`, 'package.json', 'Add package.json');
     sh.exec(`npm install ${rootDir}`);
     const plugin = "import { Plugin } from 'release-it'; class MyPlugin extends Plugin {}; export default MyPlugin;";
-    sh.ShellString(plugin).toEnd('my-plugin.js');
 
+    fs.appendFileSync('my-plugin.js', plugin);
     const hooks = {};
     ['before', 'after'].forEach(prefix => {
       ['version', 'git', 'npm', 'my-plugin'].forEach(ns => {

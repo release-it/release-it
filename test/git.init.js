@@ -1,5 +1,6 @@
+import sh from 'node:child_process';
+import fs from 'node:fs';
 import test from 'ava';
-import sh from 'shelljs';
 import Shell from '../lib/shell.js';
 import Git from '../lib/plugin/git/Git.js';
 import { readJSON } from '../lib/util.js';
@@ -11,10 +12,10 @@ const { git } = readJSON(new URL('../config/release-it.json', import.meta.url));
 test.serial.beforeEach(t => {
   const bare = mkTmpDir();
   const target = mkTmpDir();
-  sh.pushd('-q', bare);
+  process.chdir(bare);
   sh.exec(`git init --bare .`);
   sh.exec(`git clone ${bare} ${target}`);
-  sh.pushd('-q', target);
+  process.chdir(target);
   gitAdd('line', 'file', 'Add file');
   t.context = { bare, target };
 });
@@ -96,7 +97,7 @@ test.serial('should not fail (exit code 0) if there are no commits', async t => 
 test.serial('should throw if there are no commits in specified path', async t => {
   const options = { git: { requireCommits: true, commitsPath: 'dir' } };
   const gitClient = factory(Git, { options });
-  sh.mkdir('dir');
+  fs.mkdirSync('dir');
   sh.exec('git tag 1.0.0');
   await t.throwsAsync(gitClient.init(), { message: /^There are no commits since the latest tag/ });
 });
@@ -162,10 +163,11 @@ test.serial('should get the latest tag after fetch', async t => {
   const other = mkTmpDir();
   sh.exec('git push');
   sh.exec(`git clone ${bare} ${other}`);
-  sh.pushd('-q', other);
+
+  process.chdir(other);
   sh.exec('git tag 1.0.0');
   sh.exec('git push --tags');
-  sh.pushd('-q', target);
+  process.chdir(target);
   await gitClient.init();
   t.is(gitClient.config.getContext('latestTag'), '1.0.0');
 });
@@ -180,12 +182,12 @@ test.serial('should get the latest custom tag after fetch when tagName is config
   const other = mkTmpDir();
   sh.exec('git push');
   sh.exec(`git clone ${bare} ${other}`);
-  sh.pushd('-q', other);
+  process.chdir(other);
   sh.exec('git tag TAGNAME-OTHER-v2.0.0');
   sh.exec('git tag TAGNAME-v1.0.0');
   sh.exec('git tag TAGNAME-OTHER-v2.0.2');
   sh.exec('git push --tags');
-  sh.pushd('-q', target);
+  process.chdir(target);
   await gitClient.init();
   t.is(gitClient.config.getContext('latestTag'), 'TAGNAME-v1.0.0');
 });

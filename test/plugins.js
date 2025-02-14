@@ -1,6 +1,7 @@
 import { join } from 'node:path';
+import sh from 'node:child_process';
+import fs from 'node:fs';
 import test from 'ava';
-import sh from 'shelljs';
 import sinon from 'sinon';
 import Log from '../lib/log.js';
 import Spinner from '../lib/spinner.js';
@@ -44,7 +45,7 @@ test.before(t => {
 
 test.serial.beforeEach(t => {
   const dir = mkTmpDir();
-  sh.pushd('-q', dir);
+  process.chdir(dir);
   t.context = { dir };
 });
 
@@ -56,23 +57,24 @@ test.serial('should instantiate plugins and execute all release-cycle methods', 
   const { dir } = t.context;
 
   const pluginDir = mkTmpDir();
-  sh.pushd('-q', pluginDir);
-  sh.ShellString(JSON.stringify({ name: 'my-plugin', version: '1.0.0', type: 'module' })).toEnd(
-    join(pluginDir, 'package.json')
+  process.chdir(pluginDir);
+
+  fs.appendFileSync(
+    join(pluginDir, 'package.json'),
+    JSON.stringify({ name: 'my-plugin', version: '1.0.0', type: 'module' })
   );
   sh.exec(`npm link release-it`);
   const content = "import { Plugin } from 'release-it'; " + MyPlugin.toString() + '; export default MyPlugin;';
-  sh.ShellString(content).toEnd(join(pluginDir, 'index.js'));
 
-  sh.pushd('-q', dir);
-  sh.mkdir('-p', 'my/plugin');
-  sh.pushd('-q', 'my/plugin');
-  sh.ShellString(content).toEnd(join(dir, 'my', 'plugin', 'index.js'));
+  fs.appendFileSync(join(pluginDir, 'index.js'), content);
+  process.chdir(dir);
+  fs.mkdirSync('-p', 'my/plugin');
+  process.chdir('my/plugin');
 
-  sh.pushd('-q', dir);
-  sh.ShellString(JSON.stringify({ name: 'project', version: '1.0.0', type: 'module' })).toEnd(
-    join(dir, 'package.json')
-  );
+  fs.appendFileSync(join(dir, 'my', 'plugin', 'index.js'), content);
+  process.chdir(dir);
+
+  fs.appendFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'project', version: '1.0.0', type: 'module' }));
   sh.exec(`npm install ${pluginDir}`);
   sh.exec(`npm link release-it`);
 
@@ -125,18 +127,19 @@ test.serial('should instantiate plugins and execute all release-cycle methods fo
   const { dir } = t.context;
 
   const pluginDir = mkTmpDir();
-  sh.pushd('-q', pluginDir);
-  sh.ShellString(JSON.stringify({ name: '@scoped/my-plugin', version: '1.0.0', type: 'module' })).toEnd(
-    join(pluginDir, 'package.json')
+  process.chdir(pluginDir);
+
+  fs.appendFileSync(
+    join(dir, 'package.json'),
+    JSON.stringify({ name: '@scoped/my-plugin', version: '1.0.0', type: 'module' })
   );
   sh.exec(`npm link release-it`);
   const content = "import { Plugin } from 'release-it'; " + MyPlugin.toString() + '; export default MyPlugin;';
-  sh.ShellString(content).toEnd(join(pluginDir, 'index.js'));
 
-  sh.pushd('-q', dir);
-  sh.ShellString(JSON.stringify({ name: 'project', version: '1.0.0', type: 'module' })).toEnd(
-    join(dir, 'package.json')
-  );
+  fs.appendFileSync(join(pluginDir, 'index.js'), content);
+  process.chdir(dir);
+
+  fs.appendFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'project', version: '1.0.0', type: 'module' }));
   sh.exec(`npm install ${pluginDir}`);
   sh.exec(`npm link release-it`);
 
@@ -174,10 +177,12 @@ test.serial('should instantiate plugins and execute all release-cycle methods fo
 
 test.serial('should disable core plugins', async t => {
   const { dir } = t.context;
-  sh.ShellString(JSON.stringify({ name: 'project', version: '1.0.0' })).toEnd(join(dir, 'package.json'));
+
+  fs.appendFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'project', version: '1.0.0' }));
   const content =
     "import { Plugin } from 'release-it'; " + ReplacePlugin.toString() + '; export default ReplacePlugin;';
-  sh.ShellString(content).toEnd(join(dir, 'replace-plugin.mjs'));
+
+  fs.appendFileSync(join(dir, 'replace-plugin.mjs'), content);
   sh.exec(`npm link release-it`);
 
   const config = {
@@ -199,12 +204,12 @@ test.serial('should disable core plugins', async t => {
 
 test.serial('should expose context to execute commands', async t => {
   const { dir } = t.context;
-  sh.ShellString(JSON.stringify({ name: 'pkg-name', version: '1.0.0', type: 'module' })).toEnd(
-    join(dir, 'package.json')
-  );
+
+  fs.appendFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'pkg-name', version: '1.0.0', type: 'module' }));
   const content =
     "import { Plugin } from 'release-it'; " + ContextPlugin.toString() + '; export default ContextPlugin;';
-  sh.ShellString(content).toEnd(join(dir, 'context-plugin.js'));
+
+  fs.appendFileSync(join(dir, 'context-plugin.js'), content);
   sh.exec(`npm link release-it`);
 
   const repo = parseGitUrl('https://github.com/user/pkg');

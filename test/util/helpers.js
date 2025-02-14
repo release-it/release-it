@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import sh from 'shelljs';
+import sh from 'node:child_process';
 
 const mkTmpDir = () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'release-it-'));
@@ -14,11 +14,12 @@ const gitAdd = (content, filePath, message) => {
   const pathSegments = filePath.split('/').filter(Boolean);
   pathSegments.pop();
   if (pathSegments.length) {
-    sh.mkdir('-p', pathSegments.join('/'));
+    fs.mkdirSync('-p', pathSegments.join('/'));
   }
-  sh.ShellString(content).toEnd(filePath);
+
+  fs.appendFileSync(filePath, content);
   sh.exec(`git add ${filePath}`);
-  const { stdout } = sh.exec(`git commit -m "${message}"`);
+  const stdout = sh.execSync(`git commit -m "${message}"`, { encoding: 'utf-8' });
   const match = stdout.match(/\[.+([a-z0-9]{7})\]/);
   return match ? match[1] : null;
 };

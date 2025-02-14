@@ -1,6 +1,7 @@
 import path from 'node:path';
+import fs from 'node:fs';
+import sh from 'node:child_process';
 import test from 'ava';
-import sh from 'shelljs';
 import _ from 'lodash';
 import sinon from 'sinon';
 import Log from '../lib/log.js';
@@ -68,10 +69,10 @@ test.before(t => {
 test.serial.beforeEach(t => {
   const bare = mkTmpDir();
   const target = mkTmpDir();
-  sh.pushd('-q', bare);
+  process.chdir(bare);
   sh.exec(`git init --bare .`);
   sh.exec(`git clone ${bare} ${target}`);
-  sh.pushd('-q', target);
+  process.chdir(target);
   gitAdd('line', 'file', 'Add file');
   t.context = { bare, target };
 });
@@ -81,7 +82,7 @@ test.serial.afterEach(() => {
 });
 
 test.serial('should run tasks without throwing errors', async t => {
-  sh.mv('.git', 'foo');
+  fs.renameSync('.git', 'foo');
   const { name, latestVersion, version } = await runTasks({}, getContainer());
   t.is(version, '0.0.1');
   t.true(log.obtrusive.firstCall.args[0].includes(`release ${name} (currently at ${latestVersion})`));
