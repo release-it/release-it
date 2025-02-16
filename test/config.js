@@ -168,7 +168,7 @@ test('should expand pre-release shortcut (snapshot)', t => {
 test.serial('should fetch extended configuration with default file and default branch', async t => {
   const fetchStub = sandbox.stub(global, 'fetch');
   const config = {
-    extends: 'github>release-it/release-it-configuration'
+    extends: 'github:release-it/release-it-configuration'
   };
 
   const extendedConfiguration = {
@@ -194,7 +194,7 @@ test.serial('should fetch extended configuration with default file and default b
 test.serial('should fetch extended configuration with default file and specific tag', async t => {
   const fetchStub = sandbox.stub(global, 'fetch');
   const config = {
-    extends: 'github>release-it/release-it-configuration#1.0.0'
+    extends: 'github:release-it/release-it-configuration#1.0.0'
   };
 
   const extendedConfiguration = {
@@ -221,7 +221,7 @@ test.serial('should fetch extended configuration with default file and specific 
 test.serial('should fetch extended configuration with custom file and specific tag', async t => {
   const fetchStub = sandbox.stub(global, 'fetch');
   const config = {
-    extends: 'github>release-it/release-it-configuration:config.json#1.0.0'
+    extends: 'github:release-it/release-it-configuration:config.json#1.0.0'
   };
 
   const extendedConfiguration = {
@@ -248,7 +248,7 @@ test.serial('should fetch extended configuration with custom file and specific t
 test.serial('should fetch extended configuration with custom file and default branch', async t => {
   const fetchStub = sandbox.stub(global, 'fetch');
   const config = {
-    extends: 'github>release-it/release-it-configuration:config.json'
+    extends: 'github:release-it/release-it-configuration:config.json'
   };
 
   const extendedConfiguration = {
