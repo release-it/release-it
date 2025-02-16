@@ -56,6 +56,14 @@
       "type": "boolean",
       "default": false
     },
+    "useGenericPackageRepositoryForAssets": {
+      "type": "boolean",
+      "default": false
+    },
+    "genericPackageRepositoryName": {
+       "type": "string",
+       "default": "release-it"
+    },
     "origin": {
       "type": "string",
       "default": null

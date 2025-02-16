@@ -7,7 +7,7 @@ part][2] is configured correctly.
 [GitLab releases][1] work just like GitHub releases:
 
 - Configure `gitlab.release: true`.
-- Obtain a [personal access token][3] (release-it only needs the "api" scope).
+- Obtain a [personal access token][3] (release-it needs the `api` and `self_rotate` scopes).
 - Make sure the token is [available as an environment variable][4].
 
 GitLab Releases do not support pre-releases or drafts.
@@ -113,6 +113,23 @@ later), you should set the `useIdsForUrls` flag to `true`:
   "gitlab": {
     "release": true,
     "useIdsForUrls": true,
+    "assets": ["dist/*.dmg"]
+  }
+}
+```
+
+### Asset Location
+
+By default release assets are uploaded to the project's Markdown uploads API. If you want to use GitLab's Generic
+packages Repository set `useGenericPackageRepositoryForAssets` flag to true. `useIdsForUrls` is ignored from this API.
+You can set the package name to be uploaded to using `genericPackageRepositoryName` by default the name is `release-it`.
+
+```json
+{
+  "gitlab": {
+    "release": true,
+    "useGenericPackageRepositoryForAssets": true,
+    "genericPackageRepositoryName": "release-it",
     "assets": ["dist/*.dmg"]
   }
 }

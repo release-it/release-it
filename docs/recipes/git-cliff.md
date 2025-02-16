@@ -10,11 +10,9 @@ Add git-cliff to the project:
 npm install --save-dev git-cliff
 ```
 
-Git-cliff has the ability to use the Conventional Commits convention
-to automatically set the package version.
-Release-it allows the user to select the version that should be released.
-Therefore, it may be helpful to generate the changelog from the version in the
-`package.json` that was bumped by release-it.
+Git-cliff has the ability to use the Conventional Commits convention to automatically set the package version.
+Release-it allows the user to select the version that should be released. Therefore, it may be helpful to generate the
+changelog from the version in the `package.json` that was bumped by release-it.
 
 ```sh
 #!/usr/bin/env bash
@@ -43,8 +41,7 @@ Example configuration in the release-it config:
 
 ## Template
 
-Git-cliff uses Tera as a templating language, which is inspired by Jinja2 and
-Django templates.
+Git-cliff uses Tera as a templating language, which is inspired by Jinja2 and Django templates.
 
 See [git-cliff syntax docs][2] for more information.
 

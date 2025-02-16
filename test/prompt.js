@@ -42,7 +42,7 @@ test('should create prompt', async t => {
     message: 'Push?',
     name: 'push',
     choices: false,
-    transformer: false,
+    transformer: undefined,
     default: true
   });
 });

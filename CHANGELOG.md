@@ -5,6 +5,10 @@ This document lists breaking changes for each major release.
 See the GitHub Releases page for detailed changelogs:
 [https://github.com/release-it/release-it/releases](https://github.com/release-it/release-it/releases)
 
+## v18 (2025-01-06)
+
+- Removed support for Node.js v18.
+
 ## v17 (2023-11-11)
 
 - Removed support for Node.js v16.
