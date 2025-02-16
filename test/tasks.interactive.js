@@ -104,8 +104,8 @@ test.serial('should run tasks using extended configuration', async t => {
   });
 
   const config = {
-    $schema: 'https://unpkg.com/release-it@17/schema/release-it.json',
-    extends: 'github>release-it/release-it-configuration'
+    $schema: 'https://unpkg.com/release-it@18/schema/release-it.json',
+    extends: 'github:release-it/release-it-configuration'
   };
 
   const container = getContainer(config);
@@ -133,7 +133,7 @@ test.serial('should run tasks not using extended configuration as it is not a st
   const fetchStub = sandbox.stub(global, 'fetch');
 
   const config = {
-    $schema: 'https://unpkg.com/release-it@17/schema/release-it.json',
+    $schema: 'https://unpkg.com/release-it@18/schema/release-it.json',
     extends: false
   };
 

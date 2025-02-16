@@ -91,16 +91,16 @@ Release-it has [plenty of options][2]. See the following tables for plugin confi
 
 You can extend a configuration from a remote source using the `extends` option. The following formats are supported:
 
-- `github>owner/repo`
-- `github>owner/repo#tag`
-- `github>owner/repo:file#tag`
+- `github:owner/repo`
+- `github:owner/repo#tag`
+- `github:owner/repo:file#tag`
 
 For example, to extend a configuration from a GitHub repository:
 
 ```json
 {
-  "$schema": "https://unpkg.com/release-it@17/schema/release-it.json",
-  "extends": "github>release-it/release-it-configuration"
+  "$schema": "https://unpkg.com/release-it@18/schema/release-it.json",
+  "extends": "github:release-it/release-it-configuration"
 }
 ```
 
