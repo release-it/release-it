@@ -185,9 +185,10 @@ test.serial('should fetch extended configuration with default file and default b
   const response = await getRemoteConfiguration(config.extends);
 
   t.is(
-    fetchStub.lastCall.args[0],
+    fetchStub.firstCall.firstArg.href,
     'https://raw.githubusercontent.com/release-it/release-it-configuration/HEAD/.release-it.json'
   );
+
   t.is(response, extendedConfiguration);
 });
 
@@ -211,7 +212,7 @@ test.serial('should fetch extended configuration with default file and specific 
   const response = await getRemoteConfiguration(config.extends);
 
   t.is(
-    fetchStub.lastCall.args[0],
+    fetchStub.firstCall.firstArg.href,
     'https://raw.githubusercontent.com/release-it/release-it-configuration/refs/tags/1.0.0/.release-it.json'
   );
 
@@ -238,7 +239,7 @@ test.serial('should fetch extended configuration with custom file and specific t
   const response = await getRemoteConfiguration(config.extends);
 
   t.is(
-    fetchStub.lastCall.args[0],
+    fetchStub.firstCall.firstArg.href,
     'https://raw.githubusercontent.com/release-it/release-it-configuration/refs/tags/1.0.0/config.json'
   );
 
@@ -265,7 +266,7 @@ test.serial('should fetch extended configuration with custom file and default br
   const response = await getRemoteConfiguration(config.extends);
 
   t.is(
-    fetchStub.lastCall.args[0],
+    fetchStub.firstCall.firstArg.href,
     'https://raw.githubusercontent.com/release-it/release-it-configuration/HEAD/config.json'
   );
 
