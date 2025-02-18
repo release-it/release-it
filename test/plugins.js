@@ -68,7 +68,7 @@ test.serial('should instantiate plugins and execute all release-cycle methods', 
 
   fs.appendFileSync(join(pluginDir, 'index.js'), content);
   process.chdir(dir);
-  fs.mkdirSync('-p', 'my/plugin');
+  fs.mkdirSync('my/plugin', { recursive: true });
   process.chdir('my/plugin');
 
   fs.appendFileSync(join(dir, 'my', 'plugin', 'index.js'), content);
