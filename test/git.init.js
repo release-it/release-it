@@ -107,7 +107,7 @@ test.serial('should not throw if there are commits in specified path', async t =
   const options = { git: { requireCommits: true, commitsPath: 'dir' } };
   const gitClient = factory(Git, { options });
   sh.exec('git tag 1.0.0');
-  // gitAdd('line', 'dir/file', 'Add file');
+  gitAdd('line', 'dir/file', 'Add file');
   await t.notThrowsAsync(gitClient.init());
 });
 

@@ -15,7 +15,7 @@ const gitAdd = (content, filePath, message) => {
   const pathSegments = filePath.split('/').filter(Boolean);
   pathSegments.pop();
   if (pathSegments.length) {
-    mkdirSync('-p', pathSegments.join('/'));
+    mkdirSync('-p', pathSegments.join('/'), { recursive: true });
   }
 
   appendFileSync(filePath, content);
