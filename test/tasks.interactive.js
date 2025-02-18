@@ -1,6 +1,7 @@
 import path from 'node:path';
+import { renameSync } from 'node:fs';
+import childProcess from 'node:child_process';
 import test from 'ava';
-import sh from 'shelljs';
 import _ from 'lodash';
 import sinon from 'sinon';
 import Log from '../lib/log.js';
@@ -9,6 +10,7 @@ import Prompt from '../lib/prompt.js';
 import Config from '../lib/config.js';
 import runTasks from '../lib/index.js';
 import Git from '../lib/plugin/git/Git.js';
+import { execOpts } from '../lib/util.js';
 import { mkTmpDir, gitAdd } from './util/helpers.js';
 import ShellStub from './stub/shell.js';
 import { interceptPublish as interceptGitLabPublish } from './stub/gitlab.js';
@@ -68,10 +70,10 @@ test.before(t => {
 test.serial.beforeEach(t => {
   const bare = mkTmpDir();
   const target = mkTmpDir();
-  sh.pushd('-q', bare);
-  sh.exec(`git init --bare .`);
-  sh.exec(`git clone ${bare} ${target}`);
-  sh.pushd('-q', target);
+  process.chdir(bare);
+  childProcess.execSync(`git init --bare .`, execOpts);
+  childProcess.execSync(`git clone ${bare} ${target}`, execOpts);
+  process.chdir(target);
   gitAdd('line', 'file', 'Add file');
   t.context = { bare, target };
 });
@@ -81,7 +83,7 @@ test.serial.afterEach(() => {
 });
 
 test.serial('should run tasks without throwing errors', async t => {
-  sh.mv('.git', 'foo');
+  renameSync('.git', 'foo');
   const { name, latestVersion, version } = await runTasks({}, getContainer());
   t.is(version, '0.0.1');
   t.true(log.obtrusive.firstCall.args[0].includes(`release ${name} (currently at ${latestVersion})`));
@@ -118,7 +120,7 @@ test.serial('should not run hooks for cancelled release-cycle methods', async t 
   const { target } = t.context;
   const pkgName = path.basename(target);
   gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
-  sh.exec('git tag 1.0.0');
+  childProcess.execSync('git tag 1.0.0', execOpts);
 
   const hooks = getHooks(['version', 'git', 'github', 'gitlab', 'npm']);
   const inquirer = { prompt: sandbox.stub().callsFake(([options]) => ({ [options.name]: false })) };
@@ -159,7 +161,7 @@ test.serial('should run "after:*:release" plugin hooks', async t => {
   const pkgName = path.basename(target);
   const owner = path.basename(path.dirname(bare));
   gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
-  sh.exec('git tag 1.0.0');
+  childProcess.execSync('git tag 1.0.0', execOpts);
   const sha = gitAdd('line', 'file', 'More file');
 
   const git = factory(Git);

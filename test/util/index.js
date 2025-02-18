@@ -20,6 +20,7 @@ export let factory = (Definition, { namespace, options = {}, container = {} } = 
   spinner.show.callsFake(({ enabled = true, task }) => (enabled ? task() : () => {}));
   container.spinner = spinner;
   container.shell = container.shell || new ShellStub({ container });
+
   container.prompt = container.prompt || new Prompt({ container });
   container.shell.cache = { set: () => {}, has: () => false };
 

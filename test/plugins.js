@@ -1,11 +1,12 @@
-import { join } from 'node:path';
+import { resolve, join } from 'node:path';
+import childProcess from 'node:child_process';
+import fs, { appendFileSync, mkdirSync } from 'node:fs';
 import test from 'ava';
-import sh from 'shelljs';
 import sinon from 'sinon';
 import Log from '../lib/log.js';
 import Spinner from '../lib/spinner.js';
 import Config from '../lib/config.js';
-import { parseGitUrl } from '../lib/util.js';
+import { execOpts, parseGitUrl } from '../lib/util.js';
 import runTasks from '../lib/index.js';
 import MyPlugin from './stub/plugin.js';
 import ReplacePlugin from './stub/plugin-replace.js';
@@ -39,12 +40,12 @@ const getContainer = options => {
 
 test.before(t => {
   t.timeout(60 * 1000);
-  sh.exec('npm link');
+  childProcess.execSync('npm link', execOpts);
 });
 
 test.serial.beforeEach(t => {
   const dir = mkTmpDir();
-  sh.pushd('-q', dir);
+  process.chdir(dir);
   t.context = { dir };
 });
 
@@ -56,25 +57,26 @@ test.serial('should instantiate plugins and execute all release-cycle methods', 
   const { dir } = t.context;
 
   const pluginDir = mkTmpDir();
-  sh.pushd('-q', pluginDir);
-  sh.ShellString(JSON.stringify({ name: 'my-plugin', version: '1.0.0', type: 'module' })).toEnd(
-    join(pluginDir, 'package.json')
+  process.chdir(pluginDir);
+
+  appendFileSync(
+    join(pluginDir, 'package.json'),
+    JSON.stringify({ name: 'my-plugin', version: '1.0.0', type: 'module' })
   );
-  sh.exec(`npm link release-it`);
+  childProcess.execSync(`npm link release-it`, execOpts);
   const content = "import { Plugin } from 'release-it'; " + MyPlugin.toString() + '; export default MyPlugin;';
-  sh.ShellString(content).toEnd(join(pluginDir, 'index.js'));
 
-  sh.pushd('-q', dir);
-  sh.mkdir('-p', 'my/plugin');
-  sh.pushd('-q', 'my/plugin');
-  sh.ShellString(content).toEnd(join(dir, 'my', 'plugin', 'index.js'));
+  appendFileSync(join(pluginDir, 'index.js'), content);
+  process.chdir(dir);
+  mkdirSync(resolve('my/plugin'), { recursive: true });
+  process.chdir('my/plugin');
 
-  sh.pushd('-q', dir);
-  sh.ShellString(JSON.stringify({ name: 'project', version: '1.0.0', type: 'module' })).toEnd(
-    join(dir, 'package.json')
-  );
-  sh.exec(`npm install ${pluginDir}`);
-  sh.exec(`npm link release-it`);
+  appendFileSync(join(dir, 'my', 'plugin', 'index.js'), content);
+  process.chdir(dir);
+
+  appendFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'project', version: '1.0.0', type: 'module' }));
+  childProcess.execSync(`npm install ${pluginDir}`, execOpts);
+  childProcess.execSync(`npm link release-it`, execOpts);
 
   const config = {
     plugins: {
@@ -125,20 +127,21 @@ test.serial('should instantiate plugins and execute all release-cycle methods fo
   const { dir } = t.context;
 
   const pluginDir = mkTmpDir();
-  sh.pushd('-q', pluginDir);
-  sh.ShellString(JSON.stringify({ name: '@scoped/my-plugin', version: '1.0.0', type: 'module' })).toEnd(
-    join(pluginDir, 'package.json')
-  );
-  sh.exec(`npm link release-it`);
-  const content = "import { Plugin } from 'release-it'; " + MyPlugin.toString() + '; export default MyPlugin;';
-  sh.ShellString(content).toEnd(join(pluginDir, 'index.js'));
+  process.chdir(pluginDir);
 
-  sh.pushd('-q', dir);
-  sh.ShellString(JSON.stringify({ name: 'project', version: '1.0.0', type: 'module' })).toEnd(
-    join(dir, 'package.json')
+  fs.writeFileSync(
+    join(pluginDir, 'package.json'),
+    JSON.stringify({ name: '@scoped/my-plugin', version: '1.0.0', type: 'module' })
   );
-  sh.exec(`npm install ${pluginDir}`);
-  sh.exec(`npm link release-it`);
+  childProcess.execSync(`npm link release-it`, execOpts);
+  const content = "import { Plugin } from 'release-it'; " + MyPlugin.toString() + '; export default MyPlugin;';
+
+  fs.writeFileSync(join(pluginDir, 'index.js'), content);
+  process.chdir(dir);
+
+  fs.writeFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'project', version: '1.0.0', type: 'module' }));
+  childProcess.execSync(`npm install ${pluginDir}`, execOpts);
+  childProcess.execSync(`npm link release-it`, execOpts);
 
   const config = {
     plugins: {
@@ -174,11 +177,13 @@ test.serial('should instantiate plugins and execute all release-cycle methods fo
 
 test.serial('should disable core plugins', async t => {
   const { dir } = t.context;
-  sh.ShellString(JSON.stringify({ name: 'project', version: '1.0.0' })).toEnd(join(dir, 'package.json'));
+
+  fs.appendFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'project', version: '1.0.0' }));
   const content =
     "import { Plugin } from 'release-it'; " + ReplacePlugin.toString() + '; export default ReplacePlugin;';
-  sh.ShellString(content).toEnd(join(dir, 'replace-plugin.mjs'));
-  sh.exec(`npm link release-it`);
+
+  fs.appendFileSync(join(dir, 'replace-plugin.mjs'), content);
+  childProcess.execSync(`npm link release-it`, execOpts);
 
   const config = {
     plugins: {
@@ -199,13 +204,13 @@ test.serial('should disable core plugins', async t => {
 
 test.serial('should expose context to execute commands', async t => {
   const { dir } = t.context;
-  sh.ShellString(JSON.stringify({ name: 'pkg-name', version: '1.0.0', type: 'module' })).toEnd(
-    join(dir, 'package.json')
-  );
+
+  fs.appendFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'pkg-name', version: '1.0.0', type: 'module' }));
   const content =
     "import { Plugin } from 'release-it'; " + ContextPlugin.toString() + '; export default ContextPlugin;';
-  sh.ShellString(content).toEnd(join(dir, 'context-plugin.js'));
-  sh.exec(`npm link release-it`);
+
+  fs.appendFileSync(join(dir, 'context-plugin.js'), content);
+  childProcess.execSync(`npm link release-it`, execOpts);
 
   const repo = parseGitUrl('https://github.com/user/pkg');
 
