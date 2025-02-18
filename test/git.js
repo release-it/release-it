@@ -1,6 +1,6 @@
 import { EOL } from 'node:os';
 import childProcess from 'node:child_process';
-import fs from 'node:fs';
+import { appendFileSync } from 'node:fs';
 import test from 'ava';
 import sinon from 'sinon';
 import Git from '../lib/plugin/git/Git.js';
@@ -262,9 +262,9 @@ test.serial('should return repo status', async t => {
   childProcess.execSync('git init');
   gitAdd('line', 'file1', 'Add file');
 
-  fs.appendFileSync('file1', 'line');
+  appendFileSync('file1', 'line');
 
-  fs.appendFileSync('file2', 'line');
+  appendFileSync('file2', 'line');
   childProcess.execSync('git add file2');
   t.is(await gitClient.status(), ' M file1\nA  file2');
 });
@@ -274,7 +274,7 @@ test.serial('should reset files', async t => {
   childProcess.execSync('git init');
   gitAdd('line', 'file', 'Add file');
 
-  fs.appendFileSync('file', 'line');
+  appendFileSync('file', 'line');
   t.regex(await readFile('file'), /^line\s*line\s*$/);
   await gitClient.reset('file');
   t.regex(await readFile('file'), /^line\s*$/);

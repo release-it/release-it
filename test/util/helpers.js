@@ -1,23 +1,24 @@
-import fs from 'node:fs';
+import { appendFileSync, mkdirSync, mkdtempSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import sh from 'node:child_process';
+import { promises } from 'node:dns';
 
 const mkTmpDir = () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'release-it-'));
+  const dir = mkdtempSync(path.join(os.tmpdir(), 'release-it-'));
   return dir;
 };
 
-const readFile = file => fs.promises.readFile(path.resolve(file), 'utf8');
+const readFile = file => promises.readFile(path.resolve(file), 'utf8');
 
 const gitAdd = (content, filePath, message) => {
   const pathSegments = filePath.split('/').filter(Boolean);
   pathSegments.pop();
   if (pathSegments.length) {
-    fs.mkdirSync('-p', pathSegments.join('/'));
+    mkdirSync('-p', pathSegments.join('/'));
   }
 
-  fs.appendFileSync(filePath, content);
+  appendFileSync(filePath, content);
   sh.execSync(`git add ${filePath}`);
   const stdout = sh.execSync(`git commit -m "${message}"`, { encoding: 'utf-8' });
   const match = stdout.match(/\[.+([a-z0-9]{7})\]/);

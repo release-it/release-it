@@ -1,5 +1,5 @@
 import childProcess from 'node:child_process';
-import fs from 'node:fs';
+import { mkdirSync } from 'node:fs';
 import test from 'ava';
 import Shell from '../lib/shell.js';
 import Git from '../lib/plugin/git/Git.js';
@@ -98,7 +98,7 @@ test.serial('should not fail (exit code 0) if there are no commits', async t => 
 test.serial('should throw if there are no commits in specified path', async t => {
   const options = { git: { requireCommits: true, commitsPath: 'dir' } };
   const gitClient = factory(Git, { options });
-  fs.mkdirSync('dir');
+  mkdirSync('dir');
   sh.exec('git tag 1.0.0');
   await t.throwsAsync(gitClient.init(), { message: /^There are no commits since the latest tag/ });
 });

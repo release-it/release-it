@@ -1,5 +1,5 @@
 import path from 'node:path';
-import fs from 'node:fs';
+import { renameSync } from 'node:fs';
 import sh from 'node:child_process';
 import test from 'ava';
 import _ from 'lodash';
@@ -82,7 +82,7 @@ test.serial.afterEach(() => {
 });
 
 test.serial('should run tasks without throwing errors', async t => {
-  fs.renameSync('.git', 'foo');
+  renameSync('.git', 'foo');
   const { name, latestVersion, version } = await runTasks({}, getContainer());
   t.is(version, '0.0.1');
   t.true(log.obtrusive.firstCall.args[0].includes(`release ${name} (currently at ${latestVersion})`));

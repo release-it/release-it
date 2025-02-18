@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import sh from 'node:child_process';
-import fs from 'node:fs';
+import fs, { appendFileSync, mkdirSync } from 'node:fs';
 import test from 'ava';
 import sinon from 'sinon';
 import Log from '../lib/log.js';
@@ -59,22 +59,22 @@ test.serial('should instantiate plugins and execute all release-cycle methods', 
   const pluginDir = mkTmpDir();
   process.chdir(pluginDir);
 
-  fs.appendFileSync(
+  appendFileSync(
     join(pluginDir, 'package.json'),
     JSON.stringify({ name: 'my-plugin', version: '1.0.0', type: 'module' })
   );
   sh.execSync(`npm link release-it`);
   const content = "import { Plugin } from 'release-it'; " + MyPlugin.toString() + '; export default MyPlugin;';
 
-  fs.appendFileSync(join(pluginDir, 'index.js'), content);
+  appendFileSync(join(pluginDir, 'index.js'), content);
   process.chdir(dir);
-  fs.mkdirSync('-p', 'my/plugin');
+  mkdirSync('-p', 'my/plugin');
   process.chdir('my/plugin');
 
-  fs.appendFileSync(join(dir, 'my', 'plugin', 'index.js'), content);
+  appendFileSync(join(dir, 'my', 'plugin', 'index.js'), content);
   process.chdir(dir);
 
-  fs.appendFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'project', version: '1.0.0', type: 'module' }));
+  appendFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'project', version: '1.0.0', type: 'module' }));
   sh.execSync(`npm install ${pluginDir}`);
   sh.execSync(`npm link release-it`);
 

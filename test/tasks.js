@@ -1,6 +1,6 @@
 import path from 'node:path';
 import sh from 'node:child_process';
-import fs from 'node:fs';
+import { appendFileSync, mkdirSync, renameSync } from 'node:fs';
 import test from 'ava';
 import semver from 'semver';
 import _ from 'lodash';
@@ -74,7 +74,7 @@ test.serial.afterEach(() => {
 });
 
 test.serial('should run tasks without throwing errors', async t => {
-  fs.renameSync('.git', 'foo');
+  renameSync('.git', 'foo');
   const { name, latestVersion, version } = await runTasks({}, getContainer());
   t.true(log.obtrusive.firstCall.args[0].includes(`release ${name} (${latestVersion}...${version})`));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
@@ -127,7 +127,7 @@ test.serial('should use pkg.version', async t => {
 test.serial('should use pkg.version (in sub dir) w/o tagging repo', async t => {
   gitAdd('{"name":"root-package","version":"1.0.0"}', 'package.json', 'Add package.json');
   sh.execSync('git tag 1.0.0');
-  fs.mkdirSync('my-package');
+  mkdirSync('my-package');
   process.chdir('my-package');
   gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
   const container = getContainer({ increment: 'minor', git: { tag: false } });
@@ -505,7 +505,7 @@ test.serial('should use custom changelog command with context', async t => {
     sh.execSync(`npm install ${rootDir}`);
     const plugin = "import { Plugin } from 'release-it'; class MyPlugin extends Plugin {}; export default MyPlugin;";
 
-    fs.appendFileSync('my-plugin.js', plugin);
+    appendFileSync('my-plugin.js', plugin);
     const hooks = {};
     ['before', 'after'].forEach(prefix => {
       ['version', 'git', 'npm', 'my-plugin'].forEach(ns => {
