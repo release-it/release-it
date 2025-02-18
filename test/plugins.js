@@ -129,17 +129,17 @@ test.serial('should instantiate plugins and execute all release-cycle methods fo
   const pluginDir = mkTmpDir();
   process.chdir(pluginDir);
 
-  fs.appendFileSync(
-    join(dir, 'package.json'),
+  fs.writeFileSync(
+    join(pluginDir, 'package.json'),
     JSON.stringify({ name: '@scoped/my-plugin', version: '1.0.0', type: 'module' })
   );
   sh.execSync(`npm link release-it`);
   const content = "import { Plugin } from 'release-it'; " + MyPlugin.toString() + '; export default MyPlugin;';
 
-  fs.appendFileSync(join(pluginDir, 'index.js'), content);
+  fs.writeFileSync(join(pluginDir, 'index.js'), content);
   process.chdir(dir);
 
-  fs.appendFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'project', version: '1.0.0', type: 'module' }));
+  fs.writeFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'project', version: '1.0.0', type: 'module' }));
   sh.execSync(`npm install ${pluginDir}`);
   sh.execSync(`npm link release-it`);
 
