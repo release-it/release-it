@@ -1,11 +1,11 @@
-import sh from 'node:child_process';
+import childProcess from 'node:child_process';
 import test from 'ava';
 import sinon from 'sinon';
 import Shell from '../lib/shell.js';
 import Log from '../lib/log.js';
 import { factory } from './util/index.js';
 
-const cwd = sh.execSync('pwd', { encoding: 'utf8' }).trim();
+const cwd = childProcess.execSync('pwd', { encoding: 'utf8' }).trim();
 
 const shell = factory(Shell);
 

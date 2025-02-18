@@ -1,7 +1,7 @@
 import { appendFileSync, mkdirSync, mkdtempSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import sh from 'node:child_process';
+import childProcess from 'node:child_process';
 import { promises } from 'node:dns';
 
 const mkTmpDir = () => {
@@ -19,8 +19,8 @@ const gitAdd = (content, filePath, message) => {
   }
 
   appendFileSync(filePath, content);
-  sh.execSync(`git add ${filePath}`);
-  const stdout = sh.execSync(`git commit -m "${message}"`, { encoding: 'utf-8' });
+  childProcess.execSync(`git add ${filePath}`);
+  const stdout = childProcess.execSync(`git commit -m "${message}"`, { encoding: 'utf-8' });
   const match = stdout.match(/\[.+([a-z0-9]{7})\]/);
   return match ? match[1] : null;
 };
