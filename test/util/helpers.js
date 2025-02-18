@@ -1,8 +1,8 @@
-import { appendFileSync, mkdirSync, mkdtempSync } from 'node:fs';
+import { appendFileSync, mkdirSync, mkdtempSync, promises } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import childProcess from 'node:child_process';
-import { promises } from 'node:dns';
+import { execOpts } from '../../lib/util.js';
 
 const mkTmpDir = () => {
   const dir = mkdtempSync(path.join(os.tmpdir(), 'release-it-'));
@@ -15,11 +15,11 @@ const gitAdd = (content, filePath, message) => {
   const pathSegments = filePath.split('/').filter(Boolean);
   pathSegments.pop();
   if (pathSegments.length) {
-    mkdirSync('-p', pathSegments.join('/'), { recursive: true });
+    mkdirSync(path.resolve(pathSegments.join('/')), { mode: parseInt('0777', 8), recursive: true });
   }
 
   appendFileSync(filePath, content);
-  childProcess.execSync(`git add ${filePath}`);
+  childProcess.execSync(`git add ${filePath}`, execOpts);
   const stdout = childProcess.execSync(`git commit -m "${message}"`, { encoding: 'utf-8' });
   const match = stdout.match(/\[.+([a-z0-9]{7})\]/);
   return match ? match[1] : null;

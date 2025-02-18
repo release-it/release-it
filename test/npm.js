@@ -372,6 +372,7 @@ test('should not publish when `npm version` fails', async t => {
   const options = { npm };
   const npmClient = factory(npm, { options });
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
+
   exec.withArgs('npm whoami').resolves('john');
   exec
     .withArgs(/npm access (list collaborators --json|ls-collaborators) @my-scope\/my-pkg/)

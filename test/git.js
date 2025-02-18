@@ -4,7 +4,7 @@ import { appendFileSync } from 'node:fs';
 import test from 'ava';
 import sinon from 'sinon';
 import Git from '../lib/plugin/git/Git.js';
-import { touch } from '../lib/util.js';
+import { execOpts, touch } from '../lib/util.js';
 import sh from './util/sh.js';
 import { factory } from './util/index.js';
 import { mkTmpDir, readFile, gitAdd } from './util/helpers.js';
@@ -16,38 +16,38 @@ test.beforeEach(() => {
 
 test.serial('should return whether repo has upstream branch', async t => {
   const gitClient = factory(Git);
-  childProcess.execSync('git init');
+  childProcess.execSync('git init', execOpts);
   gitAdd('line', 'file', 'Add file');
   t.false(await gitClient.hasUpstreamBranch());
 });
 
 test.serial('should return branch name', async t => {
   const gitClient = factory(Git);
-  childProcess.execSync('git init');
+  childProcess.execSync('git init', execOpts);
   t.is(await gitClient.getBranchName(), null);
-  childProcess.execSync('git checkout -b feat');
+  childProcess.execSync('git checkout -b feat', execOpts);
   gitAdd('line', 'file', 'Add file');
   t.is(await gitClient.getBranchName(), 'feat');
 });
 
 test.serial('should return whether tag exists and if working dir is clean', async t => {
   const gitClient = factory(Git);
-  childProcess.execSync('git init');
+  childProcess.execSync('git init', execOpts);
   t.false(await gitClient.tagExists('1.0.0'));
   touch('file');
   t.false(await gitClient.isWorkingDirClean());
   gitAdd('line', 'file', 'Add file');
-  childProcess.execSync('git tag 1.0.0');
+  childProcess.execSync('git tag 1.0.0', execOpts);
   t.true(await gitClient.tagExists('1.0.0'));
   t.true(await gitClient.isWorkingDirClean());
 });
 
 test.serial('should throw if tag exists', async t => {
   const gitClient = factory(Git);
-  childProcess.execSync('git init');
+  childProcess.execSync('git init', execOpts);
   touch('file');
   gitAdd('line', 'file', 'Add file');
-  childProcess.execSync('git tag 0.0.2');
+  childProcess.execSync('git tag 0.0.2', execOpts);
   gitClient.config.setContext({ latestTag: '0.0.1', tagName: '0.0.2' });
   const expected = { instanceOf: Error, message: /fatal: tag '0\.0\.2' already exists/ };
   await t.throwsAsync(gitClient.tag({ name: '0.0.2' }), expected);
@@ -56,10 +56,10 @@ test.serial('should throw if tag exists', async t => {
 test.serial('should only warn if tag exists intentionally', async t => {
   const gitClient = factory(Git);
   const { warn } = gitClient.log;
-  childProcess.execSync('git init');
+  childProcess.execSync('git init', execOpts);
   touch('file');
   gitAdd('line', 'file', 'Add file');
-  childProcess.execSync('git tag 1.0.0');
+  childProcess.execSync('git tag 1.0.0', execOpts);
   gitClient.config.setContext({ latestTag: '1.0.0', tagName: '1.0.0' });
   await t.notThrowsAsync(gitClient.tag());
   t.is(warn.callCount, 1);
@@ -67,19 +67,19 @@ test.serial('should only warn if tag exists intentionally', async t => {
 });
 
 test.serial('should return the remote url', async t => {
-  childProcess.execSync(`git init`);
+  childProcess.execSync(`git init`, execOpts);
   {
     const options = { git: { pushRepo: 'origin' } };
     const gitClient = factory(Git, { options });
     t.is(await gitClient.getRemoteUrl(), null);
-    childProcess.execSync(`git remote add origin foo`);
+    childProcess.execSync(`git remote add origin foo`, execOpts);
     t.is(await gitClient.getRemoteUrl(), 'foo');
   }
   {
     const options = { git: { pushRepo: 'another' } };
     const gitClient = factory(Git, { options });
     t.is(await gitClient.getRemoteUrl(), null);
-    childProcess.execSync(`git remote add another bar`);
+    childProcess.execSync(`git remote add another bar`, execOpts);
     t.is(await gitClient.getRemoteUrl(), 'bar');
   }
   {
@@ -91,29 +91,29 @@ test.serial('should return the remote url', async t => {
 
 test.serial('should return the non-origin remote', async t => {
   const bare = mkTmpDir();
-  childProcess.execSync(`git init --bare ${bare}`);
-  childProcess.execSync(`git clone ${bare} .`);
+  childProcess.execSync(`git init --bare ${bare}`, execOpts);
+  childProcess.execSync(`git clone ${bare} .`, execOpts);
   gitAdd('line', 'file', 'Add file');
-  childProcess.execSync('git remote rename origin upstream');
+  childProcess.execSync('git remote rename origin upstream', execOpts);
   const gitClient = factory(Git);
   t.is(await gitClient.getRemoteUrl(), bare);
 });
 
 test.serial('should stage, commit, tag and push', async t => {
   const bare = mkTmpDir();
-  childProcess.execSync(`git init --bare ${bare}`);
-  childProcess.execSync(`git clone ${bare} .`);
+  childProcess.execSync(`git init --bare ${bare}`, execOpts);
+  childProcess.execSync(`git clone ${bare} .`, execOpts);
   const version = '1.2.3';
   gitAdd(`{"version":"${version}"}`, 'package.json', 'Add package.json');
   {
     const gitClient = factory(Git);
-    childProcess.execSync(`git tag ${version}`);
+    childProcess.execSync(`git tag ${version}`, execOpts);
     t.is(await gitClient.getLatestTagName(), version);
   }
   {
     const gitClient = factory(Git);
     gitAdd('line', 'file', 'Add file');
-    childProcess.execSync('npm --no-git-tag-version version patch');
+    childProcess.execSync('npm --no-git-tag-version version patch', execOpts);
     await gitClient.stage('package.json');
     await gitClient.commit({ message: `Release v1.2.4` });
     await gitClient.tag({ name: 'v1.2.4', annotation: 'Release v1.2.4' });
@@ -127,8 +127,8 @@ test.serial('should stage, commit, tag and push', async t => {
 
 test.serial('should commit, tag and push with extra args', async t => {
   const bare = mkTmpDir();
-  childProcess.execSync(`git init --bare ${bare}`);
-  childProcess.execSync(`git clone ${bare} .`);
+  childProcess.execSync(`git init --bare ${bare}`, execOpts);
+  childProcess.execSync(`git clone ${bare} .`, execOpts);
   gitAdd('line', 'file', 'Add file');
   const options = { git: { commitArgs: '-S', tagArgs: ['-T', 'foo'], pushArgs: ['-U', 'bar', '-V'] } };
   const gitClient = factory(Git, { options });
@@ -146,8 +146,8 @@ test.serial('should commit, tag and push with extra args', async t => {
 
 test.serial('should amend commit without message if not provided', async t => {
   const bare = mkTmpDir();
-  childProcess.execSync(`git init --bare ${bare}`);
-  childProcess.execSync(`git clone ${bare} .`);
+  childProcess.execSync(`git init --bare ${bare}`, execOpts);
+  childProcess.execSync(`git clone ${bare} .`, execOpts);
   gitAdd('line', 'file', 'Add file');
   const options = { git: { commitArgs: ['--amend', '--no-edit', '--no-verify'] } };
   const gitClient = factory(Git, { options });
@@ -160,8 +160,8 @@ test.serial('should amend commit without message if not provided', async t => {
 
 test.serial('should commit and tag with quoted characters', async t => {
   const bare = mkTmpDir();
-  childProcess.execSync(`git init --bare ${bare}`);
-  childProcess.execSync(`git clone ${bare} .`);
+  childProcess.execSync(`git init --bare ${bare}`, execOpts);
+  childProcess.execSync(`git clone ${bare} .`, execOpts);
   const gitClient = factory(Git, {
     options: { git: { commitMessage: 'Release ${version}', tagAnnotation: 'Release ${version}\n\n${changelog}' } }
   });
@@ -185,14 +185,17 @@ test.serial('should commit and tag with quoted characters', async t => {
 
 test.serial('should push to origin', async t => {
   const bare = mkTmpDir();
-  childProcess.execSync(`git init --bare ${bare}`);
-  childProcess.execSync(`git clone ${bare} .`);
+  childProcess.execSync(`git init --bare ${bare}`, execOpts);
+  childProcess.execSync(`git clone ${bare} .`, execOpts);
   gitAdd('line', 'file', 'Add file');
   const gitClient = factory(Git);
   const spy = sinon.spy(gitClient.shell, 'exec');
   await gitClient.push();
   t.deepEqual(spy.lastCall.args[0], ['git', 'push']);
-  const stdout = childProcess.execSync('git ls-tree -r HEAD --name-only', { cwd: bare, encoding: 'utf-8' });
+  const stdout = childProcess.execSync('git ls-tree -r HEAD --name-only', {
+    cwd: bare,
+    encoding: 'utf-8'
+  });
   t.is(stdout.trim(), 'file');
 
   spy.restore();
@@ -200,15 +203,18 @@ test.serial('should push to origin', async t => {
 
 test.serial('should push to tracked upstream branch', async t => {
   const bare = mkTmpDir();
-  childProcess.execSync(`git init --bare ${bare}`);
-  childProcess.execSync(`git clone ${bare} .`);
-  childProcess.execSync(`git remote rename origin upstream`);
+  childProcess.execSync(`git init --bare ${bare}`, execOpts);
+  childProcess.execSync(`git clone ${bare} .`, execOpts);
+  childProcess.execSync(`git remote rename origin upstream`, execOpts);
   gitAdd('line', 'file', 'Add file');
   const gitClient = factory(Git);
   const spy = sinon.spy(gitClient.shell, 'exec');
   await gitClient.push();
   t.deepEqual(spy.lastCall.args[0], ['git', 'push']);
-  const stdout = childProcess.execSync('git ls-tree -r HEAD --name-only', { cwd: bare, encoding: 'utf-8' });
+  const stdout = childProcess.execSync('git ls-tree -r HEAD --name-only', {
+    cwd: bare,
+    encoding: 'utf-8'
+  });
   t.is(stdout.trim(), 'file');
 
   spy.restore();
@@ -216,8 +222,8 @@ test.serial('should push to tracked upstream branch', async t => {
 
 test.serial('should push to repo url', async t => {
   const bare = mkTmpDir();
-  childProcess.execSync(`git init --bare ${bare}`);
-  childProcess.execSync(`git clone ${bare} .`);
+  childProcess.execSync(`git init --bare ${bare}`, execOpts);
+  childProcess.execSync(`git clone ${bare} .`, execOpts);
   gitAdd('line', 'file', 'Add file');
   const options = { git: { pushRepo: 'https://host/repo.git' } };
   const gitClient = factory(Git, { options });
@@ -232,20 +238,28 @@ test.serial('should push to repo url', async t => {
 
 test.serial('should push to remote name (not "origin")', async t => {
   const bare = mkTmpDir();
-  childProcess.execSync(`git init --bare ${bare}`);
-  childProcess.execSync(`git clone ${bare} .`);
+  childProcess.execSync(`git init --bare ${bare}`, execOpts);
+  childProcess.execSync(`git clone ${bare} .`, execOpts);
   gitAdd('line', 'file', 'Add file');
-  childProcess.execSync(`git remote add upstream ${childProcess.execSync('git config --get remote.origin.url')}`);
+  childProcess.execSync(
+    `git remote add upstream ${childProcess.execSync('git config --get remote.origin.url', {
+      encoding: 'utf-8'
+    })}`,
+    execOpts
+  );
   const options = { git: { pushRepo: 'upstream' } };
   const gitClient = factory(Git, { options });
   const spy = sinon.spy(gitClient.shell, 'exec');
   await gitClient.push();
   t.deepEqual(spy.lastCall.args[0], ['git', 'push', 'upstream']);
-  const stdout = childProcess.execSync('git ls-tree -r HEAD --name-only', { cwd: bare, encoding: 'utf-8' });
+  const stdout = childProcess.execSync('git ls-tree -r HEAD --name-only', {
+    cwd: bare,
+    encoding: 'utf-8'
+  });
   t.is(stdout.trim(), 'file');
 
   {
-    childProcess.execSync(`git checkout -b foo`);
+    childProcess.execSync(`git checkout -b foo`, execOpts);
     gitAdd('line', 'file', 'Add file');
     await gitClient.push();
     t.deepEqual(spy.lastCall.args[0], ['git', 'push', '--set-upstream', 'upstream', 'foo']);
@@ -259,19 +273,19 @@ test.serial('should push to remote name (not "origin")', async t => {
 
 test.serial('should return repo status', async t => {
   const gitClient = factory(Git);
-  childProcess.execSync('git init');
+  childProcess.execSync('git init', execOpts);
   gitAdd('line', 'file1', 'Add file');
 
   appendFileSync('file1', 'line');
 
   appendFileSync('file2', 'line');
-  childProcess.execSync('git add file2');
+  childProcess.execSync('git add file2', execOpts);
   t.is(await gitClient.status(), ' M file1\nA  file2');
 });
 
 test.serial('should reset files', async t => {
   const gitClient = factory(Git);
-  childProcess.execSync('git init');
+  childProcess.execSync('git init', execOpts);
   gitAdd('line', 'file', 'Add file');
 
   appendFileSync('file', 'line');
@@ -283,19 +297,19 @@ test.serial('should reset files', async t => {
 });
 
 test.serial('should roll back when cancelled', async t => {
-  childProcess.execSync('git init');
-  childProcess.execSync(`git remote add origin file://foo`);
+  childProcess.execSync('git init', execOpts);
+  childProcess.execSync(`git remote add origin file://foo`, execOpts);
   const version = '1.2.3';
   gitAdd(`{"version":"${version}"}`, 'package.json', 'Add package.json');
   const options = { git: { requireCleanWorkingDir: true, commit: true, tag: true, tagName: 'v${version}' } };
   const gitClient = factory(Git, { options });
   const exec = sinon.spy(gitClient.shell, 'execFormattedCommand');
-  childProcess.execSync(`git tag ${version}`);
+  childProcess.execSync(`git tag ${version}`, execOpts);
   gitAdd('line', 'file', 'Add file');
 
   await gitClient.init();
 
-  childProcess.execSync('npm --no-git-tag-version version patch');
+  childProcess.execSync('npm --no-git-tag-version version patch', execOpts);
 
   gitClient.bump('1.2.4');
   await gitClient.beforeRelease();
@@ -310,21 +324,21 @@ test.serial('should roll back when cancelled', async t => {
 
 // To get this test to pass, I had to switch between spawnsync and execsync somehow
 test.serial('should remove remote tag when push to branch failed', async t => {
-  childProcess.execSync('git init');
-  childProcess.execSync(`git remote add origin file://foo`);
-  sh.exec(`git remote update`);
+  childProcess.execSync('git init', execOpts);
+  childProcess.execSync(`git remote add origin file://foo`, execOpts);
+  sh.exec(`git remote update`, execOpts);
   const version = '1.2.3';
   gitAdd(`{"version":"${version}"}`, 'package.json', 'Add package.json');
   const options = { git: { requireCleanWorkingDir: true, commit: true, tag: true, tagName: 'v${version}' } };
   const gitClient = factory(Git, { options });
   const exec = sinon.spy(gitClient.shell, 'execFormattedCommand');
-  sh.exec(`git push`);
-  sh.exec(`git checkout HEAD~1`);
+  sh.exec(`git push`, execOpts);
+  sh.exec(`git checkout HEAD~1`, execOpts);
   gitAdd('line', 'file', 'Add file');
 
   await gitClient.init();
 
-  childProcess.execSync('npm --no-git-tag-version version patch');
+  childProcess.execSync('npm --no-git-tag-version version patch', execOpts);
 
   gitClient.bump('1.2.4');
   await gitClient.beforeRelease();
@@ -340,12 +354,12 @@ test.serial('should remove remote tag when push to branch failed', async t => {
 });
 
 test.serial('should not touch existing history when rolling back', async t => {
-  childProcess.execSync('git init');
+  childProcess.execSync('git init', execOpts);
   const version = '1.2.3';
   gitAdd(`{"version":"${version}"}`, 'package.json', 'Add package.json');
   const options = { git: { requireCleanWorkingDir: true, commit: true, tag: true } };
   const gitClient = factory(Git, { options });
-  childProcess.execSync(`git tag ${version}`);
+  childProcess.execSync(`git tag ${version}`, execOpts);
 
   const exec = sinon.spy(gitClient.shell, 'execFormattedCommand');
   gitClient.config.setContext({ version: '1.2.4' });
@@ -358,7 +372,7 @@ test.serial('should not touch existing history when rolling back', async t => {
 
 // eslint-disable-next-line ava/no-skip-test
 test.serial.skip('should not roll back with risky config', async t => {
-  childProcess.execSync('git init');
+  childProcess.execSync('git init', execOpts);
   const options = { git: { requireCleanWorkingDir: false, commit: true, tag: true } };
   const gitClient = factory(Git, { options });
   await gitClient.beforeRelease();
@@ -366,7 +380,7 @@ test.serial.skip('should not roll back with risky config', async t => {
 });
 
 test.serial('should return latest tag from default branch (not parent commit)', async t => {
-  childProcess.execSync('git init');
+  childProcess.execSync('git init', execOpts);
 
   {
     const options = { git: { getLatestTagFromAllRefs: true } };
@@ -376,19 +390,19 @@ test.serial('should return latest tag from default branch (not parent commit)', 
     const developBranchName = 'develop';
     const featureBranchPrefix = 'feature';
     await gitClient.tag({ name: '1.0.0' });
-    childProcess.execSync(`git branch ${developBranchName} ${defaultBranchName}`);
-    childProcess.execSync(`git checkout -b ${featureBranchPrefix}/first ${developBranchName}`);
+    childProcess.execSync(`git branch ${developBranchName} ${defaultBranchName}`, execOpts);
+    childProcess.execSync(`git checkout -b ${featureBranchPrefix}/first ${developBranchName}`, execOpts);
     gitAdd('feature/1', 'file', 'Update file in feature branch (1)');
-    childProcess.execSync(`git checkout ${developBranchName}`);
-    childProcess.execSync(`git merge --no-ff ${featureBranchPrefix}/first`);
+    childProcess.execSync(`git checkout ${developBranchName}`, execOpts);
+    childProcess.execSync(`git merge --no-ff ${featureBranchPrefix}/first`, execOpts);
     await gitClient.tag({ name: '1.1.0-rc.1' });
-    childProcess.execSync(`git checkout ${defaultBranchName}`);
-    childProcess.execSync(`git merge --no-ff ${developBranchName}`);
+    childProcess.execSync(`git checkout ${defaultBranchName}`, execOpts);
+    childProcess.execSync(`git merge --no-ff ${developBranchName}`, execOpts);
     await gitClient.tag({ name: '1.1.0' });
-    childProcess.execSync(`git checkout -b ${featureBranchPrefix}/second ${developBranchName}`);
+    childProcess.execSync(`git checkout -b ${featureBranchPrefix}/second ${developBranchName}`, execOpts);
     gitAdd('feature/2', 'file', 'Update file again, in feature branch (2)');
-    childProcess.execSync(`git checkout ${developBranchName}`);
-    childProcess.execSync(`git merge --no-ff ${featureBranchPrefix}/second`);
+    childProcess.execSync(`git checkout ${developBranchName}`, execOpts);
+    childProcess.execSync(`git merge --no-ff ${featureBranchPrefix}/second`, execOpts);
     t.is(await gitClient.getLatestTagName(), '1.1.0');
   }
 

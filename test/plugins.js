@@ -1,4 +1,4 @@
-import { join } from 'node:path';
+import { resolve, join } from 'node:path';
 import childProcess from 'node:child_process';
 import fs, { appendFileSync, mkdirSync } from 'node:fs';
 import test from 'ava';
@@ -6,7 +6,7 @@ import sinon from 'sinon';
 import Log from '../lib/log.js';
 import Spinner from '../lib/spinner.js';
 import Config from '../lib/config.js';
-import { parseGitUrl } from '../lib/util.js';
+import { execOpts, parseGitUrl } from '../lib/util.js';
 import runTasks from '../lib/index.js';
 import MyPlugin from './stub/plugin.js';
 import ReplacePlugin from './stub/plugin-replace.js';
@@ -40,7 +40,7 @@ const getContainer = options => {
 
 test.before(t => {
   t.timeout(60 * 1000);
-  childProcess.execSync('npm link');
+  childProcess.execSync('npm link', execOpts);
 });
 
 test.serial.beforeEach(t => {
@@ -63,20 +63,20 @@ test.serial('should instantiate plugins and execute all release-cycle methods', 
     join(pluginDir, 'package.json'),
     JSON.stringify({ name: 'my-plugin', version: '1.0.0', type: 'module' })
   );
-  childProcess.execSync(`npm link release-it`);
+  childProcess.execSync(`npm link release-it`, execOpts);
   const content = "import { Plugin } from 'release-it'; " + MyPlugin.toString() + '; export default MyPlugin;';
 
   appendFileSync(join(pluginDir, 'index.js'), content);
   process.chdir(dir);
-  mkdirSync('-p', 'my/plugin', { recursive: true });
+  mkdirSync(resolve('my/plugin'), { recursive: true });
   process.chdir('my/plugin');
 
   appendFileSync(join(dir, 'my', 'plugin', 'index.js'), content);
   process.chdir(dir);
 
   appendFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'project', version: '1.0.0', type: 'module' }));
-  childProcess.execSync(`npm install ${pluginDir}`);
-  childProcess.execSync(`npm link release-it`);
+  childProcess.execSync(`npm install ${pluginDir}`, execOpts);
+  childProcess.execSync(`npm link release-it`, execOpts);
 
   const config = {
     plugins: {
@@ -133,15 +133,15 @@ test.serial('should instantiate plugins and execute all release-cycle methods fo
     join(pluginDir, 'package.json'),
     JSON.stringify({ name: '@scoped/my-plugin', version: '1.0.0', type: 'module' })
   );
-  childProcess.execSync(`npm link release-it`);
+  childProcess.execSync(`npm link release-it`, execOpts);
   const content = "import { Plugin } from 'release-it'; " + MyPlugin.toString() + '; export default MyPlugin;';
 
   fs.writeFileSync(join(pluginDir, 'index.js'), content);
   process.chdir(dir);
 
   fs.writeFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'project', version: '1.0.0', type: 'module' }));
-  childProcess.execSync(`npm install ${pluginDir}`);
-  childProcess.execSync(`npm link release-it`);
+  childProcess.execSync(`npm install ${pluginDir}`, execOpts);
+  childProcess.execSync(`npm link release-it`, execOpts);
 
   const config = {
     plugins: {
@@ -183,7 +183,7 @@ test.serial('should disable core plugins', async t => {
     "import { Plugin } from 'release-it'; " + ReplacePlugin.toString() + '; export default ReplacePlugin;';
 
   fs.appendFileSync(join(dir, 'replace-plugin.mjs'), content);
-  childProcess.execSync(`npm link release-it`);
+  childProcess.execSync(`npm link release-it`, execOpts);
 
   const config = {
     plugins: {
@@ -210,7 +210,7 @@ test.serial('should expose context to execute commands', async t => {
     "import { Plugin } from 'release-it'; " + ContextPlugin.toString() + '; export default ContextPlugin;';
 
   fs.appendFileSync(join(dir, 'context-plugin.js'), content);
-  childProcess.execSync(`npm link release-it`);
+  childProcess.execSync(`npm link release-it`, execOpts);
 
   const repo = parseGitUrl('https://github.com/user/pkg');
 

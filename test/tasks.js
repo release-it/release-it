@@ -10,6 +10,7 @@ import Spinner from '../lib/spinner.js';
 import Config from '../lib/config.js';
 import runTasks from '../lib/index.js';
 import Git from '../lib/plugin/git/Git.js';
+import { execOpts } from '../lib/util.js';
 import { mkTmpDir, gitAdd, getArgs } from './util/helpers.js';
 import ShellStub from './stub/shell.js';
 import {
@@ -62,8 +63,8 @@ test.serial.beforeEach(t => {
   const bare = mkTmpDir();
   const target = mkTmpDir();
   process.chdir(bare);
-  childProcess.execSync(`git init --bare .`);
-  childProcess.execSync(`git clone ${bare} ${target}`);
+  childProcess.execSync(`git init --bare .`, execOpts);
+  childProcess.execSync(`git clone ${bare} ${target}`, execOpts);
   process.chdir(target);
   gitAdd('line', 'file', 'Add file');
   t.context = { bare, target };
@@ -81,21 +82,23 @@ test.serial('should run tasks without throwing errors', async t => {
 });
 
 test.serial('should run tasks without package.json', async t => {
-  childProcess.execSync('git tag 1.0.0');
+  childProcess.execSync('git tag 1.0.0', execOpts);
   gitAdd('line', 'file', 'Add file');
   const { name } = await runTasks({}, getContainer({ increment: 'major', git: { commit: false } }));
   t.true(log.obtrusive.firstCall.args[0].includes(`release ${name} (1.0.0...2.0.0)`));
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
   t.is(log.warn.callCount, 0);
   {
-    const stdout = childProcess.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
+    const stdout = childProcess.execSync('git describe --tags --match=* --abbrev=0', {
+      encoding: 'utf-8'
+    });
     t.is(stdout.trim(), '2.0.0');
   }
 });
 
 test.serial('should disable plugins', async t => {
   gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
-  childProcess.execSync('git tag 1.2.3');
+  childProcess.execSync('git tag 1.2.3', execOpts);
   gitAdd('line', 'file', 'Add file');
   const container = getContainer({ increment: 'minor', git: false, npm: false });
   const { latestVersion, version } = await runTasks({}, container);
@@ -106,7 +109,7 @@ test.serial('should disable plugins', async t => {
 
 test.serial('should run tasks with minimal config and without any warnings/errors', async t => {
   gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
-  childProcess.execSync('git tag 1.2.3');
+  childProcess.execSync('git tag 1.2.3', execOpts);
   gitAdd('line', 'file', 'More file');
   await runTasks({}, getContainer({ increment: 'patch' }));
   t.true(log.obtrusive.firstCall.args[0].includes('release my-package (1.2.3...1.2.4)'));
@@ -126,7 +129,7 @@ test.serial('should use pkg.version', async t => {
 
 test.serial('should use pkg.version (in sub dir) w/o tagging repo', async t => {
   gitAdd('{"name":"root-package","version":"1.0.0"}', 'package.json', 'Add package.json');
-  childProcess.execSync('git tag 1.0.0');
+  childProcess.execSync('git tag 1.0.0', execOpts);
   mkdirSync('my-package');
   process.chdir('my-package');
   gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
@@ -144,7 +147,7 @@ test.serial('should use pkg.version (in sub dir) w/o tagging repo', async t => {
 
 test.serial('should ignore version in pkg.version and use git tag instead', async t => {
   gitAdd('{"name":"my-package","version":"0.0.0"}', 'package.json', 'Add package.json');
-  childProcess.execSync('git tag 1.1.1');
+  childProcess.execSync('git tag 1.1.1', execOpts);
   gitAdd('line', 'file', 'More file');
   await runTasks({}, getContainer({ increment: 'minor', npm: { ignoreVersion: true } }));
   t.true(log.obtrusive.firstCall.args[0].includes('release my-package (1.1.1...1.2.0)'));
@@ -159,7 +162,7 @@ test.serial('should release all the things (basic)', async t => {
   const pkgName = path.basename(target);
   const owner = path.basename(path.dirname(bare));
   gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
-  childProcess.execSync('git tag 1.0.0');
+  childProcess.execSync('git tag 1.0.0', execOpts);
   const sha = gitAdd('line', 'file', 'More file');
 
   interceptGitHubAuthentication();
@@ -205,7 +208,7 @@ test.serial('should release with correct tag name', async t => {
   const stdout = childProcess.execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf-8' });
   const branchName = stdout.trim();
   gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
-  childProcess.execSync(`git tag ${pkgName}-${branchName}-1.0.0`);
+  childProcess.execSync(`git tag ${pkgName}-${branchName}-1.0.0`, execOpts);
   const sha = gitAdd('line', 'file', 'More file');
 
   interceptGitHubCreate({
@@ -247,9 +250,9 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
   const owner = path.basename(path.dirname(bare));
   const url = `https://gitlab.com/${owner}/${project}`;
   gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
-  childProcess.execSync('git tag v1.0.0');
+  childProcess.execSync('git tag v1.0.0', execOpts);
   const sha = gitAdd('line', 'file', 'More file');
-  childProcess.execSync('git push --follow-tags');
+  childProcess.execSync('git push --follow-tags', execOpts);
   const git = factory(Git);
   const ref = (await git.getBranchName()) ?? 'HEAD';
 
@@ -328,7 +331,9 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
     'npm publish . --tag alpha'
   ]);
 
-  const commitMessage = childProcess.execSync('git log --oneline --format=%B -n 1 HEAD', { encoding: 'utf-8' });
+  const commitMessage = childProcess.execSync('git log --oneline --format=%B -n 1 HEAD', {
+    encoding: 'utf-8'
+  });
   t.is(commitMessage.trim(), `Release 1.1.0-alpha.0 for ${pkgName} (from 1.0.0)`);
 
   const tagName = childProcess.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
@@ -352,7 +357,7 @@ test.serial('should publish pre-release without pre-id with different npm.tag', 
   const { target } = t.context;
   const pkgName = path.basename(target);
   gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
-  childProcess.execSync('git tag v1.0.0');
+  childProcess.execSync('git tag v1.0.0', execOpts);
 
   const container = getContainer({ increment: 'major', preRelease: true, npm: { name: pkgName, tag: 'next' } });
   const exec = sinon.spy(container.shell, 'exec');
@@ -462,7 +467,7 @@ test.serial('should use custom changelog command with context', async t => {
   const { bare } = t.context;
   const project = path.basename(bare);
   const owner = path.basename(path.dirname(bare));
-  childProcess.execSync('git tag v1.0.0');
+  childProcess.execSync('git tag v1.0.0', execOpts);
   gitAdd('line', 'file', 'More file');
 
   interceptGitHubAuthentication();
@@ -502,7 +507,7 @@ test.serial('should use custom changelog command with context', async t => {
 {
   test.serial('should run all hooks', async t => {
     gitAdd(`{"name":"hooked","version":"1.0.0","type":"module"}`, 'package.json', 'Add package.json');
-    childProcess.execSync(`npm install ${rootDir}`);
+    childProcess.execSync(`npm install ${rootDir}`, execOpts);
     const plugin = "import { Plugin } from 'release-it'; class MyPlugin extends Plugin {}; export default MyPlugin;";
 
     appendFileSync('my-plugin.js', plugin);

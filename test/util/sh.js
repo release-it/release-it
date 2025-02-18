@@ -10,9 +10,9 @@ const getCommandAndArgs = input => {
   return [command, args];
 };
 
-const exec = command => {
+const exec = (command, opts = { stdio: 'inherit' }) => {
   const [cmd, args] = getCommandAndArgs(command);
-  return spawnSync(cmd, args, { stdio: 'inherit' });
+  return spawnSync(cmd, args, opts);
 };
 
 export default { getCommandAndArgs, exec };
