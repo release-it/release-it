@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import sinon from 'sinon';
 import semver from 'semver';
 import { parseVersion } from '../../lib/util.js';
@@ -9,10 +8,8 @@ import Spinner from '../../lib/spinner.js';
 import Prompt from '../../lib/prompt.js';
 
 export let factory = (Definition, { namespace, options = {}, container = {} } = {}) => {
-  _.defaults(options, { ci: true, verbose: false, 'dry-run': false, debug: false });
-
+  options = Object.assign({}, { ci: true, verbose: false, 'dry-run': false, debug: false }, options);
   const ns = namespace || Definition.name.toLowerCase();
-
   container.config = container.config || new Config(Object.assign({ config: false }, options));
   container.log = container.log || sinon.createStubInstance(Log);
 
