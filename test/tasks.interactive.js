@@ -2,7 +2,6 @@ import path from 'node:path';
 import { renameSync } from 'node:fs';
 import childProcess from 'node:child_process';
 import test from 'ava';
-import _ from 'lodash';
 import sinon from 'sinon';
 import Log from '../lib/log.js';
 import Spinner from '../lib/spinner.js';
@@ -105,7 +104,7 @@ test.serial('should not run hooks for disabled release-cycle methods', async t =
 
   await runTasks({}, container);
 
-  const commands = _.flatten(exec.args).filter(arg => typeof arg === 'string' && arg.startsWith('echo'));
+  const commands = exec.args.flat().filter(arg => typeof arg === 'string' && arg.startsWith('echo'));
 
   t.true(commands.includes('echo before:init'));
   t.true(commands.includes('echo after:afterRelease'));
@@ -140,7 +139,7 @@ test.serial('should not run hooks for cancelled release-cycle methods', async t 
 
   await runTasks({}, container);
 
-  const commands = _.flatten(exec.args).filter(arg => typeof arg === 'string' && arg.startsWith('echo'));
+  const commands = exec.args.flat().filter(arg => typeof arg === 'string' && arg.startsWith('echo'));
 
   t.true(commands.includes('echo before:init'));
   t.true(commands.includes('echo after:afterRelease'));
@@ -199,7 +198,7 @@ test.serial('should run "after:*:release" plugin hooks', async t => {
 
   await runTasks({}, container);
 
-  const commands = _.flatten(exec.args).filter(arg => typeof arg === 'string' && arg.startsWith('echo'));
+  const commands = exec.args.flat().filter(arg => typeof arg === 'string' && arg.startsWith('echo'));
 
   t.true(commands.includes('echo after:git:bump'));
   t.true(commands.includes('echo after:npm:bump'));

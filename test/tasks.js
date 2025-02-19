@@ -3,7 +3,6 @@ import childProcess from 'node:child_process';
 import { appendFileSync, mkdirSync, renameSync } from 'node:fs';
 import test from 'ava';
 import semver from 'semver';
-import _ from 'lodash';
 import sinon from 'sinon';
 import Log from '../lib/log.js';
 import Spinner from '../lib/spinner.js';
@@ -529,7 +528,7 @@ test.serial('should use custom changelog command with context', async t => {
 
     await runTasks({}, container);
 
-    const commands = _.flatten(exec.args).filter(arg => typeof arg === 'string' && arg.startsWith('echo'));
+    const commands = exec.args.flat().filter(arg => typeof arg === 'string' && arg.startsWith('echo'));
 
     t.deepEqual(commands, [
       'echo before:init',
