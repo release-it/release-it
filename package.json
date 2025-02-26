@@ -69,7 +69,7 @@
     "lint": "eslint lib test",
     "format": "prettier --write eslint.config.mjs \"{lib,test}/**/*.js\"",
     "docs": "remark README.md 'docs/**/*.md' '.github/*.md' -o",
-    "test": "ava --no-worker-threads && installed-check --ignore ava --ignore nock --ignore @phun-ky/typeof",
+    "test": "ava --no-worker-threads && installed-check --ignore ava --ignore nock",
     "release": "./bin/release-it.js"
   },
   "author": {
@@ -81,7 +81,7 @@
     "@iarna/toml": "2.2.5",
     "@nodeutils/defaults-deep": "1.1.0",
     "@octokit/rest": "21.1.0",
-    "@phun-ky/typeof": "1.2.1",
+    "@phun-ky/typeof": "1.2.2",
     "async-retry": "1.3.3",
     "chalk": "5.4.1",
     "ci-info": "^4.1.0",
