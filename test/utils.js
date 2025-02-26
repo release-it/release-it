@@ -2,7 +2,7 @@ import { EOL } from 'node:os';
 import test from 'ava';
 import mockStdIo from 'mock-stdio';
 import stripAnsi from 'strip-ansi';
-import { format, truncateLines, parseGitUrl, parseVersion } from '../lib/util.js';
+import { format, truncateLines, parseGitUrl, parseVersion, merge } from '../lib/util.js';
 
 test('format', t => {
   t.is(format('release v${version}', { version: '1.0.0' }), 'release v1.0.0');
@@ -94,4 +94,63 @@ test('parseVersion', t => {
   t.deepEqual(parseVersion('1.0.0-0'), { version: '1.0.0-0', isPreRelease: true, preReleaseId: null });
   t.deepEqual(parseVersion('1.0.0-next.1'), { version: '1.0.0-next.1', isPreRelease: true, preReleaseId: 'next' });
   t.deepEqual(parseVersion('21.04.1'), { version: '21.04.1', isPreRelease: false, preReleaseId: null });
+});
+
+// Basic merging
+test('merges two objects', t => {
+  const target = { a: 1, b: 2 };
+  const source = { b: 3, c: 4 };
+  t.deepEqual(merge(target, source), { a: 1, b: 3, c: 4 });
+});
+
+// Deep merging
+test('merges nested objects', t => {
+  const target = { a: { x: 1 } };
+  const source = { a: { y: 2 } };
+  t.deepEqual(merge(target, source), { a: { x: 1, y: 2 } });
+});
+
+// Merging arrays
+test('concatenates arrays', t => {
+  const target = { a: [1, 2] };
+  const source = { a: [3, 4] };
+  t.deepEqual(merge(target, source), { a: [1, 2, 3, 4] });
+});
+
+// Prevent prototype pollution
+test('does not allow prototype pollution', t => {
+  const target = {};
+  const source = JSON.parse('{"__proto__": {"polluted": true} }');
+  merge(target, source);
+  t.falsy({}.polluted);
+});
+
+// Undefined values should not overwrite existing values
+test('ignores undefined values', t => {
+  const target = { a: 1 };
+  const source = { a: undefined, b: 2 };
+  t.deepEqual(merge(target, source), { a: 1, b: 2 });
+});
+
+// Handles null and invalid inputs
+test('returns target when sources are null or invalid', t => {
+  const target = { a: 1 };
+  t.deepEqual(merge(target, null), { a: 1 });
+  t.deepEqual(merge(target, undefined), { a: 1 });
+  t.deepEqual(merge(target, 42), { a: 1 });
+  t.deepEqual(merge(target, 'string'), { a: 1 });
+});
+
+// Handles empty sources
+test('returns target when no sources are provided', t => {
+  const target = { a: 1 };
+  t.deepEqual(merge(target), { a: 1 });
+});
+
+// Deep merging with multiple sources
+test('merges multiple sources correctly', t => {
+  const target = { a: 1, b: { x: 10 } };
+  const source1 = { b: { y: 20 }, c: 3 };
+  const source2 = { d: 4, b: { z: 30 } };
+  t.deepEqual(merge(target, source1, source2), { a: 1, b: { x: 10, y: 20, z: 30 }, c: 3, d: 4 });
 });
