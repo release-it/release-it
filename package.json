@@ -91,6 +91,7 @@
     "globby": "14.1.0",
     "inquirer": "12.4.1",
     "issue-parser": "7.0.1",
+    "lodash.merge": "4.6.2",
     "mime-types": "2.1.35",
     "new-github-release-url": "2.0.0",
     "open": "10.1.0",
