@@ -2,7 +2,6 @@ import { EOL } from 'node:os';
 import test from 'ava';
 import mockStdIo from 'mock-stdio';
 import stripAnsi from 'strip-ansi';
-import merge from 'lodash.merge';
 import { format, truncateLines, parseGitUrl, parseVersion } from '../lib/util.js';
 
 test('format', t => {

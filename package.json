@@ -86,6 +86,7 @@
     "chalk": "5.4.1",
     "ci-info": "^4.1.0",
     "cosmiconfig": "9.0.0",
+    "eta": "3.5.0",
     "execa": "9.5.2",
     "git-url-parse": "16.0.0",
     "globby": "14.1.0",
