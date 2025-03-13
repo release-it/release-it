@@ -18,6 +18,19 @@ import {
 
 const tokenHeader = 'Private-Token';
 const tokenRef = 'GITLAB_TOKEN';
+const certificateAuthorityFileRef = 'CI_SERVER_TLS_CA_FILE';
+
+let originalEnv;
+test.beforeEach(() => {
+  originalEnv = process.env;
+  process.env = { ...originalEnv };
+
+  process.env[tokenRef] = '123';
+});
+test.afterEach(() => {
+  if (originalEnv !== undefined) process.env = originalEnv;
+  nock.cleanAll();
+});
 
 test.serial('should validate token', async t => {
   const tokenRef = 'MY_GITLAB_TOKEN';
@@ -327,9 +340,43 @@ test.serial('should create fetch agent if secure == false', t => {
 
 test.serial('should create fetch agent if certificateAuthorityFile', t => {
   const sandbox = sinon.createSandbox();
-  sandbox.stub(fs, 'readFileSync').returns('test certificate');
+  sandbox.stub(fs, 'readFileSync').withArgs('cert.crt').returns('test certificate');
 
   const options = { gitlab: { certificateAuthorityFile: 'cert.crt' } };
+  const gitlab = factory(GitLab, { options });
+  const { dispatcher } = gitlab.certificateAuthorityOption;
+
+  t.true(dispatcher instanceof Agent, "Fetch dispatcher should be an instance of undici's Agent class");
+
+  const kOptions = Object.getOwnPropertySymbols(dispatcher).find(symbol => symbol.description === 'options');
+  t.deepEqual(dispatcher[kOptions].connect, { rejectUnauthorized: undefined, ca: 'test certificate' });
+
+  sandbox.restore();
+});
+
+test.serial('should create fetch agent if CI_SERVER_TLS_CA_FILE env is set', t => {
+  const sandbox = sinon.createSandbox();
+  sandbox.stub(fs, 'readFileSync').withArgs('ca.crt').returns('test certificate');
+  process.env[certificateAuthorityFileRef] = 'ca.crt';
+
+  const options = { gitlab: {} };
+  const gitlab = factory(GitLab, { options });
+  const { dispatcher } = gitlab.certificateAuthorityOption;
+
+  t.true(dispatcher instanceof Agent, "Fetch dispatcher should be an instance of undici's Agent class");
+
+  const kOptions = Object.getOwnPropertySymbols(dispatcher).find(symbol => symbol.description === 'options');
+  t.deepEqual(dispatcher[kOptions].connect, { rejectUnauthorized: undefined, ca: 'test certificate' });
+
+  sandbox.restore();
+});
+
+test.serial('should create fetch agent if certificateAuthorityFileRef env is set', t => {
+  const sandbox = sinon.createSandbox();
+  sandbox.stub(fs, 'readFileSync').withArgs('custom-ca.crt').returns('test certificate');
+  process.env['GITLAB_CA_FILE'] = 'custom-ca.crt';
+
+  const options = { gitlab: { certificateAuthorityFileRef: 'GITLAB_CA_FILE' } };
   const gitlab = factory(GitLab, { options });
   const { dispatcher } = gitlab.certificateAuthorityOption;
 
