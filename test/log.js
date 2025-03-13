@@ -28,96 +28,96 @@ describe('log', () => {
     const log = new Log();
     mockStdIo.start();
     log.warn('foo');
-    const { stdout } = mockStdIo.end();
-    assert.equal(stripVTControlCharacters(stdout), 'WARNING foo\n');
+    const { stderr } = mockStdIo.end();
+    assert.equal(stripVTControlCharacters(stderr), 'WARNING foo\n');
   });
 
   test('should print verbose', () => {
     const log = new Log({ isVerbose: true, verbosityLevel: 2 });
     mockStdIo.start();
     log.verbose('foo');
-    const { stdout } = mockStdIo.end();
-    assert.equal(stdout, 'foo\n');
+    const { stderr } = mockStdIo.end();
+    assert.equal(stderr, 'foo\n');
   });
 
   test('should print external scripts verbose', () => {
     const log = new Log({ isVerbose: true });
     mockStdIo.start();
     log.verbose('foo', { isExternal: true });
-    const { stdout } = mockStdIo.end();
-    assert.equal(stdout, 'foo\n');
+    const { stderr } = mockStdIo.end();
+    assert.equal(stderr, 'foo\n');
   });
 
   test('should always print external scripts verbose', () => {
     const log = new Log({ isVerbose: true, verbosityLevel: 2 });
     mockStdIo.start();
     log.verbose('foo', { isExternal: true });
-    const { stdout } = mockStdIo.end();
-    assert.equal(stdout, 'foo\n');
+    const { stderr } = mockStdIo.end();
+    assert.equal(stderr, 'foo\n');
   });
 
   test('should not print verbose by default', () => {
     const log = new Log();
     mockStdIo.start();
     log.verbose('foo');
-    const { stdout } = mockStdIo.end();
-    assert.equal(stdout, '');
+    const { stderr } = mockStdIo.end();
+    assert.equal(stderr, '');
   });
 
   test('should not print command execution by default', () => {
     const log = new Log();
     mockStdIo.start();
     log.exec('foo');
-    const { stdout } = mockStdIo.end();
-    assert.equal(stdout.trim(), '');
+    const { stderr } = mockStdIo.end();
+    assert.equal(stderr.trim(), '');
   });
 
   test('should print command execution (verbose)', () => {
     const log = new Log({ isVerbose: true, verbosityLevel: 2 });
     mockStdIo.start();
     log.exec('foo');
-    const { stdout } = mockStdIo.end();
-    assert.equal(stdout.trim(), '$ foo');
+    const { stderr } = mockStdIo.end();
+    assert.equal(stderr.trim(), '$ foo');
   });
 
   test('should print command execution (verbose/dry run)', () => {
     const log = new Log({ isVerbose: true });
     mockStdIo.start();
     log.exec('foo', { isDryRun: true, isExternal: true });
-    const { stdout } = mockStdIo.end();
-    assert.equal(stdout.trim(), '! foo');
+    const { stderr } = mockStdIo.end();
+    assert.equal(stderr.trim(), '! foo');
   });
 
   test('should print command execution (verbose/external)', () => {
     const log = new Log({ isVerbose: true });
     mockStdIo.start();
     log.exec('foo', { isExternal: true });
-    const { stdout } = mockStdIo.end();
-    assert.equal(stdout.trim(), '$ foo');
+    const { stderr } = mockStdIo.end();
+    assert.equal(stderr.trim(), '$ foo');
   });
 
   test('should print command execution (dry run)', () => {
     const log = new Log({ isDryRun: true });
     mockStdIo.start();
     log.exec('foo');
-    const { stdout } = mockStdIo.end();
-    assert.equal(stdout, '$ foo\n');
+    const { stderr } = mockStdIo.end();
+    assert.equal(stderr, '$ foo\n');
   });
 
   test('should print command execution (read-only)', () => {
     const log = new Log({ isDryRun: true });
     mockStdIo.start();
     log.exec('foo', 'bar', false);
-    const { stdout } = mockStdIo.end();
-    assert.equal(stdout, '$ foo bar\n');
+    const { stderr } = mockStdIo.end();
+    assert.equal(stderr, '$ foo bar\n');
   });
 
   test('should print command execution (write)', () => {
     const log = new Log({ isDryRun: true });
     mockStdIo.start();
     log.exec('foo', '--arg n', { isDryRun: true });
-    const { stdout } = mockStdIo.end();
-    assert.equal(stdout, '! foo --arg n\n');
+    const { stderr } = mockStdIo.end();
+    assert.equal(stderr, '! foo --arg n\n');
   });
 
   test('should print obtrusive', () => {
