@@ -26,96 +26,96 @@ test('should print a warning', t => {
   const log = new Log();
   mockStdIo.start();
   log.warn('foo');
-  const { stdout } = mockStdIo.end();
-  t.is(stripAnsi(stdout), 'WARNING foo\n');
+  const { stderr } = mockStdIo.end();
+  t.is(stripAnsi(stderr), 'WARNING foo\n');
 });
 
 test('should print verbose', t => {
   const log = new Log({ isVerbose: true, verbosityLevel: 2 });
   mockStdIo.start();
   log.verbose('foo');
-  const { stdout } = mockStdIo.end();
-  t.is(stdout, 'foo\n');
+  const { stderr } = mockStdIo.end();
+  t.is(stderr, 'foo\n');
 });
 
 test('should print external scripts verbose', t => {
   const log = new Log({ isVerbose: true });
   mockStdIo.start();
   log.verbose('foo', { isExternal: true });
-  const { stdout } = mockStdIo.end();
-  t.is(stdout, 'foo\n');
+  const { stderr } = mockStdIo.end();
+  t.is(stderr, 'foo\n');
 });
 
 test('should always print external scripts verbose', t => {
   const log = new Log({ isVerbose: true, verbosityLevel: 2 });
   mockStdIo.start();
   log.verbose('foo', { isExternal: true });
-  const { stdout } = mockStdIo.end();
-  t.is(stdout, 'foo\n');
+  const { stderr } = mockStdIo.end();
+  t.is(stderr, 'foo\n');
 });
 
 test('should not print verbose by default', t => {
   const log = new Log();
   mockStdIo.start();
   log.verbose('foo');
-  const { stdout } = mockStdIo.end();
-  t.is(stdout, '');
+  const { stderr } = mockStdIo.end();
+  t.is(stderr, '');
 });
 
 test('should not print command execution by default', t => {
   const log = new Log();
   mockStdIo.start();
   log.exec('foo');
-  const { stdout } = mockStdIo.end();
-  t.is(stdout.trim(), '');
+  const { stderr } = mockStdIo.end();
+  t.is(stderr.trim(), '');
 });
 
 test('should print command execution (verbose)', t => {
   const log = new Log({ isVerbose: true, verbosityLevel: 2 });
   mockStdIo.start();
   log.exec('foo');
-  const { stdout } = mockStdIo.end();
-  t.is(stdout.trim(), '$ foo');
+  const { stderr } = mockStdIo.end();
+  t.is(stderr.trim(), '$ foo');
 });
 
 test('should print command execution (verbose/dry run)', t => {
   const log = new Log({ isVerbose: true });
   mockStdIo.start();
   log.exec('foo', { isDryRun: true, isExternal: true });
-  const { stdout } = mockStdIo.end();
-  t.is(stdout.trim(), '! foo');
+  const { stderr } = mockStdIo.end();
+  t.is(stderr.trim(), '! foo');
 });
 
 test('should print command execution (verbose/external)', t => {
   const log = new Log({ isVerbose: true });
   mockStdIo.start();
   log.exec('foo', { isExternal: true });
-  const { stdout } = mockStdIo.end();
-  t.is(stdout.trim(), '$ foo');
+  const { stderr } = mockStdIo.end();
+  t.is(stderr.trim(), '$ foo');
 });
 
 test('should print command execution (dry run)', t => {
   const log = new Log({ isDryRun: true });
   mockStdIo.start();
   log.exec('foo');
-  const { stdout } = mockStdIo.end();
-  t.is(stdout, '$ foo\n');
+  const { stderr } = mockStdIo.end();
+  t.is(stderr, '$ foo\n');
 });
 
 test('should print command execution (read-only)', t => {
   const log = new Log({ isDryRun: true });
   mockStdIo.start();
   log.exec('foo', 'bar', false);
-  const { stdout } = mockStdIo.end();
-  t.is(stdout, '$ foo bar\n');
+  const { stderr } = mockStdIo.end();
+  t.is(stderr, '$ foo bar\n');
 });
 
 test('should print command execution (write)', t => {
   const log = new Log({ isDryRun: true });
   mockStdIo.start();
   log.exec('foo', '--arg n', { isDryRun: true });
-  const { stdout } = mockStdIo.end();
-  t.is(stdout, '! foo --arg n\n');
+  const { stderr } = mockStdIo.end();
+  t.is(stderr, '! foo --arg n\n');
 });
 
 test('should print obtrusive', t => {
