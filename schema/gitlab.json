@@ -46,6 +46,10 @@
     "certificateAuthorityFile": {
       "default": null
     },
+    "certificateAuthorityFileRef": {
+      "type": "string",
+      "default": "CI_SERVER_TLS_CA_FILE"
+    },
     "secure": {
       "default": null
     },

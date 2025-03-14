@@ -14,19 +14,20 @@ GitLab Releases do not support pre-releases or drafts.
 
 ## Configuration options
 
-| Option                            | Description                                                         |
-| :-------------------------------- | :------------------------------------------------------------------ |
-| `gitlab.release`                  | Set to `false` to skip the GitLab publish step                      |
-| `gitlab.releaseName`              | Set the release name (default: `Release ${version}`)                |
-| `gitlab.releaseNotes`             | Override the release notes with custom notes                        |
-| `gitlab.milestones`               | Associate one or more milestones with a GitLab release              |
-| `gitlab.tokenRef`                 | GitLab token environment variable name (default: `GITLAB_TOKEN`)    |
-| `gitlab.tokenHeader`              | _TODO_                                                              |
-| `gitlab.certificateAuthorityFile` | _TODO_                                                              |
-| `gitlab.secure`                   | _TODO_                                                              |
-| `gitlab.assets`                   | Glob pattern path to assets to add to the GitLab release            |
-| `gitlab.origin`                   | _TODO_                                                              |
-| `gitlab.skipChecks`               | Skip checks on `GITLAB_TOKEN` environment variable and milestone(s) |
+| Option                               | Description                                                                 |
+|:-------------------------------------|:----------------------------------------------------------------------------|
+| `gitlab.release`                     | Set to `false` to skip the GitLab publish step                              |
+| `gitlab.releaseName`                 | Set the release name (default: `Release ${version}`)                        |
+| `gitlab.releaseNotes`                | Override the release notes with custom notes                                |
+| `gitlab.milestones`                  | Associate one or more milestones with a GitLab release                      |
+| `gitlab.tokenRef`                    | GitLab token environment variable name (default: `GITLAB_TOKEN`)            |
+| `gitlab.tokenHeader`                 | HTTP header name for the GitLab token (default: `Private-Token`)            |
+| `gitlab.certificateAuthorityFile`    | Path of the GitLab CA file for self-hosted installations                    |
+| `gitlab.certificateAuthorityFileRef` | GitLab CA file environment variable name (default: `CI_SERVER_TLS_CA_FILE`) |
+| `gitlab.secure`                      | Flag to disable server certificate verification (default: `false`)          |
+| `gitlab.assets`                      | Glob pattern path to assets to add to the GitLab release                    |
+| `gitlab.origin`                      | Base URL to use for the GitLab API (default: `https://${repo.host}`)        |
+| `gitlab.skipChecks`                  | Skip checks on `GITLAB_TOKEN` environment variable and milestone(s)         |
 
 ## Prerequisite checks
 
@@ -143,7 +144,7 @@ derived from the Git url (e.g. to use `http` over the default `https://${repo.ho
 ## Private CA Authority
 
 If you're running your own GitLab instance with an HTTPS certificate issued by a private certificate Authority, you can
-specify the root CA certificate with `certificateAuthorityFile`, for example:
+specify the root CA certificate with `certificateAuthorityFile` or `certificateAuthorityFileRef`, for example:
 
 ```json
 {
@@ -154,6 +155,8 @@ specify the root CA certificate with `certificateAuthorityFile`, for example:
   }
 }
 ```
+
+If not explicitly set, the environment variable `CI_SERVER_TLS_CA_FILE` is used by default.
 
 Alternatively, if you want to disable the server certificate verification against the list of supplied CAs, you can set
 the `secure` flag to false:
