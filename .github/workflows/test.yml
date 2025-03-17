@@ -25,7 +25,7 @@ jobs:
           - windows-latest
           - macos-latest
         node:
-          - 20
+          # - 20 // globs in `node --test` not supported
           - 22
 
     runs-on: ${{ matrix.os }}
