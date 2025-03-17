@@ -25,9 +25,10 @@ const gitAdd = (content, filePath, message) => {
   return match ? match[1] : null;
 };
 
-const getArgs = (args, prefix) =>
-  args
-    .map(args => (typeof args[0] !== 'string' ? args[0].join(' ') : args[0]))
+const getArgs = (fn, prefix) =>
+  fn.mock.calls
+    .map(call => call.arguments[0])
+    .map(arg => (typeof arg !== 'string' ? arg.join(' ') : arg))
     .filter(cmd => cmd.startsWith(prefix))
     .map(cmd => cmd.trim());
 
