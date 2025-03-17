@@ -48,9 +48,9 @@
   "type": "module",
   "exports": {
     ".": {
+      "types": "./types/index.d.ts",
       "import": "./lib/index.js",
-      "require": "./lib/index.js",
-      "types": "./types/index.d.ts"
+      "require": "./lib/index.js"
     },
     "./package.json": "./package.json",
     "./test/util/index.js": "./test/util/index.js"
@@ -69,7 +69,7 @@
     "lint": "eslint lib test",
     "format": "prettier --write eslint.config.mjs \"{lib,test}/**/*.js\"",
     "docs": "remark README.md 'docs/**/*.md' '.github/*.md' -o",
-    "test": "ava --no-worker-threads && installed-check --ignore ava --ignore nock",
+    "test": "node --env-file=.env.test --test \"test/*.js\" && installed-check",
     "release": "./bin/release-it.js"
   },
   "author": {
@@ -112,25 +112,19 @@
     "@eslint/eslintrc": "3.3.0",
     "@eslint/js": "9.22.0",
     "@octokit/request-error": "6.1.7",
-    "@types/node": "20.17.17",
-    "ava": "6.2.0",
+    "@types/node": "20.17.24",
     "eslint": "9.22.0",
     "eslint-config-prettier": "10.1.1",
-    "eslint-plugin-ava": "15.0.1",
     "eslint-plugin-import-x": "4.6.1",
     "eslint-plugin-prettier": "5.2.3",
-    "fs-monkey": "1.0.6",
     "globals": "16.0.0",
     "installed-check": "9.3.0",
     "knip": "5.45.0",
-    "memfs": "4.17.0",
+    "mentoss": "0.8.0",
     "mock-stdio": "1.0.3",
-    "nock": "14.0.1",
     "prettier": "3.5.3",
     "remark-cli": "12.0.1",
     "remark-preset-webpro": "1.1.1",
-    "sinon": "19.0.2",
-    "strip-ansi": "7.1.0",
     "typescript": "5.8.2"
   },
   "overrides": {

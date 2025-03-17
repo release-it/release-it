@@ -1,21 +1,46 @@
-import sinon from 'sinon';
+import { mock } from 'node:test';
 import semver from 'semver';
 import { parseVersion } from '../../lib/util.js';
-import Log from '../../lib/log.js';
 import Config from '../../lib/config.js';
 import ShellStub from '../stub/shell.js';
-import Spinner from '../../lib/spinner.js';
 import Prompt from '../../lib/prompt.js';
+
+const noop = Promise.resolve();
+
+export class LogStub {
+  log = mock.fn();
+  error = mock.fn();
+  info = mock.fn();
+  warn = mock.fn();
+  verbose = mock.fn();
+  exec = mock.fn();
+  obtrusive = mock.fn();
+  preview = mock.fn();
+  resetCalls() {
+    this.log.mock.resetCalls();
+    this.error.mock.resetCalls();
+    this.info.mock.resetCalls();
+    this.warn.mock.resetCalls();
+    this.verbose.mock.resetCalls();
+    this.exec.mock.resetCalls();
+    this.obtrusive.mock.resetCalls();
+    this.preview.mock.resetCalls();
+  }
+}
+
+export class SpinnerStub {
+  show({ enabled = true, task }) {
+    return enabled ? task() : noop;
+  }
+}
 
 export let factory = (Definition, { namespace, options = {}, container = {} } = {}) => {
   options = Object.assign({}, { ci: true, verbose: false, 'dry-run': false, debug: false }, options);
   const ns = namespace || Definition.name.toLowerCase();
   container.config = container.config || new Config(Object.assign({ config: false }, options));
-  container.log = container.log || sinon.createStubInstance(Log);
+  container.log = new LogStub();
 
-  const spinner = container.spinner || sinon.createStubInstance(Spinner);
-  spinner.show.callsFake(({ enabled = true, task }) => (enabled ? task() : () => {}));
-  container.spinner = spinner;
+  container.spinner = new SpinnerStub();
   container.shell = container.shell || new ShellStub({ container });
 
   container.prompt = container.prompt || new Prompt({ container });
