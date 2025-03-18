@@ -69,7 +69,7 @@
     "lint": "eslint lib test",
     "format": "prettier --write eslint.config.mjs \"{lib,test}/**/*.js\"",
     "docs": "remark README.md 'docs/**/*.md' '.github/*.md' -o",
-    "test": "node --env-file=.env.test --test \"test/*.js\" && installed-check",
+    "test": "node --env-file=.env.test --test && installed-check",
     "release": "./bin/release-it.js"
   },
   "author": {
