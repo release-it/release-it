@@ -1,5 +1,5 @@
 {
   "entry": ["bin/release-it.js!"],
   "project": ["bin/*.js!", "lib/**/*.js!"],
-  "ignoreDependencies": ["eslint-plugin-ava"]
+  "ignoreDependencies": []
 }

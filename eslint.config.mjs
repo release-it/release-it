@@ -17,7 +17,7 @@ const compat = new FlatCompat({
 });
 
 export default [
-  ...fixupConfigRules(compat.extends('eslint:recommended', 'plugin:ava/recommended', 'prettier')),
+  ...fixupConfigRules(compat.extends('eslint:recommended', 'prettier')),
   {
     plugins: {
       prettier,
@@ -34,9 +34,7 @@ export default [
     rules: {
       'no-unused-vars': ['error', { caughtErrors: 'none' }],
       'prettier/prettier': 2,
-      'ava/no-ignored-test-files': 0,
-      'ava/no-import-test-files': 0,
-      'import/no-unresolved': [2, { ignore: ['ava', '@octokit/rest', '@octokit/request-error'] }],
+      'import/no-unresolved': [2, { ignore: ['@octokit/rest', '@octokit/request-error'] }],
       'import/no-unused-modules': 2,
       'import/order': [2, { 'newlines-between': 'never' }]
     }
