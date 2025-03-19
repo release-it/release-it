@@ -27,6 +27,7 @@
     "publish": true,
     "publishPath": ".",
     "publishArgs": [],
+    "publishPackageManager": "npm",
     "tag": null,
     "otp": null,
     "ignoreVersion": false,
