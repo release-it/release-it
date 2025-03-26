@@ -8,14 +8,16 @@ import Prompt from '../../lib/prompt.js';
 const noop = Promise.resolve();
 
 export class LogStub {
-  log = mock.fn();
-  error = mock.fn();
-  info = mock.fn();
-  warn = mock.fn();
-  verbose = mock.fn();
-  exec = mock.fn();
-  obtrusive = mock.fn();
-  preview = mock.fn();
+  constructor() {
+    this.log = mock.fn();
+    this.error = mock.fn();
+    this.info = mock.fn();
+    this.warn = mock.fn();
+    this.verbose = mock.fn();
+    this.exec = mock.fn();
+    this.obtrusive = mock.fn();
+    this.preview = mock.fn();
+  }
   resetCalls() {
     this.log.mock.resetCalls();
     this.error.mock.resetCalls();
