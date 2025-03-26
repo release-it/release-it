@@ -1,7 +1,7 @@
 import test from 'ava';
 import { isCI } from 'ci-info';
 import sinon from 'sinon';
-import Config, { getRemoteConfiguration } from '../lib/config.js';
+import Config from '../lib/config.js';
 import { readJSON } from '../lib/util.js';
 
 const defaultConfig = readJSON(new URL('../config/release-it.json', import.meta.url));
@@ -165,11 +165,8 @@ test('should expand pre-release shortcut (snapshot)', t => {
   t.true(config.options.git.getLatestTagFromAllRefs);
 });
 
-test.serial('should fetch extended configuration with default file and default branch', async t => {
+test.serial('should fetch extended configuration with default file and default branch', t => {
   const fetchStub = sandbox.stub(global, 'fetch');
-  const config = {
-    extends: 'github:release-it/release-it-configuration'
-  };
 
   const extendedConfiguration = {
     git: {
@@ -182,21 +179,20 @@ test.serial('should fetch extended configuration with default file and default b
     json: async () => extendedConfiguration
   });
 
-  const response = await getRemoteConfiguration(config.extends);
+  const config = new Config({
+    extends: 'github:release-it/release-it-configuration'
+  });
 
   t.is(
-    fetchStub.firstCall.firstArg.href,
+    fetchStub.firstCall?.firstArg?.href,
     'https://raw.githubusercontent.com/release-it/release-it-configuration/HEAD/.release-it.json'
   );
 
-  t.is(response, extendedConfiguration);
+  t.is(config.options, extendedConfiguration);
 });
 
-test.serial('should fetch extended configuration with default file and specific tag', async t => {
+test.serial('should fetch extended configuration with default file and specific tag', t => {
   const fetchStub = sandbox.stub(global, 'fetch');
-  const config = {
-    extends: 'github:release-it/release-it-configuration#1.0.0'
-  };
 
   const extendedConfiguration = {
     git: {
@@ -209,21 +205,20 @@ test.serial('should fetch extended configuration with default file and specific 
     json: async () => extendedConfiguration
   });
 
-  const response = await getRemoteConfiguration(config.extends);
+  const config = new Config({
+    extends: 'github:release-it/release-it-configuration#1.0.0'
+  });
 
   t.is(
     fetchStub.firstCall.firstArg.href,
     'https://raw.githubusercontent.com/release-it/release-it-configuration/refs/tags/1.0.0/.release-it.json'
   );
 
-  t.is(response, extendedConfiguration);
+  t.is(config.options, extendedConfiguration);
 });
 
-test.serial('should fetch extended configuration with custom file and specific tag', async t => {
+test.serial('should fetch extended configuration with custom file and specific tag', t => {
   const fetchStub = sandbox.stub(global, 'fetch');
-  const config = {
-    extends: 'github:release-it/release-it-configuration:config.json#1.0.0'
-  };
 
   const extendedConfiguration = {
     git: {
@@ -236,21 +231,20 @@ test.serial('should fetch extended configuration with custom file and specific t
     json: async () => extendedConfiguration
   });
 
-  const response = await getRemoteConfiguration(config.extends);
+  const config = new Config({
+    extends: 'github:release-it/release-it-configuration:config.json#1.0.0'
+  });
 
   t.is(
     fetchStub.firstCall.firstArg.href,
     'https://raw.githubusercontent.com/release-it/release-it-configuration/refs/tags/1.0.0/config.json'
   );
 
-  t.is(response, extendedConfiguration);
+  t.is(config.options, extendedConfiguration);
 });
 
-test.serial('should fetch extended configuration with custom file and default branch', async t => {
+test.serial('should fetch extended configuration with custom file and default branch', t => {
   const fetchStub = sandbox.stub(global, 'fetch');
-  const config = {
-    extends: 'github:release-it/release-it-configuration:config.json'
-  };
 
   const extendedConfiguration = {
     git: {
@@ -263,12 +257,14 @@ test.serial('should fetch extended configuration with custom file and default br
     json: async () => extendedConfiguration
   });
 
-  const response = await getRemoteConfiguration(config.extends);
+  const config = new Config({
+    extends: 'github:release-it/release-it-configuration:config.json'
+  });
 
   t.is(
     fetchStub.firstCall.firstArg.href,
     'https://raw.githubusercontent.com/release-it/release-it-configuration/HEAD/config.json'
   );
 
-  t.is(response, extendedConfiguration);
+  t.is(config.options, extendedConfiguration);
 });
