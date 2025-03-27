@@ -7,10 +7,12 @@ import ShellStub from '../stub/shell.js';
 import Spinner from '../../lib/spinner.js';
 import Prompt from '../../lib/prompt.js';
 
-export let factory = (Definition, { namespace, options = {}, container = {} } = {}) => {
+export let factory = async (Definition, { namespace, options = {}, container = {} } = {}) => {
   options = Object.assign({}, { ci: true, verbose: false, 'dry-run': false, debug: false }, options);
   const ns = namespace || Definition.name.toLowerCase();
   container.config = container.config || new Config(Object.assign({ config: false }, options));
+  await container.config.resolved
+
   container.log = container.log || sinon.createStubInstance(Log);
 
   const spinner = container.spinner || sinon.createStubInstance(Spinner);

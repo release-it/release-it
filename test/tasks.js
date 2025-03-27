@@ -252,7 +252,7 @@ test.serial('should release all the things (pre-release, github, gitlab)', async
   childProcess.execSync('git tag v1.0.0', execOpts);
   const sha = gitAdd('line', 'file', 'More file');
   childProcess.execSync('git push --follow-tags', execOpts);
-  const git = factory(Git);
+  const git = await factory(Git);
   const ref = (await git.getBranchName()) ?? 'HEAD';
 
   interceptGitHubAuthentication();

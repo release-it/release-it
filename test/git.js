@@ -15,14 +15,14 @@ test.beforeEach(() => {
 });
 
 test.serial('should return whether repo has upstream branch', async t => {
-  const gitClient = factory(Git);
+  const gitClient = await factory(Git);
   childProcess.execSync('git init', execOpts);
   gitAdd('line', 'file', 'Add file');
   t.false(await gitClient.hasUpstreamBranch());
 });
 
 test.serial('should return branch name', async t => {
-  const gitClient = factory(Git);
+  const gitClient = await factory(Git);
   childProcess.execSync('git init', execOpts);
   t.is(await gitClient.getBranchName(), null);
   childProcess.execSync('git checkout -b feat', execOpts);
@@ -31,7 +31,7 @@ test.serial('should return branch name', async t => {
 });
 
 test.serial('should return whether tag exists and if working dir is clean', async t => {
-  const gitClient = factory(Git);
+  const gitClient = await factory(Git);
   childProcess.execSync('git init', execOpts);
   t.false(await gitClient.tagExists('1.0.0'));
   touch('file');
@@ -43,7 +43,7 @@ test.serial('should return whether tag exists and if working dir is clean', asyn
 });
 
 test.serial('should throw if tag exists', async t => {
-  const gitClient = factory(Git);
+  const gitClient = await factory(Git);
   childProcess.execSync('git init', execOpts);
   touch('file');
   gitAdd('line', 'file', 'Add file');
@@ -54,7 +54,7 @@ test.serial('should throw if tag exists', async t => {
 });
 
 test.serial('should only warn if tag exists intentionally', async t => {
-  const gitClient = factory(Git);
+  const gitClient = await factory(Git);
   const { warn } = gitClient.log;
   childProcess.execSync('git init', execOpts);
   touch('file');
@@ -70,21 +70,21 @@ test.serial('should return the remote url', async t => {
   childProcess.execSync(`git init`, execOpts);
   {
     const options = { git: { pushRepo: 'origin' } };
-    const gitClient = factory(Git, { options });
+    const gitClient = await factory(Git, { options });
     t.is(await gitClient.getRemoteUrl(), null);
     childProcess.execSync(`git remote add origin foo`, execOpts);
     t.is(await gitClient.getRemoteUrl(), 'foo');
   }
   {
     const options = { git: { pushRepo: 'another' } };
-    const gitClient = factory(Git, { options });
+    const gitClient = await factory(Git, { options });
     t.is(await gitClient.getRemoteUrl(), null);
     childProcess.execSync(`git remote add another bar`, execOpts);
     t.is(await gitClient.getRemoteUrl(), 'bar');
   }
   {
     const options = { git: { pushRepo: 'git://github.com/webpro/release-it.git' } };
-    const gitClient = factory(Git, { options });
+    const gitClient = await factory(Git, { options });
     t.is(await gitClient.getRemoteUrl(), 'git://github.com/webpro/release-it.git');
   }
 });
@@ -95,7 +95,7 @@ test.serial('should return the non-origin remote', async t => {
   childProcess.execSync(`git clone ${bare} .`, execOpts);
   gitAdd('line', 'file', 'Add file');
   childProcess.execSync('git remote rename origin upstream', execOpts);
-  const gitClient = factory(Git);
+  const gitClient = await factory(Git);
   t.is(await gitClient.getRemoteUrl(), bare);
 });
 
@@ -106,12 +106,12 @@ test.serial('should stage, commit, tag and push', async t => {
   const version = '1.2.3';
   gitAdd(`{"version":"${version}"}`, 'package.json', 'Add package.json');
   {
-    const gitClient = factory(Git);
+    const gitClient = await factory(Git);
     childProcess.execSync(`git tag ${version}`, execOpts);
     t.is(await gitClient.getLatestTagName(), version);
   }
   {
-    const gitClient = factory(Git);
+    const gitClient = await factory(Git);
     gitAdd('line', 'file', 'Add file');
     childProcess.execSync('npm --no-git-tag-version version patch', execOpts);
     await gitClient.stage('package.json');
@@ -131,7 +131,7 @@ test.serial('should commit, tag and push with extra args', async t => {
   childProcess.execSync(`git clone ${bare} .`, execOpts);
   gitAdd('line', 'file', 'Add file');
   const options = { git: { commitArgs: '-S', tagArgs: ['-T', 'foo'], pushArgs: ['-U', 'bar', '-V'] } };
-  const gitClient = factory(Git, { options });
+  const gitClient = await factory(Git, { options });
   const stub = sinon.stub(gitClient.shell, 'exec').resolves();
   await gitClient.stage('package.json');
   await gitClient.commit({ message: `Release v1.2.4` });
@@ -150,7 +150,7 @@ test.serial('should amend commit without message if not provided', async t => {
   childProcess.execSync(`git clone ${bare} .`, execOpts);
   gitAdd('line', 'file', 'Add file');
   const options = { git: { commitArgs: ['--amend', '--no-edit', '--no-verify'] } };
-  const gitClient = factory(Git, { options });
+  const gitClient = await factory(Git, { options });
   const stub = sinon.stub(gitClient.shell, 'exec').resolves();
   await gitClient.stage('package.json');
   await gitClient.commit();
@@ -162,7 +162,7 @@ test.serial('should commit and tag with quoted characters', async t => {
   const bare = mkTmpDir();
   childProcess.execSync(`git init --bare ${bare}`, execOpts);
   childProcess.execSync(`git clone ${bare} .`, execOpts);
-  const gitClient = factory(Git, {
+  const gitClient = await factory(Git, {
     options: { git: { commitMessage: 'Release ${version}', tagAnnotation: 'Release ${version}\n\n${changelog}' } }
   });
   touch('file');
@@ -188,7 +188,7 @@ test.serial('should push to origin', async t => {
   childProcess.execSync(`git init --bare ${bare}`, execOpts);
   childProcess.execSync(`git clone ${bare} .`, execOpts);
   gitAdd('line', 'file', 'Add file');
-  const gitClient = factory(Git);
+  const gitClient = await factory(Git);
   const spy = sinon.spy(gitClient.shell, 'exec');
   await gitClient.push();
   t.deepEqual(spy.lastCall.args[0], ['git', 'push']);
@@ -207,7 +207,7 @@ test.serial('should push to tracked upstream branch', async t => {
   childProcess.execSync(`git clone ${bare} .`, execOpts);
   childProcess.execSync(`git remote rename origin upstream`, execOpts);
   gitAdd('line', 'file', 'Add file');
-  const gitClient = factory(Git);
+  const gitClient = await factory(Git);
   const spy = sinon.spy(gitClient.shell, 'exec');
   await gitClient.push();
   t.deepEqual(spy.lastCall.args[0], ['git', 'push']);
@@ -226,7 +226,7 @@ test.serial('should push to repo url', async t => {
   childProcess.execSync(`git clone ${bare} .`, execOpts);
   gitAdd('line', 'file', 'Add file');
   const options = { git: { pushRepo: 'https://host/repo.git' } };
-  const gitClient = factory(Git, { options });
+  const gitClient = await factory(Git, { options });
   const spy = sinon.spy(gitClient.shell, 'exec');
   try {
     await gitClient.push();
@@ -248,7 +248,7 @@ test.serial('should push to remote name (not "origin")', async t => {
     execOpts
   );
   const options = { git: { pushRepo: 'upstream' } };
-  const gitClient = factory(Git, { options });
+  const gitClient = await factory(Git, { options });
   const spy = sinon.spy(gitClient.shell, 'exec');
   await gitClient.push();
   t.deepEqual(spy.lastCall.args[0], ['git', 'push', 'upstream']);
@@ -272,7 +272,7 @@ test.serial('should push to remote name (not "origin")', async t => {
 });
 
 test.serial('should return repo status', async t => {
-  const gitClient = factory(Git);
+  const gitClient = await factory(Git);
   childProcess.execSync('git init', execOpts);
   gitAdd('line', 'file1', 'Add file');
 
@@ -284,7 +284,7 @@ test.serial('should return repo status', async t => {
 });
 
 test.serial('should reset files', async t => {
-  const gitClient = factory(Git);
+  const gitClient = await factory(Git);
   childProcess.execSync('git init', execOpts);
   gitAdd('line', 'file', 'Add file');
 
@@ -302,7 +302,7 @@ test.serial('should roll back when cancelled', async t => {
   const version = '1.2.3';
   gitAdd(`{"version":"${version}"}`, 'package.json', 'Add package.json');
   const options = { git: { requireCleanWorkingDir: true, commit: true, tag: true, tagName: 'v${version}' } };
-  const gitClient = factory(Git, { options });
+  const gitClient = await factory(Git, { options });
   const exec = sinon.spy(gitClient.shell, 'execFormattedCommand');
   childProcess.execSync(`git tag ${version}`, execOpts);
   gitAdd('line', 'file', 'Add file');
@@ -330,7 +330,7 @@ test.serial('should remove remote tag when push to branch failed', async t => {
   const version = '1.2.3';
   gitAdd(`{"version":"${version}"}`, 'package.json', 'Add package.json');
   const options = { git: { requireCleanWorkingDir: true, commit: true, tag: true, tagName: 'v${version}' } };
-  const gitClient = factory(Git, { options });
+  const gitClient = await factory(Git, { options });
   const exec = sinon.spy(gitClient.shell, 'execFormattedCommand');
   sh.exec(`git push`, execOpts);
   sh.exec(`git checkout HEAD~1`, execOpts);
@@ -358,7 +358,7 @@ test.serial('should not touch existing history when rolling back', async t => {
   const version = '1.2.3';
   gitAdd(`{"version":"${version}"}`, 'package.json', 'Add package.json');
   const options = { git: { requireCleanWorkingDir: true, commit: true, tag: true } };
-  const gitClient = factory(Git, { options });
+  const gitClient = await factory(Git, { options });
   childProcess.execSync(`git tag ${version}`, execOpts);
 
   const exec = sinon.spy(gitClient.shell, 'execFormattedCommand');
@@ -374,7 +374,7 @@ test.serial('should not touch existing history when rolling back', async t => {
 test.serial.skip('should not roll back with risky config', async t => {
   childProcess.execSync('git init', execOpts);
   const options = { git: { requireCleanWorkingDir: false, commit: true, tag: true } };
-  const gitClient = factory(Git, { options });
+  const gitClient = await factory(Git, { options });
   await gitClient.beforeRelease();
   t.is('rollbackOnce' in gitClient, false);
 });
@@ -384,7 +384,7 @@ test.serial('should return latest tag from default branch (not parent commit)', 
 
   {
     const options = { git: { getLatestTagFromAllRefs: true } };
-    const gitClient = factory(Git, { options });
+    const gitClient = await factory(Git, { options });
     gitAdd('main', 'file', 'Add file in main');
     const defaultBranchName = await gitClient.getBranchName();
     const developBranchName = 'develop';
@@ -408,7 +408,7 @@ test.serial('should return latest tag from default branch (not parent commit)', 
 
   {
     const options = { git: { getLatestTagFromAllRefs: false } };
-    const gitClient = factory(Git, { options });
+    const gitClient = await factory(Git, { options });
     t.is(await gitClient.getLatestTagName(), '1.1.0-rc.1');
   }
 });

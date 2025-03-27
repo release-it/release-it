@@ -224,7 +224,7 @@ test.serial('should run "after:*:release" plugin hooks', async t => {
   childProcess.execSync('git tag 1.0.0', execOpts);
   const sha = gitAdd('line', 'file', 'More file');
 
-  const git = factory(Git);
+  const git = await factory(Git);
   const ref = (await git.getBranchName()) ?? 'HEAD';
 
   interceptGitHubCreate({

@@ -23,59 +23,59 @@ test.serial.beforeEach(t => {
 
 test.serial('should throw if on wrong branch', async t => {
   const options = { git: { requireBranch: 'dev' } };
-  const gitClient = factory(Git, { options });
+  const gitClient = await factory(Git, { options });
   childProcess.execSync('git remote remove origin', execOpts);
   await t.throwsAsync(gitClient.init(), { message: /^Must be on branch dev/ });
 });
 
 test.serial('should throw if on negated branch', async t => {
   const options = { git: { requireBranch: '!main' } };
-  const gitClient = factory(Git, { options });
+  const gitClient = await factory(Git, { options });
   sh.exec('git checkout -b main', execOpts);
   await t.throwsAsync(gitClient.init(), { message: /^Must be on branch !main/ });
 });
 
 test.serial('should not throw if required branch matches', async t => {
   const options = { git: { requireBranch: 'ma?*' } };
-  const gitClient = factory(Git, { options });
+  const gitClient = await factory(Git, { options });
   await t.notThrowsAsync(gitClient.init());
 });
 
 test.serial('should not throw if one of required branch matches', async t => {
   const options = { git: { requireBranch: ['release/*', 'hotfix/*'] } };
-  const gitClient = factory(Git, { options });
+  const gitClient = await factory(Git, { options });
   childProcess.execSync('git checkout -b release/v1', execOpts);
   await t.notThrowsAsync(gitClient.init());
 });
 
 test.serial('should throw if there is no remote Git url', async t => {
-  const gitClient = factory(Git, { options: { git } });
+  const gitClient = await factory(Git, { options: { git } });
   childProcess.execSync('git remote remove origin', execOpts);
   await t.throwsAsync(gitClient.init(), { message: /^Could not get remote Git url/ });
 });
 
 test.serial('should throw if working dir is not clean', async t => {
-  const gitClient = factory(Git, { options: { git } });
+  const gitClient = await factory(Git, { options: { git } });
   childProcess.execSync('rm file', execOpts);
   await t.throwsAsync(gitClient.init(), { message: /^Working dir must be clean/ });
 });
 
 test.serial('should throw if no upstream is configured', async t => {
-  const gitClient = factory(Git, { options: { git } });
+  const gitClient = await factory(Git, { options: { git } });
   childProcess.execSync('git checkout -b foo', execOpts);
   await t.throwsAsync(gitClient.init(), { message: /^No upstream configured for current branch/ });
 });
 
 test.serial('should throw if there are no commits', async t => {
   const options = { git: { requireCommits: true } };
-  const gitClient = factory(Git, { options });
+  const gitClient = await factory(Git, { options });
   childProcess.execSync('git tag 1.0.0', execOpts);
   await t.throwsAsync(gitClient.init(), { message: /^There are no commits since the latest tag/ });
 });
 
 test.serial('should not throw if there are commits', async t => {
   const options = { git: { requireCommits: true } };
-  const gitClient = factory(Git, { options });
+  const gitClient = await factory(Git, { options });
   childProcess.execSync('git tag 1.0.0', execOpts);
   gitAdd('line', 'file', 'Add file');
   await t.notThrowsAsync(gitClient.init(), 'There are no commits since the latest tag');
@@ -83,21 +83,21 @@ test.serial('should not throw if there are commits', async t => {
 
 test.serial('should fail (exit code 1) if there are no commits', async t => {
   const options = { git: { requireCommits: true } };
-  const gitClient = factory(Git, { options });
+  const gitClient = await factory(Git, { options });
   childProcess.execSync('git tag 1.0.0', execOpts);
   await t.throwsAsync(gitClient.init(), { code: 1 });
 });
 
 test.serial('should not fail (exit code 0) if there are no commits', async t => {
   const options = { git: { requireCommits: true, requireCommitsFail: false } };
-  const gitClient = factory(Git, { options });
+  const gitClient = await factory(Git, { options });
   childProcess.execSync('git tag 1.0.0', execOpts);
   await t.throwsAsync(gitClient.init(), { code: 0 });
 });
 
 test.serial('should throw if there are no commits in specified path', async t => {
   const options = { git: { requireCommits: true, commitsPath: 'dir' } };
-  const gitClient = factory(Git, { options });
+  const gitClient = await factory(Git, { options });
   mkdirSync('dir', { recursive: true });
   sh.exec('git tag 1.0.0', execOpts);
   await t.throwsAsync(gitClient.init(), { message: /^There are no commits since the latest tag/ });
@@ -105,7 +105,7 @@ test.serial('should throw if there are no commits in specified path', async t =>
 
 test.serial('should not throw if there are commits in specified path', async t => {
   const options = { git: { requireCommits: true, commitsPath: 'dir' } };
-  const gitClient = factory(Git, { options });
+  const gitClient = await factory(Git, { options });
   sh.exec('git tag 1.0.0', execOpts);
   gitAdd('line', 'dir/file', 'Add file');
   await t.notThrowsAsync(gitClient.init());
@@ -113,19 +113,19 @@ test.serial('should not throw if there are commits in specified path', async t =
 
 test.serial('should not throw if there are no tags', async t => {
   const options = { git: { requireCommits: true } };
-  const gitClient = factory(Git, { options });
+  const gitClient = await factory(Git, { options });
   gitAdd('line', 'file', 'Add file');
   await t.notThrowsAsync(gitClient.init());
 });
 
 test.serial('should not throw if origin remote is renamed', async t => {
   childProcess.execSync('git remote rename origin upstream', execOpts);
-  const gitClient = factory(Git);
+  const gitClient = await factory(Git);
   await t.notThrowsAsync(gitClient.init());
 });
 
 test.serial('should detect and include version prefix ("v")', async t => {
-  const gitClient = factory(Git, { options: { git } });
+  const gitClient = await factory(Git, { options: { git } });
   childProcess.execSync('git tag v1.0.0', execOpts);
   await gitClient.init();
   await gitClient.bump('1.0.1');
@@ -133,7 +133,7 @@ test.serial('should detect and include version prefix ("v")', async t => {
 });
 
 test.serial('should detect and exclude version prefix', async t => {
-  const gitClient = factory(Git, { options: { git } });
+  const gitClient = await factory(Git, { options: { git } });
   childProcess.execSync('git tag 1.0.0', execOpts);
   await gitClient.init();
   await gitClient.bump('1.0.1');
@@ -141,7 +141,7 @@ test.serial('should detect and exclude version prefix', async t => {
 });
 
 test.serial('should detect and exclude version prefix (configured)', async t => {
-  const gitClient = factory(Git, { options: { git: { tagName: 'v${version}' } } });
+  const gitClient = await factory(Git, { options: { git: { tagName: 'v${version}' } } });
   childProcess.execSync('git tag 1.0.0', execOpts);
   await gitClient.init();
   await gitClient.bump('1.0.1');
@@ -149,7 +149,7 @@ test.serial('should detect and exclude version prefix (configured)', async t => 
 });
 
 test.serial('should honor custom tagName configuration', async t => {
-  const gitClient = factory(Git, { options: { git: { tagName: 'TAGNAME-${repo.project}-v${version}' } } });
+  const gitClient = await factory(Git, { options: { git: { tagName: 'TAGNAME-${repo.project}-v${version}' } } });
   childProcess.execSync('git tag 1.0.0', execOpts);
   await gitClient.init();
   await gitClient.bump('1.0.1');
@@ -158,8 +158,8 @@ test.serial('should honor custom tagName configuration', async t => {
 });
 
 test.serial('should get the latest tag after fetch', async t => {
-  const shell = factory(Shell);
-  const gitClient = factory(Git, { container: { shell } });
+  const shell = await factory(Shell);
+  const gitClient = await factory(Git, { container: { shell } });
   const { bare, target } = t.context;
   const other = mkTmpDir();
   childProcess.execSync('git push', execOpts);
@@ -174,8 +174,8 @@ test.serial('should get the latest tag after fetch', async t => {
 });
 
 test.serial('should get the latest custom tag after fetch when tagName is configured', async t => {
-  const shell = factory(Shell);
-  const gitClient = factory(Git, {
+  const shell = await factory(Shell);
+  const gitClient = await factory(Git, {
     options: { git: { tagName: 'TAGNAME-v${version}' } },
     container: { shell }
   });
@@ -194,8 +194,8 @@ test.serial('should get the latest custom tag after fetch when tagName is config
 });
 
 test.serial('should get the latest tag based on tagMatch', async t => {
-  const shell = factory(Shell);
-  const gitClient = factory(Git, {
+  const shell = await factory(Shell);
+  const gitClient = await factory(Git, {
     options: { git: { tagMatch: '[0-9][0-9]\\.[0-1][0-9]\\.[0-9]*' } },
     container: { shell }
   });
@@ -208,8 +208,8 @@ test.serial('should get the latest tag based on tagMatch', async t => {
 });
 
 test.serial('should get the latest tag based on tagExclude', async t => {
-  const shell = factory(Shell);
-  const gitClient = factory(Git, {
+  const shell = await factory(Shell);
+  const gitClient = await factory(Git, {
     options: { git: { tagExclude: '*[-]*' } },
     container: { shell }
   });
@@ -225,7 +225,7 @@ test.serial('should get the latest tag based on tagExclude', async t => {
 });
 
 test.serial('should generate correct changelog', async t => {
-  const gitClient = factory(Git, { options: { git } });
+  const gitClient = await factory(Git, { options: { git } });
   childProcess.execSync('git tag 1.0.0', execOpts);
   gitAdd('line', 'file', 'Add file');
   gitAdd('line', 'file', 'Add file');
@@ -235,8 +235,8 @@ test.serial('should generate correct changelog', async t => {
 });
 
 test.serial('should get the full changelog since latest major tag', async t => {
-  const shell = factory(Shell);
-  const gitClient = factory(Git, {
+  const shell = await factory(Shell);
+  const gitClient = await factory(Git, {
     options: { git: { tagMatch: '[0-9]\\.[0-9]\\.[0-9]', changelog: git.changelog } },
     container: { shell }
   });

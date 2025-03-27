@@ -7,7 +7,7 @@ import { factory } from './util/index.js';
 
 const cwd = childProcess.execSync('pwd', { encoding: 'utf8' }).trim();
 
-const shell = factory(Shell);
+const shell = await factory(Shell);
 
 test('exec', async t => {
   t.is(await shell.exec('echo bar'), 'bar');
@@ -29,7 +29,7 @@ test('exec (with args)', async t => {
 });
 
 test('exec (dry-run/read-only)', async t => {
-  const shell = factory(Shell, { options: { 'dry-run': true } });
+  const shell = await factory(Shell, { options: { 'dry-run': true } });
   {
     const actual = await shell.exec('pwd', { write: false });
     t.is(actual, cwd);
@@ -46,7 +46,7 @@ test('exec (dry-run/read-only)', async t => {
 });
 
 test('exec (verbose)', async t => {
-  const shell = factory(Shell, { options: { verbose: true } });
+  const shell = await factory(Shell, { options: { verbose: true } });
   const actual = await shell.exec('echo foo');
   t.is(shell.log.exec.firstCall.args[0], 'echo foo');
   t.is(shell.log.exec.callCount, 1);
@@ -57,7 +57,7 @@ test('exec (verbose)', async t => {
 
 test('should cache results of command execution', async t => {
   const log = sinon.createStubInstance(Log);
-  const shell = factory(Shell, { container: { log } });
+  const shell = await factory(Shell, { container: { log } });
   const result1 = await shell.exec('echo foo');
   const result2 = await shell.exec('echo foo');
   t.is(result1, result2);

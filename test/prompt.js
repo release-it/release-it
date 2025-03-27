@@ -23,7 +23,7 @@ test('should not create prompt if disabled', async t => {
   const task = sinon.spy();
   const stub = sinon.stub().callsFake(yes);
   const inquirer = t.context.getInquirer(stub);
-  const prompt = factory(Prompt, { container: { inquirer } });
+  const prompt = await factory(Prompt, { container: { inquirer } });
   prompt.register(prompts.git);
   await prompt.show({ enabled: false, prompt: 'push', task });
   t.is(stub.callCount, 0);
@@ -33,7 +33,7 @@ test('should not create prompt if disabled', async t => {
 test('should create prompt', async t => {
   const stub = sinon.stub().callsFake(yes);
   const inquirer = t.context.getInquirer(stub);
-  const prompt = factory(Prompt, { container: { inquirer } });
+  const prompt = await factory(Prompt, { container: { inquirer } });
   prompt.register(prompts.git);
   await prompt.show({ prompt: 'push' });
   t.is(stub.callCount, 1);
@@ -63,9 +63,10 @@ test('should create prompt', async t => {
       git: { tagName: 'v${version}' },
       npm: { name: 'my-pkg', tag: 'next' }
     });
+    await config.resolved
     config.setContext({ version: '1.0.0', tagName: '1.0.0' });
     const inquirer = t.context.getInquirer(stub);
-    const p = factory(Prompt, { container: { inquirer } });
+    const p = await factory(Prompt, { container: { inquirer } });
     p.register(prompts[namespace], namespace);
     await p.show({ namespace, prompt, context: config.getContext() });
     t.is(stub.callCount, 1);
@@ -77,7 +78,7 @@ test('should execute task after positive answer', async t => {
   const task = sinon.spy();
   const stub = sinon.stub().callsFake(yes);
   const inquirer = t.context.getInquirer(stub);
-  const prompt = factory(Prompt, { container: { inquirer } });
+  const prompt = await factory(Prompt, { container: { inquirer } });
   prompt.register(prompts.git);
   await prompt.show({ prompt: 'push', task });
   t.is(stub.callCount, 1);
@@ -89,7 +90,7 @@ test('should not execute task after negative answer', async t => {
   const task = sinon.spy();
   const stub = sinon.stub().callsFake(no);
   const inquirer = t.context.getInquirer(stub);
-  const prompt = factory(Prompt, { container: { inquirer } });
+  const prompt = await factory(Prompt, { container: { inquirer } });
   prompt.register(prompts.git);
   await prompt.show({ prompt: 'push', task });
   t.is(stub.callCount, 1);

@@ -3,33 +3,38 @@ import { isCI } from 'ci-info';
 import sinon from 'sinon';
 import Config from '../lib/config.js';
 import { readJSON } from '../lib/util.js';
+import { fileURLToPath } from 'node:url'
+import { createRemoteTarBlob } from './util/fetch.js';
 
 const defaultConfig = readJSON(new URL('../config/release-it.json', import.meta.url));
 const projectConfig = readJSON(new URL('../.release-it.json', import.meta.url));
 
 const localConfig = { github: { release: true } };
 
-const sandbox = sinon.createSandbox();
+const fetchStub = sinon.stub(global, 'fetch')
 
 test.serial.afterEach(() => {
-  sandbox.restore();
-});
+  fetchStub.reset();
+  fetchStub.restore();
+})
 
-test("should read this project's own configuration", t => {
+test("should read this project's own configuration", async t => {
   const config = new Config();
+  await config.resolved
   t.deepEqual(config.constructorConfig, {});
   t.deepEqual(config.localConfig, projectConfig);
   t.deepEqual(config.defaultConfig, defaultConfig);
 });
 
-test('should contain default values', t => {
+test('should contain default values', async t => {
   const config = new Config({ configDir: './test/stub/config/default' });
+  await config.resolved
   t.deepEqual(config.constructorConfig, { configDir: './test/stub/config/default' });
   t.deepEqual(config.localConfig, localConfig);
   t.deepEqual(config.defaultConfig, defaultConfig);
 });
 
-test('should merge provided options', t => {
+test('should merge provided options', async t => {
   const config = new Config({
     configDir: './test/stub/config/merge',
     increment: '1.0.0',
@@ -38,6 +43,8 @@ test('should merge provided options', t => {
       release: true
     }
   });
+  await config.resolved
+
   const { options } = config;
   t.is(config.isVerbose, true);
   t.is(config.isDryRun, false);
@@ -46,65 +53,92 @@ test('should merge provided options', t => {
   t.is(options.github.release, true);
 });
 
-test('should set CI mode', t => {
+test('should set CI mode', async t => {
   const config = new Config({ ci: true });
+  await config.resolved
+
   t.is(config.isCI, true);
 });
 
-test('should detect CI mode', t => {
+test('should detect CI mode', async t => {
   const config = new Config();
+  await config.resolved
+
   t.is(config.options.ci, isCI);
   t.is(config.isCI, isCI);
 });
 
-test('should override --no-npm.publish', t => {
+test('should override --no-npm.publish', async t => {
   const config = new Config({ npm: { publish: false } });
+  await config.resolved
+
   t.is(config.options.npm.publish, false);
 });
 
-test('should read YAML config', t => {
+test('should read YAML config', async t => {
   const config = new Config({ configDir: './test/stub/config/yaml' });
+  await config.resolved
+
   t.deepEqual(config.options.foo, { bar: 1 });
 });
 
-test('should read YML config', t => {
+test('should read YML config', async t => {
   const config = new Config({ configDir: './test/stub/config/yml' });
+  await config.resolved
+
   t.deepEqual(config.options.foo, { bar: 1 });
 });
 
-test('should read TOML config', t => {
+test('should read TOML config', async t => {
   const config = new Config({ configDir: './test/stub/config/toml' });
+  await config.resolved
+
   t.deepEqual(config.options.foo, { bar: 1 });
 });
 
-test('should throw if provided config file is not found', t => {
-  t.throws(() => new Config({ config: 'nofile' }), { message: /no such file.+nofile/ });
+test('should throw if provided config file is not found', async t => {
+  await t.throwsAsync(async () => {
+    const config = new Config({ config: 'nofile' })
+    await config.resolved
+  }, { message: /no such file.+nofile/ });
 });
 
-test('should throw if provided config file is invalid (cosmiconfig exception)', t => {
-  t.throws(() => new Config({ config: './test/stub/config/invalid-config-txt' }), {
+test('should throw if provided config file is invalid (cosmiconfig exception)', async t => {
+  await t.throwsAsync(async () => {
+    const config = new Config({ config: './test/stub/config/invalid-config-txt' })
+    await config.resolved
+  }, {
     message: /Invalid configuration file at/
   });
 });
 
-test('should throw if provided config file is invalid (no object)', t => {
-  t.throws(() => new Config({ config: './test/stub/config/invalid-config-rc' }), {
+test('should throw if provided config file is invalid (no object)', async t => {
+  await t.throwsAsync(async () => {
+    const config = new Config({ config: './test/stub/config/invalid-config-rc' })
+    await config.resolved
+  }, {
     message: /Invalid configuration file at/
   });
 });
 
-test('should not set default increment (for CI mode)', t => {
+test('should not set default increment (for CI mode)', async t => {
   const config = new Config({ ci: true });
+  await config.resolved
+
   t.is(config.options.version.increment, undefined);
 });
 
-test('should not set default increment (for interactive mode)', t => {
+test('should not set default increment (for interactive mode)', async t => {
   const config = new Config({ ci: false });
+  await config.resolved
+
   t.is(config.options.version.increment, undefined);
 });
 
-test('should expand pre-release shortcut', t => {
+test('should expand pre-release shortcut', async t => {
   const config = new Config({ increment: 'major', preRelease: 'beta' });
+  await config.resolved
+
   t.deepEqual(config.options.version, {
     increment: 'major',
     isPreRelease: true,
@@ -113,8 +147,10 @@ test('should expand pre-release shortcut', t => {
   });
 });
 
-test('should expand pre-release shortcut (preRelease boolean)', t => {
+test('should expand pre-release shortcut (preRelease boolean)', async t => {
   const config = new Config({ ci: true, preRelease: true });
+  await config.resolved
+
   t.deepEqual(config.options.version, {
     increment: undefined,
     isPreRelease: true,
@@ -123,8 +159,10 @@ test('should expand pre-release shortcut (preRelease boolean)', t => {
   });
 });
 
-test('should expand pre-release shortcut (without increment)', t => {
+test('should expand pre-release shortcut (without increment)', async t => {
   const config = new Config({ ci: false, preRelease: 'alpha' });
+  await config.resolved
+
   t.deepEqual(config.options.version, {
     increment: undefined,
     isPreRelease: true,
@@ -133,8 +171,10 @@ test('should expand pre-release shortcut (without increment)', t => {
   });
 });
 
-test('should expand pre-release shortcut (including increment and npm.tag)', t => {
+test('should expand pre-release shortcut (including increment and npm.tag)', async t => {
   const config = new Config({ increment: 'minor', preRelease: 'rc' });
+  await config.resolved
+
   t.deepEqual(config.options.version, {
     increment: 'minor',
     isPreRelease: true,
@@ -143,8 +183,10 @@ test('should expand pre-release shortcut (including increment and npm.tag)', t =
   });
 });
 
-test('should use pre-release base', t => {
+test('should use pre-release base', async t => {
   const config = new Config({ increment: 'minor', preRelease: 'next', preReleaseBase: '1' });
+  await config.resolved
+
   t.deepEqual(config.options.version, {
     increment: 'minor',
     isPreRelease: true,
@@ -153,8 +195,10 @@ test('should use pre-release base', t => {
   });
 });
 
-test('should expand pre-release shortcut (snapshot)', t => {
+test('should expand pre-release shortcut (snapshot)', async t => {
   const config = new Config({ snapshot: 'feat' });
+  await config.resolved
+
   t.deepEqual(config.options.version, {
     increment: 'prerelease',
     isPreRelease: true,
@@ -165,106 +209,118 @@ test('should expand pre-release shortcut (snapshot)', t => {
   t.true(config.options.git.getLatestTagFromAllRefs);
 });
 
-test.serial('should fetch extended configuration with default file and default branch', t => {
-  const fetchStub = sandbox.stub(global, 'fetch');
-
-  const extendedConfiguration = {
-    git: {
-      commitMessage: 'Released version ${version}'
-    }
-  };
-
-  fetchStub.resolves({
+test.serial('should fetch extended configuration with default file and default branch', async t => {
+  fetchStub.onCall(0).resolves({
     ok: true,
-    json: async () => extendedConfiguration
-  });
+    headers: new Headers(),
+  })
+
+  fetchStub.onCall(1).resolves({
+    ok: true,
+    body: createRemoteTarBlob(fileURLToPath(new URL('./stub/config/remote', import.meta.url)))
+  })
 
   const config = new Config({
     extends: 'github:release-it/release-it-configuration'
   });
+  await config.resolved
 
   t.is(
-    fetchStub.firstCall?.firstArg?.href,
-    'https://raw.githubusercontent.com/release-it/release-it-configuration/HEAD/.release-it.json'
+    fetchStub.firstCall?.firstArg,
+    'https://api.github.com/repos/release-it/release-it-configuration/tarball/main'
   );
 
-  t.is(config.options, extendedConfiguration);
+  t.is(
+    config.options.git?.commitMessage,
+    'Released version ${version}'
+  );
+
+  fetchStub.restore();
 });
 
-test.serial('should fetch extended configuration with default file and specific tag', t => {
-  const fetchStub = sandbox.stub(global, 'fetch');
-
-  const extendedConfiguration = {
-    git: {
-      commitMessage: 'Released version ${version}'
-    }
-  };
-
-  fetchStub.resolves({
+test.serial('should fetch extended configuration with default file and specific tag', async t => {
+  fetchStub.onCall(0).resolves({
     ok: true,
-    json: async () => extendedConfiguration
-  });
+    headers: new Headers(),
+  })
+
+  fetchStub.onCall(1).resolves({
+    ok: true,
+    body: createRemoteTarBlob(fileURLToPath(new URL('./stub/config/remote', import.meta.url)))
+  })
 
   const config = new Config({
     extends: 'github:release-it/release-it-configuration#1.0.0'
   });
+  await config.resolved
 
   t.is(
-    fetchStub.firstCall.firstArg.href,
-    'https://raw.githubusercontent.com/release-it/release-it-configuration/refs/tags/1.0.0/.release-it.json'
+    fetchStub.firstCall?.firstArg,
+    'https://api.github.com/repos/release-it/release-it-configuration/tarball/1.0.0'
   );
 
-  t.is(config.options, extendedConfiguration);
+  t.is(
+    config.options.git?.commitMessage,
+    'Released version ${version}'
+  );
+
+  fetchStub.restore();
 });
 
-test.serial('should fetch extended configuration with custom file and specific tag', t => {
-  const fetchStub = sandbox.stub(global, 'fetch');
-
-  const extendedConfiguration = {
-    git: {
-      commitMessage: 'Released version ${version}'
-    }
-  };
-
-  fetchStub.resolves({
+test.serial('should fetch extended configuration with subdir and specific tag', async t => {
+  fetchStub.onCall(0).resolves({
     ok: true,
-    json: async () => extendedConfiguration
-  });
+    headers: new Headers(),
+  })
+
+  fetchStub.onCall(1).resolves({
+    ok: true,
+    body: createRemoteTarBlob(fileURLToPath(new URL('./stub/config/remote', import.meta.url)))
+  })
 
   const config = new Config({
-    extends: 'github:release-it/release-it-configuration:config.json#1.0.0'
+    extends: 'github:release-it/release-it-configuration/sub#1.0.0'
   });
+  await config.resolved
 
   t.is(
-    fetchStub.firstCall.firstArg.href,
-    'https://raw.githubusercontent.com/release-it/release-it-configuration/refs/tags/1.0.0/config.json'
+    fetchStub.firstCall?.firstArg,
+    'https://api.github.com/repos/release-it/release-it-configuration/tarball/1.0.0'
   );
 
-  t.is(config.options, extendedConfiguration);
+  t.is(
+    config.options.git?.commitMessage,
+    'Released with version ${version}'
+  );
+
+  fetchStub.restore();
 });
 
-test.serial('should fetch extended configuration with custom file and default branch', t => {
-  const fetchStub = sandbox.stub(global, 'fetch');
-
-  const extendedConfiguration = {
-    git: {
-      commitMessage: 'Released version ${version}'
-    }
-  };
-
-  fetchStub.resolves({
+test.serial('should fetch extended configuration with custom file and default branch', async t => {
+  fetchStub.onCall(0).resolves({
     ok: true,
-    json: async () => extendedConfiguration
-  });
+    headers: new Headers(),
+  })
+
+  fetchStub.onCall(1).resolves({
+    ok: true,
+    body: createRemoteTarBlob(fileURLToPath(new URL('./stub/config/remote', import.meta.url)))
+  })
 
   const config = new Config({
-    extends: 'github:release-it/release-it-configuration:config.json'
+    extends: 'github:release-it/release-it-configuration/sub'
   });
+  await config.resolved
 
   t.is(
-    fetchStub.firstCall.firstArg.href,
-    'https://raw.githubusercontent.com/release-it/release-it-configuration/HEAD/config.json'
+    fetchStub.firstCall?.firstArg,
+    'https://api.github.com/repos/release-it/release-it-configuration/tarball/main'
   );
 
-  t.is(config.options, extendedConfiguration);
+  t.is(
+    config.options.git?.commitMessage,
+    'Released with version ${version}'
+  );
+
+  fetchStub.restore();
 });

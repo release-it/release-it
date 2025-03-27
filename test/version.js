@@ -3,20 +3,20 @@ import sinon from 'sinon';
 import Version from '../lib/plugin/version/Version.js';
 import { factory, runTasks } from './util/index.js';
 
-test('isValidVersion', t => {
-  const v = factory(Version);
+test('isValidVersion', async t => {
+  const v = await factory(Version);
   t.is(v.isValid('1.0.0'), true);
   t.is(v.isValid(1.0), false);
 });
 
-test('isPreRelease', t => {
-  const v = factory(Version);
+test('isPreRelease', async t => {
+  const v = await factory(Version);
   t.is(v.isPreRelease('1.0.0-beta.0'), true);
   t.is(v.isPreRelease('1.0.0'), false);
 });
 
 test('should return the same version in both interactive and ci mode', async t => {
-  const v = factory(Version);
+  const v = await factory(Version);
   const options = { latestVersion: '2.0.0-beta.1', increment: null, preReleaseId: 'rc', isPreRelease: true };
   const resultInteractiveMode = await v.getIncrementedVersion(options);
   t.is(resultInteractiveMode, '2.0.0-rc.0');
@@ -24,8 +24,8 @@ test('should return the same version in both interactive and ci mode', async t =
   t.is(resultInteractiveMode, resultCiMode);
 });
 
-test('should increment latest version', t => {
-  const v = factory(Version);
+test('should increment latest version', async t => {
+  const v = await factory(Version);
   const latestVersion = '1.0.0';
   t.is(v.incrementVersion({ latestVersion, increment: false }), '1.0.0');
   t.is(v.incrementVersion({ latestVersion, increment: 'foo' }), undefined);
@@ -37,15 +37,15 @@ test('should increment latest version', t => {
   t.is(v.incrementVersion({ latestVersion, increment: '2.0.0-beta.1' }), '2.0.0-beta.1');
 });
 
-test('should not increment latest version in interactive mode', t => {
-  const v = factory(Version, { options: { ci: false } });
+test('should not increment latest version in interactive mode', async t => {
+  const v = await factory(Version, { options: { ci: false } });
   const latestVersion = '1.0.0';
   t.is(v.incrementVersion({ latestVersion, increment: null }), undefined);
   t.is(v.incrementVersion({ latestVersion, increment: false }), '1.0.0');
 });
 
-test('should always set increment version in CI mode', t => {
-  const v = factory(Version, { options: { ci: true } });
+test('should always set increment version in CI mode', async t => {
+  const v = await factory(Version, { options: { ci: true } });
   const latestVersion = '1.0.0';
   t.is(v.getIncrementedVersionCI({ latestVersion, increment: false }), '1.0.0');
   t.is(v.getIncrementedVersionCI({ latestVersion, increment: null }), '1.0.1');
@@ -53,41 +53,41 @@ test('should always set increment version in CI mode', t => {
   t.is(v.getIncrementedVersionCI({ latestVersion, increment: 'major' }), '2.0.0');
 });
 
-test('should increment latest version (coerce)', t => {
-  const v = factory(Version);
+test('should increment latest version (coerce)', async t => {
+  const v = await factory(Version);
   t.is(v.incrementVersion({ increment: '1.2' }), '1.2.0');
   t.is(v.incrementVersion({ increment: '1' }), '1.0.0');
   t.is(v.incrementVersion({ increment: 'v1.2.0.0' }), '1.2.0');
 });
 
-test('should increment version (pre-release continuation)', t => {
-  const v = factory(Version);
+test('should increment version (pre-release continuation)', async t => {
+  const v = await factory(Version);
   t.is(v.incrementVersion({ latestVersion: '1.2.3-alpha.0', increment: 'prepatch' }), '1.2.4-0');
 });
 
-test('should increment version (prepatch)', t => {
-  const v = factory(Version);
+test('should increment version (prepatch)', async t => {
+  const v = await factory(Version);
   t.is(v.incrementVersion({ latestVersion: '1.2.3', increment: 'prepatch', preReleaseId: 'alpha' }), '1.2.4-alpha.0');
 });
 
-test('should increment version (normalized)', t => {
-  const v = factory(Version);
+test('should increment version (normalized)', async t => {
+  const v = await factory(Version);
   t.is(
     v.incrementVersion({ latestVersion: '1.2.3', increment: 'patch', preReleaseId: 'alpha', isPreRelease: true }),
     '1.2.4-alpha.0'
   );
 });
 
-test('should increment version (prepatch on prerelease version)', t => {
-  const v = factory(Version);
+test('should increment version (prepatch on prerelease version)', async t => {
+  const v = await factory(Version);
   t.is(
     v.incrementVersion({ latestVersion: '1.2.3-alpha.5', increment: 'prepatch', preReleaseId: 'next' }),
     '1.2.4-next.0'
   );
 });
 
-test('should increment version (normalized on prerelease version)', t => {
-  const v = factory(Version);
+test('should increment version (normalized on prerelease version)', async t => {
+  const v = await factory(Version);
   t.is(
     v.incrementVersion({
       latestVersion: '1.2.3-alpha.5',
@@ -99,47 +99,47 @@ test('should increment version (normalized on prerelease version)', t => {
   );
 });
 
-test('should increment version (prerelease)', t => {
-  const v = factory(Version);
+test('should increment version (prerelease)', async t => {
+  const v = await factory(Version);
   t.is(v.incrementVersion({ latestVersion: '1.2.3', increment: 'prerelease', preReleaseId: 'alpha' }), '1.2.4-alpha.0');
 });
 
-test('should increment version (prerelease cont.)', t => {
-  const v = factory(Version);
+test('should increment version (prerelease cont.)', async t => {
+  const v = await factory(Version);
   t.is(v.incrementVersion({ latestVersion: '1.2.3-alpha.0', increment: 'prerelease' }), '1.2.3-alpha.1');
 });
 
-test('should increment version (preReleaseId continuation)', t => {
-  const v = factory(Version);
+test('should increment version (preReleaseId continuation)', async t => {
+  const v = await factory(Version);
   t.is(
     v.incrementVersion({ latestVersion: '1.2.3-alpha.0', increment: 'prerelease', preReleaseId: 'alpha' }),
     '1.2.3-alpha.1'
   );
 });
 
-test('should increment version (prepatch/preReleaseId continuation)', t => {
-  const v = factory(Version);
+test('should increment version (prepatch/preReleaseId continuation)', async t => {
+  const v = await factory(Version);
   const options = { latestVersion: '1.2.3-beta.0', increment: 'prerelease', preReleaseId: 'beta', isPreRelease: true };
   t.is(v.incrementVersion(options), '1.2.3-beta.1');
 });
 
-test('should increment version (preReleaseId w/o preRelease)', t => {
-  const v = factory(Version);
+test('should increment version (preReleaseId w/o preRelease)', async t => {
+  const v = await factory(Version);
   t.is(v.incrementVersion({ latestVersion: '1.2.3-alpha.0', increment: 'patch', preReleaseId: 'alpha' }), '1.2.3');
 });
 
-test('should increment version (non-numeric prepatch continuation)', t => {
-  const v = factory(Version);
+test('should increment version (non-numeric prepatch continuation)', async t => {
+  const v = await factory(Version);
   t.is(v.incrementVersion({ latestVersion: '1.2.3-alpha', increment: 'prerelease' }), '1.2.3-alpha.0');
 });
 
-test('should increment version (patch release after pre-release)', t => {
-  const v = factory(Version);
+test('should increment version (patch release after pre-release)', async t => {
+  const v = await factory(Version);
   t.is(v.incrementVersion({ latestVersion: '1.2.3-alpha.1', increment: 'patch' }), '1.2.3');
 });
 
-test('should increment version and start at base 1', t => {
-  const v = factory(Version);
+test('should increment version and start at base 1', async t => {
+  const v = await factory(Version);
   t.is(
     v.incrementVersion({
       latestVersion: '1.3.0',
@@ -152,8 +152,8 @@ test('should increment version and start at base 1', t => {
   );
 });
 
-test('should increment prerelease version and ignore prelease base 1', t => {
-  const v = factory(Version);
+test('should increment prerelease version and ignore prelease base 1', async t => {
+  const v = await factory(Version);
   t.is(
     v.incrementVersion({
       latestVersion: '1.2.3-alpha.5',
@@ -168,7 +168,7 @@ test('should increment prerelease version and ignore prelease base 1', t => {
 
 test('should run tasks without errors', async t => {
   const options = { version: { increment: 'minor' } };
-  const v = factory(Version, { options });
+  const v = await factory(Version, { options });
   const getIncrement = sinon.spy(v, 'getIncrement');
   const getIncrementedVersionCI = sinon.spy(v, 'getIncrementedVersionCI');
   const incrementVersion = sinon.spy(v, 'incrementVersion');

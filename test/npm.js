@@ -16,43 +16,43 @@ const mockFs = volume => {
   };
 };
 
-test('should return npm package url', t => {
+test('should return npm package url', async t => {
   const options = { npm: { name: 'my-cool-package' } };
-  const npmClient = factory(npm, { options });
+  const npmClient = await factory(npm, { options });
   t.is(npmClient.getPackageUrl(), 'https://www.npmjs.com/package/my-cool-package');
 });
 
-test('should return npm package url (custom registry)', t => {
+test('should return npm package url (custom registry)', async t => {
   const options = { npm: { name: 'my-cool-package', publishConfig: { registry: 'https://registry.example.org/' } } };
-  const npmClient = factory(npm, { options });
+  const npmClient = await factory(npm, { options });
   t.is(npmClient.getPackageUrl(), 'https://registry.example.org/package/my-cool-package');
 });
 
-test('should return npm package url (custom publicPath)', t => {
+test('should return npm package url (custom publicPath)', async t => {
   const options = { npm: { name: 'my-cool-package', publishConfig: { publicPath: '/custom/public-path' } } };
-  const npmClient = factory(npm, { options });
+  const npmClient = await factory(npm, { options });
   t.is(npmClient.getPackageUrl(), 'https://www.npmjs.com/custom/public-path/my-cool-package');
 });
 
-test('should return npm package url (custom registry and publicPath)', t => {
+test('should return npm package url (custom registry and publicPath)', async t => {
   const options = {
     npm: {
       name: 'my-cool-package',
       publishConfig: { registry: 'https://registry.example.org/', publicPath: '/custom/public-path' }
     }
   };
-  const npmClient = factory(npm, { options });
+  const npmClient = await factory(npm, { options });
   t.is(npmClient.getPackageUrl(), 'https://registry.example.org/custom/public-path/my-cool-package');
 });
 
 test('should return default tag', async t => {
-  const npmClient = factory(npm);
+  const npmClient = await factory(npm);
   const tag = await npmClient.resolveTag();
   t.is(tag, 'latest');
 });
 
 test('should resolve default tag for pre-release', async t => {
-  const npmClient = factory(npm);
+  const npmClient = await factory(npm);
   const stub = sinon.stub(npmClient, 'getRegistryPreReleaseTags').resolves([]);
   const tag = await npmClient.resolveTag('1.0.0-0');
   t.is(tag, 'next');
@@ -60,7 +60,7 @@ test('should resolve default tag for pre-release', async t => {
 });
 
 test('should guess tag from registry for pre-release', async t => {
-  const npmClient = factory(npm);
+  const npmClient = await factory(npm);
   const stub = sinon.stub(npmClient, 'getRegistryPreReleaseTags').resolves(['alpha']);
   const tag = await npmClient.resolveTag('1.0.0-0');
   t.is(tag, 'alpha');
@@ -68,14 +68,14 @@ test('should guess tag from registry for pre-release', async t => {
 });
 
 test('should derive tag from pre-release version', async t => {
-  const npmClient = factory(npm);
+  const npmClient = await factory(npm);
   const tag = await npmClient.resolveTag('1.0.2-alpha.3');
   t.is(tag, 'alpha');
 });
 
 test('should use provided (default) tag even for pre-release', async t => {
   const options = { npm: { tag: 'latest' } };
-  const npmClient = factory(npm, { options });
+  const npmClient = await factory(npm, { options });
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   await npmClient.bump('1.0.0-next.0');
   t.is(npmClient.getContext('tag'), 'latest');
@@ -83,7 +83,7 @@ test('should use provided (default) tag even for pre-release', async t => {
 });
 
 test('should throw when `npm version` fails', async t => {
-  const npmClient = factory(npm);
+  const npmClient = await factory(npm);
   const exec = sinon
     .stub(npmClient.shell, 'exec')
     .rejects(new Error('npm ERR! Version not changed, might want --allow-same-version'));
@@ -94,7 +94,7 @@ test('should throw when `npm version` fails', async t => {
 });
 
 test('should return first pre-release tag from package in registry when resolving tag without pre-id', async t => {
-  const npmClient = factory(npm);
+  const npmClient = await factory(npm);
   const response = {
     latest: '1.4.1',
     alpha: '2.0.0-alpha.1',
@@ -106,7 +106,7 @@ test('should return first pre-release tag from package in registry when resolvin
 });
 
 test('should return default pre-release tag when resolving tag without pre-id', async t => {
-  const npmClient = factory(npm);
+  const npmClient = await factory(npm);
   const response = {
     latest: '1.4.1'
   };
@@ -116,21 +116,21 @@ test('should return default pre-release tag when resolving tag without pre-id', 
 });
 
 test('should handle erroneous output when resolving tag without pre-id', async t => {
-  const npmClient = factory(npm);
+  const npmClient = await factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves('');
   t.is(await npmClient.resolveTag('2.0.0-0'), 'next');
   exec.restore();
 });
 
 test('should handle errored request when resolving tag without pre-id', async t => {
-  const npmClient = factory(npm);
+  const npmClient = await factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').rejects();
   t.is(await npmClient.resolveTag('2.0.0-0'), 'next');
   exec.restore();
 });
 
 test('should add registry to commands when specified', async t => {
-  const npmClient = factory(npm);
+  const npmClient = await factory(npm);
   npmClient.setContext({ publishConfig: { registry: 'registry.example.org' } });
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   exec.withArgs('npm whoami --registry registry.example.org').resolves('john');
@@ -145,7 +145,7 @@ test('should add registry to commands when specified', async t => {
 });
 
 test('should not throw when executing tasks', async t => {
-  const npmClient = factory(npm);
+  const npmClient = await factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   exec.withArgs('npm whoami').resolves('john');
   exec
@@ -156,7 +156,7 @@ test('should not throw when executing tasks', async t => {
 });
 
 test('should throw if npm is down', async t => {
-  const npmClient = factory(npm);
+  const npmClient = await factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   exec.withArgs('npm ping').rejects();
   await t.throwsAsync(runTasks(npmClient), { message: /^Unable to reach npm registry/ });
@@ -164,7 +164,7 @@ test('should throw if npm is down', async t => {
 });
 
 test('should not throw if npm returns 400/404 for unsupported ping/whoami/access', async t => {
-  const npmClient = factory(npm);
+  const npmClient = await factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   const pingError = "npm ERR! code E404\nnpm ERR! 404 Package '--ping' not found : ping";
   const whoamiError = "npm ERR! code E404\nnpm ERR! 404 Package '--whoami' not found : whoami";
@@ -178,7 +178,7 @@ test('should not throw if npm returns 400/404 for unsupported ping/whoami/access
 });
 
 test('should not throw if npm returns 400 for unsupported ping/whoami/access', async t => {
-  const npmClient = factory(npm);
+  const npmClient = await factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   const pingError = 'npm ERR! code E400\nnpm ERR! 400 Bad Request - GET https://npm.example.org/-/ping?write=true';
   const whoamiError = 'npm ERR! code E400\nnpm ERR! 400 Bad Request - GET https://npm.example.org/-/whoami';
@@ -192,7 +192,7 @@ test('should not throw if npm returns 400 for unsupported ping/whoami/access', a
 });
 
 test('should not throw if npm returns 404 for unsupported ping', async t => {
-  const npmClient = factory(npm);
+  const npmClient = await factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   const pingError = 'npm ERR!     <title>404 - No content for path /-/ping</title>';
   exec.withArgs('npm ping').rejects(new Error(pingError));
@@ -206,7 +206,7 @@ test('should not throw if npm returns 404 for unsupported ping', async t => {
 });
 
 test('should throw if user is not authenticated', async t => {
-  const npmClient = factory(npm);
+  const npmClient = await factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   exec.withArgs('npm whoami').rejects();
   await t.throwsAsync(runTasks(npmClient), { message: /^Not authenticated with npm/ });
@@ -214,7 +214,7 @@ test('should throw if user is not authenticated', async t => {
 });
 
 test('should throw if user is not a collaborator (v9)', async t => {
-  const npmClient = factory(npm);
+  const npmClient = await factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   exec.withArgs('npm whoami').resolves('ada');
   exec.withArgs('npm --version').resolves('9.2.0');
@@ -224,7 +224,7 @@ test('should throw if user is not a collaborator (v9)', async t => {
 });
 
 test('should throw if user is not a collaborator (v8)', async t => {
-  const npmClient = factory(npm);
+  const npmClient = await factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   exec.withArgs('npm whoami').resolves('ada');
   exec.withArgs('npm --version').resolves('8.2.0');
@@ -236,7 +236,7 @@ test('should throw if user is not a collaborator (v8)', async t => {
 });
 
 test('should not throw if user is not a collaborator on a new package', async t => {
-  const npmClient = factory(npm);
+  const npmClient = await factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   exec.withArgs('npm whoami').resolves('ada');
   exec
@@ -252,7 +252,7 @@ test('should not throw if user is not a collaborator on a new package', async t 
 
 test('should publish a new private scoped package as npm would', async t => {
   const options = { npm: { tag: 'beta' } };
-  const npmClient = factory(npm, { options });
+  const npmClient = await factory(npm, { options });
   npmClient.setContext({ name: '@scoped/pkg' });
   const exec = sinon.spy(npmClient.shell, 'exec');
   await npmClient.publish();
@@ -261,7 +261,7 @@ test('should publish a new private scoped package as npm would', async t => {
 });
 
 test('should not publish private package', async t => {
-  const npmClient = factory(npm);
+  const npmClient = await factory(npm);
   npmClient.setContext({ name: 'pkg', private: true });
   const exec = sinon.spy(npmClient.shell, 'exec');
   await npmClient.publish();
@@ -271,7 +271,7 @@ test('should not publish private package', async t => {
 });
 
 test('should handle 2FA and publish with OTP', async t => {
-  const npmClient = factory(npm);
+  const npmClient = await factory(npm);
   npmClient.setContext({ name: 'pkg' });
 
   const exec = sinon.stub(npmClient.shell, 'exec');
@@ -298,7 +298,7 @@ test('should handle 2FA and publish with OTP', async t => {
 });
 
 test('should publish', async t => {
-  const npmClient = factory(npm);
+  const npmClient = await factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   exec.withArgs('npm whoami').resolves('john');
   exec
@@ -311,7 +311,7 @@ test('should publish', async t => {
 
 test('should use extra publish arguments ', async t => {
   const options = { npm: { skipChecks: true, publishArgs: '--registry=http://my-internal-registry.local' } };
-  const npmClient = factory(npm, { options });
+  const npmClient = await factory(npm, { options });
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   await runTasks(npmClient);
   t.is(exec.lastCall.args[0].trim(), 'npm publish . --tag latest --registry=http://my-internal-registry.local');
@@ -320,7 +320,7 @@ test('should use extra publish arguments ', async t => {
 
 test('should skip checks', async t => {
   const options = { npm: { skipChecks: true } };
-  const npmClient = factory(npm, { options });
+  const npmClient = await factory(npm, { options });
   await t.notThrowsAsync(npmClient.init());
 });
 
@@ -336,7 +336,7 @@ test('should publish to a different/scoped registry', async t => {
     })
   });
   const options = { npm };
-  const npmClient = factory(npm, { options });
+  const npmClient = await factory(npm, { options });
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   exec
     .withArgs('npm whoami --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/')
@@ -370,7 +370,7 @@ test('should not publish when `npm version` fails', async t => {
     })
   });
   const options = { npm };
-  const npmClient = factory(npm, { options });
+  const npmClient = await factory(npm, { options });
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
 
   exec.withArgs('npm whoami').resolves('john');
@@ -401,7 +401,7 @@ test('should not publish when `npm version` fails', async t => {
 
 test('should add allow-same-version argument', async t => {
   const options = { npm: { skipChecks: true, allowSameVersion: true } };
-  const npmClient = factory(npm, { options });
+  const npmClient = await factory(npm, { options });
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   await runTasks(npmClient);
   const version = exec.args.filter(arg => arg[0].startsWith('npm version'));
@@ -410,7 +410,7 @@ test('should add allow-same-version argument', async t => {
 
 test('should add version arguments', async t => {
   const options = { npm: { skipChecks: true, versionArgs: ['--workspaces-update=false', '--allow-same-version'] } };
-  const npmClient = factory(npm, { options });
+  const npmClient = await factory(npm, { options });
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   await runTasks(npmClient);
   const version = exec.args.filter(arg => arg[0].startsWith('npm version'));

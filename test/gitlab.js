@@ -36,7 +36,7 @@ test.serial('should validate token', async t => {
   const tokenRef = 'MY_GITLAB_TOKEN';
   const pushRepo = 'https://gitlab.com/user/repo';
   const options = { gitlab: { release: true, tokenRef, tokenHeader, pushRepo } };
-  const gitlab = factory(GitLab, { options });
+  const gitlab = await factory(GitLab, { options });
   delete process.env[tokenRef];
 
   await t.throwsAsync(gitlab.init(), {
@@ -55,7 +55,7 @@ test.serial('should support CI Job token header', async t => {
   process.env[tokenRef] = 'j0b-t0k3n';
   const pushRepo = 'https://gitlab.com/user/repo';
   const options = { git: { pushRepo }, gitlab: { release: true, tokenRef, tokenHeader } };
-  const gitlab = factory(GitLab, { options });
+  const gitlab = await factory(GitLab, { options });
 
   interceptPublish(undefined, { reqheaders: { 'job-token': '1' } });
 
@@ -77,10 +77,10 @@ test.serial('should upload assets and release', async t => {
       milestones: ['${version}', '${latestVersion} UAT']
     }
   };
-  const gitlab = factory(GitLab, { options });
+  const gitlab = await factory(GitLab, { options });
   sinon.stub(gitlab, 'getLatestVersion').resolves('2.0.0');
 
-  const git = factory(Git);
+  const git = await factory(Git);
   const ref = (await git.getBranchName()) ?? 'HEAD';
 
   interceptUser();
@@ -145,7 +145,7 @@ test.serial('should upload assets with ID-based URLs too', async t => {
       useIdsForUrls: true
     }
   };
-  const gitlab = factory(GitLab, { options });
+  const gitlab = await factory(GitLab, { options });
   sinon.stub(gitlab, 'getLatestVersion').resolves('2.0.0');
 
   interceptUser();
@@ -171,7 +171,7 @@ test.serial('should upload assets to generic repo', async t => {
       genericPackageRepositoryName: 'release-it'
     }
   };
-  const gitlab = factory(GitLab, { options });
+  const gitlab = await factory(GitLab, { options });
   sinon.stub(gitlab, 'getLatestVersion').resolves('2.0.0');
 
   interceptUser();
@@ -194,7 +194,7 @@ test.serial('should throw when release milestone is missing', async t => {
       milestones: ['${version}', '${latestVersion} UAT']
     }
   };
-  const gitlab = factory(GitLab, { options });
+  const gitlab = await factory(GitLab, { options });
   sinon.stub(gitlab, 'getLatestVersion').resolves('2.0.0');
 
   interceptUser();
@@ -227,7 +227,7 @@ test.serial('should release to self-managed host', async t => {
     git: { pushRepo: `${host}/user/repo` },
     gitlab: { releaseName: 'Release ${version}', releaseNotes: 'echo readme', tokenRef }
   };
-  const gitlab = factory(GitLab, { options });
+  const gitlab = await factory(GitLab, { options });
   sinon.stub(gitlab, 'getLatestVersion').resolves('1.0.0');
 
   interceptUser({ host });
@@ -244,7 +244,7 @@ test.serial('should release to sub-grouped repo', async t => {
   const scope = nock('https://gitlab.com');
   scope.post('/api/v4/projects/group%2Fsub-group%2Frepo/releases').reply(200, {});
   const options = { gitlab: { tokenRef }, git: { pushRepo: 'git@gitlab.com:group/sub-group/repo.git' } };
-  const gitlab = factory(GitLab, { options });
+  const gitlab = await factory(GitLab, { options });
 
   interceptUser({ owner: 'sub-group' });
   interceptCollaborator({ owner: 'sub-group', group: 'group' });
@@ -260,7 +260,7 @@ test.serial('should throw for unauthenticated user', async t => {
   const host = 'https://gitlab.com';
   const pushRepo = `${host}/user/repo`;
   const options = { gitlab: { tokenRef, pushRepo, host } };
-  const gitlab = factory(GitLab, { options });
+  const gitlab = await factory(GitLab, { options });
   const scope = nock(host);
   scope.get(`/api/v4/user`).reply(401);
 
@@ -273,7 +273,7 @@ test.serial('should throw for non-collaborator', async t => {
   const host = 'https://gitlab.com';
   const pushRepo = `${host}/john/repo`;
   const options = { gitlab: { tokenRef, pushRepo, host } };
-  const gitlab = factory(GitLab, { options });
+  const gitlab = await factory(GitLab, { options });
   const scope = nock(host);
   scope.get(`/api/v4/projects/john%2Frepo/members/all/1`).reply(200, { username: 'emma' });
   interceptUser({ owner: 'john' });
@@ -285,7 +285,7 @@ test.serial('should throw for insufficient access level', async t => {
   const host = 'https://gitlab.com';
   const pushRepo = `${host}/john/repo`;
   const options = { gitlab: { tokenRef, pushRepo, host } };
-  const gitlab = factory(GitLab, { options });
+  const gitlab = await factory(GitLab, { options });
   const scope = nock(host);
   scope.get(`/api/v4/projects/john%2Frepo/members/all/1`).reply(200, { username: 'john', access_level: 10 });
   interceptUser({ owner: 'john' });
@@ -297,7 +297,7 @@ test('should not make requests in dry run', async t => {
   const [host, owner, repo] = ['https://gitlab.example.org', 'user', 'repo'];
   const pushRepo = `${host}/${owner}/${repo}`;
   const options = { 'dry-run': true, git: { pushRepo }, gitlab: { releaseName: 'R', tokenRef } };
-  const gitlab = factory(GitLab, { options });
+  const gitlab = await factory(GitLab, { options });
   sinon.stub(gitlab, 'getLatestVersion').resolves('1.0.0');
 
   await runTasks(gitlab);
@@ -312,7 +312,7 @@ test('should not make requests in dry run', async t => {
 
 test('should skip checks', async t => {
   const options = { gitlab: { tokenRef, skipChecks: true, release: true, milestones: ['v1.0.0'] } };
-  const gitlab = factory(GitLab, { options });
+  const gitlab = await factory(GitLab, { options });
 
   await t.notThrowsAsync(gitlab.init());
   await t.notThrowsAsync(gitlab.beforeRelease());
@@ -320,16 +320,16 @@ test('should skip checks', async t => {
   t.is(gitlab.log.exec.args.filter(entry => /checkReleaseMilestones/.test(entry[0])).length, 0);
 });
 
-test.serial('should not create fetch agent', t => {
+test.serial('should not create fetch agent', async t => {
   const options = { gitlab: {} };
-  const gitlab = factory(GitLab, { options });
+  const gitlab = await factory(GitLab, { options });
 
   t.deepEqual(gitlab.certificateAuthorityOption, {});
 });
 
-test.serial('should create fetch agent if secure == false', t => {
+test.serial('should create fetch agent if secure == false', async t => {
   const options = { gitlab: { secure: false } };
-  const gitlab = factory(GitLab, { options });
+  const gitlab = await factory(GitLab, { options });
   const { dispatcher } = gitlab.certificateAuthorityOption;
 
   t.true(dispatcher instanceof Agent, "Fetch dispatcher should be an instance of undici's Agent class");
@@ -338,12 +338,12 @@ test.serial('should create fetch agent if secure == false', t => {
   t.deepEqual(dispatcher[kOptions].connect, { rejectUnauthorized: false, ca: undefined });
 });
 
-test.serial('should create fetch agent if certificateAuthorityFile', t => {
+test.serial('should create fetch agent if certificateAuthorityFile', async t => {
   const sandbox = sinon.createSandbox();
   sandbox.stub(fs, 'readFileSync').withArgs('cert.crt').returns('test certificate');
 
   const options = { gitlab: { certificateAuthorityFile: 'cert.crt' } };
-  const gitlab = factory(GitLab, { options });
+  const gitlab = await factory(GitLab, { options });
   const { dispatcher } = gitlab.certificateAuthorityOption;
 
   t.true(dispatcher instanceof Agent, "Fetch dispatcher should be an instance of undici's Agent class");
@@ -354,13 +354,13 @@ test.serial('should create fetch agent if certificateAuthorityFile', t => {
   sandbox.restore();
 });
 
-test.serial('should create fetch agent if CI_SERVER_TLS_CA_FILE env is set', t => {
+test.serial('should create fetch agent if CI_SERVER_TLS_CA_FILE env is set', async t => {
   const sandbox = sinon.createSandbox();
   sandbox.stub(fs, 'readFileSync').withArgs('ca.crt').returns('test certificate');
   process.env[certificateAuthorityFileRef] = 'ca.crt';
 
   const options = { gitlab: {} };
-  const gitlab = factory(GitLab, { options });
+  const gitlab = await factory(GitLab, { options });
   const { dispatcher } = gitlab.certificateAuthorityOption;
 
   t.true(dispatcher instanceof Agent, "Fetch dispatcher should be an instance of undici's Agent class");
@@ -371,13 +371,13 @@ test.serial('should create fetch agent if CI_SERVER_TLS_CA_FILE env is set', t =
   sandbox.restore();
 });
 
-test.serial('should create fetch agent if certificateAuthorityFileRef env is set', t => {
+test.serial('should create fetch agent if certificateAuthorityFileRef env is set', async t => {
   const sandbox = sinon.createSandbox();
   sandbox.stub(fs, 'readFileSync').withArgs('custom-ca.crt').returns('test certificate');
   process.env['GITLAB_CA_FILE'] = 'custom-ca.crt';
 
   const options = { gitlab: { certificateAuthorityFileRef: 'GITLAB_CA_FILE' } };
-  const gitlab = factory(GitLab, { options });
+  const gitlab = await factory(GitLab, { options });
   const { dispatcher } = gitlab.certificateAuthorityOption;
 
   t.true(dispatcher instanceof Agent, "Fetch dispatcher should be an instance of undici's Agent class");
@@ -395,7 +395,7 @@ test.serial('should throw for insecure connections to self-hosted instances', as
     git: { pushRepo: `${host}/user/repo` },
     gitlab: { host, tokenRef, origin: host }
   };
-  const gitlab = factory(GitLab, { options });
+  const gitlab = await factory(GitLab, { options });
   const server = new GitlabTestServer();
 
   t.teardown(async () => {
@@ -423,7 +423,7 @@ test.serial('should succesfully connect to self-hosted instance if insecure conn
       secure: false
     }
   };
-  const gitlab = factory(GitLab, { options });
+  const gitlab = await factory(GitLab, { options });
   const server = new GitlabTestServer();
 
   t.teardown(async () => {
@@ -449,7 +449,7 @@ test.serial('should succesfully connect to self-hosted instance with valid CA fi
       certificateAuthorityFile: 'test/util/https-server/client/my-private-root-ca.cert.pem'
     }
   };
-  const gitlab = factory(GitLab, { options });
+  const gitlab = await factory(GitLab, { options });
   const server = new GitlabTestServer();
 
   t.teardown(async () => {
