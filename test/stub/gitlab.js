@@ -56,10 +56,8 @@ export const interceptAsset = (server, { owner = 'user', project = 'repo' } = {}
       url: `/projects/${owner}%2F${project}/uploads`
     },
     async request => {
-      const reader = request.body.getReader();
-      const { value } = await reader.read();
-      const bodyText = new TextDecoder().decode(value);
-      const [, name] = bodyText.match(/filename="([^"]+)"/);
+      const formData = await request.formData();
+      const { name } = formData.get('file');
       return {
         status: 200,
         body: {
