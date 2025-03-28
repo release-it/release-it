@@ -63,7 +63,7 @@ test('should create prompt', async t => {
       git: { tagName: 'v${version}' },
       npm: { name: 'my-pkg', tag: 'next' }
     });
-    await config.resolved
+    await config.resolved;
     config.setContext({ version: '1.0.0', tagName: '1.0.0' });
     const inquirer = t.context.getInquirer(stub);
     const p = await factory(Prompt, { container: { inquirer } });

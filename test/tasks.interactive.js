@@ -125,6 +125,7 @@ test.serial('should run tasks using extended configuration', async t => {
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
 
   fetchStub.restore();
+  fetchStub.reset();
 });
 
 test.serial('should run tasks not using extended configuration as it is not a string', async t => {
@@ -148,6 +149,7 @@ test.serial('should run tasks not using extended configuration as it is not a st
   t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
 
   fetchStub.restore();
+  fetchStub.reset();
 });
 
 test.serial('should not run hooks for disabled release-cycle methods', async t => {

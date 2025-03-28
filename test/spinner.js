@@ -13,9 +13,9 @@ const getConfig = async options => {
     config: false
   };
   const config = new Config(Object.assign({}, testConfig, options));
-  await config.resolved
+  await config.resolved;
 
-  return config
+  return config;
 };
 
 test('should not show spinner and not execute task if disabled', async t => {

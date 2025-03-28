@@ -11,7 +11,7 @@ export let factory = async (Definition, { namespace, options = {}, container = {
   options = Object.assign({}, { ci: true, verbose: false, 'dry-run': false, debug: false }, options);
   const ns = namespace || Definition.name.toLowerCase();
   container.config = container.config || new Config(Object.assign({ config: false }, options));
-  await container.config.resolved
+  await container.config.resolved;
 
   container.log = container.log || sinon.createStubInstance(Log);
 

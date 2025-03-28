@@ -7,7 +7,11 @@ import { factory } from './util/index.js';
 
 const cwd = childProcess.execSync('pwd', { encoding: 'utf8' }).trim();
 
-const shell = await factory(Shell);
+let shell;
+
+test.before(async () => {
+  shell = await factory(Shell);
+});
 
 test('exec', async t => {
   t.is(await shell.exec('echo bar'), 'bar');
