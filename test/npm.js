@@ -129,7 +129,7 @@ test('should handle errored request when resolving tag without pre-id', async t 
   exec.restore();
 });
 
-test('should add registry to commands when specified', async t => {
+test.serial('should add registry to commands when specified', async t => {
   const npmClient = await factory(npm);
   npmClient.setContext({ publishConfig: { registry: 'registry.example.org' } });
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
@@ -213,7 +213,7 @@ test('should throw if user is not authenticated', async t => {
   exec.restore();
 });
 
-test('should throw if user is not a collaborator (v9)', async t => {
+test.serial('should throw if user is not a collaborator (v9)', async t => {
   const npmClient = await factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   exec.withArgs('npm whoami').resolves('ada');
@@ -223,7 +223,7 @@ test('should throw if user is not a collaborator (v9)', async t => {
   exec.restore();
 });
 
-test('should throw if user is not a collaborator (v8)', async t => {
+test.serial('should throw if user is not a collaborator (v8)', async t => {
   const npmClient = await factory(npm);
   const exec = sinon.stub(npmClient.shell, 'exec').resolves();
   exec.withArgs('npm whoami').resolves('ada');
@@ -324,7 +324,7 @@ test('should skip checks', async t => {
   await t.notThrowsAsync(npmClient.init());
 });
 
-test('should publish to a different/scoped registry', async t => {
+test.serial('should publish to a different/scoped registry', async t => {
   const resetFs = mockFs({
     [path.resolve('package.json')]: JSON.stringify({
       name: '@my-scope/my-pkg',
