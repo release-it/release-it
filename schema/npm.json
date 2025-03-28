@@ -21,6 +21,10 @@
       },
       "default": []
     },
+    "publishPackageManager": {
+      "type": "string",
+      "default": "npm"
+    },
     "tag": {
       "type": "string",
       "default": null
