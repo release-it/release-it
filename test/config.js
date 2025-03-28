@@ -4,7 +4,7 @@ import { isCI } from 'ci-info';
 import sinon from 'sinon';
 import Config from '../lib/config.js';
 import { readJSON } from '../lib/util.js';
-import { createRemoteTarBlob } from './util/fetch.js';
+import { createTarBlob } from './util/fetch.js';
 
 const defaultConfig = readJSON(new URL('../config/release-it.json', import.meta.url));
 const projectConfig = readJSON(new URL('../.release-it.json', import.meta.url));
@@ -226,7 +226,7 @@ test.serial('should fetch extended configuration with default file and default b
 
   fetchStub.onCall(1).resolves({
     ok: true,
-    body: createRemoteTarBlob(fileURLToPath(new URL('./stub/config/remote', import.meta.url)))
+    body: createTarBlob(fileURLToPath(new URL('./stub/config/remote', import.meta.url)))
   });
 
   const config = new Config({
@@ -249,7 +249,7 @@ test.serial('should fetch extended configuration with default file and specific 
 
   fetchStub.onCall(1).resolves({
     ok: true,
-    body: createRemoteTarBlob(fileURLToPath(new URL('./stub/config/remote', import.meta.url)))
+    body: createTarBlob(fileURLToPath(new URL('./stub/config/remote', import.meta.url)))
   });
 
   const config = new Config({
@@ -272,7 +272,7 @@ test.serial('should fetch extended configuration with subdir and specific tag', 
 
   fetchStub.onCall(1).resolves({
     ok: true,
-    body: createRemoteTarBlob(fileURLToPath(new URL('./stub/config/remote', import.meta.url)))
+    body: createTarBlob(fileURLToPath(new URL('./stub/config/remote', import.meta.url)))
   });
 
   const config = new Config({
@@ -295,7 +295,7 @@ test.serial('should fetch extended configuration with custom file and default br
 
   fetchStub.onCall(1).resolves({
     ok: true,
-    body: createRemoteTarBlob(fileURLToPath(new URL('./stub/config/remote', import.meta.url)))
+    body: createTarBlob(fileURLToPath(new URL('./stub/config/remote', import.meta.url)))
   });
 
   const config = new Config({

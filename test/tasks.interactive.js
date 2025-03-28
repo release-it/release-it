@@ -15,6 +15,7 @@ import ShellStub from './stub/shell.js';
 import { interceptPublish as interceptGitLabPublish } from './stub/gitlab.js';
 import { interceptCreate as interceptGitHubCreate } from './stub/github.js';
 import { factory } from './util/index.js';
+import { createTarBlobByRawContents } from './util/fetch.js';
 
 const noop = Promise.resolve();
 
@@ -94,12 +95,21 @@ test.serial('should run tasks using extended configuration', async t => {
 
   const validationExtendedConfiguration = "echo 'extended_configuration'";
 
-  const fetchStub = sandbox.stub(global, 'fetch').resolves({
+  const fetchStub = sandbox.stub(global, 'fetch');
+
+  fetchStub.onCall(0).resolves({
     ok: true,
-    json: async () => ({
-      hooks: {
-        'before:init': validationExtendedConfiguration
-      }
+    headers: new Headers()
+  });
+
+  fetchStub.onCall(1).resolves({
+    ok: true,
+    body: createTarBlobByRawContents({
+      '.release-it.json': JSON.stringify({
+        hooks: {
+          'before:init': validationExtendedConfiguration
+        }
+      })
     })
   });
 
@@ -115,7 +125,7 @@ test.serial('should run tasks using extended configuration', async t => {
 
   const { name, latestVersion, version } = await runTasks({}, container);
 
-  t.is(fetchStub.callCount, 1);
+  t.is(fetchStub.callCount, 2);
 
   const commands = exec.args.flat().filter(arg => typeof arg === 'string' && arg.startsWith('echo'));
 

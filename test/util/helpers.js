@@ -12,13 +12,7 @@ const mkTmpDir = () => {
 const readFile = file => promises.readFile(path.resolve(file), 'utf8');
 
 const gitAdd = (content, filePath, message) => {
-  const pathSegments = filePath.split('/').filter(Boolean);
-  pathSegments.pop();
-  if (pathSegments.length) {
-    mkdirSync(path.resolve(pathSegments.join('/')), { mode: parseInt('0777', 8), recursive: true });
-  }
-
-  appendFileSync(filePath, content);
+  appendFile(content, filePath);
   childProcess.execSync(`git add ${filePath}`, execOpts);
   const stdout = childProcess.execSync(`git commit -m "${message}"`, { encoding: 'utf-8' });
   const match = stdout.match(/\[.+([a-z0-9]{7})\]/);
@@ -31,4 +25,16 @@ const getArgs = (args, prefix) =>
     .filter(cmd => cmd.startsWith(prefix))
     .map(cmd => cmd.trim());
 
-export { mkTmpDir, readFile, gitAdd, getArgs };
+const appendFile = (content, filePath, cwd) => {
+  filePath = path.join(cwd ?? '', filePath);
+
+  const pathSegments = filePath.split('/').filter(Boolean);
+  pathSegments.pop();
+  if (pathSegments.length) {
+    mkdirSync(path.resolve(pathSegments.join('/')), { mode: parseInt('0777', 8), recursive: true });
+  }
+
+  appendFileSync(filePath, content);
+};
+
+export { mkTmpDir, readFile, gitAdd, getArgs, appendFile };
