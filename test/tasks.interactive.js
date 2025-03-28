@@ -105,7 +105,8 @@ test.serial('should run tasks using extended configuration', async t => {
 
   const config = {
     $schema: 'https://unpkg.com/release-it@18/schema/release-it.json',
-    extends: 'github:release-it/release-it-configuration'
+    extends: 'github:release-it/release-it-configuration',
+    config: true
   };
 
   const container = getContainer(config);
