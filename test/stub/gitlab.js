@@ -1,3 +1,7 @@
+export const interceptMembers = (server, { owner = 'emma' } = {}) => {
+  server.get(`/projects/john%2Frepo/members/all/1`, { status: 200, username: owner });
+};
+
 export const interceptUser = (server, { owner = 'user' } = {}, options = {}) => {
   server.get({ url: '/user', ...options }, { status: 200, body: { id: 1, username: owner } });
 };

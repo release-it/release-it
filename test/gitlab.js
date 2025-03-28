@@ -13,7 +13,8 @@ import {
   interceptPublish,
   interceptAsset,
   interceptAssetGeneric,
-  interceptMilestones
+  interceptMilestones,
+  interceptMembers
 } from './stub/gitlab.js';
 
 describe('GitLab', () => {
@@ -129,7 +130,7 @@ describe('GitLab', () => {
     assert.equal(releaseUrl, `${pushRepo}/-/releases/2.0.1`);
   });
 
-  test('should upload assets with ID-based URLs too', async t => {
+  test('should upload assets with ID-based URLs', async t => {
     const host = 'https://gitlab.com';
     const pushRepo = `${host}/user/repo`;
     const options = {
@@ -266,7 +267,7 @@ describe('GitLab', () => {
     const options = { gitlab: { tokenRef, pushRepo, host } };
     const gitlab = factory(GitLab, { options });
 
-    api.get(`/projects/john%2Frepo/members/all/1`, { status: 200, username: 'emma' });
+    interceptMembers(api, { owner: 'emma' });
     interceptUser(api, { owner: 'john' });
 
     await assert.rejects(runTasks(gitlab), /User john is not a collaborator for john\/repo/);
@@ -278,7 +279,7 @@ describe('GitLab', () => {
     const options = { gitlab: { tokenRef, pushRepo, host } };
     const gitlab = factory(GitLab, { options });
 
-    api.get(`/projects/john%2Frepo/members/all/1`, { status: 200, username: 'john', access_level: 10 });
+    interceptMembers(api, { owner: 'john', access_level: 10 });
     interceptUser(api, { owner: 'john' });
 
     await assert.rejects(runTasks(gitlab), /User john is not a collaborator for john\/repo/);
