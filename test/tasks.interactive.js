@@ -3,7 +3,6 @@ import { renameSync } from 'node:fs';
 import childProcess from 'node:child_process';
 import test, { afterEach, after, before, beforeEach, describe, mock } from 'node:test';
 import assert from 'node:assert/strict';
-import { MockServer, FetchMocker } from 'mentoss';
 import Prompt from '../lib/prompt.js';
 import Config from '../lib/config.js';
 import runTasks from '../lib/index.js';
@@ -14,15 +13,14 @@ import ShellStub from './stub/shell.js';
 import { interceptPublish as interceptGitLabPublish } from './stub/gitlab.js';
 import { interceptCreate as interceptGitHubCreate } from './stub/github.js';
 import { factory, LogStub, SpinnerStub } from './util/index.js';
+import { mockFetch } from './util/mock.js';
 
 describe('tasks.interactive', () => {
-  const github = new MockServer('https://api.github.com');
-  const gitlab = new MockServer('https://gitlab.com/api/v4');
-  const githubusercontent = new MockServer('https://raw.githubusercontent.com');
-
-  const mocker = new FetchMocker({
-    servers: [github, gitlab, githubusercontent]
-  });
+  const [mocker, github, gitlab, githubusercontent] = mockFetch([
+    'https://api.github.com',
+    'https://gitlab.com/api/v4',
+    'https://raw.githubusercontent.com'
+  ]);
 
   before(() => {
     mocker.mockGlobal();

@@ -2,7 +2,6 @@ import fs from 'node:fs';
 import test, { before, after, afterEach, beforeEach, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import { Agent } from 'undici';
-import { MockServer, FetchMocker } from 'mentoss';
 import Git from '../lib/plugin/git/Git.js';
 import GitLab from '../lib/plugin/gitlab/GitLab.js';
 import { GitlabTestServer } from './util/https-server/server.js';
@@ -16,19 +15,18 @@ import {
   interceptMilestones,
   interceptMembers
 } from './stub/gitlab.js';
+import { mockFetch } from './util/mock.js';
 
 describe('GitLab', () => {
   const tokenHeader = 'Private-Token';
   const tokenRef = 'GITLAB_TOKEN';
   const certificateAuthorityFileRef = 'CI_SERVER_TLS_CA_FILE';
 
-  const api = new MockServer('https://gitlab.com/api/v4');
-  const example = new MockServer('https://gitlab.example.org/api/v4');
-  const local = new MockServer('https://localhost:3000/api/v4');
-
-  const mocker = new FetchMocker({
-    servers: [api, example, local]
-  });
+  const [mocker, api, example, local] = mockFetch([
+    'https://gitlab.com/api/v4',
+    'https://gitlab.example.org/api/v4',
+    'https://localhost:3000/api/v4'
+  ]);
 
   before(() => {
     mocker.mockGlobal();

@@ -1,9 +1,9 @@
 import test, { describe, before, after, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { isCI } from 'ci-info';
-import { MockServer, FetchMocker } from 'mentoss';
 import Config, { getRemoteConfiguration } from '../lib/config.js';
 import { readJSON } from '../lib/util.js';
+import { mockFetch } from './util/mock.js';
 
 const defaultConfig = readJSON(new URL('../config/release-it.json', import.meta.url));
 const projectConfig = readJSON(new URL('../.release-it.json', import.meta.url));
@@ -165,11 +165,7 @@ describe('config', () => {
 });
 
 describe('fetch extended configuration', () => {
-  const server = new MockServer('https://raw.githubusercontent.com');
-
-  const mocker = new FetchMocker({
-    servers: [server]
-  });
+  const [mocker, server] = mockFetch('https://raw.githubusercontent.com');
 
   before(() => {
     mocker.mockGlobal();

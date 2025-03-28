@@ -4,7 +4,6 @@ import { appendFileSync, mkdirSync, renameSync } from 'node:fs';
 import test, { after, afterEach, before, beforeEach, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import semver from 'semver';
-import { MockServer, FetchMocker } from 'mentoss';
 import Config from '../lib/config.js';
 import runTasks from '../lib/index.js';
 import Git from '../lib/plugin/git/Git.js';
@@ -24,17 +23,16 @@ import {
   interceptAsset as interceptGitHubAsset
 } from './stub/github.js';
 import { factory, LogStub, SpinnerStub } from './util/index.js';
+import { mockFetch } from './util/mock.js';
 
 describe('tasks', () => {
   const rootDir = new URL('..', import.meta.url);
 
-  const github = new MockServer('https://api.github.com');
-  const assets = new MockServer('https://uploads.github.com');
-  const gitlab = new MockServer('https://gitlab.com/api/v4');
-
-  const mocker = new FetchMocker({
-    servers: [github, assets, gitlab]
-  });
+  const [mocker, github, assets, gitlab] = mockFetch([
+    'https://api.github.com',
+    'https://uploads.github.com',
+    'https://gitlab.com/api/v4'
+  ]);
 
   const npmMajorVersion = semver.major(process.env.npm_config_user_agent.match(/npm\/([^ ]+)/)[1]);
 

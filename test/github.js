@@ -1,7 +1,6 @@
 import test, { describe, before, after, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { RequestError } from '@octokit/request-error';
-import { MockServer, FetchMocker } from 'mentoss';
 import GitHub from '../lib/plugin/github/GitHub.js';
 import { getSearchQueries } from '../lib/plugin/github/util.js';
 import { factory, runTasks } from './util/index.js';
@@ -13,6 +12,7 @@ import {
   interceptUpdate,
   interceptAsset
 } from './stub/github.js';
+import { mockFetch } from './util/mock.js';
 
 describe('github', () => {
   const tokenRef = 'GITHUB_TOKEN';
@@ -21,14 +21,12 @@ describe('github', () => {
   const git = { changelog: '' };
   const requestErrorOptions = { request: { url: '', headers: {} }, response: { headers: {} } };
 
-  const api = new MockServer('https://api.github.com');
-  const assets = new MockServer('https://uploads.github.com');
-  const example = new MockServer('https://github.example.org/api/v3');
-  const custom = new MockServer('https://custom.example.org/api/v3');
-
-  const mocker = new FetchMocker({
-    servers: [api, assets, example, custom]
-  });
+  const [mocker, api, assets, example, custom] = mockFetch([
+    'https://api.github.com',
+    'https://uploads.github.com',
+    'https://github.example.org/api/v3',
+    'https://custom.example.org/api/v3'
+  ]);
 
   before(() => {
     mocker.mockGlobal();
