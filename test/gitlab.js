@@ -53,7 +53,7 @@ describe('GitLab', () => {
     const tokenRef = 'MY_GITLAB_TOKEN';
     const pushRepo = 'https://gitlab.com/user/repo';
     const options = { gitlab: { release: true, tokenRef, tokenHeader, pushRepo } };
-    const gitlab = factory(GitLab, { options });
+    const gitlab = await factory(GitLab, { options });
     delete process.env[tokenRef];
 
     await assert.rejects(gitlab.init(), /Environment variable "MY_GITLAB_TOKEN" is required for GitLab releases/);
@@ -71,7 +71,7 @@ describe('GitLab', () => {
     process.env[tokenRef] = 'j0b-t0k3n';
     const pushRepo = 'https://gitlab.com/user/repo';
     const options = { git: { pushRepo }, gitlab: { release: true, tokenRef, tokenHeader } };
-    const gitlab = factory(GitLab, { options });
+    const gitlab = await factory(GitLab, { options });
 
     interceptPublish(api, { headers: { 'job-token': '1' } });
 
@@ -93,10 +93,10 @@ describe('GitLab', () => {
         milestones: ['${version}', '${latestVersion} UAT']
       }
     };
-    const gitlab = factory(GitLab, { options });
+    const gitlab = await factory(GitLab, { options });
     t.mock.method(gitlab, 'getLatestVersion', () => Promise.resolve('2.0.0'));
 
-    const git = factory(Git);
+    const git = await factory(Git);
     const ref = (await git.getBranchName()) ?? 'HEAD';
 
     interceptUser(api);
@@ -141,7 +141,7 @@ describe('GitLab', () => {
       }
     };
 
-    const gitlab = factory(GitLab, { options });
+    const gitlab = await factory(GitLab, { options });
     t.mock.method(gitlab, 'getLatestVersion', () => Promise.resolve('2.0.0'));
 
     interceptUser(api);
@@ -170,7 +170,7 @@ describe('GitLab', () => {
         genericPackageRepositoryName: 'release-it'
       }
     };
-    const gitlab = factory(GitLab, { options });
+    const gitlab = await factory(GitLab, { options });
     t.mock.method(gitlab, 'getLatestVersion', () => Promise.resolve('2.0.0'));
 
     interceptUser(api);
@@ -196,7 +196,7 @@ describe('GitLab', () => {
         milestones: ['${version}', '${latestVersion} UAT']
       }
     };
-    const gitlab = factory(GitLab, { options });
+    const gitlab = await factory(GitLab, { options });
     t.mock.method(gitlab, 'getLatestVersion', () => Promise.resolve('2.0.0'));
 
     interceptUser(api);
@@ -216,7 +216,7 @@ describe('GitLab', () => {
       git: { pushRepo: `${host}/user/repo` },
       gitlab: { releaseName: 'Release ${version}', releaseNotes: 'echo readme', tokenRef }
     };
-    const gitlab = factory(GitLab, { options });
+    const gitlab = await factory(GitLab, { options });
     t.mock.method(gitlab, 'getLatestVersion', () => Promise.resolve('1.0.0'));
 
     interceptUser(example);
@@ -232,7 +232,7 @@ describe('GitLab', () => {
 
   test('should release to sub-grouped repo', async () => {
     const options = { gitlab: { tokenRef }, git: { pushRepo: 'git@gitlab.com:group/sub-group/repo.git' } };
-    const gitlab = factory(GitLab, { options });
+    const gitlab = await factory(GitLab, { options });
 
     interceptUser(api, { owner: 'sub-group' });
     interceptCollaborator(api, { owner: 'sub-group', group: 'group' });
@@ -249,7 +249,7 @@ describe('GitLab', () => {
     const host = 'https://gitlab.com';
     const pushRepo = `${host}/user/repo`;
     const options = { gitlab: { tokenRef, pushRepo, host } };
-    const gitlab = factory(GitLab, { options });
+    const gitlab = await factory(GitLab, { options });
 
     api.get('/user', { status: 401 });
 
@@ -263,7 +263,7 @@ describe('GitLab', () => {
     const host = 'https://gitlab.com';
     const pushRepo = `${host}/john/repo`;
     const options = { gitlab: { tokenRef, pushRepo, host } };
-    const gitlab = factory(GitLab, { options });
+    const gitlab = await factory(GitLab, { options });
 
     interceptMembers(api, { owner: 'emma' });
     interceptUser(api, { owner: 'john' });
@@ -275,7 +275,7 @@ describe('GitLab', () => {
     const host = 'https://gitlab.com';
     const pushRepo = `${host}/john/repo`;
     const options = { gitlab: { tokenRef, pushRepo, host } };
-    const gitlab = factory(GitLab, { options });
+    const gitlab = await factory(GitLab, { options });
 
     interceptMembers(api, { owner: 'john', access_level: 10 });
     interceptUser(api, { owner: 'john' });
@@ -287,7 +287,7 @@ describe('GitLab', () => {
     const [host, owner, repo] = ['https://gitlab.example.org', 'user', 'repo'];
     const pushRepo = `${host}/${owner}/${repo}`;
     const options = { 'dry-run': true, git: { pushRepo }, gitlab: { releaseName: 'R', tokenRef } };
-    const gitlab = factory(GitLab, { options });
+    const gitlab = await factory(GitLab, { options });
     t.mock.method(gitlab, 'getLatestVersion', () => Promise.resolve('1.0.0'));
 
     await runTasks(gitlab);
@@ -302,7 +302,7 @@ describe('GitLab', () => {
 
   test('should skip checks', async () => {
     const options = { gitlab: { tokenRef, skipChecks: true, release: true, milestones: ['v1.0.0'] } };
-    const gitlab = factory(GitLab, { options });
+    const gitlab = await factory(GitLab, { options });
 
     await assert.doesNotReject(gitlab.init());
     await assert.doesNotReject(gitlab.beforeRelease());
@@ -315,16 +315,16 @@ describe('GitLab', () => {
     );
   });
 
-  test('should not create fetch agent', () => {
+  test('should not create fetch agent', async () => {
     const options = { gitlab: {} };
-    const gitlab = factory(GitLab, { options });
+    const gitlab = await factory(GitLab, { options });
 
     assert.deepEqual(gitlab.certificateAuthorityOption, {});
   });
 
-  test('should create fetch agent if secure == false', () => {
+  test('should create fetch agent if secure == false', async () => {
     const options = { gitlab: { secure: false } };
-    const gitlab = factory(GitLab, { options });
+    const gitlab = await factory(GitLab, { options });
     const { dispatcher } = gitlab.certificateAuthorityOption;
 
     assert(dispatcher instanceof Agent, "Fetch dispatcher should be an instance of undici's Agent class");
@@ -333,11 +333,11 @@ describe('GitLab', () => {
     assert.deepEqual(dispatcher[kOptions].connect, { rejectUnauthorized: false, ca: undefined });
   });
 
-  test('should create fetch agent if certificateAuthorityFile', t => {
+  test('should create fetch agent if certificateAuthorityFile', async t => {
     const readFileSync = t.mock.method(fs, 'readFileSync', () => 'test certificate');
 
     const options = { gitlab: { certificateAuthorityFile: 'cert.crt' } };
-    const gitlab = factory(GitLab, { options });
+    const gitlab = await factory(GitLab, { options });
     const { dispatcher } = gitlab.certificateAuthorityOption;
 
     assert(dispatcher instanceof Agent, "Fetch dispatcher should be an instance of undici's Agent class");
@@ -348,12 +348,12 @@ describe('GitLab', () => {
     readFileSync.mock.restore();
   });
 
-  test('should create fetch agent if CI_SERVER_TLS_CA_FILE env is set', t => {
+  test('should create fetch agent if CI_SERVER_TLS_CA_FILE env is set', async t => {
     const readFileSync = t.mock.method(fs, 'readFileSync', () => 'test certificate');
     process.env[certificateAuthorityFileRef] = 'ca.crt';
 
     const options = { gitlab: {} };
-    const gitlab = factory(GitLab, { options });
+    const gitlab = await factory(GitLab, { options });
     const { dispatcher } = gitlab.certificateAuthorityOption;
 
     assert(dispatcher instanceof Agent, "Fetch dispatcher should be an instance of undici's Agent class");
@@ -364,12 +364,12 @@ describe('GitLab', () => {
     readFileSync.mock.restore();
   });
 
-  test('should create fetch agent if certificateAuthorityFileRef env is set', t => {
+  test('should create fetch agent if certificateAuthorityFileRef env is set', async t => {
     const readFileSync = t.mock.method(fs, 'readFileSync', () => 'test certificate');
     process.env['GITLAB_CA_FILE'] = 'custom-ca.crt';
 
     const options = { gitlab: { certificateAuthorityFileRef: 'GITLAB_CA_FILE' } };
-    const gitlab = factory(GitLab, { options });
+    const gitlab = await factory(GitLab, { options });
     const { dispatcher } = gitlab.certificateAuthorityOption;
 
     assert(dispatcher instanceof Agent, "Fetch dispatcher should be an instance of undici's Agent class");
@@ -387,7 +387,7 @@ describe('GitLab', () => {
       git: { pushRepo: `${host}/user/repo` },
       gitlab: { host, tokenRef, origin: host }
     };
-    const gitlab = factory(GitLab, { options });
+    const gitlab = await factory(GitLab, { options });
     const server = new GitlabTestServer();
 
     t.after(async () => {
@@ -411,7 +411,7 @@ describe('GitLab', () => {
         secure: false
       }
     };
-    const gitlab = factory(GitLab, { options });
+    const gitlab = await factory(GitLab, { options });
     const server = new GitlabTestServer();
 
     t.after(async () => {
@@ -438,7 +438,7 @@ describe('GitLab', () => {
         certificateAuthorityFile: 'test/util/https-server/client/my-private-root-ca.cert.pem'
       }
     };
-    const gitlab = factory(GitLab, { options });
+    const gitlab = await factory(GitLab, { options });
     const server = new GitlabTestServer();
 
     t.after(async () => {

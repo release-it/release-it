@@ -91,9 +91,11 @@ Release-it has [plenty of options][2]. See the following tables for plugin confi
 
 You can extend a configuration from a remote source using the `extends` option. The following formats are supported:
 
-- `github:owner/repo`
-- `github:owner/repo#tag`
-- `github:owner/repo:file#tag`
+- `github:owner/repo`: Get the config from the default branch (main) in the repo at Github.
+- `github:owner/repo#tag`: Get the config from the specified tag in the repo at Github.
+- `github:owner/repo:subdir#tag`: Get the config from the specified tag in the repo sub dir at Github.
+
+And support other schema, either `gitlab:`, `bitbucket:`, or `https:`.
 
 For example, to extend a configuration from a GitHub repository:
 
@@ -104,7 +106,7 @@ For example, to extend a configuration from a GitHub repository:
 }
 ```
 
-Only public GitHub repositories are supported at this time.
+Get more information at [c12 documents](https://github.com/unjs/c12?tab=readme-ov-file#extending-configuration).
 
 ## Setting options via CLI
 
