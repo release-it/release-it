@@ -94,7 +94,6 @@
     "issue-parser": "7.0.1",
     "lodash.get": "4.4.2",
     "lodash.merge": "4.6.2",
-    "make-synchronized": "0.6.0",
     "mime-types": "2.1.35",
     "new-github-release-url": "2.0.0",
     "open": "10.1.0",
