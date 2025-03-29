@@ -1,6 +1,6 @@
 {
   "name": "release-it",
-  "version": "19.0.0-next.1",
+  "version": "19.0.0-next.2",
   "description": "Generic CLI tool to automate versioning and package publishing-related tasks.",
   "keywords": [
     "build",
@@ -48,9 +48,9 @@
   "type": "module",
   "exports": {
     ".": {
+      "types": "./types/index.d.ts",
       "import": "./lib/index.js",
-      "require": "./lib/index.js",
-      "types": "./types/index.d.ts"
+      "require": "./lib/index.js"
     },
     "./package.json": "./package.json",
     "./test/util/index.js": "./test/util/index.js"
@@ -69,7 +69,7 @@
     "lint": "eslint lib test",
     "format": "prettier --write eslint.config.mjs \"{lib,test}/**/*.js\"",
     "docs": "remark README.md 'docs/**/*.md' '.github/*.md' -o",
-    "test": "ava --no-worker-threads && installed-check --ignore ava --ignore nock",
+    "test": "node --env-file=.env.test --test && installed-check",
     "release": "./bin/release-it.js"
   },
   "author": {
@@ -90,7 +90,7 @@
     "execa": "9.5.2",
     "git-url-parse": "16.0.1",
     "globby": "14.1.0",
-    "inquirer": "12.4.3",
+    "inquirer": "12.5.0",
     "issue-parser": "7.0.1",
     "lodash.get": "4.4.2",
     "lodash.merge": "4.6.2",
@@ -111,28 +111,23 @@
   },
   "devDependencies": {
     "@eslint/compat": "1.2.7",
-    "@eslint/eslintrc": "3.3.0",
-    "@eslint/js": "9.22.0",
+    "@eslint/eslintrc": "3.3.1",
+    "@eslint/js": "9.23.0",
     "@octokit/request-error": "6.1.7",
-    "@types/node": "20.17.17",
-    "ava": "6.2.0",
-    "eslint": "9.22.0",
+    "@types/node": "20.17.24",
+    "eslint": "9.23.0",
     "eslint-config-prettier": "10.1.1",
-    "eslint-plugin-ava": "15.0.1",
-    "eslint-plugin-import-x": "4.6.1",
-    "eslint-plugin-prettier": "5.2.3",
-    "fs-monkey": "1.0.6",
+    "eslint-plugin-import-x": "4.9.3",
+    "eslint-plugin-prettier": "5.2.5",
     "globals": "16.0.0",
     "installed-check": "9.3.0",
-    "knip": "5.45.0",
-    "memfs": "4.17.0",
+    "knip": "5.46.1",
+    "mentoss": "0.9.1",
     "mock-stdio": "1.0.3",
-    "nock": "14.0.1",
     "prettier": "3.5.3",
     "remark-cli": "12.0.1",
     "remark-preset-webpro": "1.1.1",
-    "sinon": "19.0.2",
-    "strip-ansi": "7.1.0",
+    "tar": "6.2.1",
     "typescript": "5.8.2"
   },
   "overrides": {

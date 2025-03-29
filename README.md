@@ -400,7 +400,7 @@ Are you using release-it at work? Please consider [sponsoring me][14]!
 [29]: ./docs/git.md
 [30]: https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases
 [31]: ./docs/github-releases.md
-[32]: https://docs.gitlab.com/ce/user/project/releases/
+[32]: https://docs.gitlab.com/api/releases/
 [33]: https://gitlab.com/profile/personal_access_tokens
 [34]: ./docs/environment-variables.md
 [35]: ./docs/gitlab-releases.md

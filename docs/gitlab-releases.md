@@ -15,7 +15,7 @@ GitLab Releases do not support pre-releases or drafts.
 ## Configuration options
 
 | Option                               | Description                                                                 |
-|:-------------------------------------|:----------------------------------------------------------------------------|
+| :----------------------------------- | :-------------------------------------------------------------------------- |
 | `gitlab.release`                     | Set to `false` to skip the GitLab publish step                              |
 | `gitlab.releaseName`                 | Set the release name (default: `Release ${version}`)                        |
 | `gitlab.releaseNotes`                | Override the release notes with custom notes                                |
@@ -171,8 +171,7 @@ the `secure` flag to false:
 }
 ```
 
-The `secure` option is passed down to [got][7], which in turn also forwards it to node's [`https.request`][8] method as
-the `rejectUnauthorized` option. The default value of `rejectUnauthorized` is `true`.
+The `secure` option is passed down to the `fetch` agent as the `connect.rejectUnauthorized` option.
 
 ## Update the latest release
 
@@ -190,11 +189,9 @@ Example command to add assets to the latest release:
 release-it --no-increment --no-git --gitlab.release --gitlab.assets=*.zip
 ```
 
-[1]: https://docs.gitlab.com/ce/user/project/releases/
+[1]: https://docs.gitlab.com/api/releases/
 [2]: ./git.md
-[3]: https://docs.gitlab.com/ce/user/profile/personal_access_tokens
+[3]: https://docs.gitlab.com/user/profile/personal_access_tokens/
 [4]: ./environment-variables.md
 [5]: ./changelog.md
 [6]: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/156939
-[7]: https://github.com/sindresorhus/got
-[8]: https://nodejs.org/api/https.html#httpsrequestoptions-callback

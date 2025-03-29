@@ -1,11 +1,9 @@
 import path from 'node:path';
 import childProcess from 'node:child_process';
 import { appendFileSync, mkdirSync, renameSync } from 'node:fs';
-import test from 'ava';
+import test, { after, afterEach, before, beforeEach, describe } from 'node:test';
+import assert from 'node:assert/strict';
 import semver from 'semver';
-import sinon from 'sinon';
-import Log from '../lib/log.js';
-import Spinner from '../lib/spinner.js';
 import Config from '../lib/config.js';
 import runTasks from '../lib/index.js';
 import Git from '../lib/plugin/git/Git.js';
@@ -24,487 +22,471 @@ import {
   interceptCreate as interceptGitHubCreate,
   interceptAsset as interceptGitHubAsset
 } from './stub/github.js';
-import { factory } from './util/index.js';
+import { factory, LogStub, SpinnerStub } from './util/index.js';
+import { mockFetch } from './util/mock.js';
 
-const rootDir = new URL('..', import.meta.url);
+describe('tasks', () => {
+  const rootDir = new URL('..', import.meta.url);
 
-const noop = Promise.resolve();
+  const [mocker, github, assets, gitlab] = mockFetch([
+    'https://api.github.com',
+    'https://uploads.github.com',
+    'https://gitlab.com/api/v4'
+  ]);
 
-const sandbox = sinon.createSandbox();
+  const npmMajorVersion = semver.major(process.env.npm_config_user_agent.match(/npm\/([^ ]+)/)[1]);
 
-const npmMajorVersion = semver.major(process.env.npm_config_user_agent.match(/npm\/([^ ]+)/)[1]);
-
-const testConfig = {
-  ci: true,
-  config: false
-};
-
-const log = sandbox.createStubInstance(Log);
-const spinner = sandbox.createStubInstance(Spinner);
-spinner.show.callsFake(({ enabled = true, task }) => (enabled ? task() : noop));
-
-const getContainer = options => {
-  const config = new Config(Object.assign({}, testConfig, options));
-  const shell = new ShellStub({ container: { log, config } });
-  return {
-    log,
-    spinner,
-    config,
-    shell
+  const testConfig = {
+    ci: true,
+    config: false
   };
-};
 
-test.before(t => {
-  t.timeout(90 * 1000);
-});
+  const log = new LogStub();
+  const spinner = new SpinnerStub();
 
-test.serial.beforeEach(t => {
-  const bare = mkTmpDir();
-  const target = mkTmpDir();
-  process.chdir(bare);
-  childProcess.execSync(`git init --bare .`, execOpts);
-  childProcess.execSync(`git clone ${bare} ${target}`, execOpts);
-  process.chdir(target);
-  gitAdd('line', 'file', 'Add file');
-  t.context = { bare, target };
-});
+  const getContainer = options => {
+    const config = new Config(Object.assign({}, testConfig, options));
+    const shell = new ShellStub({ container: { log, config } });
+    return { log, spinner, config, shell };
+  };
 
-test.serial.afterEach(() => {
-  sandbox.resetHistory();
-});
+  before(() => {
+    mocker.mockGlobal();
+  });
 
-test.serial('should run tasks without throwing errors', async t => {
-  renameSync('.git', 'foo');
-  const { name, latestVersion, version } = await runTasks({}, getContainer());
-  t.true(log.obtrusive.firstCall.args[0].includes(`release ${name} (${latestVersion}...${version})`));
-  t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-});
+  let bare;
+  let target;
+  beforeEach(async () => {
+    bare = mkTmpDir();
+    target = mkTmpDir();
+    process.chdir(bare);
+    childProcess.execSync(`git init --bare .`, execOpts);
+    childProcess.execSync(`git clone ${bare} ${target}`, execOpts);
+    process.chdir(target);
+    gitAdd('line', 'file', 'Add file');
+  });
 
-test.serial('should run tasks without package.json', async t => {
-  childProcess.execSync('git tag 1.0.0', execOpts);
-  gitAdd('line', 'file', 'Add file');
-  const { name } = await runTasks({}, getContainer({ increment: 'major', git: { commit: false } }));
-  t.true(log.obtrusive.firstCall.args[0].includes(`release ${name} (1.0.0...2.0.0)`));
-  t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-  t.is(log.warn.callCount, 0);
-  {
+  afterEach(() => {
+    mocker.clearAll();
+    log.resetCalls();
+  });
+
+  after(() => {
+    mocker.unmockGlobal();
+  });
+
+  test('should run tasks without throwing errors', async () => {
+    renameSync('.git', 'foo');
+    const { name, latestVersion, version } = await runTasks({}, getContainer());
+    assert(log.obtrusive.mock.calls[0].arguments[0].includes(`release ${name} (${latestVersion}...${version})`));
+    assert.match(log.log.mock.calls.at(-1).arguments[0], /Done \(in [0-9]+s\.\)/);
+  });
+
+  test('should run tasks without package.json', async () => {
+    childProcess.execSync('git tag 1.0.0', execOpts);
+    gitAdd('line', 'file', 'Add file');
+    const { name } = await runTasks({}, getContainer({ increment: 'major', git: { commit: false } }));
+    assert(log.obtrusive.mock.calls[0].arguments[0].includes(`release ${name} (1.0.0...2.0.0)`));
+    assert.match(log.log.mock.calls.at(-1).arguments[0], /Done \(in [0-9]+s\.\)/);
+    assert.equal(log.warn.mock.callCount(), 0);
     const stdout = childProcess.execSync('git describe --tags --match=* --abbrev=0', {
       encoding: 'utf-8'
     });
-    t.is(stdout.trim(), '2.0.0');
-  }
-});
-
-test.serial('should disable plugins', async t => {
-  gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
-  childProcess.execSync('git tag 1.2.3', execOpts);
-  gitAdd('line', 'file', 'Add file');
-  const container = getContainer({ increment: 'minor', git: false, npm: false });
-  const { latestVersion, version } = await runTasks({}, container);
-  t.is(latestVersion, '0.0.0');
-  t.is(version, '0.1.0');
-  t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-});
-
-test.serial('should run tasks with minimal config and without any warnings/errors', async t => {
-  gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
-  childProcess.execSync('git tag 1.2.3', execOpts);
-  gitAdd('line', 'file', 'More file');
-  await runTasks({}, getContainer({ increment: 'patch' }));
-  t.true(log.obtrusive.firstCall.args[0].includes('release my-package (1.2.3...1.2.4)'));
-  t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-  const stdout = childProcess.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
-  t.is(stdout.trim(), '1.2.4');
-});
-
-test.serial('should use pkg.version', async t => {
-  gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
-  await runTasks({}, getContainer({ increment: 'minor' }));
-  t.true(log.obtrusive.firstCall.args[0].includes('release my-package (1.2.3...1.3.0)'));
-  t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-  const stdout = childProcess.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
-  t.is(stdout.trim(), '1.3.0');
-});
-
-test.serial('should use pkg.version (in sub dir) w/o tagging repo', async t => {
-  gitAdd('{"name":"root-package","version":"1.0.0"}', 'package.json', 'Add package.json');
-  childProcess.execSync('git tag 1.0.0', execOpts);
-  mkdirSync('my-package');
-  process.chdir('my-package');
-  gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
-  const container = getContainer({ increment: 'minor', git: { tag: false } });
-  const exec = sinon.spy(container.shell, 'exec');
-  await runTasks({}, container);
-  t.true(log.obtrusive.firstCall.args[0].endsWith('release my-package (1.2.3...1.3.0)'));
-  t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-  const stdout = childProcess.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
-  t.is(stdout.trim(), '1.0.0');
-  const npmArgs = getArgs(exec.args, 'npm');
-  t.is(npmArgs[5], 'npm version 1.3.0 --no-git-tag-version');
-  exec.restore();
-});
-
-test.serial('should ignore version in pkg.version and use git tag instead', async t => {
-  gitAdd('{"name":"my-package","version":"0.0.0"}', 'package.json', 'Add package.json');
-  childProcess.execSync('git tag 1.1.1', execOpts);
-  gitAdd('line', 'file', 'More file');
-  await runTasks({}, getContainer({ increment: 'minor', npm: { ignoreVersion: true } }));
-  t.true(log.obtrusive.firstCall.args[0].includes('release my-package (1.1.1...1.2.0)'));
-  t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-  const stdout = childProcess.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
-  t.is(stdout.trim(), '1.2.0');
-});
-
-test.serial('should release all the things (basic)', async t => {
-  const { bare, target } = t.context;
-  const project = path.basename(bare);
-  const pkgName = path.basename(target);
-  const owner = path.basename(path.dirname(bare));
-  gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
-  childProcess.execSync('git tag 1.0.0', execOpts);
-  const sha = gitAdd('line', 'file', 'More file');
-
-  interceptGitHubAuthentication();
-  interceptGitHubCollaborator({ owner, project });
-  interceptGitHubCreate({
-    owner,
-    project,
-    body: { tag_name: '1.0.1', name: 'Release 1.0.1', body: `* More file (${sha})`, prerelease: false }
+    assert.equal(stdout.trim(), '2.0.0');
   });
 
-  const container = getContainer({
-    github: { release: true, pushRepo: `https://github.com/${owner}/${project}` },
-    npm: { name: pkgName }
-  });
-  const exec = sinon.spy(container.shell, 'exec');
-
-  await runTasks({}, container);
-
-  const npmArgs = getArgs(container.shell.exec.args, 'npm');
-
-  t.deepEqual(npmArgs, [
-    'npm ping',
-    'npm whoami',
-    `npm show ${pkgName}@latest version`,
-    'npm --version',
-    `npm access ${npmMajorVersion >= 9 ? 'list collaborators --json' : 'ls-collaborators'} ${pkgName}`,
-    'npm version 1.0.1 --no-git-tag-version',
-    'npm publish . --tag latest'
-  ]);
-
-  t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
-  t.true(log.log.firstCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
-  t.true(log.log.secondCall.args[0].endsWith(`https://github.com/${owner}/${project}/releases/tag/1.0.1`));
-
-  exec.restore();
-});
-
-test.serial('should release with correct tag name', async t => {
-  const { bare, target } = t.context;
-  const project = path.basename(bare);
-  const pkgName = path.basename(target);
-  const owner = path.basename(path.dirname(bare));
-  const stdout = childProcess.execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf-8' });
-  const branchName = stdout.trim();
-  gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
-  childProcess.execSync(`git tag ${pkgName}-${branchName}-1.0.0`, execOpts);
-  const sha = gitAdd('line', 'file', 'More file');
-
-  interceptGitHubCreate({
-    owner,
-    project,
-    body: {
-      tag_name: `${pkgName}-${branchName}-1.0.1`,
-      name: 'Release 1.0.1',
-      body: `* More file (${sha})`,
-      prerelease: false
-    }
+  test('should disable plugins', async () => {
+    gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
+    childProcess.execSync('git tag 1.2.3', execOpts);
+    gitAdd('line', 'file', 'Add file');
+    const container = getContainer({ increment: 'minor', git: false, npm: false });
+    const { latestVersion, version } = await runTasks({}, container);
+    assert.equal(latestVersion, '0.0.0');
+    assert.equal(version, '0.1.0');
+    assert.match(log.log.mock.calls.at(-1).arguments[0], /Done \(in [0-9]+s\.\)/);
   });
 
-  const container = getContainer({
-    git: { tagName: '${npm.name}-${branchName}-${version}' },
-    github: { release: true, skipChecks: true, pushRepo: `https://github.com/${owner}/${project}` }
+  test('should run tasks with minimal config and without any warnings/errors', async () => {
+    gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
+    childProcess.execSync('git tag 1.2.3', execOpts);
+    gitAdd('line', 'file', 'More file');
+    await runTasks({}, getContainer({ increment: 'patch' }));
+    assert(log.obtrusive.mock.calls[0].arguments[0].includes('release my-package (1.2.3...1.2.4)'));
+    assert.match(log.log.mock.calls.at(-1).arguments[0], /Done \(in [0-9]+s\.\)/);
+    const stdout = childProcess.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
+    assert.equal(stdout.trim(), '1.2.4');
   });
 
-  const exec = sinon.spy(container.shell, 'exec');
-
-  await runTasks({}, container);
-
-  const gitArgs = getArgs(container.shell.exec.args, 'git');
-
-  t.true(gitArgs.includes(`git tag --annotate --message Release 1.0.1 ${pkgName}-${branchName}-1.0.1`));
-  t.true(
-    log.log.secondCall.args[0].endsWith(
-      `https://github.com/${owner}/${project}/releases/tag/${pkgName}-${branchName}-1.0.1`
-    )
-  );
-
-  exec.restore();
-});
-
-test.serial('should release all the things (pre-release, github, gitlab)', async t => {
-  const { bare, target } = t.context;
-  const project = path.basename(bare);
-  const pkgName = path.basename(target);
-  const owner = path.basename(path.dirname(bare));
-  const url = `https://gitlab.com/${owner}/${project}`;
-  gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
-  childProcess.execSync('git tag v1.0.0', execOpts);
-  const sha = gitAdd('line', 'file', 'More file');
-  childProcess.execSync('git push --follow-tags', execOpts);
-  const git = await factory(Git);
-  const ref = (await git.getBranchName()) ?? 'HEAD';
-
-  interceptGitHubAuthentication();
-  interceptGitHubCollaborator({ owner, project });
-  interceptGitHubCreate({
-    owner,
-    project,
-    body: {
-      tag_name: 'v1.1.0-alpha.0',
-      name: 'Release 1.1.0-alpha.0',
-      body: `Notes for ${pkgName} [v1.1.0-alpha.0]: ${sha}`,
-      prerelease: true
-    }
+  test('should use pkg.version', async () => {
+    gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
+    await runTasks({}, getContainer({ increment: 'minor' }));
+    assert(log.obtrusive.mock.calls[0].arguments[0].includes('release my-package (1.2.3...1.3.0)'));
+    assert.match(log.log.mock.calls.at(-1).arguments[0], /Done \(in [0-9]+s\.\)/);
+    const stdout = childProcess.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
+    assert.equal(stdout.trim(), '1.3.0');
   });
-  interceptGitHubAsset({ owner, project, body: 'lineline' });
 
-  interceptGitLabUser({ owner });
-  interceptGitLabCollaborator({ owner, project });
-  interceptGitLabAsset({ owner, project });
-  interceptGitLabPublish({
-    owner,
-    project,
-    body: {
-      name: 'Release 1.1.0-alpha.0',
-      ref,
-      tag_name: 'v1.1.0-alpha.0',
-      tag_message: `${owner} ${owner}/${project} ${project}`,
-      description: `Notes for ${pkgName}: ${sha}`,
-      assets: {
-        links: [
-          {
-            name: 'file',
-            url: `${url}/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/file`
-          }
-        ]
+  test('should use pkg.version (in sub dir) w/o tagging repo', async t => {
+    gitAdd('{"name":"root-package","version":"1.0.0"}', 'package.json', 'Add package.json');
+    childProcess.execSync('git tag 1.0.0', execOpts);
+    mkdirSync('my-package');
+    process.chdir('my-package');
+    gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
+    const container = getContainer({ increment: 'minor', git: { tag: false } });
+    const exec = t.mock.method(container.shell, 'exec');
+    await runTasks({}, container);
+    assert(log.obtrusive.mock.calls[0].arguments[0].endsWith('release my-package (1.2.3...1.3.0)'));
+    assert.match(log.log.mock.calls.at(-1).arguments[0], /Done \(in [0-9]+s\.\)/);
+    const stdout = childProcess.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
+    assert.equal(stdout.trim(), '1.0.0');
+    const npmArgs = getArgs(exec, 'npm');
+    assert.equal(npmArgs[5], 'npm version 1.3.0 --no-git-tag-version');
+  });
+
+  test('should ignore version in pkg.version and use git tag instead', async () => {
+    gitAdd('{"name":"my-package","version":"0.0.0"}', 'package.json', 'Add package.json');
+    childProcess.execSync('git tag 1.1.1', execOpts);
+    gitAdd('line', 'file', 'More file');
+    await runTasks({}, getContainer({ increment: 'minor', npm: { ignoreVersion: true } }));
+    assert(log.obtrusive.mock.calls[0].arguments[0].includes('release my-package (1.1.1...1.2.0)'));
+    assert.match(log.log.mock.calls.at(-1).arguments[0], /Done \(in [0-9]+s\.\)/);
+    const stdout = childProcess.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
+    assert.equal(stdout.trim(), '1.2.0');
+  });
+
+  test('should release all the things (basic)', async t => {
+    const project = path.basename(bare);
+    const pkgName = path.basename(target);
+    const owner = path.basename(path.dirname(bare));
+    gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
+    childProcess.execSync('git tag 1.0.0', execOpts);
+    const sha = gitAdd('line', 'file', 'More file');
+
+    interceptGitHubAuthentication(github);
+    interceptGitHubCollaborator(github, { owner, project });
+    interceptGitHubCreate(github, {
+      owner,
+      project,
+      body: { tag_name: '1.0.1', name: 'Release 1.0.1', body: `* More file (${sha})`, prerelease: false }
+    });
+
+    const container = getContainer({
+      github: { release: true, pushRepo: `https://github.com/${owner}/${project}` },
+      npm: { name: pkgName }
+    });
+
+    const exec = t.mock.method(container.shell, 'exec');
+
+    await runTasks({}, container);
+
+    const npmArgs = getArgs(exec, 'npm');
+
+    assert.deepEqual(npmArgs, [
+      'npm ping',
+      'npm whoami',
+      `npm show ${pkgName}@latest version`,
+      'npm --version',
+      `npm access ${npmMajorVersion >= 9 ? 'list collaborators --json' : 'ls-collaborators'} ${pkgName}`,
+      'npm version 1.0.1 --no-git-tag-version',
+      'npm publish . --tag latest'
+    ]);
+
+    assert(log.obtrusive.mock.calls[0].arguments[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
+    assert(log.log.mock.calls[0].arguments[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
+    assert(log.log.mock.calls[1].arguments[0].endsWith(`https://github.com/${owner}/${project}/releases/tag/1.0.1`));
+  });
+
+  test('should release with correct tag name', async t => {
+    const project = path.basename(bare);
+    const pkgName = path.basename(target);
+    const owner = path.basename(path.dirname(bare));
+    const stdout = childProcess.execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf-8' });
+    const branchName = stdout.trim();
+    gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
+    childProcess.execSync(`git tag ${pkgName}-${branchName}-1.0.0`, execOpts);
+    const sha = gitAdd('line', 'file', 'More file');
+
+    interceptGitHubCreate(github, {
+      owner,
+      project,
+      body: {
+        tag_name: `${pkgName}-${branchName}-1.0.1`,
+        name: 'Release 1.0.1',
+        body: `* More file (${sha})`,
+        prerelease: false
       }
-    }
+    });
+
+    const container = getContainer({
+      git: { tagName: '${npm.name}-${branchName}-${version}' },
+      github: { release: true, skipChecks: true, pushRepo: `https://github.com/${owner}/${project}` }
+    });
+
+    const exec = t.mock.method(container.shell, 'exec');
+
+    await runTasks({}, container);
+
+    const gitArgs = getArgs(exec, 'git');
+
+    assert(gitArgs.includes(`git tag --annotate --message Release 1.0.1 ${pkgName}-${branchName}-1.0.1`));
+    assert(
+      log.log.mock.calls[1].arguments[0].endsWith(`/${owner}/${project}/releases/tag/${pkgName}-${branchName}-1.0.1`)
+    );
   });
 
-  const container = getContainer({
-    increment: 'minor',
-    preRelease: 'alpha',
-    git: {
-      changelog: 'git log --pretty=format:%h ${latestTag}...HEAD',
-      commitMessage: 'Release ${version} for ${name} (from ${latestVersion})',
-      tagAnnotation: '${repo.owner} ${repo.repository} ${repo.project}'
-    },
-    github: {
-      release: true,
-      pushRepo: `https://github.com/${owner}/${project}`,
-      releaseNotes: 'echo Notes for ${name} [v${version}]: ${changelog}',
-      assets: ['file']
-    },
-    gitlab: {
-      release: true,
-      pushRepo: url,
-      releaseNotes: 'echo Notes for ${name}: ${changelog}',
-      assets: ['file']
-    },
-    npm: { name: pkgName }
+  test('should release all the things (pre-release, github, gitlab)', async t => {
+    const project = path.basename(bare);
+    const pkgName = path.basename(target);
+    const owner = path.basename(path.dirname(bare));
+    const url = `https://gitlab.com/${owner}/${project}`;
+    gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
+    childProcess.execSync('git tag v1.0.0', execOpts);
+    const sha = gitAdd('line', 'file', 'More file');
+    childProcess.execSync('git push --follow-tags', execOpts);
+    const git = await factory(Git);
+    const ref = (await git.getBranchName()) ?? 'HEAD';
+
+    interceptGitHubAuthentication(github);
+    interceptGitHubCollaborator(github, { owner, project });
+    interceptGitHubAsset(assets, { owner, project, body: 'lineline' });
+    interceptGitHubCreate(github, {
+      owner,
+      project,
+      body: {
+        tag_name: 'v1.1.0-alpha.0',
+        name: 'Release 1.1.0-alpha.0',
+        body: `Notes for ${pkgName} [v1.1.0-alpha.0]: ${sha}`,
+        prerelease: true
+      }
+    });
+
+    interceptGitLabUser(gitlab, { owner });
+    interceptGitLabCollaborator(gitlab, { owner, project });
+    interceptGitLabAsset(gitlab, { owner, project });
+    interceptGitLabPublish(gitlab, {
+      owner,
+      project,
+      body: {
+        name: 'Release 1.1.0-alpha.0',
+        ref,
+        tag_name: 'v1.1.0-alpha.0',
+        tag_message: `${owner} ${owner}/${project} ${project}`,
+        description: `Notes for ${pkgName}: ${sha}`,
+        assets: {
+          links: [
+            {
+              name: 'file',
+              url: `${url}/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/file`
+            }
+          ]
+        }
+      }
+    });
+
+    const container = getContainer({
+      increment: 'minor',
+      preRelease: 'alpha',
+      git: {
+        changelog: 'git log --pretty=format:%h ${latestTag}...HEAD',
+        commitMessage: 'Release ${version} for ${name} (from ${latestVersion})',
+        tagAnnotation: '${repo.owner} ${repo.repository} ${repo.project}'
+      },
+      github: {
+        release: true,
+        pushRepo: `https://github.com/${owner}/${project}`,
+        releaseNotes: 'echo Notes for ${name} [v${version}]: ${changelog}',
+        assets: ['file']
+      },
+      gitlab: {
+        release: true,
+        pushRepo: url,
+        releaseNotes: 'echo Notes for ${name}: ${changelog}',
+        assets: ['file']
+      },
+      npm: { name: pkgName }
+    });
+
+    const exec = t.mock.method(container.shell, 'exec');
+
+    process.env['GITLAB_TOKEN'] = '123';
+
+    await runTasks({}, container);
+
+    const npmArgs = getArgs(exec, 'npm');
+
+    assert.deepEqual(npmArgs, [
+      'npm ping',
+      'npm whoami',
+      `npm show ${pkgName}@latest version`,
+      'npm --version',
+      `npm access ${npmMajorVersion >= 9 ? 'list collaborators --json' : 'ls-collaborators'} ${pkgName}`,
+      'npm version 1.1.0-alpha.0 --no-git-tag-version',
+      'npm publish . --tag alpha'
+    ]);
+
+    const commitMessage = childProcess.execSync('git log --oneline --format=%B -n 1 HEAD', {
+      encoding: 'utf-8'
+    });
+    assert.equal(commitMessage.trim(), `Release 1.1.0-alpha.0 for ${pkgName} (from 1.0.0)`);
+
+    const tagName = childProcess.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
+    assert.equal(tagName.trim(), 'v1.1.0-alpha.0');
+
+    const tagAnnotation = childProcess.execSync('git for-each-ref refs/tags/v1.1.0-alpha.0 --format="%(contents)"', {
+      encoding: 'utf-8'
+    });
+    assert.equal(tagAnnotation.trim(), `${owner} ${owner}/${project} ${project}`);
+
+    assert(log.obtrusive.mock.calls[0].arguments[0].endsWith(`release ${pkgName} (1.0.0...1.1.0-alpha.0)`));
+    assert(log.log.mock.calls[0].arguments[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
+    assert(log.log.mock.calls[1].arguments[0].endsWith(`/${owner}/${project}/releases/tag/v1.1.0-alpha.0`));
+    assert(log.log.mock.calls[2].arguments[0].endsWith(`/${project}/-/releases/v1.1.0-alpha.0`));
+    assert.match(log.log.mock.calls.at(-1).arguments[0], /Done \(in [0-9]+s\.\)/);
   });
 
-  const exec = sinon.spy(container.shell, 'exec');
+  test('should publish pre-release without pre-id with different npm.tag', async t => {
+    const pkgName = path.basename(target);
+    gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
+    childProcess.execSync('git tag v1.0.0', execOpts);
 
-  await runTasks({}, container);
+    const container = getContainer({ increment: 'major', preRelease: true, npm: { name: pkgName, tag: 'next' } });
+    const exec = t.mock.method(container.shell, 'exec');
 
-  const npmArgs = getArgs(container.shell.exec.args, 'npm');
-  t.deepEqual(npmArgs, [
-    'npm ping',
-    'npm whoami',
-    `npm show ${pkgName}@latest version`,
-    'npm --version',
-    `npm access ${npmMajorVersion >= 9 ? 'list collaborators --json' : 'ls-collaborators'} ${pkgName}`,
-    'npm version 1.1.0-alpha.0 --no-git-tag-version',
-    'npm publish . --tag alpha'
-  ]);
+    await runTasks({}, container);
 
-  const commitMessage = childProcess.execSync('git log --oneline --format=%B -n 1 HEAD', {
-    encoding: 'utf-8'
-  });
-  t.is(commitMessage.trim(), `Release 1.1.0-alpha.0 for ${pkgName} (from 1.0.0)`);
+    const npmArgs = getArgs(exec, 'npm');
+    assert.deepEqual(npmArgs, [
+      'npm ping',
+      'npm whoami',
+      `npm show ${pkgName}@latest version`,
+      'npm --version',
+      `npm access ${npmMajorVersion >= 9 ? 'list collaborators --json' : 'ls-collaborators'} ${pkgName}`,
+      'npm version 2.0.0-0 --no-git-tag-version',
+      'npm publish . --tag next'
+    ]);
 
-  const tagName = childProcess.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
-  t.is(tagName.trim(), 'v1.1.0-alpha.0');
-
-  const tagAnnotation = childProcess.execSync('git for-each-ref refs/tags/v1.1.0-alpha.0 --format="%(contents)"', {
-    encoding: 'utf-8'
-  });
-  t.is(tagAnnotation.trim(), `${owner} ${owner}/${project} ${project}`);
-
-  t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.1.0-alpha.0)`));
-  t.true(log.log.firstCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
-  t.true(log.log.secondCall.args[0].endsWith(`https://github.com/${owner}/${project}/releases/tag/v1.1.0-alpha.0`));
-  t.true(log.log.thirdCall.args[0].endsWith(`${project}/-/releases/v1.1.0-alpha.0`));
-  t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-
-  exec.restore();
-});
-
-test.serial('should publish pre-release without pre-id with different npm.tag', async t => {
-  const { target } = t.context;
-  const pkgName = path.basename(target);
-  gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
-  childProcess.execSync('git tag v1.0.0', execOpts);
-
-  const container = getContainer({ increment: 'major', preRelease: true, npm: { name: pkgName, tag: 'next' } });
-  const exec = sinon.spy(container.shell, 'exec');
-
-  await runTasks({}, container);
-
-  const npmArgs = getArgs(container.shell.exec.args, 'npm');
-  t.deepEqual(npmArgs, [
-    'npm ping',
-    'npm whoami',
-    `npm show ${pkgName}@latest version`,
-    'npm --version',
-    `npm access ${npmMajorVersion >= 9 ? 'list collaborators --json' : 'ls-collaborators'} ${pkgName}`,
-    'npm version 2.0.0-0 --no-git-tag-version',
-    'npm publish . --tag next'
-  ]);
-
-  const stdout = childProcess.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
-  t.is(stdout.trim(), 'v2.0.0-0');
-  t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...2.0.0-0)`));
-  t.true(log.log.firstCall.args[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
-  t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-
-  exec.restore();
-});
-
-test.serial('should handle private package correctly, bump lockfile', async t => {
-  const { target } = t.context;
-  const pkgName = path.basename(target);
-  gitAdd(`{"name":"${pkgName}","version":"1.0.0","private":true}`, 'package.json', 'Add package.json');
-  gitAdd(`{"name":"${pkgName}","version":"1.0.0","private":true}`, 'package-lock.json', 'Add package-lock.json');
-
-  const container = getContainer({ npm: { name: pkgName, private: true } });
-  const exec = sinon.spy(container.shell, 'exec');
-
-  await runTasks({}, container);
-
-  const npmArgs = getArgs(container.shell.exec.args, 'npm');
-  t.deepEqual(npmArgs, ['npm version 1.0.1 --no-git-tag-version']);
-  t.true(log.obtrusive.firstCall.args[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
-  t.is(log.warn.length, 0);
-  t.regex(log.log.firstCall.args[0], /Done \(in [0-9]+s\.\)/);
-
-  exec.restore();
-});
-
-test.serial('should initially publish non-private scoped npm package privately', async t => {
-  const { target } = t.context;
-  const pkgName = path.basename(target);
-  gitAdd(`{"name":"@scope/${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
-
-  const container = getContainer({ npm: { name: pkgName } });
-
-  const exec = sinon.stub(container.shell, 'exec').callThrough();
-  exec.withArgs(`npm show @scope/${pkgName}@latest version`).rejects();
-
-  await runTasks({}, container);
-
-  const npmArgs = getArgs(container.shell.exec.args, 'npm');
-  t.is(npmArgs[6], 'npm publish . --tag latest');
-  exec.restore();
-});
-
-test.serial('should use pkg.publishConfig.registry', async t => {
-  const { target } = t.context;
-  const pkgName = path.basename(target);
-  const registry = 'https://my-registry.example.org';
-
-  gitAdd(
-    JSON.stringify({
-      name: pkgName,
-      version: '1.2.3',
-      publishConfig: { registry }
-    }),
-    'package.json',
-    'Add package.json'
-  );
-
-  const container = getContainer();
-
-  const exec = sinon.spy(container.shell, 'exec');
-
-  await runTasks({}, container);
-
-  const npmArgs = getArgs(exec.args, 'npm');
-  t.is(npmArgs[0], `npm ping --registry ${registry}`);
-  t.is(npmArgs[1], `npm whoami --registry ${registry}`);
-  t.true(container.log.log.firstCall.args[0].endsWith(`${registry}/package/${pkgName}`));
-
-  exec.restore();
-});
-
-test.serial('should propagate errors', async t => {
-  const config = {
-    hooks: {
-      'before:init': 'some-failing-command'
-    }
-  };
-  const container = getContainer(config);
-
-  await t.throwsAsync(runTasks({}, container), { message: /some-failing-command/ });
-
-  t.is(log.error.callCount, 1);
-});
-
-test.serial('should use custom changelog command with context', async t => {
-  const { bare } = t.context;
-  const project = path.basename(bare);
-  const owner = path.basename(path.dirname(bare));
-  childProcess.execSync('git tag v1.0.0', execOpts);
-  gitAdd('line', 'file', 'More file');
-
-  interceptGitHubAuthentication();
-  interceptGitHubCollaborator({ owner, project });
-  interceptGitHubCreate({
-    owner,
-    project,
-    body: {
-      tag_name: 'v1.1.0',
-      name: 'Release 1.1.0',
-      body: 'custom-changelog-generator --from=v1.0.0 --to=v1.1.0',
-      draft: false,
-      prerelease: false
-    }
+    const stdout = childProcess.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
+    assert.equal(stdout.trim(), 'v2.0.0-0');
+    assert(log.obtrusive.mock.calls[0].arguments[0].endsWith(`release ${pkgName} (1.0.0...2.0.0-0)`));
+    assert(log.log.mock.calls[0].arguments[0].endsWith(`https://www.npmjs.com/package/${pkgName}`));
+    assert.match(log.log.mock.calls.at(-1).arguments[0], /Done \(in [0-9]+s\.\)/);
   });
 
-  const container = getContainer({
-    increment: 'minor',
-    github: {
-      release: true,
-      releaseNotes: 'echo custom-changelog-generator --from=${latestTag} --to=${tagName}',
-      pushRepo: `https://github.com/${owner}/${project}`
-    }
+  test('should handle private package correctly, bump lockfile', async t => {
+    const pkgName = path.basename(target);
+    gitAdd(`{"name":"${pkgName}","version":"1.0.0","private":true}`, 'package.json', 'Add package.json');
+    gitAdd(`{"name":"${pkgName}","version":"1.0.0","private":true}`, 'package-lock.json', 'Add package-lock.json');
+
+    const container = getContainer({ npm: { name: pkgName, private: true } });
+    const exec = t.mock.method(container.shell, 'exec');
+
+    await runTasks({}, container);
+
+    const npmArgs = getArgs(exec, 'npm');
+    assert.deepEqual(npmArgs, ['npm version 1.0.1 --no-git-tag-version']);
+    assert(log.obtrusive.mock.calls[0].arguments[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
+    assert.equal(log.warn.length, 0);
+    assert.match(log.log.mock.calls[0].arguments[0], /Done \(in [0-9]+s\.\)/);
   });
 
-  const exec = sinon.spy(container.shell, 'execStringCommand');
+  test('should initially publish non-private scoped npm package privately', async t => {
+    const pkgName = path.basename(target);
+    gitAdd(`{"name":"@scope/${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
 
-  await runTasks({}, container);
+    const container = getContainer({ npm: { name: pkgName } });
 
-  const command = exec.args.find(([command]) => command.includes('custom-changelog-generator'));
+    const original = container.shell.exec.bind(container.shell);
+    const exec = t.mock.method(container.shell, 'exec', (...args) => {
+      if (args[0] === `npm show @scope/${pkgName}@latest version`) return Promise.reject();
+      return original(...args);
+    });
 
-  t.is(command[0], 'echo custom-changelog-generator --from=v1.0.0 --to=v1.1.0');
+    await runTasks({}, container);
 
-  exec.restore();
-});
+    const npmArgs = getArgs(exec, 'npm');
+    assert.equal(npmArgs[6], 'npm publish . --tag latest');
+  });
 
-{
-  test.serial('should run all hooks', async t => {
+  test('should use pkg.publishConfig.registry', async t => {
+    const pkgName = path.basename(target);
+    const registry = 'https://my-registry.example.org';
+
+    gitAdd(
+      JSON.stringify({
+        name: pkgName,
+        version: '1.2.3',
+        publishConfig: { registry }
+      }),
+      'package.json',
+      'Add package.json'
+    );
+
+    const container = getContainer();
+
+    const exec = t.mock.method(container.shell, 'exec');
+
+    await runTasks({}, container);
+
+    const npmArgs = getArgs(exec, 'npm');
+    assert.equal(npmArgs[0], `npm ping --registry ${registry}`);
+    assert.equal(npmArgs[1], `npm whoami --registry ${registry}`);
+    assert(container.log.log.mock.calls[0].arguments[0].endsWith(`${registry}/package/${pkgName}`));
+  });
+
+  test('should propagate errors', async () => {
+    const config = {
+      hooks: {
+        'before:init': 'some-failing-command'
+      }
+    };
+    const container = getContainer(config);
+
+    await assert.rejects(runTasks({}, container), { message: /some-failing-command/ });
+
+    assert.equal(log.error.mock.callCount(), 1);
+  });
+
+  test('should use custom changelog command with context', async t => {
+    const project = path.basename(bare);
+    const owner = path.basename(path.dirname(bare));
+    childProcess.execSync('git tag v1.0.0', execOpts);
+    gitAdd('line', 'file', 'More file');
+
+    interceptGitHubAuthentication(github);
+    interceptGitHubCollaborator(github, { owner, project });
+    interceptGitHubCreate(github, {
+      owner,
+      project,
+      body: {
+        tag_name: 'v1.1.0',
+        name: 'Release 1.1.0',
+        body: 'custom-changelog-generator --from=v1.0.0 --to=v1.1.0',
+        draft: false,
+        prerelease: false
+      }
+    });
+
+    const container = getContainer({
+      increment: 'minor',
+      github: {
+        release: true,
+        releaseNotes: 'echo custom-changelog-generator --from=${latestTag} --to=${tagName}',
+        pushRepo: `https://github.com/${owner}/${project}`
+      }
+    });
+
+    const exec = t.mock.method(container.shell, 'execStringCommand');
+
+    await runTasks({}, container);
+
+    const command = exec.mock.calls
+      .map(call => call.arguments)
+      .find(([command]) => command.includes('custom-changelog-generator'));
+
+    assert.equal(command[0], 'echo custom-changelog-generator --from=v1.0.0 --to=v1.1.0');
+  });
+
+  test('should run all hooks', async t => {
     gitAdd(`{"name":"hooked","version":"1.0.0","type":"module"}`, 'package.json', 'Add package.json');
     childProcess.execSync(`npm install ${rootDir}`, execOpts);
     const plugin = "import { Plugin } from 'release-it'; class MyPlugin extends Plugin {}; export default MyPlugin;";
@@ -524,13 +506,13 @@ test.serial('should use custom changelog command with context', async t => {
       git: { requireCleanWorkingDir: false },
       hooks
     });
-    const exec = sinon.spy(container.shell, 'execFormattedCommand');
+    const exec = t.mock.method(container.shell, 'execFormattedCommand');
 
     await runTasks({}, container);
 
-    const commands = exec.args.flat().filter(arg => typeof arg === 'string' && arg.startsWith('echo'));
+    const commands = getArgs(exec, 'echo');
 
-    t.deepEqual(commands, [
+    assert.deepEqual(commands, [
       'echo before:init',
       'echo before:my-plugin:init',
       'echo after:my-plugin:init',
@@ -592,7 +574,5 @@ test.serial('should use custom changelog command with context', async t => {
       'echo after:my-plugin:afterRelease',
       'echo after:afterRelease'
     ]);
-
-    exec.restore();
   });
-}
+});

@@ -1,6 +1,6 @@
 import { appendFileSync, mkdirSync, mkdtempSync, promises } from 'node:fs';
 import os from 'node:os';
-import path from 'node:path';
+import path, { dirname } from 'node:path';
 import childProcess from 'node:child_process';
 import { execOpts } from '../../lib/util.js';
 
@@ -19,19 +19,19 @@ const gitAdd = (content, filePath, message) => {
   return match ? match[1] : null;
 };
 
-const getArgs = (args, prefix) =>
-  args
-    .map(args => (typeof args[0] !== 'string' ? args[0].join(' ') : args[0]))
+const getArgs = (fn, prefix) =>
+  fn.mock.calls
+    .map(call => call.arguments[0])
+    .map(arg => (typeof arg !== 'string' ? arg.join(' ') : arg))
     .filter(cmd => cmd.startsWith(prefix))
     .map(cmd => cmd.trim());
 
 const appendFile = (content, filePath, cwd) => {
-  filePath = path.join(cwd ?? '', filePath);
+  filePath = path.resolve(cwd ?? '', filePath);
+  const dirPath = path.dirname(filePath);
 
-  const pathSegments = filePath.split('/').filter(Boolean);
-  pathSegments.pop();
-  if (pathSegments.length) {
-    mkdirSync(path.resolve(pathSegments.join('/')), { mode: parseInt('0777', 8), recursive: true });
+  if (dirPath) {
+    mkdirSync(dirPath, { mode: parseInt('0777', 8), recursive: true });
   }
 
   appendFileSync(filePath, content);

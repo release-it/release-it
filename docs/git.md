@@ -224,7 +224,7 @@ script.
 [3]: https://docs.github.com/en/authentication/connecting-to-github-with-ssh
 [4]: https://docs.github.com/en/get-started/getting-started-with-git/managing-remote-repositories
 [5]: https://support.atlassian.com/bitbucket-cloud/docs/configure-ssh-and-two-step-verification/
-[6]: https://docs.gitlab.com/ce/user/ssh
+[6]: https://docs.gitlab.com/user/ssh/
 [7]: https://code.visualstudio.com/docs/editor/glob-patterns
 [8]: #use-all-refs-to-determine-latest-tag
 [9]: https://git-scm.com/docs/git-describe
