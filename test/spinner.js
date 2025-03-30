@@ -9,7 +9,7 @@ const getConfig = async options => {
     config: false
   };
   const config = new Config(Object.assign({}, testConfig, options));
-  await config.resolved;
+  await config.init();
 
   return config;
 };

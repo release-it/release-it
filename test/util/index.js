@@ -41,7 +41,7 @@ export let factory = async (Definition, { namespace, options = {}, container = {
   const ns = namespace || Definition.name.toLowerCase();
   container.config = container.config || new Config(Object.assign({ config: false }, options));
   container.log = new LogStub();
-  await container.config.resolved;
+  await container.config.init();
 
   container.spinner = new SpinnerStub();
   container.shell = container.shell || new ShellStub({ container });
