@@ -1,6 +1,5 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import prettier from 'eslint-plugin-prettier';
 import _import from 'eslint-plugin-import-x';
 import { fixupConfigRules } from '@eslint/compat';
 import globals from 'globals';
@@ -17,10 +16,9 @@ const compat = new FlatCompat({
 });
 
 export default [
-  ...fixupConfigRules(compat.extends('eslint:recommended', 'prettier')),
+  ...fixupConfigRules(compat.extends('eslint:recommended')),
   {
     plugins: {
-      prettier,
       import: _import
     },
     languageOptions: {
@@ -33,7 +31,6 @@ export default [
     },
     rules: {
       'no-unused-vars': ['error', { caughtErrors: 'none' }],
-      'prettier/prettier': 2,
       'import/no-unresolved': [2, { ignore: ['@octokit/rest', '@octokit/request-error'] }],
       'import/no-unused-modules': 2,
       'import/order': [2, { 'newlines-between': 'never' }]
