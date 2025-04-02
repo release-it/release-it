@@ -16,14 +16,14 @@ describe('git', () => {
   });
 
   test('should return whether repo has upstream branch', async () => {
-    const gitClient = factory(Git);
+    const gitClient = await factory(Git);
     childProcess.execSync('git init', execOpts);
     gitAdd('line', 'file', 'Add file');
     assert.equal(await gitClient.hasUpstreamBranch(), false);
   });
 
   test('should return branch name', async () => {
-    const gitClient = factory(Git);
+    const gitClient = await factory(Git);
     childProcess.execSync('git init', execOpts);
     assert.equal(await gitClient.getBranchName(), null);
     childProcess.execSync('git checkout -b feat', execOpts);
@@ -32,7 +32,7 @@ describe('git', () => {
   });
 
   test('should return whether tag exists and if working dir is clean', async () => {
-    const gitClient = factory(Git);
+    const gitClient = await factory(Git);
     childProcess.execSync('git init', execOpts);
     assert.equal(await gitClient.tagExists('1.0.0'), false);
     touch('file');
@@ -44,7 +44,7 @@ describe('git', () => {
   });
 
   test('should throw if tag exists', async () => {
-    const gitClient = factory(Git);
+    const gitClient = await factory(Git);
     childProcess.execSync('git init', execOpts);
     touch('file');
     gitAdd('line', 'file', 'Add file');
@@ -54,7 +54,7 @@ describe('git', () => {
   });
 
   test('should only warn if tag exists intentionally', async t => {
-    const gitClient = factory(Git);
+    const gitClient = await factory(Git);
     const warn = t.mock.method(gitClient.log, 'warn');
     childProcess.execSync('git init', execOpts);
     touch('file');
@@ -70,21 +70,21 @@ describe('git', () => {
     childProcess.execSync(`git init`, execOpts);
     {
       const options = { git: { pushRepo: 'origin' } };
-      const gitClient = factory(Git, { options });
+      const gitClient = await factory(Git, { options });
       assert.equal(await gitClient.getRemoteUrl(), null);
       childProcess.execSync(`git remote add origin foo`, execOpts);
       assert.equal(await gitClient.getRemoteUrl(), 'foo');
     }
     {
       const options = { git: { pushRepo: 'another' } };
-      const gitClient = factory(Git, { options });
+      const gitClient = await factory(Git, { options });
       assert.equal(await gitClient.getRemoteUrl(), null);
       childProcess.execSync(`git remote add another bar`, execOpts);
       assert.equal(await gitClient.getRemoteUrl(), 'bar');
     }
     {
       const options = { git: { pushRepo: 'git://github.com/webpro/release-it.git' } };
-      const gitClient = factory(Git, { options });
+      const gitClient = await factory(Git, { options });
       assert.equal(await gitClient.getRemoteUrl(), 'git://github.com/webpro/release-it.git');
     }
   });
@@ -95,7 +95,7 @@ describe('git', () => {
     childProcess.execSync(`git clone ${bare} .`, execOpts);
     gitAdd('line', 'file', 'Add file');
     childProcess.execSync('git remote rename origin upstream', execOpts);
-    const gitClient = factory(Git);
+    const gitClient = await factory(Git);
     assert.equal(await gitClient.getRemoteUrl(), bare);
   });
 
@@ -106,12 +106,12 @@ describe('git', () => {
     const version = '1.2.3';
     gitAdd(`{"version":"${version}"}`, 'package.json', 'Add package.json');
     {
-      const gitClient = factory(Git);
+      const gitClient = await factory(Git);
       childProcess.execSync(`git tag ${version}`, execOpts);
       assert.equal(await gitClient.getLatestTagName(), version);
     }
     {
-      const gitClient = factory(Git);
+      const gitClient = await factory(Git);
       gitAdd('line', 'file', 'Add file');
       childProcess.execSync('npm --no-git-tag-version version patch', execOpts);
       await gitClient.stage('package.json');
@@ -130,7 +130,7 @@ describe('git', () => {
     childProcess.execSync(`git clone ${bare} .`, execOpts);
     gitAdd('line', 'file', 'Add file');
     const options = { git: { commitArgs: '-S', tagArgs: ['-T', 'foo'], pushArgs: ['-U', 'bar', '-V'] } };
-    const gitClient = factory(Git, { options });
+    const gitClient = await factory(Git, { options });
     const stub = t.mock.method(gitClient.shell, 'exec', () => Promise.resolve());
     await gitClient.stage('package.json');
     await gitClient.commit({ message: `Release v1.2.4` });
@@ -148,7 +148,7 @@ describe('git', () => {
     childProcess.execSync(`git clone ${bare} .`, execOpts);
     gitAdd('line', 'file', 'Add file');
     const options = { git: { commitArgs: ['--amend', '--no-edit', '--no-verify'] } };
-    const gitClient = factory(Git, { options });
+    const gitClient = await factory(Git, { options });
     const exec = t.mock.method(gitClient.shell, 'exec', () => Promise.resolve());
     await gitClient.stage('package.json');
     await gitClient.commit();
@@ -159,7 +159,7 @@ describe('git', () => {
     const bare = mkTmpDir();
     childProcess.execSync(`git init --bare ${bare}`, execOpts);
     childProcess.execSync(`git clone ${bare} .`, execOpts);
-    const gitClient = factory(Git, {
+    const gitClient = await factory(Git, {
       options: { git: { commitMessage: 'Release ${version}', tagAnnotation: 'Release ${version}\n\n${changelog}' } }
     });
     touch('file');
@@ -188,7 +188,7 @@ describe('git', () => {
     childProcess.execSync(`git init --bare ${bare}`, execOpts);
     childProcess.execSync(`git clone ${bare} .`, execOpts);
     gitAdd('line', 'file', 'Add file');
-    const gitClient = factory(Git);
+    const gitClient = await factory(Git);
     const spy = t.mock.method(gitClient.shell, 'exec');
     await gitClient.push();
     assert.deepEqual(spy.mock.calls.at(-1).arguments[0], ['git', 'push']);
@@ -205,7 +205,7 @@ describe('git', () => {
     childProcess.execSync(`git clone ${bare} .`, execOpts);
     childProcess.execSync(`git remote rename origin upstream`, execOpts);
     gitAdd('line', 'file', 'Add file');
-    const gitClient = factory(Git);
+    const gitClient = await factory(Git);
     const spy = t.mock.method(gitClient.shell, 'exec');
     await gitClient.push();
     assert.deepEqual(spy.mock.calls.at(-1).arguments[0], ['git', 'push']);
@@ -222,7 +222,7 @@ describe('git', () => {
     childProcess.execSync(`git clone ${bare} .`, execOpts);
     gitAdd('line', 'file', 'Add file');
     const options = { git: { pushRepo: 'https://host/repo.git' } };
-    const gitClient = factory(Git, { options });
+    const gitClient = await factory(Git, { options });
     const spy = t.mock.method(gitClient.shell, 'exec');
     try {
       await gitClient.push();
@@ -243,7 +243,7 @@ describe('git', () => {
       execOpts
     );
     const options = { git: { pushRepo: 'upstream' } };
-    const gitClient = factory(Git, { options });
+    const gitClient = await factory(Git, { options });
     const spy = t.mock.method(gitClient.shell, 'exec');
     await gitClient.push();
     assert.deepEqual(spy.mock.calls.at(-1).arguments[0], ['git', 'push', 'upstream']);
@@ -266,7 +266,7 @@ describe('git', () => {
   });
 
   test('should return repo status', async () => {
-    const gitClient = factory(Git);
+    const gitClient = await factory(Git);
     childProcess.execSync('git init', execOpts);
     gitAdd('line', 'file1', 'Add file');
 
@@ -278,7 +278,7 @@ describe('git', () => {
   });
 
   test('should reset files', async t => {
-    const gitClient = factory(Git);
+    const gitClient = await factory(Git);
     childProcess.execSync('git init', execOpts);
     gitAdd('line', 'file', 'Add file');
 
@@ -297,7 +297,7 @@ describe('git', () => {
     const version = '1.2.3';
     gitAdd(`{"version":"${version}"}`, 'package.json', 'Add package.json');
     const options = { git: { requireCleanWorkingDir: true, commit: true, tag: true, tagName: 'v${version}' } };
-    const gitClient = factory(Git, { options });
+    const gitClient = await factory(Git, { options });
     const exec = t.mock.method(gitClient.shell, 'execFormattedCommand');
     childProcess.execSync(`git tag ${version}`, execOpts);
     gitAdd('line', 'file', 'Add file');
@@ -325,7 +325,7 @@ describe('git', () => {
     const version = '1.2.3';
     gitAdd(`{"version":"${version}"}`, 'package.json', 'Add package.json');
     const options = { git: { requireCleanWorkingDir: true, commit: true, tag: true, tagName: 'v${version}' } };
-    const gitClient = factory(Git, { options });
+    const gitClient = await factory(Git, { options });
     const exec = t.mock.method(gitClient.shell, 'execFormattedCommand');
     sh.exec(`git push`, execOpts);
     sh.exec(`git checkout HEAD~1`, execOpts);
@@ -353,7 +353,7 @@ describe('git', () => {
     const version = '1.2.3';
     gitAdd(`{"version":"${version}"}`, 'package.json', 'Add package.json');
     const options = { git: { requireCleanWorkingDir: true, commit: true, tag: true } };
-    const gitClient = factory(Git, { options });
+    const gitClient = await factory(Git, { options });
     childProcess.execSync(`git tag ${version}`, execOpts);
 
     const exec = t.mock.method(gitClient.shell, 'execFormattedCommand');
@@ -368,7 +368,7 @@ describe('git', () => {
   test.skip('should not roll back with risky config', async () => {
     childProcess.execSync('git init', execOpts);
     const options = { git: { requireCleanWorkingDir: false, commit: true, tag: true } };
-    const gitClient = factory(Git, { options });
+    const gitClient = await factory(Git, { options });
     await gitClient.beforeRelease();
     assert.equal('rollbackOnce' in gitClient, false);
   });
@@ -378,7 +378,7 @@ describe('git', () => {
 
     {
       const options = { git: { getLatestTagFromAllRefs: true } };
-      const gitClient = factory(Git, { options });
+      const gitClient = await factory(Git, { options });
       gitAdd('main', 'file', 'Add file in main');
       const defaultBranchName = await gitClient.getBranchName();
       const developBranchName = 'develop';
@@ -402,7 +402,7 @@ describe('git', () => {
 
     {
       const options = { git: { getLatestTagFromAllRefs: false } };
-      const gitClient = factory(Git, { options });
+      const gitClient = await factory(Git, { options });
       assert.equal(await gitClient.getLatestTagName(), '1.1.0-rc.1');
     }
   });

@@ -4,10 +4,10 @@ import assert from 'node:assert/strict';
 import Shell from '../lib/shell.js';
 import { factory } from './util/index.js';
 
-describe('shell', () => {
+describe('shell', async () => {
   const cwd = childProcess.execSync('pwd', { encoding: 'utf8' }).trim();
 
-  const shell = factory(Shell);
+  const shell = await factory(Shell);
 
   test('exec', async () => {
     assert.equal(await shell.exec('echo bar'), 'bar');
@@ -29,7 +29,7 @@ describe('shell', () => {
   });
 
   test('exec (dry-run/read-only)', async () => {
-    const shell = factory(Shell, { options: { 'dry-run': true } });
+    const shell = await factory(Shell, { options: { 'dry-run': true } });
     {
       const actual = await shell.exec('pwd', { write: false });
       assert.equal(actual, cwd);
@@ -46,7 +46,7 @@ describe('shell', () => {
   });
 
   test('exec (verbose)', async () => {
-    const shell = factory(Shell, { options: { verbose: true } });
+    const shell = await factory(Shell, { options: { verbose: true } });
     const actual = await shell.exec('echo foo');
     assert.equal(shell.log.exec.mock.calls[0].arguments[0], 'echo foo');
     assert.equal(shell.log.exec.mock.callCount(), 1);
@@ -56,7 +56,7 @@ describe('shell', () => {
   });
 
   test('should cache results of command execution', async () => {
-    const shell = factory(Shell);
+    const shell = await factory(Shell);
     const result1 = await shell.exec('echo foo');
     const result2 = await shell.exec('echo foo');
     assert(result1 === result2);
