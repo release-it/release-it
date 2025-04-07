@@ -53,6 +53,10 @@
       },
       "default": []
     },
+    "commitMessage": {
+      "type": "string",
+      "default": null
+    },
     "tag": {
       "type": "boolean",
       "default": true
