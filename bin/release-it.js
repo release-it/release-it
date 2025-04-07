@@ -16,9 +16,46 @@ const aliases = {
   V: 'verbose'
 };
 
+const booleanOptions = [
+  'dry-run',
+  'ci',
+  'git',
+  'npm',
+  'github',
+  'gitlab',
+  'git.addUntrackedFiles',
+  'git.requireCleanWorkingDir',
+  'git.requireUpstream',
+  'git.requireCommits',
+  'git.requireCommitsFail',
+  'git.commit',
+  'git.tag',
+  'git.push',
+  'git.getLatestTagFromAllRefs',
+  'git.skipChecks',
+  'github.release',
+  'github.autoGenerate',
+  'github.preRelease',
+  'github.draft',
+  'github.skipChecks',
+  'github.web',
+  'github.comments.submit',
+  'gitlab.release',
+  'gitlab.autoGenerate',
+  'gitlab.preRelease',
+  'gitlab.draft',
+  'gitlab.useIdsForUrls',
+  'gitlab.useGenericPackageRepositoryForAssets',
+  'gitlab.skipChecks',
+  'npm.publish',
+  'npm.ignoreVersion',
+  'npm.allowSameVersion',
+  'npm.skipChecks'
+];
+
 const parseCliArguments = args => {
   const options = parseArgs(args, {
-    boolean: ['dry-run', 'ci'],
+    boolean: booleanOptions,
     alias: aliases,
     configuration: {
       'parse-numbers': false,
