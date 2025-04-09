@@ -1,6 +1,6 @@
 import { appendFileSync, mkdirSync, mkdtempSync, promises } from 'node:fs';
 import os from 'node:os';
-import path, { dirname } from 'node:path';
+import path from 'node:path';
 import childProcess from 'node:child_process';
 import { execOpts } from '../../lib/util.js';
 

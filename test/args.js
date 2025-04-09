@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { parseCliArguments } from '../lib/args.js';
 
-test("should parse boolean arguments", () => {
+test('should parse boolean arguments', () => {
   const args = [
     '--dry-run=false',
     '--ci',
@@ -11,8 +11,8 @@ test("should parse boolean arguments", () => {
     '--git.addUntrackedFiles=true',
     '--git.commit=false',
     '--no-git.tag',
-    '--git.commitMessage=test',
-  ]
+    '--git.commitMessage=test'
+  ];
 
   const result = parseCliArguments(args);
 
