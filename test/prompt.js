@@ -17,7 +17,7 @@ test('should not create prompt if disabled', async t => {
   const task = t.mock.fn();
   const promptMock = t.mock.fn(yes);
   const inquirer = { prompt: promptMock };
-  const prompt = factory(Prompt, { container: { inquirer } });
+  const prompt = await factory(Prompt, { container: { inquirer } });
   prompt.register(prompts.git);
   await prompt.show({ enabled: false, prompt: 'push', task });
   assert.equal(promptMock.mock.callCount(), 0);
@@ -27,7 +27,7 @@ test('should not create prompt if disabled', async t => {
 test('should create prompt', async t => {
   const promptMock = t.mock.fn(yes);
   const inquirer = { prompt: promptMock };
-  const prompt = factory(Prompt, { container: { inquirer } });
+  const prompt = await factory(Prompt, { container: { inquirer } });
   prompt.register(prompts.git);
   await prompt.show({ prompt: 'push' });
   assert.equal(promptMock.mock.callCount(), 1);
@@ -57,9 +57,10 @@ test('should create prompt', async t => {
       git: { tagName: 'v${version}' },
       npm: { name: 'my-pkg', tag: 'next' }
     });
+    await config.init();
     config.setContext({ version: '1.0.0', tagName: '1.0.0' });
     const inquirer = { prompt: promptMock };
-    const p = factory(Prompt, { container: { inquirer } });
+    const p = await factory(Prompt, { container: { inquirer } });
     p.register(prompts[namespace], namespace);
     await p.show({ namespace, prompt, context: config.getContext() });
     assert.equal(promptMock.mock.callCount(), 1);
@@ -71,7 +72,7 @@ test('should execute task after positive answer', async t => {
   const task = t.mock.fn();
   const promptMock = t.mock.fn(yes);
   const inquirer = { prompt: promptMock };
-  const prompt = factory(Prompt, { container: { inquirer } });
+  const prompt = await factory(Prompt, { container: { inquirer } });
   prompt.register(prompts.git);
   await prompt.show({ prompt: 'push', task });
   assert.equal(promptMock.mock.callCount(), 1);
@@ -83,7 +84,7 @@ test('should not execute task after negative answer', async t => {
   const task = t.mock.fn();
   const promptMock = t.mock.fn(no);
   const inquirer = { prompt: promptMock };
-  const prompt = factory(Prompt, { container: { inquirer } });
+  const prompt = await factory(Prompt, { container: { inquirer } });
   prompt.register(prompts.git);
   await prompt.show({ prompt: 'push', task });
   assert.equal(promptMock.mock.callCount(), 1);

@@ -36,11 +36,12 @@ export class SpinnerStub {
   }
 }
 
-export let factory = (Definition, { namespace, options = {}, container = {} } = {}) => {
+export let factory = async (Definition, { namespace, options = {}, container = {} } = {}) => {
   options = Object.assign({}, { ci: true, verbose: false, 'dry-run': false, debug: false }, options);
   const ns = namespace || Definition.name.toLowerCase();
   container.config = container.config || new Config(Object.assign({ config: false }, options));
   container.log = new LogStub();
+  await container.config.init();
 
   container.spinner = new SpinnerStub();
   container.shell = container.shell || new ShellStub({ container });

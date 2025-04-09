@@ -1,0 +1,5 @@
+{
+  "git": {
+    "commitMessage": "Released with version ${version}"
+  }
+}

@@ -43,7 +43,7 @@ describe('github', () => {
   test('should check token and perform checks', async () => {
     const tokenRef = 'MY_GITHUB_TOKEN';
     const options = { github: { release: true, tokenRef, pushRepo } };
-    const github = factory(GitHub, { options });
+    const github = await factory(GitHub, { options });
 
     interceptAuthentication(api);
     interceptCollaborator(api);
@@ -53,7 +53,7 @@ describe('github', () => {
   test('should check token and warn', async () => {
     const tokenRef = 'MY_GITHUB_TOKEN';
     const options = { github: { release: true, tokenRef, pushRepo } };
-    const github = factory(GitHub, { options });
+    const github = await factory(GitHub, { options });
     delete process.env[tokenRef];
 
     await assert.doesNotReject(github.init());
@@ -77,7 +77,7 @@ describe('github', () => {
         assets: 'test/resources/file-v${version}.txt'
       }
     };
-    const github = factory(GitHub, { options });
+    const github = await factory(GitHub, { options });
 
     const original = github.shell.exec.bind(github.shell);
     t.mock.method(github.shell, 'exec', (...args) => {
@@ -110,7 +110,7 @@ describe('github', () => {
         draft: true
       }
     };
-    const github = factory(GitHub, { options });
+    const github = await factory(GitHub, { options });
 
     const original = github.shell.exec.bind(github.shell);
     t.mock.method(github.shell, 'exec', (...args) => {
@@ -141,7 +141,7 @@ describe('github', () => {
         autoGenerate: true
       }
     };
-    const github = factory(GitHub, { options });
+    const github = await factory(GitHub, { options });
 
     const original = github.shell.exec.bind(github.shell);
     t.mock.method(github.shell, 'exec', (...args) => {
@@ -177,7 +177,7 @@ describe('github', () => {
         assets: `test/resources/${asset}`
       }
     };
-    const github = factory(GitHub, { options });
+    const github = await factory(GitHub, { options });
 
     const original = github.shell.exec.bind(github.shell);
     t.mock.method(github.shell, 'exec', (...args) => {
@@ -214,7 +214,7 @@ describe('github', () => {
         }
       }
     };
-    const github = factory(GitHub, { options });
+    const github = await factory(GitHub, { options });
 
     const original = github.shell.exec.bind(github.shell);
     t.mock.method(github.shell, 'exec', (...args) => {
@@ -248,7 +248,7 @@ describe('github', () => {
         releaseNotes: 'echo Custom notes'
       }
     };
-    const github = factory(GitHub, { options });
+    const github = await factory(GitHub, { options });
 
     const original = github.shell.exec.bind(github.shell);
     t.mock.method(github.shell, 'exec', (...args) => {
@@ -273,7 +273,7 @@ describe('github', () => {
 
   test('should release to enterprise host', async t => {
     const options = { git, github: { tokenRef, pushRepo: 'git://github.example.org/user/repo' } };
-    const github = factory(GitHub, { options });
+    const github = await factory(GitHub, { options });
 
     const original = github.shell.exec.bind(github.shell);
     t.mock.method(github.shell, 'exec', (...args) => {
@@ -309,7 +309,7 @@ describe('github', () => {
         proxy: 'http://proxy:8080'
       }
     };
-    const github = factory(GitHub, { options });
+    const github = await factory(GitHub, { options });
 
     const original = github.shell.exec.bind(github.shell);
     t.mock.method(github.shell, 'exec', (...args) => {
@@ -336,7 +336,7 @@ describe('github', () => {
 
   test('should release to git.pushRepo', async t => {
     const options = { git: { pushRepo: 'upstream', changelog: '' }, github: { tokenRef, skipChecks: true } };
-    const github = factory(GitHub, { options });
+    const github = await factory(GitHub, { options });
 
     const original = github.shell.exec.bind(github.shell);
     t.mock.method(github.shell, 'exec', (...args) => {
@@ -363,7 +363,7 @@ describe('github', () => {
 
   testSkipOnActions('should throw for unauthenticated user', async t => {
     const options = { github: { tokenRef, pushRepo, host } };
-    const github = factory(GitHub, { options });
+    const github = await factory(GitHub, { options });
 
     const getAuthenticated = t.mock.method(github.client.users, 'getAuthenticated', () => {
       throw new RequestError('Bad credentials', 401, requestErrorOptions);
@@ -378,7 +378,7 @@ describe('github', () => {
 
   testSkipOnActions('should throw for non-collaborator', async t => {
     const options = { github: { tokenRef, pushRepo, host } };
-    const github = factory(GitHub, { options });
+    const github = await factory(GitHub, { options });
 
     t.mock.method(github.client.repos, 'checkCollaborator', () => {
       throw new RequestError('HttpError', 401, requestErrorOptions);
@@ -397,7 +397,7 @@ describe('github', () => {
     }
 
     const options = { github: { tokenRef } };
-    const github = factory(GitHub, { options });
+    const github = await factory(GitHub, { options });
     const authStub = t.mock.method(github, 'isAuthenticated');
     const collaboratorStub = t.mock.method(github, 'isCollaborator');
 
@@ -414,7 +414,7 @@ describe('github', () => {
   });
 
   test('should handle octokit client error (without retries)', async t => {
-    const github = factory(GitHub, { options: { github: { tokenRef, pushRepo, host } } });
+    const github = await factory(GitHub, { options: { github: { tokenRef, pushRepo, host } } });
     const createRelease = t.mock.method(github.client.repos, 'createRelease', () => {
       throw new RequestError('Not found', 404, requestErrorOptions);
     });
@@ -429,7 +429,7 @@ describe('github', () => {
 
   test('should handle octokit client error (with retries)', async t => {
     const options = { github: { tokenRef, pushRepo, host, retryMinTimeout: 0 } };
-    const github = factory(GitHub, { options });
+    const github = await factory(GitHub, { options });
 
     const createRelease = t.mock.method(github.client.repos, 'createRelease', () => {
       throw new RequestError('Request failed', 500, requestErrorOptions);
@@ -449,7 +449,7 @@ describe('github', () => {
       git,
       github: { tokenRef, pushRepo, releaseName: 'R ${version}', assets: ['*'] }
     };
-    const github = factory(GitHub, { options });
+    const github = await factory(GitHub, { options });
 
     const get = t.mock.getter(github, 'client');
     const original = github.shell.exec.bind(github.shell);
@@ -479,7 +479,7 @@ describe('github', () => {
         releaseNotes: 'echo Custom notes'
       }
     };
-    const github = factory(GitHub, { options });
+    const github = await factory(GitHub, { options });
 
     const original = github.shell.exec.bind(github.shell);
     t.mock.method(github.shell, 'exec', (...args) => {
@@ -510,7 +510,7 @@ describe('github', () => {
         releaseNotes: 'echo It happened'
       }
     };
-    const github = factory(GitHub, { options });
+    const github = await factory(GitHub, { options });
 
     const original = github.shell.exec.bind(github.shell);
     t.mock.method(github.shell, 'exec', (...args) => {
@@ -542,7 +542,7 @@ describe('github', () => {
         releaseNotes: 'echo ' + releaseNotes
       }
     };
-    const github = factory(GitHub, { options });
+    const github = await factory(GitHub, { options });
 
     const original = github.shell.exec.bind(github.shell);
     t.mock.method(github.shell, 'exec', (...args) => {
@@ -601,7 +601,7 @@ describe('github', () => {
         discussionCategoryName: 'Announcement'
       }
     };
-    const github = factory(GitHub, { options });
+    const github = await factory(GitHub, { options });
     const original = github.shell.exec.bind(github.shell);
     t.mock.method(github.shell, 'exec', (...args) => {
       if (args[0] === 'git describe --tags --match=* --abbrev=0') return Promise.resolve('2.0.1');

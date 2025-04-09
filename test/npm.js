@@ -9,19 +9,19 @@ import { mkTmpDir, getArgs } from './util/helpers.js';
 describe('npm', async () => {
   test('should return npm package url', async () => {
     const options = { npm: { name: 'my-cool-package' } };
-    const npmClient = factory(npm, { options });
+    const npmClient = await factory(npm, { options });
     assert.equal(npmClient.getPackageUrl(), 'https://www.npmjs.com/package/my-cool-package');
   });
 
   test('should return npm package url (custom registry)', async () => {
     const options = { npm: { name: 'my-cool-package', publishConfig: { registry: 'https://registry.example.org/' } } };
-    const npmClient = factory(npm, { options });
+    const npmClient = await factory(npm, { options });
     assert.equal(npmClient.getPackageUrl(), 'https://registry.example.org/package/my-cool-package');
   });
 
   test('should return npm package url (custom publicPath)', async () => {
     const options = { npm: { name: 'my-cool-package', publishConfig: { publicPath: '/custom/public-path' } } };
-    const npmClient = factory(npm, { options });
+    const npmClient = await factory(npm, { options });
     assert.equal(npmClient.getPackageUrl(), 'https://www.npmjs.com/custom/public-path/my-cool-package');
   });
 
@@ -32,46 +32,46 @@ describe('npm', async () => {
         publishConfig: { registry: 'https://registry.example.org/', publicPath: '/custom/public-path' }
       }
     };
-    const npmClient = factory(npm, { options });
+    const npmClient = await factory(npm, { options });
     assert.equal(npmClient.getPackageUrl(), 'https://registry.example.org/custom/public-path/my-cool-package');
   });
 
   test('should return default tag', async () => {
-    const npmClient = factory(npm);
+    const npmClient = await factory(npm);
     const tag = await npmClient.resolveTag();
     assert.equal(tag, 'latest');
   });
 
   test('should resolve default tag for pre-release', async t => {
-    const npmClient = factory(npm);
+    const npmClient = await factory(npm);
     t.mock.method(npmClient, 'getRegistryPreReleaseTags', () => []);
     const tag = await npmClient.resolveTag('1.0.0-0');
     assert.equal(tag, 'next');
   });
 
   test('should guess tag from registry for pre-release', async t => {
-    const npmClient = factory(npm);
+    const npmClient = await factory(npm);
     t.mock.method(npmClient, 'getRegistryPreReleaseTags', () => ['alpha']);
     const tag = await npmClient.resolveTag('1.0.0-0');
     assert.equal(tag, 'alpha');
   });
 
   test('should derive tag from pre-release version', async () => {
-    const npmClient = factory(npm);
+    const npmClient = await factory(npm);
     const tag = await npmClient.resolveTag('1.0.2-alpha.3');
     assert.equal(tag, 'alpha');
   });
 
   test('should use provided (default) tag even for pre-release', async t => {
     const options = { npm: { tag: 'latest' } };
-    const npmClient = factory(npm, { options });
+    const npmClient = await factory(npm, { options });
     t.mock.method(npmClient.shell, 'exec', () => Promise.resolve());
     await npmClient.bump('1.0.0-next.0');
     assert.equal(npmClient.getContext('tag'), 'latest');
   });
 
   test('should throw when `npm version` fails', async t => {
-    const npmClient = factory(npm);
+    const npmClient = await factory(npm);
     t.mock.method(npmClient.shell, 'exec', () =>
       Promise.reject(new Error('npm ERR! Version not changed, might want --allow-same-version'))
     );
@@ -79,14 +79,14 @@ describe('npm', async () => {
   });
 
   test('should return first pre-release tag from package in registry when resolving tag without pre-id', async t => {
-    const npmClient = factory(npm);
+    const npmClient = await factory(npm);
     const response = { latest: '1.4.1', alpha: '2.0.0-alpha.1', beta: '2.0.0-beta.3' };
     t.mock.method(npmClient.shell, 'exec', () => Promise.resolve(JSON.stringify(response)));
     assert.equal(await npmClient.resolveTag('2.0.0-5'), 'alpha');
   });
 
   test('should return default pre-release tag when resolving tag without pre-id', async t => {
-    const npmClient = factory(npm);
+    const npmClient = await factory(npm);
     const response = {
       latest: '1.4.1'
     };
@@ -95,19 +95,19 @@ describe('npm', async () => {
   });
 
   test('should handle erroneous output when resolving tag without pre-id', async t => {
-    const npmClient = factory(npm);
+    const npmClient = await factory(npm);
     t.mock.method(npmClient.shell, 'exec', () => Promise.resolve(''));
     assert.equal(await npmClient.resolveTag('2.0.0-0'), 'next');
   });
 
   test('should handle errored request when resolving tag without pre-id', async t => {
-    const npmClient = factory(npm);
+    const npmClient = await factory(npm);
     t.mock.method(npmClient.shell, 'exec', () => Promise.resolve());
     assert.equal(await npmClient.resolveTag('2.0.0-0'), 'next');
   });
 
   test('should add registry to commands when specified', async t => {
-    const npmClient = factory(npm);
+    const npmClient = await factory(npm);
     npmClient.setContext({ publishConfig: { registry: 'registry.example.org' } });
     const exec = t.mock.method(npmClient.shell, 'exec', command => {
       if (command === 'npm whoami --registry registry.example.org') return Promise.resolve('john');
@@ -126,7 +126,7 @@ describe('npm', async () => {
   });
 
   test('should not throw when executing tasks', async t => {
-    const npmClient = factory(npm);
+    const npmClient = await factory(npm);
     t.mock.method(npmClient.shell, 'exec', command => {
       if (command === 'npm whoami') return Promise.resolve('john');
       const re = /npm access (list collaborators --json|ls-collaborators) release-it/;
@@ -137,7 +137,7 @@ describe('npm', async () => {
   });
 
   test('should throw if npm is down', async t => {
-    const npmClient = factory(npm);
+    const npmClient = await factory(npm);
     t.mock.method(npmClient.shell, 'exec', command => {
       if (command === 'npm ping') return Promise.reject();
       return Promise.resolve();
@@ -146,7 +146,7 @@ describe('npm', async () => {
   });
 
   test('should not throw if npm returns 400/404 for unsupported ping/whoami/access', async t => {
-    const npmClient = factory(npm);
+    const npmClient = await factory(npm);
     const exec = t.mock.method(npmClient.shell, 'exec', () => Promise.resolve());
     const pingError = "npm ERR! code E404\nnpm ERR! 404 Package '--ping' not found : ping";
     const whoamiError = "npm ERR! code E404\nnpm ERR! 404 Package '--whoami' not found : whoami";
@@ -159,7 +159,7 @@ describe('npm', async () => {
   });
 
   test('should not throw if npm returns 400 for unsupported ping/whoami/access', async t => {
-    const npmClient = factory(npm);
+    const npmClient = await factory(npm);
     const exec = t.mock.method(npmClient.shell, 'exec', () => Promise.resolve());
     const pingError = 'npm ERR! code E400\nnpm ERR! 400 Bad Request - GET https://npm.example.org/-/ping?write=true';
     const whoamiError = 'npm ERR! code E400\nnpm ERR! 400 Bad Request - GET https://npm.example.org/-/whoami';
@@ -172,14 +172,14 @@ describe('npm', async () => {
   });
 
   test('should throw if user is not authenticated', async t => {
-    const npmClient = factory(npm);
+    const npmClient = await factory(npm);
     const exec = t.mock.method(npmClient.shell, 'exec', () => Promise.resolve());
     exec.mock.mockImplementationOnce(() => Promise.reject(), 1);
     await assert.rejects(runTasks(npmClient), { message: /^Not authenticated with npm/ });
   });
 
   test('should throw if user is not a collaborator (v9)', async t => {
-    const npmClient = factory(npm);
+    const npmClient = await factory(npm);
     t.mock.method(npmClient.shell, 'exec', command => {
       if (command === 'npm whoami') return Promise.resolve('ada');
       if (command === 'npm --version') return Promise.resolve('9.2.0');
@@ -191,7 +191,7 @@ describe('npm', async () => {
   });
 
   test('should throw if user is not a collaborator (v8)', async t => {
-    const npmClient = factory(npm);
+    const npmClient = await factory(npm);
 
     t.mock.method(npmClient.shell, 'exec', command => {
       if (command === 'npm whoami') return Promise.resolve('ada');
@@ -205,7 +205,7 @@ describe('npm', async () => {
   });
 
   test('should not throw if user is not a collaborator on a new package', async t => {
-    const npmClient = factory(npm);
+    const npmClient = await factory(npm);
 
     t.mock.method(npmClient.shell, 'exec', command => {
       if (command === 'npm whoami') return Promise.resolve('ada');
@@ -220,7 +220,7 @@ describe('npm', async () => {
   });
 
   test('should handle 2FA and publish with OTP', async t => {
-    const npmClient = factory(npm);
+    const npmClient = await factory(npm);
     npmClient.setContext({ name: 'pkg' });
 
     const exec = t.mock.method(npmClient.shell, 'exec');
@@ -247,7 +247,7 @@ describe('npm', async () => {
   });
 
   test('should publish', async t => {
-    const npmClient = factory(npm);
+    const npmClient = await factory(npm);
     const exec = t.mock.method(npmClient.shell, 'exec', command => {
       if (command === 'npm whoami') return Promise.resolve('john');
       const re = /npm access (list collaborators --json|ls-collaborators) release-it/;
@@ -260,7 +260,7 @@ describe('npm', async () => {
 
   test('should use extra publish arguments', async t => {
     const options = { npm: { skipChecks: true, publishArgs: '--registry=http://my-internal-registry.local' } };
-    const npmClient = factory(npm, { options });
+    const npmClient = await factory(npm, { options });
     const exec = t.mock.method(npmClient.shell, 'exec', () => Promise.resolve());
     await runTasks(npmClient);
     assert.equal(
@@ -271,7 +271,7 @@ describe('npm', async () => {
 
   test('should skip checks', async () => {
     const options = { npm: { skipChecks: true } };
-    const npmClient = factory(npm, { options });
+    const npmClient = await factory(npm, { options });
     await assert.doesNotReject(npmClient.init());
   });
 
@@ -290,7 +290,7 @@ describe('npm', async () => {
       })
     );
     const options = { npm };
-    const npmClient = factory(npm, { options });
+    const npmClient = await factory(npm, { options });
     const exec = t.mock.method(npmClient.shell, 'exec', command => {
       const cmd = 'npm whoami --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/';
       if (command === cmd) return Promise.resolve('john');
@@ -316,7 +316,7 @@ describe('npm', async () => {
     process.chdir(tmp);
     writeFileSync(join(tmp, 'package.json'), JSON.stringify({ name: '@my-scope/my-pkg', version: '1.0.0' }));
     const options = { npm };
-    const npmClient = factory(npm, { options });
+    const npmClient = await factory(npm, { options });
 
     const exec = t.mock.method(npmClient.shell, 'exec', command => {
       if (command === 'npm whoami') return Promise.resolve('john');
@@ -340,7 +340,7 @@ describe('npm', async () => {
 
   test('should add allow-same-version argument', async t => {
     const options = { npm: { skipChecks: true, allowSameVersion: true } };
-    const npmClient = factory(npm, { options });
+    const npmClient = await factory(npm, { options });
 
     const exec = t.mock.method(npmClient.shell, 'exec', () => Promise.resolve());
 
@@ -351,7 +351,7 @@ describe('npm', async () => {
 
   test('should add version arguments', async t => {
     const options = { npm: { skipChecks: true, versionArgs: ['--workspaces-update=false', '--allow-same-version'] } };
-    const npmClient = factory(npm, { options });
+    const npmClient = await factory(npm, { options });
     const exec = t.mock.method(npmClient.shell, 'exec', () => Promise.resolve());
     await runTasks(npmClient);
     const versionArgs = getArgs(exec, 'npm version');

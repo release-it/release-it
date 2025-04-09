@@ -243,7 +243,7 @@ describe('tasks', () => {
     childProcess.execSync('git tag v1.0.0', execOpts);
     const sha = gitAdd('line', 'file', 'More file');
     childProcess.execSync('git push --follow-tags', execOpts);
-    const git = factory(Git);
+    const git = await factory(Git);
     const ref = (await git.getBranchName()) ?? 'HEAD';
 
     interceptGitHubAuthentication(github);

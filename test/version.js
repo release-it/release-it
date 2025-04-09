@@ -4,20 +4,20 @@ import Version from '../lib/plugin/version/Version.js';
 import { factory, runTasks } from './util/index.js';
 
 describe('version', () => {
-  test('isValidVersion', () => {
-    const v = factory(Version);
+  test('isValidVersion', async () => {
+    const v = await factory(Version);
     assert.equal(v.isValid('1.0.0'), true);
     assert.equal(v.isValid(1.0), false);
   });
 
-  test('isPreRelease', () => {
-    const v = factory(Version);
+  test('isPreRelease', async () => {
+    const v = await factory(Version);
     assert.equal(v.isPreRelease('1.0.0-beta.0'), true);
     assert.equal(v.isPreRelease('1.0.0'), false);
   });
 
   test('should return the same version in both interactive and ci mode', async () => {
-    const v = factory(Version);
+    const v = await factory(Version);
     const options = { latestVersion: '2.0.0-beta.1', increment: null, preReleaseId: 'rc', isPreRelease: true };
     const resultInteractiveMode = await v.getIncrementedVersion(options);
     assert.equal(resultInteractiveMode, '2.0.0-rc.0');
@@ -25,8 +25,8 @@ describe('version', () => {
     assert.equal(resultInteractiveMode, resultCiMode);
   });
 
-  test('should increment latest version', () => {
-    const v = factory(Version);
+  test('should increment latest version', async () => {
+    const v = await factory(Version);
     const latestVersion = '1.0.0';
     assert.equal(v.incrementVersion({ latestVersion, increment: false }), '1.0.0');
     assert.equal(v.incrementVersion({ latestVersion, increment: 'foo' }), undefined);
@@ -38,15 +38,15 @@ describe('version', () => {
     assert.equal(v.incrementVersion({ latestVersion, increment: '2.0.0-beta.1' }), '2.0.0-beta.1');
   });
 
-  test('should not increment latest version in interactive mode', () => {
-    const v = factory(Version, { options: { ci: false } });
+  test('should not increment latest version in interactive mode', async () => {
+    const v = await factory(Version, { options: { ci: false } });
     const latestVersion = '1.0.0';
     assert.equal(v.incrementVersion({ latestVersion, increment: null }), undefined);
     assert.equal(v.incrementVersion({ latestVersion, increment: false }), '1.0.0');
   });
 
-  test('should always set increment version in CI mode', () => {
-    const v = factory(Version, { options: { ci: true } });
+  test('should always set increment version in CI mode', async () => {
+    const v = await factory(Version, { options: { ci: true } });
     const latestVersion = '1.0.0';
     assert.equal(v.getIncrementedVersionCI({ latestVersion, increment: false }), '1.0.0');
     assert.equal(v.getIncrementedVersionCI({ latestVersion, increment: null }), '1.0.1');
@@ -54,44 +54,44 @@ describe('version', () => {
     assert.equal(v.getIncrementedVersionCI({ latestVersion, increment: 'major' }), '2.0.0');
   });
 
-  test('should increment latest version (coerce)', () => {
-    const v = factory(Version);
+  test('should increment latest version (coerce)', async () => {
+    const v = await factory(Version);
     assert.equal(v.incrementVersion({ increment: '1.2' }), '1.2.0');
     assert.equal(v.incrementVersion({ increment: '1' }), '1.0.0');
     assert.equal(v.incrementVersion({ increment: 'v1.2.0.0' }), '1.2.0');
   });
 
-  test('should increment version (pre-release continuation)', () => {
-    const v = factory(Version);
+  test('should increment version (pre-release continuation)', async () => {
+    const v = await factory(Version);
     assert.equal(v.incrementVersion({ latestVersion: '1.2.3-alpha.0', increment: 'prepatch' }), '1.2.4-0');
   });
 
-  test('should increment version (prepatch)', () => {
-    const v = factory(Version);
+  test('should increment version (prepatch)', async () => {
+    const v = await factory(Version);
     assert.equal(
       v.incrementVersion({ latestVersion: '1.2.3', increment: 'prepatch', preReleaseId: 'alpha' }),
       '1.2.4-alpha.0'
     );
   });
 
-  test('should increment version (normalized)', () => {
-    const v = factory(Version);
+  test('should increment version (normalized)', async () => {
+    const v = await factory(Version);
     assert.equal(
       v.incrementVersion({ latestVersion: '1.2.3', increment: 'patch', preReleaseId: 'alpha', isPreRelease: true }),
       '1.2.4-alpha.0'
     );
   });
 
-  test('should increment version (prepatch on prerelease version)', () => {
-    const v = factory(Version);
+  test('should increment version (prepatch on prerelease version)', async () => {
+    const v = await factory(Version);
     assert.equal(
       v.incrementVersion({ latestVersion: '1.2.3-alpha.5', increment: 'prepatch', preReleaseId: 'next' }),
       '1.2.4-next.0'
     );
   });
 
-  test('should increment version (normalized on prerelease version)', () => {
-    const v = factory(Version);
+  test('should increment version (normalized on prerelease version)', async () => {
+    const v = await factory(Version);
     assert.equal(
       v.incrementVersion({
         latestVersion: '1.2.3-alpha.5',
@@ -103,29 +103,29 @@ describe('version', () => {
     );
   });
 
-  test('should increment version (prerelease)', () => {
-    const v = factory(Version);
+  test('should increment version (prerelease)', async () => {
+    const v = await factory(Version);
     assert.equal(
       v.incrementVersion({ latestVersion: '1.2.3', increment: 'prerelease', preReleaseId: 'alpha' }),
       '1.2.4-alpha.0'
     );
   });
 
-  test('should increment version (prerelease cont.)', () => {
-    const v = factory(Version);
+  test('should increment version (prerelease cont.)', async () => {
+    const v = await factory(Version);
     assert.equal(v.incrementVersion({ latestVersion: '1.2.3-alpha.0', increment: 'prerelease' }), '1.2.3-alpha.1');
   });
 
-  test('should increment version (preReleaseId continuation)', () => {
-    const v = factory(Version);
+  test('should increment version (preReleaseId continuation)', async () => {
+    const v = await factory(Version);
     assert.equal(
       v.incrementVersion({ latestVersion: '1.2.3-alpha.0', increment: 'prerelease', preReleaseId: 'alpha' }),
       '1.2.3-alpha.1'
     );
   });
 
-  test('should increment version (prepatch/preReleaseId continuation)', () => {
-    const v = factory(Version);
+  test('should increment version (prepatch/preReleaseId continuation)', async () => {
+    const v = await factory(Version);
     const options = {
       latestVersion: '1.2.3-beta.0',
       increment: 'prerelease',
@@ -135,26 +135,26 @@ describe('version', () => {
     assert.equal(v.incrementVersion(options), '1.2.3-beta.1');
   });
 
-  test('should increment version (preReleaseId w/o preRelease)', () => {
-    const v = factory(Version);
+  test('should increment version (preReleaseId w/o preRelease)', async () => {
+    const v = await factory(Version);
     assert.equal(
       v.incrementVersion({ latestVersion: '1.2.3-alpha.0', increment: 'patch', preReleaseId: 'alpha' }),
       '1.2.3'
     );
   });
 
-  test('should increment version (non-numeric prepatch continuation)', () => {
-    const v = factory(Version);
+  test('should increment version (non-numeric prepatch continuation)', async () => {
+    const v = await factory(Version);
     assert.equal(v.incrementVersion({ latestVersion: '1.2.3-alpha', increment: 'prerelease' }), '1.2.3-alpha.0');
   });
 
-  test('should increment version (patch release after pre-release)', () => {
-    const v = factory(Version);
+  test('should increment version (patch release after pre-release)', async () => {
+    const v = await factory(Version);
     assert.equal(v.incrementVersion({ latestVersion: '1.2.3-alpha.1', increment: 'patch' }), '1.2.3');
   });
 
-  test('should increment version and start at base 1', () => {
-    const v = factory(Version);
+  test('should increment version and start at base 1', async () => {
+    const v = await factory(Version);
     assert.equal(
       v.incrementVersion({
         latestVersion: '1.3.0',
@@ -167,8 +167,8 @@ describe('version', () => {
     );
   });
 
-  test('should increment prerelease version and ignore prelease base 1', () => {
-    const v = factory(Version);
+  test('should increment prerelease version and ignore prelease base 1', async () => {
+    const v = await factory(Version);
     assert.equal(
       v.incrementVersion({
         latestVersion: '1.2.3-alpha.5',
@@ -183,7 +183,7 @@ describe('version', () => {
 
   test('should run tasks without errors', async t => {
     const options = { version: { increment: 'minor' } };
-    const v = factory(Version, { options });
+    const v = await factory(Version, { options });
     const getIncrement = t.mock.method(v, 'getIncrement');
     const getIncrementedVersionCI = t.mock.method(v, 'getIncrementedVersionCI');
     const incrementVersion = t.mock.method(v, 'incrementVersion');

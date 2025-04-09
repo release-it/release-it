@@ -14,13 +14,10 @@ import { interceptPublish as interceptGitLabPublish } from './stub/gitlab.js';
 import { interceptCreate as interceptGitHubCreate } from './stub/github.js';
 import { factory, LogStub, SpinnerStub } from './util/index.js';
 import { mockFetch } from './util/mock.js';
+import { createTarBlobByRawContents } from './util/fetch.js';
 
 describe('tasks.interactive', () => {
-  const [mocker, github, gitlab, githubusercontent] = mockFetch([
-    'https://api.github.com',
-    'https://gitlab.com/api/v4',
-    'https://raw.githubusercontent.com'
-  ]);
+  const [mocker, github, gitlab] = mockFetch(['https://api.github.com', 'https://gitlab.com/api/v4']);
 
   before(() => {
     mocker.mockGlobal();
@@ -96,18 +93,28 @@ describe('tasks.interactive', () => {
 
     const validationExtendedConfiguration = "echo 'extended_configuration'";
 
-    githubusercontent.get('/release-it/release-it-configuration/HEAD/.release-it.json', {
+    github.head('/repos/release-it/release-it-configuration/tarball/main', {
       status: 200,
-      body: {
-        hooks: {
-          'before:init': validationExtendedConfiguration
-        }
-      }
+      headers: {}
+    });
+
+    github.get('/repos/release-it/release-it-configuration/tarball/main', {
+      status: 200,
+      body: await new Response(
+        createTarBlobByRawContents({
+          '.release-it.json': JSON.stringify({
+            hooks: {
+              'before:init': validationExtendedConfiguration
+            }
+          })
+        })
+      ).arrayBuffer()
     });
 
     const config = {
       $schema: 'https://unpkg.com/release-it@18/schema/release-it.json',
-      extends: 'github:release-it/release-it-configuration'
+      extends: 'github:release-it/release-it-configuration',
+      config: true
     };
 
     const container = getContainer(config);
@@ -213,7 +220,7 @@ describe('tasks.interactive', () => {
     childProcess.execSync('git tag 1.0.0', execOpts);
     const sha = gitAdd('line', 'file', 'More file');
 
-    const git = factory(Git);
+    const git = await factory(Git);
     const ref = (await git.getBranchName()) ?? 'HEAD';
 
     interceptGitHubCreate(github, {
