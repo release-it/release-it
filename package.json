@@ -100,7 +100,6 @@
     "proxy-agent": "6.5.0",
     "semver": "7.7.1",
     "undici": "6.21.2",
-    "update-notifier": "7.3.1",
     "url-join": "5.0.0",
     "wildcard-match": "5.1.4",
     "yargs-parser": "21.1.1"
