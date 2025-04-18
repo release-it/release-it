@@ -18,7 +18,7 @@ An example `.release-it.json`:
 
 ```json
 {
-  "$schema": "https://unpkg.com/release-it@18/schema/release-it.json",
+  "$schema": "https://unpkg.com/release-it@19/schema/release-it.json",
   "git": {
     "commitMessage": "chore: release v${version}"
   },
@@ -101,7 +101,7 @@ For example, to extend a configuration from a GitHub repository:
 
 ```json
 {
-  "$schema": "https://unpkg.com/release-it@18/schema/release-it.json",
+  "$schema": "https://unpkg.com/release-it@19/schema/release-it.json",
   "extends": "github:release-it/release-it-configuration"
 }
 ```

@@ -44,7 +44,7 @@ npm install -D release-it
     "release": "release-it"
   },
   "devDependencies": {
-    "release-it": "^18.0.0"
+    "release-it": "^19.0.0"
   }
 }
 ```
@@ -99,7 +99,7 @@ Here's a quick example `.release-it.json`:
 
 ```json
 {
-  "$schema": "https://unpkg.com/release-it@18/schema/release-it.json",
+  "$schema": "https://unpkg.com/release-it@19/schema/release-it.json",
   "git": {
     "commitMessage": "chore: release v${version}"
   },
@@ -346,10 +346,11 @@ release-it programmatically][54] for example code.
 
 ## Node.js version support
 
-The latest major version is v18, supporting Node.js 20 and up:
+The latest major version is v19, supporting Node.js 20 and up:
 
 | release-it | Node.js |
 | :--------: | :-----: |
+|    v19     |   v20   |
 |    v18     |   v20   |
 |    v17     |   v18   |
 |    v16     |   v16   |

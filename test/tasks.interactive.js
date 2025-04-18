@@ -112,7 +112,7 @@ describe('tasks.interactive', () => {
     });
 
     const config = {
-      $schema: 'https://unpkg.com/release-it@18/schema/release-it.json',
+      $schema: 'https://unpkg.com/release-it@19/schema/release-it.json',
       extends: 'github:release-it/release-it-configuration',
       config: true
     };
@@ -136,7 +136,7 @@ describe('tasks.interactive', () => {
     renameSync('.git', 'foo');
 
     const config = {
-      $schema: 'https://unpkg.com/release-it@18/schema/release-it.json',
+      $schema: 'https://unpkg.com/release-it@19/schema/release-it.json',
       extends: false
     };
 
