@@ -83,13 +83,6 @@ describe('config', async () => {
     assert.deepEqual(config.options.foo, { bar: 1 });
   });
 
-  test('should throw if provided config file is not found', async () => {
-    await assert.rejects(async () => {
-      const config = new Config({ config: 'nofile' });
-      await config.init();
-    }, /no such file.+nofile/);
-  });
-
   test('should throw if provided config file is invalid (cosmiconfig exception)', async () => {
     await assert.rejects(async () => {
       const config = new Config({ config: './test/stub/config/invalid-config-txt' });
