@@ -1,5 +1,4 @@
 {
   "entry": ["bin/release-it.js!"],
-  "project": ["bin/*.js!", "lib/**/*.js!"],
-  "ignoreDependencies": []
+  "project": ["bin/*.js!", "lib/**/*.js!"]
 }

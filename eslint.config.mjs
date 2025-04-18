@@ -31,7 +31,7 @@ export default [
     },
     rules: {
       'no-unused-vars': ['error', { caughtErrors: 'none' }],
-      'import/no-unresolved': [2, { ignore: ['@octokit/rest', '@octokit/request-error'] }],
+      'import/no-unresolved': [2, { ignore: ['@octokit/rest', '@octokit/request-error', 'c12'] }],
       'import/no-unused-modules': 2,
       'import/order': [2, { 'newlines-between': 'never' }]
     }
