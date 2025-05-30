@@ -162,7 +162,7 @@ GitLab projects can have releases attached to Git tags, containing release notes
 releases][32]:
 
 - Configure `gitlab.release: true`
-- Obtain a [personal access token][33] (release-it only needs the "api" scope).
+- Obtain a [personal access token][33] (release-it needs the `api` and `self_rotate` scopes).
 - Make sure the token is [available as an environment variable][34].
 
 → See [GitLab Releases][35] for more details.
