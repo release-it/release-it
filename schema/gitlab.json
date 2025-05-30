@@ -51,7 +51,7 @@
       "default": "CI_SERVER_TLS_CA_FILE"
     },
     "secure": {
-      "default": null
+      "default": false
     },
     "assets": {
       "default": null
