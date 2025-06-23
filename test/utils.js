@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { stripVTControlCharacters } from 'node:util';
 import mockStdIo from 'mock-stdio';
-import { format, truncateLines, parseGitUrl, parseVersion } from '../lib/util.js';
+import { format, truncateLines, parseGitUrl, parseVersion, get } from '../lib/util.js';
 
 test('format', () => {
   assert.equal(format('release v${version}', { version: '1.0.0' }), 'release v1.0.0');
@@ -95,4 +95,54 @@ test('parseVersion', () => {
   assert.deepEqual(parseVersion('1.0.0-0'), { version: '1.0.0-0', isPreRelease: true, preReleaseId: null });
   assert.deepEqual(parseVersion('1.0.0-next.1'), { version: '1.0.0-next.1', isPreRelease: true, preReleaseId: 'next' });
   assert.deepEqual(parseVersion('21.04.1'), { version: '21.04.1', isPreRelease: false, preReleaseId: null });
+});
+
+const sample = {
+  root: {
+    level1: {
+      level2: {
+        value: 'nested'
+      },
+      array: [
+        { id: 1, data: 'first' },
+        { id: 2, data: 'second' }
+      ],
+      'key.with.dot': {
+        special: true
+      }
+    },
+    mixed: [
+      { deep: { value: 100 } },
+      { deep: { value: 200 } }
+    ],
+  }
+};
+
+test('get: accesses a simple nested property', () => {
+  assert.equal(get(sample, 'root.level1.level2.value'), 'nested');
+});
+
+test('get: accesses array elements by index', () => {
+  assert.equal(get(sample, 'root.level1.array[0].data'), 'first');
+  assert.equal(get(sample, 'root.level1.array[1].id'), 2);
+});
+
+test('get: accesses keys with dots using bracket notation', () => {
+  assert.equal(get(sample, 'root.level1["key.with.dot"].special'), true);
+});
+
+test('get: navigates mixed objects and arrays', () => {
+  assert.equal(get(sample, 'root.mixed[0].deep.value'), 100);
+  assert.equal(get(sample, 'root.mixed[1].deep.value'), 200);
+});
+
+test('get: returns default value for non-existent properties', () => {
+  assert.equal(get(sample, 'root.level1.unknown', 'default'), 'default');
+  assert.equal(get(sample, 'root.level1.array[10].id', null), null);
+});
+
+test('get: handles empty path and null/undefined objects', () => {
+  assert.equal(get(sample, '', 'default'), 'default');
+  assert.equal(get(null, 'any.path', 'default'), 'default');
+  assert.equal(get(undefined, 'any.path', 'default'), 'default');
 });
