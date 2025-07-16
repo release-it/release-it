@@ -88,7 +88,6 @@
     "git-url-parse": "16.1.0",
     "inquirer": "12.6.3",
     "issue-parser": "7.0.1",
-    "lodash.get": "4.4.2",
     "lodash.merge": "4.6.2",
     "mime-types": "3.0.1",
     "new-github-release-url": "2.0.0",
