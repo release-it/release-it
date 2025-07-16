@@ -106,7 +106,7 @@ For example, to extend a configuration from a GitHub repository:
 }
 ```
 
-Get more information at [c12 documents](https://github.com/unjs/c12?tab=readme-ov-file#extending-configuration).
+Get more information at [c12 documents][7].
 
 ## Setting options via CLI
 
@@ -134,3 +134,4 @@ release-it --no-plugins.@release-it/keep-a-changelog.strictLatest
 [4]: ./npm.md#configuration-options
 [5]: ./github-releases.md#configuration-options
 [6]: ./gitlab-releases.md#configuration-options
+[7]: https://github.com/unjs/c12?tab=readme-ov-file#extending-configuration

@@ -308,41 +308,42 @@ Since v11, release-it can be extended in many, many ways. Here are some plugins:
 | [@jcamp-code/release-it-dotnet][47]       | Use .csproj or .props file for versioning, automate NuGet publishing                        |
 | [release-it-pnpm][16]                     | Add basic support for pnpm workspaces, integrates with [bumpp][48] and [changelogithub][49] |
 | [changesets-release-it-plugin][50]        | Combine [Changesets][51] changelog management with release-it                               |
+| [release-it-gitea][52]                    | Gitea plugin to create Gitea releases and upload attachments                                |
 
 Internally, release-it uses its own plugin architecture (for Git, GitHub, GitLab, npm).
 
-→ See all [release-it plugins on npm][52].
+→ See all [release-it plugins on npm][53].
 
-→ See [plugins][53] for documentation to write plugins.
+→ See [plugins][54] for documentation to write plugins.
 
 ## Use release-it programmatically
 
 While mostly used as a CLI tool, release-it can be used as a dependency to integrate in your own scripts. See [use
-release-it programmatically][54] for example code.
+release-it programmatically][55] for example code.
 
 ## Projects using release-it
 
-- [AdonisJs][55]
-- [Axios][56]
-- [Cal.com][57]
-- [Ember CLI][58]
-- [Halo][59]
-- [hosts][60]
-- [js-cookie][61]
-- [jQuery][62]
-- [Madge][63]
-- [Metalsmith][64]
-- [Node-Redis][65]
-- [React Native Paper][66]
-- [Readability.js][67]
-- [Redux][68]
-- [Saleor][69]
-- [Semantic UI React][70]
-- [Shepherd][71]
-- [Tabler][72] + [tabler-icons][73]
-- Swagger ([swagger-ui][74] + [swagger-editor][75])
-- [Repositories that depend on release-it][76]
-- GitHub search for [path:\*\*/.release-it.json][77]
+- [AdonisJs][56]
+- [Axios][57]
+- [Cal.com][58]
+- [Ember CLI][59]
+- [Halo][60]
+- [hosts][61]
+- [js-cookie][62]
+- [jQuery][63]
+- [Madge][64]
+- [Metalsmith][65]
+- [Node-Redis][66]
+- [React Native Paper][67]
+- [Readability.js][68]
+- [Redux][69]
+- [Saleor][70]
+- [Semantic UI React][71]
+- [Shepherd][72]
+- [Tabler][73] + [tabler-icons][74]
+- Swagger ([swagger-ui][75] + [swagger-editor][76])
+- [Repositories that depend on release-it][77]
+- GitHub search for [path:\*\*/.release-it.json][78]
 
 ## Node.js version support
 
@@ -356,17 +357,17 @@ The latest major version is v19, supporting Node.js 20 and up:
 |    v16     |   v16   |
 |    v15     |   v14   |
 
-Also see [CHANGELOG.md][78] for dates and details.
+Also see [CHANGELOG.md][79] for dates and details.
 
 ## Links
 
-- See [CHANGELOG.md][78] for major/breaking updates, and [releases][79] for a detailed version history.
-- To **contribute**, please read [CONTRIBUTING.md][80] first.
-- Please [open an issue][81] if anything is missing or unclear in this documentation.
+- See [CHANGELOG.md][79] for major/breaking updates, and [releases][80] for a detailed version history.
+- To **contribute**, please read [CONTRIBUTING.md][81] first.
+- Please [open an issue][82] if anything is missing or unclear in this documentation.
 
 ## License
 
-[MIT][82]
+[MIT][83]
 
 Are you using release-it at work? Please consider [sponsoring me][14]!
 
@@ -421,34 +422,35 @@ Are you using release-it at work? Please consider [sponsoring me][14]!
 [49]: https://github.com/antfu/changelogithub
 [50]: https://www.npmjs.com/package/changesets-release-it-plugin
 [51]: https://github.com/changesets/changesets
-[52]: https://www.npmjs.com/search?q=keywords:release-it-plugin
-[53]: ./docs/plugins.md
-[54]: ./docs/recipes/programmatic.md
-[55]: https://github.com/adonisjs/core
-[56]: https://github.com/axios/axios
-[57]: https://github.com/calcom/cal.com
-[58]: https://github.com/ember-cli/ember-cli
-[59]: https://github.com/halo-dev/halo
-[60]: https://github.com/StevenBlack/hosts
-[61]: https://github.com/js-cookie/js-cookie
-[62]: https://github.com/jquery/jquery
-[63]: https://github.com/pahen/madge
-[64]: https://github.com/metalsmith/metalsmith
-[65]: https://github.com/redis/node-redis
-[66]: https://github.com/callstack/react-native-paper
-[67]: https://github.com/mozilla/readability
-[68]: https://github.com/reduxjs/redux
-[69]: https://github.com/saleor/saleor
-[70]: https://github.com/Semantic-Org/Semantic-UI-React
-[71]: https://github.com/shipshapecode/shepherd
-[72]: https://github.com/tabler/tabler
-[73]: https://github.com/tabler/tabler-icons
-[74]: https://github.com/swagger-api/swagger-ui
-[75]: https://github.com/swagger-api/swagger-editor
-[76]: https://github.com/release-it/release-it/network/dependents
-[77]: https://github.com/search?q=path%3A**%2F.release-it.json&type=code
-[78]: ./CHANGELOG.md
-[79]: https://github.com/release-it/release-it/releases
-[80]: ./.github/CONTRIBUTING.md
-[81]: https://github.com/release-it/release-it/issues/new
-[82]: ./LICENSE
+[52]: https://github.com/lib-pack/release-it-gitea
+[53]: https://www.npmjs.com/search?q=keywords:release-it-plugin
+[54]: ./docs/plugins.md
+[55]: ./docs/recipes/programmatic.md
+[56]: https://github.com/adonisjs/core
+[57]: https://github.com/axios/axios
+[58]: https://github.com/calcom/cal.com
+[59]: https://github.com/ember-cli/ember-cli
+[60]: https://github.com/halo-dev/halo
+[61]: https://github.com/StevenBlack/hosts
+[62]: https://github.com/js-cookie/js-cookie
+[63]: https://github.com/jquery/jquery
+[64]: https://github.com/pahen/madge
+[65]: https://github.com/metalsmith/metalsmith
+[66]: https://github.com/redis/node-redis
+[67]: https://github.com/callstack/react-native-paper
+[68]: https://github.com/mozilla/readability
+[69]: https://github.com/reduxjs/redux
+[70]: https://github.com/saleor/saleor
+[71]: https://github.com/Semantic-Org/Semantic-UI-React
+[72]: https://github.com/shipshapecode/shepherd
+[73]: https://github.com/tabler/tabler
+[74]: https://github.com/tabler/tabler-icons
+[75]: https://github.com/swagger-api/swagger-ui
+[76]: https://github.com/swagger-api/swagger-editor
+[77]: https://github.com/release-it/release-it/network/dependents
+[78]: https://github.com/search?q=path%3A**%2F.release-it.json&type=code
+[79]: ./CHANGELOG.md
+[80]: https://github.com/release-it/release-it/releases
+[81]: ./.github/CONTRIBUTING.md
+[82]: https://github.com/release-it/release-it/issues/new
+[83]: ./LICENSE
