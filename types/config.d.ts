@@ -201,5 +201,8 @@ export interface Config {
 
     /** @default false */
     skipChecks?: boolean;
+
+    /** @default null */
+    repoId?: string;
   };
 }

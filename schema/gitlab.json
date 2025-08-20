@@ -75,6 +75,10 @@
     "skipChecks": {
       "type": "boolean",
       "default": false
+    },
+    "repoId": {
+      "type": "string",
+      "default": null
     }
   }
 }
