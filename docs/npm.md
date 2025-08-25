@@ -168,7 +168,8 @@ For Yarn workspaces, see the [release-it-yarn-workspaces][6] plugin.
 
 ## Trusted Publishing (OIDC)
 
-npm's [Trusted Publishing][10] uses OpenID Connect (OIDC) for secure, token-free publishing from CI/CD. This eliminates long-lived tokens and automatically generates provenance attestations.
+npm's [Trusted Publishing][7] uses OpenID Connect (OIDC) for secure, token-free publishing from CI/CD. This eliminates
+long-lived tokens and automatically generates provenance attestations.
 
 Note that none of these steps are optional.
 
@@ -180,7 +181,7 @@ Note that none of these steps are optional.
 
 ### Step 2: configure `release-it`
 
-When using Trusted Publishing, you **must** configure release-it to **skip npm authentication checks** (see [#1244][11]):
+When using Trusted Publishing, you **must** configure release-it to **skip npm authentication checks** (see [#1244][8]):
 
 ```json
 {
@@ -192,9 +193,9 @@ When using Trusted Publishing, you **must** configure release-it to **skip npm a
 
 ### Step 3: configure your publishing workflow
 
-You'll need to 
+You'll need to
 
-- add `id-token: write` and 
+- add `id-token: write` and
 - remove your `NODE_AUTH_TOKEN`
 - add a step to upgrade `npm` to at least v11.5.1
 
@@ -213,7 +214,7 @@ jobs:
         with:
           node-version: 'lts/*'
           registry-url: 'https://registry.npmjs.org'
-      
+
       # OIDC requires npm v11.5.1 or later
       # Node.js v20 comes with v10.8, so we need to update it:
       - run: npm install -g npm@latest
@@ -226,10 +227,10 @@ jobs:
 
 ## Miscellaneous
 
-- When `npm version` fails, the release is aborted (except when using [`--no-increment`][7]).
-- Learn how to [authenticate and publish from a CI/CD environment][8].
+- When `npm version` fails, the release is aborted (except when using [`--no-increment`][9]).
+- Learn how to [authenticate and publish from a CI/CD environment][10].
 - The `"private": true` setting in package.json will be respected, and `release-it` will skip this step.
-- Getting an `ENEEDAUTH` error while a manual `npm publish` works? Please see [#95][9].
+- Getting an `ENEEDAUTH` error while a manual `npm publish` works? Please see [#95][11].
 
 [1]: https://docs.npmjs.com/about-scopes
 [2]: https://registry.npmjs.org
@@ -237,8 +238,8 @@ jobs:
 [4]: https://github.com/release-it/bumper
 [5]: ./recipes/monorepo.md
 [6]: https://github.com/release-it-plugins/workspaces
-[7]: ../README.md#update-or-re-run-existing-releases
-[8]: ./ci.md#npm
-[9]: https://github.com/release-it/release-it/issues/95#issuecomment-344919384
-[10]: https://docs.npmjs.com/trusted-publishers
-[11]: https://github.com/release-it/release-it/issues/1244#issuecomment-3217898680
+[7]: https://docs.npmjs.com/trusted-publishers
+[8]: https://github.com/release-it/release-it/issues/1244#issuecomment-3217898680
+[9]: ../README.md#update-or-re-run-existing-releases
+[10]: ./ci.md#npm
+[11]: https://github.com/release-it/release-it/issues/95#issuecomment-344919384
