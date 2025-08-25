@@ -170,25 +170,33 @@ For Yarn workspaces, see the [release-it-yarn-workspaces][6] plugin.
 
 npm's [Trusted Publishing][10] uses OpenID Connect (OIDC) for secure, token-free publishing from CI/CD. This eliminates long-lived tokens and automatically generates provenance attestations.
 
-### Supported Providers
+Note that none of these steps are optional.
 
-- GitHub Actions (GitHub-hosted runners)
-- GitLab CI/CD (GitLab.com shared runners)
+### Step 1: configure npmjs.com
 
-### Configuration for release-it
+1. Log into npmjs.com
+2. Navigate to your package's "Settings" tab
+3. Click the button under **Select your publisher** and fill out the form.
 
-When using Trusted Publishing, configure release-it to skip npm authentication checks (see [#1244][11]):
+### Step 2: configure `release-it`
+
+When using Trusted Publishing, you **must** configure release-it to **skip npm authentication checks** (see [#1244][11]):
 
 ```json
 {
   "npm": {
-    "publish": false,
     "skipChecks": true
   }
 }
 ```
 
-Then handle publishing separately after release-it completes:
+### Step 3: configure your publishing workflow
+
+You'll need to 
+
+- add `id-token: write` and 
+- remove your `NODE_AUTH_TOKEN`
+- add a step to upgrade `npm` to at least v11.5.1
 
 ```yaml
 # GitHub Actions example
@@ -197,7 +205,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write # For git operations
-      id-token: write # For OIDC
+      id-token: write # < REQUIRED FOR OIDC
 
     steps:
       - uses: actions/checkout
@@ -206,27 +214,15 @@ jobs:
           node-version: 'lts/*'
           registry-url: 'https://registry.npmjs.org'
       
-      # Ensure npm supports trusted publishing
+      # OIDC requires npm v11.5.1 or later
+      # Node.js v20 comes with v10.8, so we need to update it:
       - run: npm install -g npm@latest
       - run: npm ci
-      
-      # Run release-it for versioning and git operations
       - run: npx release-it --ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
-      # Publish with OIDC (no NPM_TOKEN needed)
-      - run: npm publish
+          # Delete your NPM_TOKEN/NODE_AUTH_TOKEN -- you don't need it!
 ```
-
-### Setup Steps
-
-1. **Configure on npmjs.com**: Add trusted publisher in your package settings
-2. **Update CI config**: Add `id-token: write` permission (GitHub) or `id_tokens` config (GitLab)
-3. **Configure release-it**: Use `npm.skipChecks: true` to bypass authentication
-4. **Separate publish step**: Run `npm publish` after release-it
-
-For detailed setup instructions, see [npm's Trusted Publishing documentation][10].
 
 ## Miscellaneous
 
