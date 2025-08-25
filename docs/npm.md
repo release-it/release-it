@@ -166,6 +166,68 @@ Also see this [monorepo recipe][5].
 
 For Yarn workspaces, see the [release-it-yarn-workspaces][6] plugin.
 
+## Trusted Publishing (OIDC)
+
+npm's [Trusted Publishing][10] uses OpenID Connect (OIDC) for secure, token-free publishing from CI/CD. This eliminates long-lived tokens and automatically generates provenance attestations.
+
+### Supported Providers
+
+- GitHub Actions (GitHub-hosted runners)
+- GitLab CI/CD (GitLab.com shared runners)
+
+### Configuration for release-it
+
+When using Trusted Publishing, configure release-it to skip npm authentication checks (see [#1244][11]):
+
+```json
+{
+  "npm": {
+    "publish": false,
+    "skipChecks": true
+  }
+}
+```
+
+Then handle publishing separately after release-it completes:
+
+```yaml
+# GitHub Actions example
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # For git operations
+      id-token: write # For OIDC
+
+    steps:
+      - uses: actions/checkout
+      - uses: actions/setup-node
+        with:
+          node-version: 'lts/*'
+          registry-url: 'https://registry.npmjs.org'
+      
+      # Ensure npm supports trusted publishing
+      - run: npm install -g npm@latest
+      - run: npm ci
+      
+      # Run release-it for versioning and git operations
+      - run: npx release-it --ci
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      # Publish with OIDC (no NPM_TOKEN needed)
+      - run: npm publish
+```
+
+### Setup Steps
+
+1. **Configure on npmjs.com**: Add trusted publisher in your package settings
+2. **Update CI config**: Add `id-token: write` permission (GitHub) or `id_tokens` config (GitLab)
+3. **Configure release-it**: Use `npm.skipChecks: true` to bypass authentication
+4. **Separate publish step**: Run `npm publish` after release-it
+
+For detailed setup instructions, see [npm's Trusted Publishing documentation][10].
+
 ## Miscellaneous
 
 - When `npm version` fails, the release is aborted (except when using [`--no-increment`][7]).
@@ -182,3 +244,5 @@ For Yarn workspaces, see the [release-it-yarn-workspaces][6] plugin.
 [7]: ../README.md#update-or-re-run-existing-releases
 [8]: ./ci.md#npm
 [9]: https://github.com/release-it/release-it/issues/95#issuecomment-344919384
+[10]: https://docs.npmjs.com/trusted-publishers
+[11]: https://github.com/release-it/release-it/issues/1244#issuecomment-3217898680
