@@ -331,25 +331,24 @@ release-it programmatically][57] for example code.
 
 - [AdonisJs][58]
 - [Axios][59]
-- [Cal.com][60]
-- [Ember CLI][61]
-- [Halo][62]
-- [hosts][63]
-- [js-cookie][64]
-- [jQuery][65]
-- [Madge][66]
-- [Metalsmith][67]
+- [Chakra UI][60]
+- [Halo][61]
+- [hosts][62]
+- [js-cookie][63]
+- [jQuery][64]
+- [Madge][65]
+- [Metalsmith][66]
+- [n8n][67]
 - [Node-Redis][68]
 - [React Native Paper][69]
 - [Readability.js][70]
 - [Redux][71]
 - [Saleor][72]
 - [Semantic UI React][73]
-- [Shepherd][74]
-- [Tabler][75] + [tabler-icons][76]
-- Swagger ([swagger-ui][77] + [swagger-editor][78])
-- [Repositories that depend on release-it][79]
-- GitHub search for [path:\*\*/.release-it.json][80]
+- [tabler-icons][74]
+- Swagger ([swagger-ui][75] + [swagger-editor][76])
+- [Repositories that depend on release-it][77]
+- GitHub search for [path:\*\*/.release-it.json][78]
 
 ## Node.js version support
 
@@ -363,17 +362,17 @@ The latest major version is v19, supporting Node.js 20 and up:
 |    v16     |   v16   |
 |    v15     |   v14   |
 
-Also see [CHANGELOG.md][81] for dates and details.
+Also see [CHANGELOG.md][79] for dates and details.
 
 ## Links
 
-- See [CHANGELOG.md][81] for major/breaking updates, and [releases][82] for a detailed version history.
-- To **contribute**, please read [CONTRIBUTING.md][83] first.
-- Please [open an issue][84] if anything is missing or unclear in this documentation.
+- See [CHANGELOG.md][79] for major/breaking updates, and [releases][80] for a detailed version history.
+- To **contribute**, please read [CONTRIBUTING.md][81] first.
+- Please [open an issue][82] if anything is missing or unclear in this documentation.
 
 ## License
 
-[MIT][85]
+[MIT][83]
 
 Are you using release-it at work? Please consider [sponsoring me][14]!
 
@@ -436,29 +435,27 @@ Are you using release-it at work? Please consider [sponsoring me][14]!
 [57]: ./docs/recipes/programmatic.md
 [58]: https://github.com/adonisjs/core
 [59]: https://github.com/axios/axios
-[60]: https://github.com/calcom/cal.com
-[61]: https://github.com/ember-cli/ember-cli
-[62]: https://github.com/halo-dev/halo
-[63]: https://github.com/StevenBlack/hosts
-[64]: https://github.com/js-cookie/js-cookie
-[65]: https://github.com/jquery/jquery
-[66]: https://github.com/pahen/madge
-[67]: https://github.com/metalsmith/metalsmith
+[60]: https://github.com/chakra-ui/chakra-ui
+[61]: https://github.com/halo-dev/halo
+[62]: https://github.com/StevenBlack/hosts
+[63]: https://github.com/js-cookie/js-cookie
+[64]: https://github.com/jquery/jquery
+[65]: https://github.com/pahen/madge
+[66]: https://github.com/metalsmith/metalsmith
+[67]: https://github.com/n8n-io/n8n
 [68]: https://github.com/redis/node-redis
 [69]: https://github.com/callstack/react-native-paper
 [70]: https://github.com/mozilla/readability
 [71]: https://github.com/reduxjs/redux
 [72]: https://github.com/saleor/saleor
 [73]: https://github.com/Semantic-Org/Semantic-UI-React
-[74]: https://github.com/shipshapecode/shepherd
-[75]: https://github.com/tabler/tabler
-[76]: https://github.com/tabler/tabler-icons
-[77]: https://github.com/swagger-api/swagger-ui
-[78]: https://github.com/swagger-api/swagger-editor
-[79]: https://github.com/release-it/release-it/network/dependents
-[80]: https://github.com/search?q=path%3A**%2F.release-it.json&type=code
-[81]: ./CHANGELOG.md
-[82]: https://github.com/release-it/release-it/releases
-[83]: ./.github/CONTRIBUTING.md
-[84]: https://github.com/release-it/release-it/issues/new
-[85]: ./LICENSE
+[74]: https://github.com/tabler/tabler-icons
+[75]: https://github.com/swagger-api/swagger-ui
+[76]: https://github.com/swagger-api/swagger-editor
+[77]: https://github.com/release-it/release-it/network/dependents
+[78]: https://github.com/search?q=path%3A**%2F.release-it.json&type=code
+[79]: ./CHANGELOG.md
+[80]: https://github.com/release-it/release-it/releases
+[81]: ./.github/CONTRIBUTING.md
+[82]: https://github.com/release-it/release-it/issues/new
+[83]: ./LICENSE
