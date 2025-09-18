@@ -111,10 +111,7 @@ const sample = {
         special: true
       }
     },
-    mixed: [
-      { deep: { value: 100 } },
-      { deep: { value: 200 } }
-    ],
+    mixed: [{ deep: { value: 100 } }, { deep: { value: 200 } }]
   }
 };
 
