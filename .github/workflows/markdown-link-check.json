@@ -1,5 +1,5 @@
 {
-  "aliveStatusCodes": [0, 200, 429],
+  "aliveStatusCodes": [0, 200, 403, 429],
   "ignorePatterns": [
     {
       "pattern": "example.org"
