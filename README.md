@@ -315,6 +315,7 @@ Since v11, release-it can be extended in many, many ways. Here are some plugins:
 | [release-it-pnpm][16]                     | Add basic support for pnpm workspaces, integrates with [bumpp][50] and [changelogithub][51] |
 | [changesets-release-it-plugin][52]        | Combine [Changesets][53] changelog management with release-it                               |
 | [release-it-gitea][54]                    | Gitea plugin to create Gitea releases and upload attachments                                |
+| [release-it-beautiful-changelog][84]      | Generate beautiful changelogs using conventional commits by [@unjs/changelogen][45]         |
 
 Internally, release-it uses its own plugin architecture (for Git, GitHub, GitLab, npm).
 
@@ -459,3 +460,4 @@ Are you using release-it at work? Please consider [sponsoring me][14]!
 [81]: ./.github/CONTRIBUTING.md
 [82]: https://github.com/release-it/release-it/issues/new
 [83]: ./LICENSE
+[84]: https://github.com/mohammadGh/release-it-beautiful-changelog
