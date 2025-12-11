@@ -155,7 +155,14 @@ describe('npm', async () => {
     exec.mock.mockImplementationOnce(() => Promise.reject(new Error(whoamiError)), 1);
     exec.mock.mockImplementationOnce(() => Promise.reject(new Error(accessError)), 2);
     await runTasks(npmClient);
-    assert.equal(exec.mock.calls.at(-1).arguments[0].trim(), 'npm publish . --tag latest --workspaces=false');
+    assert.deepEqual(exec.mock.calls.at(-1).arguments[0], [
+      'npm',
+      'publish',
+      '.',
+      '--tag',
+      'latest',
+      '--workspaces=false'
+    ]);
   });
 
   test('should not throw if npm returns 400 for unsupported ping/whoami/access', async t => {
@@ -168,7 +175,14 @@ describe('npm', async () => {
     exec.mock.mockImplementationOnce(() => Promise.reject(new Error(whoamiError)), 1);
     exec.mock.mockImplementationOnce(() => Promise.reject(new Error(accessError)), 2);
     await runTasks(npmClient);
-    assert.equal(exec.mock.calls.at(-1).arguments[0].trim(), 'npm publish . --tag latest --workspaces=false');
+    assert.deepEqual(exec.mock.calls.at(-1).arguments[0], [
+      'npm',
+      'publish',
+      '.',
+      '--tag',
+      'latest',
+      '--workspaces=false'
+    ]);
   });
 
   test('should throw if user is not authenticated', async t => {
@@ -238,9 +252,27 @@ describe('npm', async () => {
     });
 
     assert.equal(exec.mock.callCount(), 3);
-    assert.equal(exec.mock.calls[0].arguments[0].trim(), 'npm publish . --tag latest --workspaces=false');
-    assert.equal(exec.mock.calls[1].arguments[0].trim(), 'npm publish . --tag latest --workspaces=false --otp 123');
-    assert.equal(exec.mock.calls[2].arguments[0].trim(), 'npm publish . --tag latest --workspaces=false --otp 123456');
+    assert.deepEqual(exec.mock.calls[0].arguments[0], ['npm', 'publish', '.', '--tag', 'latest', '--workspaces=false']);
+    assert.deepEqual(exec.mock.calls[1].arguments[0], [
+      'npm',
+      'publish',
+      '.',
+      '--tag',
+      'latest',
+      '--workspaces=false',
+      '--otp',
+      '123'
+    ]);
+    assert.deepEqual(exec.mock.calls[2].arguments[0], [
+      'npm',
+      'publish',
+      '.',
+      '--tag',
+      'latest',
+      '--workspaces=false',
+      '--otp',
+      '123456'
+    ]);
 
     assert.equal(npmClient.log.warn.mock.callCount(), 1);
     assert.equal(npmClient.log.warn.mock.calls[0].arguments[0], 'The provided OTP is incorrect or has expired.');
@@ -255,7 +287,14 @@ describe('npm', async () => {
       return Promise.resolve();
     });
     await runTasks(npmClient);
-    assert.equal(exec.mock.calls.at(-1).arguments[0].trim(), 'npm publish . --tag latest --workspaces=false');
+    assert.deepEqual(exec.mock.calls.at(-1).arguments[0], [
+      'npm',
+      'publish',
+      '.',
+      '--tag',
+      'latest',
+      '--workspaces=false'
+    ]);
   });
 
   test('should use extra publish arguments', async t => {
@@ -263,10 +302,15 @@ describe('npm', async () => {
     const npmClient = await factory(npm, { options });
     const exec = t.mock.method(npmClient.shell, 'exec', () => Promise.resolve());
     await runTasks(npmClient);
-    assert.equal(
-      exec.mock.calls.at(-1).arguments[0].trim(),
-      'npm publish . --tag latest --workspaces=false --registry=http://my-internal-registry.local'
-    );
+    assert.deepEqual(exec.mock.calls.at(-1).arguments[0], [
+      'npm',
+      'publish',
+      '.',
+      '--tag',
+      'latest',
+      '--workspaces=false',
+      '--registry=http://my-internal-registry.local'
+    ]);
   });
 
   test('should skip checks', async () => {
