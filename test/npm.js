@@ -155,7 +155,7 @@ describe('npm', async () => {
     exec.mock.mockImplementationOnce(() => Promise.reject(new Error(whoamiError)), 1);
     exec.mock.mockImplementationOnce(() => Promise.reject(new Error(accessError)), 2);
     await runTasks(npmClient);
-    assert.equal(exec.mock.calls.at(-1).arguments[0].trim(), 'npm publish . --tag latest');
+    assert.equal(exec.mock.calls.at(-1).arguments[0].trim(), 'npm publish . --tag latest --workspaces=false');
   });
 
   test('should not throw if npm returns 400 for unsupported ping/whoami/access', async t => {
@@ -168,7 +168,7 @@ describe('npm', async () => {
     exec.mock.mockImplementationOnce(() => Promise.reject(new Error(whoamiError)), 1);
     exec.mock.mockImplementationOnce(() => Promise.reject(new Error(accessError)), 2);
     await runTasks(npmClient);
-    assert.equal(exec.mock.calls.at(-1).arguments[0].trim(), 'npm publish . --tag latest');
+    assert.equal(exec.mock.calls.at(-1).arguments[0].trim(), 'npm publish . --tag latest --workspaces=false');
   });
 
   test('should throw if user is not authenticated', async t => {
@@ -238,9 +238,9 @@ describe('npm', async () => {
     });
 
     assert.equal(exec.mock.callCount(), 3);
-    assert.equal(exec.mock.calls[0].arguments[0].trim(), 'npm publish . --tag latest');
-    assert.equal(exec.mock.calls[1].arguments[0].trim(), 'npm publish . --tag latest --otp 123');
-    assert.equal(exec.mock.calls[2].arguments[0].trim(), 'npm publish . --tag latest --otp 123456');
+    assert.equal(exec.mock.calls[0].arguments[0].trim(), 'npm publish . --tag latest --workspaces=false');
+    assert.equal(exec.mock.calls[1].arguments[0].trim(), 'npm publish . --tag latest --workspaces=false --otp 123');
+    assert.equal(exec.mock.calls[2].arguments[0].trim(), 'npm publish . --tag latest --workspaces=false --otp 123456');
 
     assert.equal(npmClient.log.warn.mock.callCount(), 1);
     assert.equal(npmClient.log.warn.mock.calls[0].arguments[0], 'The provided OTP is incorrect or has expired.');
@@ -255,7 +255,7 @@ describe('npm', async () => {
       return Promise.resolve();
     });
     await runTasks(npmClient);
-    assert.equal(exec.mock.calls.at(-1).arguments[0].trim(), 'npm publish . --tag latest');
+    assert.equal(exec.mock.calls.at(-1).arguments[0].trim(), 'npm publish . --tag latest --workspaces=false');
   });
 
   test('should use extra publish arguments', async t => {
@@ -265,7 +265,7 @@ describe('npm', async () => {
     await runTasks(npmClient);
     assert.equal(
       exec.mock.calls.at(-1).arguments[0].trim(),
-      'npm publish . --tag latest --registry=http://my-internal-registry.local'
+      'npm publish . --tag latest --workspaces=false --registry=http://my-internal-registry.local'
     );
   });
 
@@ -306,8 +306,8 @@ describe('npm', async () => {
       'npm whoami --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
       'npm show @my-scope/my-pkg@latest version --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
       'npm --version',
-      'npm version 1.0.1 --no-git-tag-version',
-      'npm publish . --tag latest --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/'
+      'npm version 1.0.1 --no-git-tag-version --workspaces=false',
+      'npm publish . --tag latest --workspaces=false --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/'
     ]);
   });
 
@@ -322,7 +322,7 @@ describe('npm', async () => {
       if (command === 'npm whoami') return Promise.resolve('john');
       const re = /npm access (list collaborators --json|ls-collaborators) @my-scope\/my-pkg/;
       if (re.test(command)) return Promise.resolve(JSON.stringify({ john: ['write'] }));
-      if (command === 'npm version 1.0.1 --no-git-tag-version')
+      if (command === 'npm version 1.0.1 --no-git-tag-version --workspaces=false')
         return Promise.reject('npm ERR! Version not changed, might want --allow-same-version');
       return Promise.resolve();
     });
@@ -334,7 +334,7 @@ describe('npm', async () => {
       'npm whoami',
       'npm show @my-scope/my-pkg@latest version',
       'npm --version',
-      'npm version 1.0.1 --no-git-tag-version'
+      'npm version 1.0.1 --no-git-tag-version --workspaces=false'
     ]);
   });
 

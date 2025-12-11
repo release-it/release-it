@@ -140,7 +140,7 @@ describe('tasks', () => {
     const stdout = childProcess.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
     assert.equal(stdout.trim(), '1.0.0');
     const npmArgs = getArgs(exec, 'npm');
-    assert.equal(npmArgs[5], 'npm version 1.3.0 --no-git-tag-version');
+    assert.equal(npmArgs[5], 'npm version 1.3.0 --no-git-tag-version --workspaces=false');
   });
 
   test('should ignore version in pkg.version and use git tag instead', async () => {
@@ -187,8 +187,8 @@ describe('tasks', () => {
       `npm show ${pkgName}@latest version`,
       'npm --version',
       `npm access ${npmMajorVersion >= 9 ? 'list collaborators --json' : 'ls-collaborators'} ${pkgName}`,
-      'npm version 1.0.1 --no-git-tag-version',
-      'npm publish . --tag latest'
+      'npm version 1.0.1 --no-git-tag-version --workspaces=false',
+      'npm publish . --tag latest --workspaces=false'
     ]);
 
     assert(log.obtrusive.mock.calls[0].arguments[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
@@ -320,8 +320,8 @@ describe('tasks', () => {
       `npm show ${pkgName}@latest version`,
       'npm --version',
       `npm access ${npmMajorVersion >= 9 ? 'list collaborators --json' : 'ls-collaborators'} ${pkgName}`,
-      'npm version 1.1.0-alpha.0 --no-git-tag-version',
-      'npm publish . --tag alpha'
+      'npm version 1.1.0-alpha.0 --no-git-tag-version --workspaces=false',
+      'npm publish . --tag alpha --workspaces=false'
     ]);
 
     const commitMessage = childProcess.execSync('git log --oneline --format=%B -n 1 HEAD', {
@@ -361,8 +361,8 @@ describe('tasks', () => {
       `npm show ${pkgName}@latest version`,
       'npm --version',
       `npm access ${npmMajorVersion >= 9 ? 'list collaborators --json' : 'ls-collaborators'} ${pkgName}`,
-      'npm version 2.0.0-0 --no-git-tag-version',
-      'npm publish . --tag next'
+      'npm version 2.0.0-0 --no-git-tag-version --workspaces=false',
+      'npm publish . --tag next --workspaces=false'
     ]);
 
     const stdout = childProcess.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
@@ -383,7 +383,7 @@ describe('tasks', () => {
     await runTasks({}, container);
 
     const npmArgs = getArgs(exec, 'npm');
-    assert.deepEqual(npmArgs, ['npm version 1.0.1 --no-git-tag-version']);
+    assert.deepEqual(npmArgs, ['npm version 1.0.1 --no-git-tag-version --workspaces=false']);
     assert(log.obtrusive.mock.calls[0].arguments[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
     assert.equal(log.warn.length, 0);
     assert.match(log.log.mock.calls[0].arguments[0], /Done \(in [0-9]+s\.\)/);
@@ -404,7 +404,7 @@ describe('tasks', () => {
     await runTasks({}, container);
 
     const npmArgs = getArgs(exec, 'npm');
-    assert.equal(npmArgs[6], 'npm publish . --tag latest');
+    assert.equal(npmArgs[6], 'npm publish . --tag latest --workspaces=false');
   });
 
   test('should use pkg.publishConfig.registry', async t => {
