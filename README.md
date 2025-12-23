@@ -44,7 +44,7 @@ npm install -D release-it
     "release": "release-it"
   },
   "devDependencies": {
-    "release-it": "^16.1.0"
+    "release-it": "^19.0.0"
   }
 }
 ```
@@ -99,7 +99,7 @@ Here's a quick example `.release-it.json`:
 
 ```json
 {
-  "$schema": "https://unpkg.com/release-it@17/schema/release-it.json",
+  "$schema": "https://unpkg.com/release-it@19/schema/release-it.json",
   "git": {
     "commitMessage": "chore: release v${version}"
   },
@@ -146,26 +146,32 @@ remote.
 
 → See [Git][29] for more details.
 
+## npmjs.com Releases
+
+As of July 2025, GitHub and GitLab CI workflows can now use npm's [Trusted Publishing][30] OpenID Connect (OIDC)
+integration for secure, token-free publishing from CI/CD. This eliminates long-lived tokens and automatically generates
+provenance attestations. See [docs/npm.md][31] for details.
+
 ## GitHub Releases
 
 GitHub projects can have releases attached to Git tags, containing release notes and assets. There are two ways to add
-[GitHub releases][30] in your release-it flow:
+[GitHub releases][32] in your release-it flow:
 
 1. Automated (requires a `GITHUB_TOKEN`)
 2. Manual (using the GitHub web interface with pre-populated fields)
 
-→ See [GitHub Releases][31] for more details.
+→ See [GitHub Releases][33] for more details.
 
 ## GitLab Releases
 
 GitLab projects can have releases attached to Git tags, containing release notes and assets. To automate [GitLab
-releases][32]:
+releases][34]:
 
 - Configure `gitlab.release: true`
-- Obtain a [personal access token][33] (release-it only needs the "api" scope).
-- Make sure the token is [available as an environment variable][34].
+- Obtain a [personal access token][35] (release-it needs the `api` and `self_rotate` scopes).
+- Make sure the token is [available as an environment variable][36].
 
-→ See [GitLab Releases][35] for more details.
+→ See [GitLab Releases][37] for more details.
 
 ## Changelog
 
@@ -181,10 +187,11 @@ message conventions. Plugins are available for:
 - auto-changelog
 - Conventional Changelog
 - Keep A Changelog
+- git-cliff
 
 To print the changelog without releasing anything, add the `--changelog` flag.
 
-→ See [Changelog][36] for more details.
+→ See [Changelog][38] for more details.
 
 ## Publish to npm
 
@@ -199,7 +206,7 @@ With release-it, it's easy to create pre-releases: a version of your software th
 it's not in the stable semver range yet. Often "alpha", "beta", and "rc" (release candidate) are used as identifiers for
 pre-releases. An example pre-release version is `2.0.0-beta.0`.
 
-→ See [Manage pre-releases][37] for more details.
+→ See [Manage pre-releases][39] for more details.
 
 ## Update or re-run existing releases
 
@@ -229,7 +236,7 @@ Use the optional `:plugin` part in the middle to hook into a life cycle method e
 The core plugins include `version`, `git`, `npm`, `github`, `gitlab`.
 
 Note that hooks like `after:git:release` will not run when either the `git push` failed, or when it is configured not to
-be executed (e.g. `git.push: false`). See [execution order][38] for more details on execution order of plugin lifecycle
+be executed (e.g. `git.push: false`). See [execution order][40] for more details on execution order of plugin lifecycle
 methods.
 
 All commands can use configuration variables (like template strings). An array of commands can also be provided, they
@@ -279,7 +286,7 @@ Using Inquirer.js inside custom hook scripts might cause issues (since release-i
 
 Use `--dry-run` to show the interactivity and the commands it _would_ execute.
 
-→ See [Dry Runs][39] for more details.
+→ See [Dry Runs][41] for more details.
 
 ## Troubleshooting & debugging
 
@@ -297,66 +304,76 @@ Since v11, release-it can be extended in many, many ways. Here are some plugins:
 | ----------------------------------------- | ------------------------------------------------------------------------------------------- |
 | [@release-it/bumper][26]                  | Read & write the version from/to any file                                                   |
 | [@release-it/conventional-changelog][27]  | Provides recommended bump, conventional-changelog, and updates `CHANGELOG.md`               |
-| [@release-it/keep-a-changelog][40]        | Maintain CHANGELOG.md using the Keep a Changelog standards                                  |
-| [@release-it-plugins/lerna-changelog][41] | Integrates lerna-changelog into the release-it pipeline                                     |
-| [@jcamp-code/release-it-changelogen][42]  | Use [@unjs/changelogen][43] for versioning and changelog                                    |
-| [@release-it-plugins/workspaces][44]      | Releases each of your projects configured workspaces                                        |
+| [@release-it/keep-a-changelog][42]        | Maintain CHANGELOG.md using the Keep a Changelog standards                                  |
+| [@release-it-plugins/lerna-changelog][43] | Integrates lerna-changelog into the release-it pipeline                                     |
+| [@jcamp-code/release-it-changelogen][44]  | Use [@unjs/changelogen][45] for versioning and changelog                                    |
+| [@release-it-plugins/workspaces][46]      | Releases each of your projects configured workspaces                                        |
 | [release-it-calver-plugin][28]            | Enables Calendar Versioning (calver) with release-it                                        |
-| [@grupoboticario/news-fragments][45]      | An easy way to generate your changelog file                                                 |
-| [@j-ulrich/release-it-regex-bumper][46]   | Regular expression based version read/write plugin for release-it                           |
-| [@jcamp-code/release-it-dotnet][47]       | Use .csproj or .props file for versioning, automate NuGet publishing                        |
-| [release-it-pnpm][16]                     | Add basic support for pnpm workspaces, integrates with [bumpp][48] and [changelogithub][49] |
-| [changesets-release-it-plugin][50]        | Combine [Changesets][51] changelog management with release-it                               |
+| [@grupoboticario/news-fragments][47]      | An easy way to generate your changelog file                                                 |
+| [@j-ulrich/release-it-regex-bumper][48]   | Regular expression based version read/write plugin for release-it                           |
+| [@jcamp-code/release-it-dotnet][49]       | Use .csproj or .props file for versioning, automate NuGet publishing                        |
+| [release-it-pnpm][16]                     | Add basic support for pnpm workspaces, integrates with [bumpp][50] and [changelogithub][51] |
+| [changesets-release-it-plugin][52]        | Combine [Changesets][53] changelog management with release-it                               |
+| [release-it-gitea][54]                    | Gitea plugin to create Gitea releases and upload attachments                                |
+| [release-it-beautiful-changelog][55]      | Generate beautiful changelogs using conventional commits by [@unjs/changelogen][45]         |
 
 Internally, release-it uses its own plugin architecture (for Git, GitHub, GitLab, npm).
 
-→ See all [release-it plugins on npm][52].
+→ See all [release-it plugins on npm][56].
 
-→ See [plugins][53] for documentation to write plugins.
+→ See [plugins][57] for documentation to write plugins.
 
 ## Use release-it programmatically
 
 While mostly used as a CLI tool, release-it can be used as a dependency to integrate in your own scripts. See [use
-release-it programmatically][54] for example code.
+release-it programmatically][58] for example code.
 
 ## Projects using release-it
 
-- [AdonisJs][55]
-- [Axios][56]
-- [Cal.com][57]
-- [Ember CLI][58]
-- [Halo][59]
-- [hosts][60]
-- [js-cookie][61]
-- [jQuery][62]
-- [Madge][63]
-- [Metalsmith][64]
-- [Node-Redis][65]
-- [React Native Paper][66]
-- [Readability.js][67]
-- [Redux][68]
-- [Saleor][69]
-- [Semantic UI React][70]
-- [Shepherd][71]
-- [Tabler][72] + [tabler-icons][73]
-- Swagger ([swagger-ui][74] + [swagger-editor][75])
-- [Repositories that depend on release-it][76]
-- GitHub search for [path:\*\*/.release-it.json][77]
+- [AdonisJs][59]
+- [Axios][60]
+- [Chakra UI][61]
+- [Halo][62]
+- [hosts][63]
+- [js-cookie][64]
+- [jQuery][65]
+- [Madge][66]
+- [Metalsmith][67]
+- [n8n][68]
+- [Node-Redis][69]
+- [React Native Paper][70]
+- [Readability.js][71]
+- [Redux][72]
+- [Saleor][73]
+- [Semantic UI React][74]
+- [tabler-icons][75]
+- Swagger ([swagger-ui][76] + [swagger-editor][77])
+- [Repositories that depend on release-it][78]
+- GitHub search for [path:\*\*/.release-it.json][79]
 
-## Legacy Node.js
+## Node.js version support
 
-The latest major version is v17, supporting Node.js 18 and up (as Node.js v16 is EOL). The previous major version was
-v16, supporting Node.js 16. Use release-it v15 for environments running Node.js v14. Also see [CHANGELOG.md][78].
+The latest major version is v19, supporting Node.js 20 and up:
+
+| release-it | Node.js |
+| :--------: | :-----: |
+|    v19     |   v20   |
+|    v18     |   v20   |
+|    v17     |   v18   |
+|    v16     |   v16   |
+|    v15     |   v14   |
+
+Also see [CHANGELOG.md][80] for dates and details.
 
 ## Links
 
-- See [CHANGELOG.md][78] for major/breaking updates, and [releases][79] for a detailed version history.
-- To **contribute**, please read [CONTRIBUTING.md][80] first.
-- Please [open an issue][81] if anything is missing or unclear in this documentation.
+- See [CHANGELOG.md][80] for major/breaking updates, and [releases][81] for a detailed version history.
+- To **contribute**, please read [CONTRIBUTING.md][82] first.
+- Please [open an issue][83] if anything is missing or unclear in this documentation.
 
 ## License
 
-[MIT][82]
+[MIT][84]
 
 Are you using release-it at work? Please consider [sponsoring me][14]!
 
@@ -389,56 +406,58 @@ Are you using release-it at work? Please consider [sponsoring me][14]!
 [27]: https://github.com/release-it/conventional-changelog
 [28]: https://github.com/casmith/release-it-calver-plugin
 [29]: ./docs/git.md
-[30]: https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases
-[31]: ./docs/github-releases.md
-[32]: https://docs.gitlab.com/ce/user/project/releases/
-[33]: https://gitlab.com/profile/personal_access_tokens
-[34]: ./docs/environment-variables.md
-[35]: ./docs/gitlab-releases.md
-[36]: ./docs/changelog.md
-[37]: ./docs/pre-releases.md
-[38]: ./docs/plugins.md#execution-order
-[39]: ./docs/dry-runs.md
-[40]: https://github.com/release-it/keep-a-changelog
-[41]: https://github.com/release-it-plugins/lerna-changelog
-[42]: https://github.com/jcamp-code/release-it-changelogen
-[43]: https://github.com/unjs/changelogen
-[44]: https://github.com/release-it-plugins/workspaces
-[45]: https://github.com/grupoboticario/news-fragments
-[46]: https://github.com/j-ulrich/release-it-regex-bumper
-[47]: https://github.com/jcamp-code/release-it-dotnet
-[48]: https://github.com/antfu/bumpp
-[49]: https://github.com/antfu/changelogithub
-[50]: https://www.npmjs.com/package/changesets-release-it-plugin
-[51]: https://github.com/changesets/changesets
-[52]: https://www.npmjs.com/search?q=keywords:release-it-plugin
-[53]: ./docs/plugins.md
-[54]: ./docs/recipes/programmatic.md
-[55]: https://github.com/adonisjs/core
-[56]: https://github.com/axios/axios
-[57]: https://github.com/calcom/cal.com
-[58]: https://github.com/ember-cli/ember-cli
-[59]: https://github.com/halo-dev/halo
-[60]: https://github.com/StevenBlack/hosts
-[61]: https://github.com/js-cookie/js-cookie
-[62]: https://github.com/jquery/jquery
-[63]: https://github.com/pahen/madge
-[64]: https://github.com/metalsmith/metalsmith
-[65]: https://github.com/redis/node-redis
-[66]: https://github.com/callstack/react-native-paper
-[67]: https://github.com/mozilla/readability
-[68]: https://github.com/reduxjs/redux
-[69]: https://github.com/saleor/saleor
-[70]: https://github.com/Semantic-Org/Semantic-UI-React
-[71]: https://github.com/shipshapecode/shepherd
-[72]: https://github.com/tabler/tabler
-[73]: https://github.com/tabler/tabler-icons
-[74]: https://github.com/swagger-api/swagger-ui
-[75]: https://github.com/swagger-api/swagger-editor
-[76]: https://github.com/release-it/release-it/network/dependents
-[77]: https://github.com/search?q=path%3A**%2F.release-it.json&type=code
-[78]: ./CHANGELOG.md
-[79]: https://github.com/release-it/release-it/releases
-[80]: ./.github/CONTRIBUTING.md
-[81]: https://github.com/release-it/release-it/issues/new
-[82]: ./LICENSE
+[30]: https://docs.npmjs.com/trusted-publishers
+[31]: ./docs/npm.md#trusted-publishing-oidc
+[32]: https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases
+[33]: ./docs/github-releases.md
+[34]: https://docs.gitlab.com/api/releases/
+[35]: https://gitlab.com/profile/personal_access_tokens
+[36]: ./docs/environment-variables.md
+[37]: ./docs/gitlab-releases.md
+[38]: ./docs/changelog.md
+[39]: ./docs/pre-releases.md
+[40]: ./docs/plugins.md#execution-order
+[41]: ./docs/dry-runs.md
+[42]: https://github.com/release-it/keep-a-changelog
+[43]: https://github.com/release-it-plugins/lerna-changelog
+[44]: https://github.com/jcamp-code/release-it-changelogen
+[45]: https://github.com/unjs/changelogen
+[46]: https://github.com/release-it-plugins/workspaces
+[47]: https://github.com/grupoboticario/news-fragments
+[48]: https://github.com/j-ulrich/release-it-regex-bumper
+[49]: https://github.com/jcamp-code/release-it-dotnet
+[50]: https://github.com/antfu/bumpp
+[51]: https://github.com/antfu/changelogithub
+[52]: https://www.npmjs.com/package/changesets-release-it-plugin
+[53]: https://github.com/changesets/changesets
+[54]: https://github.com/lib-pack/release-it-gitea
+[55]: https://github.com/mohammadGh/release-it-beautiful-changelog
+[56]: https://www.npmjs.com/search?q=keywords:release-it-plugin
+[57]: ./docs/plugins.md
+[58]: ./docs/recipes/programmatic.md
+[59]: https://github.com/adonisjs/core
+[60]: https://github.com/axios/axios
+[61]: https://github.com/chakra-ui/chakra-ui
+[62]: https://github.com/halo-dev/halo
+[63]: https://github.com/StevenBlack/hosts
+[64]: https://github.com/js-cookie/js-cookie
+[65]: https://github.com/jquery/jquery
+[66]: https://github.com/pahen/madge
+[67]: https://github.com/metalsmith/metalsmith
+[68]: https://github.com/n8n-io/n8n
+[69]: https://github.com/redis/node-redis
+[70]: https://github.com/callstack/react-native-paper
+[71]: https://github.com/mozilla/readability
+[72]: https://github.com/reduxjs/redux
+[73]: https://github.com/saleor/saleor
+[74]: https://github.com/Semantic-Org/Semantic-UI-React
+[75]: https://github.com/tabler/tabler-icons
+[76]: https://github.com/swagger-api/swagger-ui
+[77]: https://github.com/swagger-api/swagger-editor
+[78]: https://github.com/release-it/release-it/network/dependents
+[79]: https://github.com/search?q=path%3A**%2F.release-it.json&type=code
+[80]: ./CHANGELOG.md
+[81]: https://github.com/release-it/release-it/releases
+[82]: ./.github/CONTRIBUTING.md
+[83]: https://github.com/release-it/release-it/issues/new
+[84]: ./LICENSE

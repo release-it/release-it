@@ -25,16 +25,16 @@ jobs:
           - windows-latest
           - macos-latest
         node:
-          - 18
           - 20
           - 22
+          - 24
 
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.os }} (Node v${{ matrix.node }})
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node }}
       - run: git config --global user.name User

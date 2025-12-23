@@ -1,32 +1,40 @@
-import fs from 'node:fs';
+import { appendFileSync, mkdirSync, mkdtempSync, promises } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import sh from 'shelljs';
+import childProcess from 'node:child_process';
+import { execOpts } from '../../lib/util.js';
 
 const mkTmpDir = () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'release-it-'));
+  const dir = mkdtempSync(path.join(os.tmpdir(), 'release-it-'));
   return dir;
 };
 
-const readFile = file => fs.promises.readFile(path.resolve(file), 'utf8');
+const readFile = file => promises.readFile(path.resolve(file), 'utf8');
 
 const gitAdd = (content, filePath, message) => {
-  const pathSegments = filePath.split('/').filter(Boolean);
-  pathSegments.pop();
-  if (pathSegments.length) {
-    sh.mkdir('-p', pathSegments.join('/'));
-  }
-  sh.ShellString(content).toEnd(filePath);
-  sh.exec(`git add ${filePath}`);
-  const { stdout } = sh.exec(`git commit -m "${message}"`);
+  appendFile(content, filePath);
+  childProcess.execSync(`git add ${filePath}`, execOpts);
+  const stdout = childProcess.execSync(`git commit -m "${message}"`, { encoding: 'utf-8' });
   const match = stdout.match(/\[.+([a-z0-9]{7})\]/);
   return match ? match[1] : null;
 };
 
-const getArgs = (args, prefix) =>
-  args
-    .map(args => (typeof args[0] !== 'string' ? args[0].join(' ') : args[0]))
+const getArgs = (fn, prefix) =>
+  fn.mock.calls
+    .map(call => call.arguments[0])
+    .map(arg => (typeof arg !== 'string' ? arg.join(' ') : arg))
     .filter(cmd => cmd.startsWith(prefix))
     .map(cmd => cmd.trim());
 
-export { mkTmpDir, readFile, gitAdd, getArgs };
+const appendFile = (content, filePath, cwd) => {
+  filePath = path.resolve(cwd ?? '', filePath);
+  const dirPath = path.dirname(filePath);
+
+  if (dirPath) {
+    mkdirSync(dirPath, { mode: parseInt('0777', 8), recursive: true });
+  }
+
+  appendFileSync(filePath, content);
+};
+
+export { mkTmpDir, readFile, gitAdd, getArgs, appendFile };

@@ -14,6 +14,24 @@
       "default": "Release ${version}"
     },
     "releaseNotes": {
+      "anyOf": [
+        { "type": ["string", "null"] },
+        {
+          "type": "object",
+          "properties": {
+            "commit": {
+              "type": "string"
+            },
+            "excludeMatches": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": []
+            }
+          }
+        }
+      ],
       "default": null
     },
     "autoGenerate": {

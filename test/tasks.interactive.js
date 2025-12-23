@@ -1,215 +1,274 @@
 import path from 'node:path';
-import test from 'ava';
-import sh from 'shelljs';
-import _ from 'lodash';
-import sinon from 'sinon';
-import Log from '../lib/log.js';
-import Spinner from '../lib/spinner.js';
+import { renameSync } from 'node:fs';
+import childProcess from 'node:child_process';
+import test, { afterEach, after, before, beforeEach, describe, mock } from 'node:test';
+import assert from 'node:assert/strict';
 import Prompt from '../lib/prompt.js';
 import Config from '../lib/config.js';
 import runTasks from '../lib/index.js';
 import Git from '../lib/plugin/git/Git.js';
-import { mkTmpDir, gitAdd } from './util/helpers.js';
+import { execOpts } from '../lib/util.js';
+import { mkTmpDir, gitAdd, getArgs } from './util/helpers.js';
 import ShellStub from './stub/shell.js';
 import { interceptPublish as interceptGitLabPublish } from './stub/gitlab.js';
 import { interceptCreate as interceptGitHubCreate } from './stub/github.js';
-import { factory } from './util/index.js';
+import { factory, LogStub, SpinnerStub } from './util/index.js';
+import { mockFetch } from './util/mock.js';
+import { createTarBlobByRawContents } from './util/fetch.js';
 
-const noop = Promise.resolve();
+describe('tasks.interactive', () => {
+  const [mocker, github, gitlab] = mockFetch(['https://api.github.com', 'https://gitlab.com/api/v4']);
 
-const sandbox = sinon.createSandbox();
+  before(() => {
+    mocker.mockGlobal();
+  });
 
-const testConfig = {
-  ci: false,
-  config: false
-};
+  afterEach(() => {
+    mocker.clearAll();
+    prompt.mock.resetCalls();
+    log.resetCalls();
+  });
 
-const log = sandbox.createStubInstance(Log);
-const spinner = sandbox.createStubInstance(Spinner);
-spinner.show.callsFake(({ enabled = true, task }) => (enabled ? task() : noop));
+  after(() => {
+    mocker.unmockGlobal();
+  });
 
-const defaultInquirer = {
-  prompt: sandbox.stub().callsFake(([options]) => {
-    const answer = options.type === 'list' ? options.choices[0].value : options.name === 'version' ? '0.0.1' : true;
-    return { [options.name]: answer };
-  })
-};
-
-const getContainer = (options, inquirer = defaultInquirer) => {
-  const config = new Config(Object.assign({}, testConfig, options));
-  const shell = new ShellStub({ container: { log, config } });
-  const prompt = new Prompt({ container: { inquirer } });
-  return {
-    log,
-    spinner,
-    config,
-    shell,
-    prompt
+  const testConfig = {
+    ci: false,
+    config: false
   };
-};
 
-const getHooks = plugins => {
-  const hooks = {};
-  ['before', 'after'].forEach(prefix => {
-    plugins.forEach(ns => {
-      ['init', 'beforeBump', 'bump', 'beforeRelease', 'release', 'afterRelease'].forEach(lifecycle => {
-        hooks[`${prefix}:${lifecycle}`] = `echo ${prefix}:${lifecycle}`;
-        hooks[`${prefix}:${ns}:${lifecycle}`] = `echo ${prefix}:${ns}:${lifecycle}`;
+  const getHooks = plugins => {
+    const hooks = {};
+    ['before', 'after'].forEach(prefix => {
+      plugins.forEach(ns => {
+        ['init', 'beforeBump', 'bump', 'beforeRelease', 'release', 'afterRelease'].forEach(lifecycle => {
+          hooks[`${prefix}:${lifecycle}`] = `echo ${prefix}:${lifecycle}`;
+          hooks[`${prefix}:${ns}:${lifecycle}`] = `echo ${prefix}:${ns}:${lifecycle}`;
+        });
       });
     });
-  });
-  return hooks;
-};
+    return hooks;
+  };
 
-test.before(t => {
-  t.timeout(90 * 1000);
-});
+  const log = new LogStub();
+  const spinner = new SpinnerStub();
 
-test.serial.beforeEach(t => {
-  const bare = mkTmpDir();
-  const target = mkTmpDir();
-  sh.pushd('-q', bare);
-  sh.exec(`git init --bare .`);
-  sh.exec(`git clone ${bare} ${target}`);
-  sh.pushd('-q', target);
-  gitAdd('line', 'file', 'Add file');
-  t.context = { bare, target };
-});
-
-test.serial.afterEach(() => {
-  sandbox.resetHistory();
-});
-
-test.serial('should run tasks without throwing errors', async t => {
-  sh.mv('.git', 'foo');
-  const { name, latestVersion, version } = await runTasks({}, getContainer());
-  t.is(version, '0.0.1');
-  t.true(log.obtrusive.firstCall.args[0].includes(`release ${name} (currently at ${latestVersion})`));
-  t.regex(log.log.lastCall.args[0], /Done \(in [0-9]+s\.\)/);
-});
-
-test.serial('should not run hooks for disabled release-cycle methods', async t => {
-  const hooks = getHooks(['version', 'git', 'github', 'gitlab', 'npm']);
-
-  const container = getContainer({
-    hooks,
-    git: { push: false },
-    github: { release: false },
-    gitlab: { release: false },
-    npm: { publish: false }
+  const prompt = mock.fn(([options]) => {
+    const answer = options.type === 'list' ? options.choices[0].value : options.name === 'version' ? '0.0.1' : true;
+    return { [options.name]: answer };
   });
 
-  const exec = sandbox.spy(container.shell, 'execFormattedCommand');
+  const defaultInquirer = { prompt };
 
-  await runTasks({}, container);
+  const getContainer = (options, inquirer = defaultInquirer) => {
+    const config = new Config(Object.assign({}, testConfig, options));
+    const shell = new ShellStub({ container: { log, config } });
+    const prompt = new Prompt({ container: { inquirer } });
+    return { log, spinner, config, shell, prompt };
+  };
 
-  const commands = _.flatten(exec.args).filter(arg => typeof arg === 'string' && arg.startsWith('echo'));
+  let bare;
+  let target;
+  beforeEach(async () => {
+    bare = mkTmpDir();
+    target = mkTmpDir();
+    process.chdir(bare);
+    childProcess.execSync(`git init --bare .`, execOpts);
+    childProcess.execSync(`git clone ${bare} ${target}`, execOpts);
+    process.chdir(target);
+    gitAdd('line', 'file', 'Add file');
+  });
 
-  t.true(commands.includes('echo before:init'));
-  t.true(commands.includes('echo after:afterRelease'));
+  test('should run tasks without throwing errors', async () => {
+    renameSync('.git', 'foo');
+    const { name, latestVersion, version } = await runTasks({}, getContainer());
+    assert.equal(version, '0.0.1');
+    assert(log.obtrusive.mock.calls[0].arguments[0].includes(`release ${name} (currently at ${latestVersion})`));
+    assert.match(log.log.mock.calls.at(-1).arguments[0], /Done \(in [0-9]+s\.\)/);
+  });
 
-  t.false(commands.includes('echo after:git:release'));
-  t.false(commands.includes('echo after:github:release'));
-  t.false(commands.includes('echo after:gitlab:release'));
-  t.false(commands.includes('echo after:npm:release'));
-});
+  test('should run tasks using extended configuration', async t => {
+    renameSync('.git', 'foo');
 
-test.serial('should not run hooks for cancelled release-cycle methods', async t => {
-  const { target } = t.context;
-  const pkgName = path.basename(target);
-  gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
-  sh.exec('git tag 1.0.0');
+    const validationExtendedConfiguration = "echo 'extended_configuration'";
 
-  const hooks = getHooks(['version', 'git', 'github', 'gitlab', 'npm']);
-  const inquirer = { prompt: sandbox.stub().callsFake(([options]) => ({ [options.name]: false })) };
+    github.head('/repos/release-it/release-it-configuration/tarball/main', {
+      status: 200,
+      headers: {}
+    });
 
-  const container = getContainer(
-    {
+    github.get('/repos/release-it/release-it-configuration/tarball/main', {
+      status: 200,
+      body: await new Response(
+        createTarBlobByRawContents({
+          '.release-it.json': JSON.stringify({
+            hooks: {
+              'before:init': validationExtendedConfiguration
+            }
+          })
+        })
+      ).arrayBuffer()
+    });
+
+    const config = {
+      $schema: 'https://unpkg.com/release-it@19/schema/release-it.json',
+      extends: 'github:release-it/release-it-configuration',
+      config: true
+    };
+
+    const container = getContainer(config);
+
+    const exec = t.mock.method(container.shell, 'execFormattedCommand');
+
+    const { name, latestVersion, version } = await runTasks({}, container);
+
+    const commands = getArgs(exec, 'echo');
+
+    assert(commands.includes(validationExtendedConfiguration));
+
+    assert.equal(version, '0.0.1');
+    assert(log.obtrusive.mock.calls[0].arguments[0].includes(`release ${name} (currently at ${latestVersion})`));
+    assert.match(log.log.mock.calls.at(-1).arguments[0], /Done \(in [0-9]+s\.\)/);
+  });
+
+  test('should run tasks not using extended configuration as it is not a string', async () => {
+    renameSync('.git', 'foo');
+
+    const config = {
+      $schema: 'https://unpkg.com/release-it@19/schema/release-it.json',
+      extends: false
+    };
+
+    const container = getContainer(config);
+
+    const { name, latestVersion, version } = await runTasks({}, container);
+
+    assert.equal(version, '0.0.1');
+    assert(log.obtrusive.mock.calls[0].arguments[0].includes(`release ${name} (currently at ${latestVersion})`));
+    assert.match(log.log.mock.calls.at(-1).arguments[0], /Done \(in [0-9]+s\.\)/);
+  });
+
+  test('should not run hooks for disabled release-cycle methods', async t => {
+    const hooks = getHooks(['version', 'git', 'github', 'gitlab', 'npm']);
+
+    const container = getContainer({
+      hooks,
+      git: { push: false },
+      github: { release: false },
+      gitlab: { release: false },
+      npm: { publish: false }
+    });
+
+    const exec = t.mock.method(container.shell, 'execFormattedCommand');
+
+    await runTasks({}, container);
+
+    const commands = getArgs(exec, 'echo');
+
+    assert(commands.includes('echo before:init'));
+    assert(commands.includes('echo after:afterRelease'));
+
+    assert(!commands.includes('echo after:git:release'));
+    assert(!commands.includes('echo after:github:release'));
+    assert(!commands.includes('echo after:gitlab:release'));
+    assert(!commands.includes('echo after:npm:release'));
+  });
+
+  test('should not run hooks for cancelled release-cycle methods', async t => {
+    const pkgName = path.basename(target);
+    gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
+    childProcess.execSync('git tag 1.0.0', execOpts);
+
+    const hooks = getHooks(['version', 'git', 'github', 'gitlab', 'npm']);
+    const prompt = mock.fn(([options]) => ({ [options.name]: false }));
+    const inquirer = { prompt };
+
+    const container = getContainer(
+      {
+        increment: 'minor',
+        hooks,
+        github: { release: true, skipChecks: true },
+        gitlab: { release: true, skipChecks: true },
+        npm: { publish: true, skipChecks: true }
+      },
+      inquirer
+    );
+
+    const exec = t.mock.method(container.shell, 'execFormattedCommand');
+
+    await runTasks({}, container);
+
+    const commands = getArgs(exec, 'echo');
+
+    assert(commands.includes('echo before:init'));
+    assert(commands.includes('echo after:afterRelease'));
+    assert(commands.includes('echo after:git:bump'));
+    assert(commands.includes('echo after:npm:bump'));
+
+    assert(!commands.includes('echo after:git:release'));
+    assert(!commands.includes('echo after:github:release'));
+    assert(!commands.includes('echo after:gitlab:release'));
+    assert(!commands.includes('echo after:npm:release'));
+  });
+
+  test('should run "after:*:release" plugin hooks', async t => {
+    const project = path.basename(bare);
+    const pkgName = path.basename(target);
+    const owner = path.basename(path.dirname(bare));
+    gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
+    childProcess.execSync('git tag 1.0.0', execOpts);
+    const sha = gitAdd('line', 'file', 'More file');
+
+    const git = await factory(Git);
+    const ref = (await git.getBranchName()) ?? 'HEAD';
+
+    interceptGitHubCreate(github, {
+      owner,
+      project,
+      body: { tag_name: '1.1.0', name: 'Release 1.1.0', body: `* More file (${sha})` }
+    });
+
+    interceptGitLabPublish(gitlab, {
+      owner,
+      project,
+      body: {
+        name: 'Release 1.1.0',
+        ref,
+        tag_name: '1.1.0',
+        tag_message: 'Release 1.1.0',
+        description: `* More file (${sha})`
+      }
+    });
+
+    const hooks = getHooks(['version', 'git', 'github', 'gitlab', 'npm']);
+
+    const container = getContainer({
       increment: 'minor',
       hooks,
-      github: { release: true, skipChecks: true },
-      gitlab: { release: true, skipChecks: true },
-      npm: { publish: true, skipChecks: true }
-    },
-    inquirer
-  );
+      github: { release: true, pushRepo: `https://github.com/${owner}/${project}`, skipChecks: true },
+      gitlab: { release: true, pushRepo: `https://gitlab.com/${owner}/${project}`, skipChecks: true },
+      npm: { name: pkgName, skipChecks: true }
+    });
 
-  const exec = sandbox.stub(container.shell, 'execFormattedCommand').callThrough();
+    const exec = t.mock.method(container.shell, 'execFormattedCommand');
 
-  await runTasks({}, container);
+    await runTasks({}, container);
 
-  const commands = _.flatten(exec.args).filter(arg => typeof arg === 'string' && arg.startsWith('echo'));
+    const commands = getArgs(exec, 'echo');
 
-  t.true(commands.includes('echo before:init'));
-  t.true(commands.includes('echo after:afterRelease'));
-  t.true(commands.includes('echo after:git:bump'));
-  t.true(commands.includes('echo after:npm:bump'));
-
-  t.false(commands.includes('echo after:git:release'));
-  t.false(commands.includes('echo after:github:release'));
-  t.false(commands.includes('echo after:gitlab:release'));
-  t.false(commands.includes('echo after:npm:release'));
-
-  exec.restore();
-});
-
-test.serial('should run "after:*:release" plugin hooks', async t => {
-  const { bare, target } = t.context;
-  const project = path.basename(bare);
-  const pkgName = path.basename(target);
-  const owner = path.basename(path.dirname(bare));
-  gitAdd(`{"name":"${pkgName}","version":"1.0.0"}`, 'package.json', 'Add package.json');
-  sh.exec('git tag 1.0.0');
-  const sha = gitAdd('line', 'file', 'More file');
-
-  const git = factory(Git);
-  const ref = (await git.getBranchName()) ?? 'HEAD';
-
-  interceptGitHubCreate({
-    owner,
-    project,
-    body: { tag_name: '1.1.0', name: 'Release 1.1.0', body: `* More file (${sha})` }
+    assert(commands.includes('echo after:git:bump'));
+    assert(commands.includes('echo after:npm:bump'));
+    assert(commands.includes('echo after:git:release'));
+    assert(commands.includes('echo after:github:release'));
+    assert(commands.includes('echo after:gitlab:release'));
+    assert(commands.includes('echo after:npm:release'));
   });
 
-  interceptGitLabPublish({
-    owner,
-    project,
-    body: {
-      name: 'Release 1.1.0',
-      ref,
-      tag_name: '1.1.0',
-      tag_message: 'Release 1.1.0',
-      description: `* More file (${sha})`
-    }
+  test('should show only version prompt', async () => {
+    const config = { ci: false, 'only-version': true };
+    await runTasks({}, getContainer(config));
+    assert.equal(prompt.mock.callCount(), 1);
+    assert.equal(prompt.mock.calls[0].arguments[0][0].name, 'incrementList');
   });
-
-  const hooks = getHooks(['version', 'git', 'github', 'gitlab', 'npm']);
-
-  const container = getContainer({
-    increment: 'minor',
-    hooks,
-    github: { release: true, pushRepo: `https://github.com/${owner}/${project}`, skipChecks: true },
-    gitlab: { release: true, pushRepo: `https://gitlab.com/${owner}/${project}`, skipChecks: true },
-    npm: { name: pkgName, skipChecks: true }
-  });
-
-  const exec = sandbox.spy(container.shell, 'execFormattedCommand');
-
-  await runTasks({}, container);
-
-  const commands = _.flatten(exec.args).filter(arg => typeof arg === 'string' && arg.startsWith('echo'));
-
-  t.true(commands.includes('echo after:git:bump'));
-  t.true(commands.includes('echo after:npm:bump'));
-  t.true(commands.includes('echo after:git:release'));
-  t.true(commands.includes('echo after:github:release'));
-  t.true(commands.includes('echo after:gitlab:release'));
-  t.true(commands.includes('echo after:npm:release'));
-});
-
-test.serial('should show only version prompt', async t => {
-  const config = { ci: false, 'only-version': true };
-  await runTasks({}, getContainer(config));
-  t.true(defaultInquirer.prompt.calledOnce);
-  t.is(defaultInquirer.prompt.firstCall.args[0][0].name, 'incrementList');
 });

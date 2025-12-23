@@ -14,6 +14,27 @@ To add [GitHub releases][3] in your release-it flow, there are two options:
 1. Automated. This requires a personal access token.
 2. Manual. The GitHub web interface will be opened with pre-populated fields.
 
+## Configuration options
+
+| Option                   | Description                                                                     |
+| :----------------------- | :------------------------------------------------------------------------------ |
+| `github.release`         | Set to `false` to skip the GitHub publish step                                  |
+| `github.releaseName`     | Set the release name (default: `Release ${version}`)                            |
+| `github.releaseNotes`    | Override the release notes with custom notes                                    |
+| `github.autoGenerate`    | Let GitHub generate release notes (overrides other notes!)                      |
+| `github.preRelease`      | Set the release to a pre-release status                                         |
+| `github.draft`           | Set the release to a draft status                                               |
+| `github.tokenRef`        | GitHub token environment variable name (default: `GITHUB_TOKEN`)                |
+| `github.assets`          | Glob pattern path to assets to add to the GitHub release                        |
+| `github.host`            | Use a different host from what would be derived from the Git URL                |
+| `github.timeout`         | Timeout duration to wait for a response from the GitHub API                     |
+| `github.proxy`           | If the release is performed behind a proxy, set this to string of the proxy URL |
+| `github.skipChecks`      | Skip checks on `GITHUB_TOKEN` environment variable and user permissions         |
+| `github.web`             | Explicitly override checking if the `GITHUB_TOKEN` is set                       |
+| `github.comments.submit` | Submit a comment to each merged PR and closed issue part of the release         |
+| `github.comments.issue`  | The text to add to the associated closed issues                                 |
+| `github.comments.pr`     | The text to add to the associated merged pull requests                          |
+
 ## Automated
 
 To automate the release (using the GitHub REST API), the following needs to be configured:
@@ -91,6 +112,8 @@ Another example using `--no-merges` to omit merge commits:
 }
 ```
 
+### Function
+
 When the value is a function, it's executed with a single `context` parameter that contains the plugin context. The
 function can also be `async`. Make sure that it returns a string value. An example:
 
@@ -109,6 +132,52 @@ function can also be `async`. Make sure that it returns a string value. An examp
 Use `--github.autoGenerate` to have GitHub auto-generate the release notes (does not work with `web: true`).
 
 See [Changelog][10] for more information about generating changelogs/release notes.
+
+### Object
+
+Use an object to switch from the `releaseNotes` as a command string to commits fetched by the GitHub Octokit API and
+rendered using the provided template. Example:
+
+```json
+{
+  "github": {
+    "releaseNotes": {
+      "commit": "* ${commit.subject} (${sha}){ - thanks @${author.login}!}",
+      "excludeMatches": ["webpro"]
+    }
+  }
+}
+```
+
+Placeholders have syntax `${place.holder}`. Blocks surrounded by `{` and `}` are rendered only if each placeholder
+inside is replaced with a value and that value is not in `excludeMatches`.
+
+Here's an excerpt of an example object that is the context of the `releaseNotes.commit` template:
+
+```json
+{
+  "sha": "2e8c8ac65fa9e05fc170d08913d7fbac2b2bd876",
+  "commit": {
+    "author": { "name": "Lars Kappert", "email": "lars@webpro.nl", "date": "2025-01-06T21:15:33Z" },
+    "committer": { "name": "Lars Kappert", "email": "lars@webpro.nl", "date": "2025-01-06T21:15:33Z" },
+    "message": "Add platform-specific entries to metro plugin",
+    "url": "https://api.github.com/repos/webpro-nl/knip/git/commits/2e8c8ac65fa9e05fc170d08913d7fbac2b2bd876",
+    "comment_count": 0,
+    "verification": { "verified": false, "reason": "unsigned", "signature": null, "payload": null, "verified_at": null }
+  },
+  "url": "https://api.github.com/repos/webpro-nl/knip/commits/2e8c8ac65fa9e05fc170d08913d7fbac2b2bd876",
+  "html_url": "https://github.com/webpro-nl/knip/commit/2e8c8ac65fa9e05fc170d08913d7fbac2b2bd876",
+  "comments_url": "https://api.github.com/repos/webpro-nl/knip/commits/2e8c8ac65fa9e05fc170d08913d7fbac2b2bd876/comments",
+  "author": { "login": "webpro", "id": 456426, "html_url": "https://github.com/webpro" },
+  "committer": { "login": "webpro", "id": 456426, "avatar_url": "https://avatars.githubusercontent.com/u/456426?v=4" },
+  "parents": []
+}
+```
+
+The GitHub plugin adds `commit.subject` which is only the first line of `commit.message` (which is potentially multiple
+lines especially for merge commits).
+
+See [REST API: Compare two commits][11] for the full specs of this object.
 
 ## Attach binary assets
 
@@ -138,8 +207,8 @@ In case the release should not be made public yet, set `github.draft: true`.
 
 Use a different host from what would be derived from the Git url (e.g. when using GitHub Enterprise).
 
-By default, the GitHub API host is [https://api.github.com][11]. Setting `github.host` to `"private.example.org"` would
-result in release-it using [https://private.example.org/api/v3][12].
+By default, the GitHub API host is [https://api.github.com][12]. Setting `github.host` to `"private.example.org"` would
+result in release-it using [https://private.example.org/api/v3][13].
 
 ## Proxy
 
@@ -196,7 +265,7 @@ To submit a comment to each merged pull requests and closed issue that is part o
 
 Example comment:
 
-:rocket: _This issue has been resolved in v15.10.0. See [Release 15.10.0][13] for release notes._
+\:rocket: _This issue has been resolved in v15.10.0. See [Release 15.10.0][14] for release notes._
 
 This only works with `github.release: true` and not with [manual release via the web interface][9].
 
@@ -212,6 +281,7 @@ Since this is an experimental feature, it's disabled by default for now. Set `gi
 [8]: ./ci.md#git
 [9]: #manual
 [10]: ./changelog.md
-[11]: https://api.github.com
-[12]: https://private.example.org/api/v3
-[13]: https://github.com/release-it/release-it/releases/tag/15.10.0
+[11]: https://docs.github.com/en/rest/commits/commits?apiVersion=2022-11-28#compare-two-commits
+[12]: https://api.github.com
+[13]: https://private.example.org/api/v3
+[14]: https://github.com/release-it/release-it/releases/tag/15.10.0

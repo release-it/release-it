@@ -1,11 +1,15 @@
 {
   "$schema": "./schema/release-it.json",
   "hooks": {
-    "after:init": ["npm run lint", "npm run knip", "npm test"]
+    "after:init": ["npm run lint", "npm run knip", "npm run knip -- --production", "npm test"]
   },
   "github": {
     "tokenRef": "GITHUB_TOKEN_RELEASE_IT",
     "release": true,
+    "releaseNotes": {
+      "commit": "* ${commit.subject} (${sha}){ - thanks @${author.login}!}",
+      "excludeMatches": ["webpro"]
+    },
     "comments": {
       "submit": true
     }

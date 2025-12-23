@@ -7,10 +7,27 @@ part][2] is configured correctly.
 [GitLab releases][1] work just like GitHub releases:
 
 - Configure `gitlab.release: true`.
-- Obtain a [personal access token][3] (release-it only needs the "api" scope).
+- Obtain a [personal access token][3] (release-it needs the `api` and `self_rotate` scopes).
 - Make sure the token is [available as an environment variable][4].
 
 GitLab Releases do not support pre-releases or drafts.
+
+## Configuration options
+
+| Option                               | Description                                                                 |
+| :----------------------------------- | :-------------------------------------------------------------------------- |
+| `gitlab.release`                     | Set to `false` to skip the GitLab publish step                              |
+| `gitlab.releaseName`                 | Set the release name (default: `Release ${version}`)                        |
+| `gitlab.releaseNotes`                | Override the release notes with custom notes                                |
+| `gitlab.milestones`                  | Associate one or more milestones with a GitLab release                      |
+| `gitlab.tokenRef`                    | GitLab token environment variable name (default: `GITLAB_TOKEN`)            |
+| `gitlab.tokenHeader`                 | HTTP header name for the GitLab token (default: `Private-Token`)            |
+| `gitlab.certificateAuthorityFile`    | Path of the GitLab CA file for self-hosted installations                    |
+| `gitlab.certificateAuthorityFileRef` | GitLab CA file environment variable name (default: `CI_SERVER_TLS_CA_FILE`) |
+| `gitlab.secure`                      | Flag to disable server certificate verification (default: `false`)          |
+| `gitlab.assets`                      | Glob pattern path to assets to add to the GitLab release                    |
+| `gitlab.origin`                      | Base URL to use for the GitLab API (default: `https://${repo.host}`)        |
+| `gitlab.skipChecks`                  | Skip checks on `GITLAB_TOKEN` environment variable and milestone(s)         |
 
 ## Prerequisite checks
 
@@ -102,6 +119,23 @@ later), you should set the `useIdsForUrls` flag to `true`:
 }
 ```
 
+### Asset Location
+
+By default release assets are uploaded to the project's Markdown uploads API. If you want to use GitLab's Generic
+packages Repository set `useGenericPackageRepositoryForAssets` flag to true. `useIdsForUrls` is ignored from this API.
+You can set the package name to be uploaded to using `genericPackageRepositoryName` by default the name is `release-it`.
+
+```json
+{
+  "gitlab": {
+    "release": true,
+    "useGenericPackageRepositoryForAssets": true,
+    "genericPackageRepositoryName": "release-it",
+    "assets": ["dist/*.dmg"]
+  }
+}
+```
+
 ## Origin
 
 The `origin` can be set to a string such as `"http://example.org:3000"` to use a different origin from what would be
@@ -110,7 +144,7 @@ derived from the Git url (e.g. to use `http` over the default `https://${repo.ho
 ## Private CA Authority
 
 If you're running your own GitLab instance with an HTTPS certificate issued by a private certificate Authority, you can
-specify the root CA certificate with `certificateAuthorityFile`, for example:
+specify the root CA certificate with `certificateAuthorityFile` or `certificateAuthorityFileRef`, for example:
 
 ```json
 {
@@ -121,6 +155,8 @@ specify the root CA certificate with `certificateAuthorityFile`, for example:
   }
 }
 ```
+
+If not explicitly set, the environment variable `CI_SERVER_TLS_CA_FILE` is used by default.
 
 Alternatively, if you want to disable the server certificate verification against the list of supplied CAs, you can set
 the `secure` flag to false:
@@ -135,8 +171,7 @@ the `secure` flag to false:
 }
 ```
 
-The `secure` option is passed down to [got][7], which in turn also forwards it to node's [`https.request`][8] method as
-the `rejectUnauthorized` option. The default value of `rejectUnauthorized` is `true`.
+The `secure` option is passed down to the `fetch` agent as the `connect.rejectUnauthorized` option.
 
 ## Update the latest release
 
@@ -154,11 +189,9 @@ Example command to add assets to the latest release:
 release-it --no-increment --no-git --gitlab.release --gitlab.assets=*.zip
 ```
 
-[1]: https://docs.gitlab.com/ce/user/project/releases/
+[1]: https://docs.gitlab.com/api/releases/
 [2]: ./git.md
-[3]: https://docs.gitlab.com/ce/user/profile/personal_access_tokens
+[3]: https://docs.gitlab.com/user/profile/personal_access_tokens/
 [4]: ./environment-variables.md
 [5]: ./changelog.md
 [6]: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/156939
-[7]: https://github.com/sindresorhus/got
-[8]: https://nodejs.org/api/https.html#httpsrequestoptions-callback

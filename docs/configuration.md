@@ -1,6 +1,6 @@
 # Configuration
 
-Out of the box, release-it has sane defaults, and [plenty of options][1] to configure it.
+Out of the box, release-it has sane defaults. See the [configuration options][1] to configure it.
 
 Put only the options to override in a configuration file. Here is a list of file names where release-it looks for
 configuration in the root of the project:
@@ -18,7 +18,7 @@ An example `.release-it.json`:
 
 ```json
 {
-  "$schema": "https://unpkg.com/release-it@17/schema/release-it.json",
+  "$schema": "https://unpkg.com/release-it@19/schema/release-it.json",
   "git": {
     "commitMessage": "chore: release v${version}"
   },
@@ -78,6 +78,38 @@ TOML is also supported in `.release-it.toml`:
 "before:init" = "npm test"
 ```
 
+## Configuration options
+
+Release-it has [plenty of options][2]. See the following tables for plugin configuration options:
+
+- [Git][3]
+- [npm][4]
+- [GitHub][5]
+- [GitLab][6]
+
+### Extend Configuration
+
+You can extend a configuration from a remote source using the `extends` option. The following formats are supported:
+
+- `github:owner/repo`: Get the config from the default branch (main) in the repo at Github.
+- `github:owner/repo#tag`: Get the config from the specified tag in the repo at Github.
+- `github:owner/repo:subdir#tag`: Get the config from the specified tag in the repo sub dir at Github.
+
+And support other schema, either `gitlab:`, `bitbucket:`, or `https:`.
+
+For example, to extend a configuration from a GitHub repository:
+
+```json
+{
+  "$schema": "https://unpkg.com/release-it@19/schema/release-it.json",
+  "extends": "github:release-it/release-it-configuration"
+}
+```
+
+Get more information at [c12 documents][7].
+
+## Setting options via CLI
+
 Any option can also be set on the command-line, and will have highest priority. Example:
 
 ```bash
@@ -96,4 +128,10 @@ Also plugin options can be set from the command line:
 release-it --no-plugins.@release-it/keep-a-changelog.strictLatest
 ```
 
-[1]: ../config/release-it.json
+[1]: #configuration-options
+[2]: ../config/release-it.json
+[3]: ./git.md#configuration-options
+[4]: ./npm.md#configuration-options
+[5]: ./github-releases.md#configuration-options
+[6]: ./gitlab-releases.md#configuration-options
+[7]: https://github.com/unjs/c12?tab=readme-ov-file#extending-configuration

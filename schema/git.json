@@ -38,8 +38,8 @@
       "default": ""
     },
     "addUntrackedFiles": {
-      "type": "string",
-      "default": ""
+      "type": "boolean",
+      "default": false
     },
     "commit": {
       "type": "boolean",
@@ -52,6 +52,10 @@
         "type": "string"
       },
       "default": []
+    },
+    "commitMessage": {
+      "type": "string",
+      "default": null
     },
     "tag": {
       "type": "boolean",

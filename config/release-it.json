@@ -64,9 +64,11 @@
     "tokenRef": "GITLAB_TOKEN",
     "tokenHeader": "Private-Token",
     "certificateAuthorityFile": null,
-    "secure": null,
+    "secure": false,
     "assets": null,
     "useIdsForUrls": false,
+    "useGenericPackageRepositoryForAssets": false,
+    "genericPackageRepositoryName": "release-it",
     "origin": null,
     "skipChecks": false
   }

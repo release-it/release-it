@@ -46,8 +46,12 @@
     "certificateAuthorityFile": {
       "default": null
     },
+    "certificateAuthorityFileRef": {
+      "type": "string",
+      "default": "CI_SERVER_TLS_CA_FILE"
+    },
     "secure": {
-      "default": null
+      "default": false
     },
     "assets": {
       "default": null
@@ -55,6 +59,14 @@
     "useIdsForUrls": {
       "type": "boolean",
       "default": false
+    },
+    "useGenericPackageRepositoryForAssets": {
+      "type": "boolean",
+      "default": false
+    },
+    "genericPackageRepositoryName": {
+       "type": "string",
+       "default": "release-it"
     },
     "origin": {
       "type": "string",

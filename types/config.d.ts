@@ -106,7 +106,7 @@ export interface Config {
     releaseName?: string;
 
     /** @default null */
-    releaseNotes?: any;
+    releaseNotes?: string | null | (() => string | Promise<string>) | { commit?: string; excludeMatches?: string[] };
 
     /** @default false */
     autoGenerate?: boolean;
@@ -181,7 +181,7 @@ export interface Config {
     /** @default null */
     certificateAuthorityFile?: any;
 
-    /** @default null */
+    /** @default false */
     secure?: boolean;
 
     /** @default null */
@@ -189,6 +189,12 @@ export interface Config {
 
     /** @default false */
     useIdsForUrls?: boolean;
+
+    /** @default false */
+    useGenericPackageRepositoryForAssets?: boolean;
+
+    /** @default "release-it" */
+    genericPackageRepositoryName?: string;
 
     /** @default null */
     origin?: any;

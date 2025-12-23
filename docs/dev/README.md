@@ -27,9 +27,9 @@ docker run --hostname localhost --publish 443:443 --publish 80:80 --publish 22:2
 [1]: https://github.com/octokit/rest.js
 [2]: https://octokit.github.io/rest.js/#repos-create-release
 [3]: https://octokit.github.io/rest.js/#repos-upload-release-asset
-[4]: https://docs.gitlab.com/ce/api/
-[5]: https://docs.gitlab.com/ce/api/releases/
-[6]: https://docs.gitlab.com/ce/api/projects.html#upload-a-file
-[7]: https://docs.gitlab.com/ce/api/tags.html#create-a-new-release
-[8]: https://docs.gitlab.com/ce/install/docker.html
+[4]: https://docs.gitlab.com/api/rest/
+[5]: https://docs.gitlab.com/api/releases/
+[6]: https://docs.gitlab.com/api/project_markdown_uploads/
+[7]: https://docs.gitlab.com/api/releases/#create-a-release
+[8]: https://docs.gitlab.com/install/docker/installation/
 [9]: https://hub.docker.com/r/gitlab/gitlab-ce/
