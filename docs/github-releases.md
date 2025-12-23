@@ -177,9 +177,7 @@ Here's an excerpt of an example object that is the context of the `releaseNotes.
 The GitHub plugin adds `commit.subject` which is only the first line of `commit.message` (which is potentially multiple
 lines especially for merge commits).
 
-See
-[REST API: Compare two commits](https://docs.github.com/en/rest/commits/commits?apiVersion=2022-11-28#compare-two-commits)
-for the full specs of this object.
+See [REST API: Compare two commits][11] for the full specs of this object.
 
 ## Attach binary assets
 
@@ -209,8 +207,8 @@ In case the release should not be made public yet, set `github.draft: true`.
 
 Use a different host from what would be derived from the Git url (e.g. when using GitHub Enterprise).
 
-By default, the GitHub API host is [https://api.github.com][11]. Setting `github.host` to `"private.example.org"` would
-result in release-it using [https://private.example.org/api/v3][12].
+By default, the GitHub API host is [https://api.github.com][12]. Setting `github.host` to `"private.example.org"` would
+result in release-it using [https://private.example.org/api/v3][13].
 
 ## Proxy
 
@@ -267,7 +265,7 @@ To submit a comment to each merged pull requests and closed issue that is part o
 
 Example comment:
 
-:rocket: _This issue has been resolved in v15.10.0. See [Release 15.10.0][13] for release notes._
+\:rocket: _This issue has been resolved in v15.10.0. See [Release 15.10.0][14] for release notes._
 
 This only works with `github.release: true` and not with [manual release via the web interface][9].
 
@@ -283,6 +281,7 @@ Since this is an experimental feature, it's disabled by default for now. Set `gi
 [8]: ./ci.md#git
 [9]: #manual
 [10]: ./changelog.md
-[11]: https://api.github.com
-[12]: https://private.example.org/api/v3
-[13]: https://github.com/release-it/release-it/releases/tag/15.10.0
+[11]: https://docs.github.com/en/rest/commits/commits?apiVersion=2022-11-28#compare-two-commits
+[12]: https://api.github.com
+[13]: https://private.example.org/api/v3
+[14]: https://github.com/release-it/release-it/releases/tag/15.10.0
