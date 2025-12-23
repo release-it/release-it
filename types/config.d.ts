@@ -77,6 +77,9 @@ export interface Config {
 
     publishArgs?: Array<any>;
 
+    /** @default "npm" */
+    publishPackageManager?: 'npm' | 'pnpm' | 'bun';
+
     /** @default null */
     tag?: any;
 
