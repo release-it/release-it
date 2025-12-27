@@ -83,6 +83,16 @@ describe('config', async () => {
     assert.deepEqual(config.options.foo, { bar: 1 });
   });
 
+  test('should load shared config from CLI string (file path)', async () => {
+    const config = new Config({ configDir: './test/stub/config/string', config: './external.js' });
+    await config.init();
+
+    console.log({ options: config.options })
+
+    assert.equal(config.options.git.commitMessage, 'Shared config commit ${version}');
+    assert.equal(config.options.github.release, true);
+  });
+
   test('should throw if provided config file is invalid (cosmiconfig exception)', async () => {
     await assert.rejects(async () => {
       const config = new Config({ config: './test/stub/config/invalid-config-txt' });

@@ -1,6 +1,16 @@
 import { Hooks } from './hooks';
 
 export interface Config {
+  /**
+   * Extend configuration from a remote or external source.
+   * Supports strings like:
+   * - github:owner/repo
+   * - gitlab:owner/repo
+   * - bitbucket:owner/repo
+   * - https:... URL
+   * - Node package name exporting a config object (via package.json `release-it` string)
+   */
+  extends?: string | string[];
   hooks?: Hooks;
 
   plugins?: Record<string, Record<string, any>>;

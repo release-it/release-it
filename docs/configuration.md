@@ -44,6 +44,27 @@ The configuration can also be stored in a `release-it` property in `package.json
 }
 ```
 
+You can also reference a shared configuration directly via a string. Set the `release-it` property to a package name or file path that provides a configuration object:
+
+```json
+{
+  "name": "my-package",
+  "devDependencies": {
+    "release-it": "*",
+    "@acme/release-it-config": "^1.0.0"
+  },
+  "release-it": "@acme/release-it-config"
+}
+```
+
+Alternatively, reference a local file path:
+
+```json
+{
+  "release-it": "./config/release-it.config.js"
+}
+```
+
 Typescript config files are supported, providing typing hints to the config:
 
 ```ts
@@ -96,6 +117,8 @@ You can extend a configuration from a remote source using the `extends` option. 
 - `github:owner/repo:subdir#tag`: Get the config from the specified tag in the repo sub dir at Github.
 
 And support other schema, either `gitlab:`, `bitbucket:`, or `https:`.
+
+In addition, you can point to a Node package that exports a configuration object by setting the `release-it` field in `package.json` to the package name. The exported value can be an object or a function returning an object. When present, local overrides defined in other config sources are applied after the shared config is loaded.
 
 For example, to extend a configuration from a GitHub repository:
 
