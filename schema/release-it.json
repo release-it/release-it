@@ -10,8 +10,11 @@
       "description": "The JSON schema version used to validate this configuration file"
     },
     "extends": {
-      "type": "string",
-      "description": "URL that specifies a configuration to extend"
+      "description": "One or more sources to extend configuration from (URL/package/schema-supported specifiers)",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "array", "items": { "type": "string" } }
+      ]
     },
     "hooks": {
       "type": "object",

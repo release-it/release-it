@@ -1,4 +1,5 @@
 import test, { describe, before, after, afterEach } from 'node:test';
+import path from 'node:path';
 import assert from 'node:assert/strict';
 import { isCI } from 'ci-info';
 import Config from '../lib/config.js';
@@ -86,9 +87,14 @@ describe('config', async () => {
   test('should load shared config from CLI string (file path)', async () => {
     const config = new Config({ configDir: './test/stub/config/string', config: './external.js' });
     await config.init();
+    assert.equal(config.options.git.commitMessage, 'Shared config commit ${version}');
+    assert.equal(config.options.github.release, true);
+  });
 
-    console.log({ options: config.options })
-
+  test('should load shared config from package.json string (no CLI)', async () => {
+    const dir = path.resolve('./test/stub/config/string');
+    const config = new Config({ configDir: dir });
+    await config.init();
     assert.equal(config.options.git.commitMessage, 'Shared config commit ${version}');
     assert.equal(config.options.github.release, true);
   });
