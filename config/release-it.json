@@ -70,6 +70,7 @@
     "useGenericPackageRepositoryForAssets": false,
     "genericPackageRepositoryName": "release-it",
     "origin": null,
-    "skipChecks": false
+    "skipChecks": false,
+    "repoId": null
   }
 }
