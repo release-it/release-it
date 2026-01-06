@@ -392,7 +392,7 @@ Here's an example:
 [12]: #getter-methods
 [13]: #helper-methods
 [14]: #execution-order
-[15]: #step
+[15]: #thisstep--promise
 [16]: https://github.com/SBoudrias/Inquirer.js
 [17]: https://github.com/SBoudrias/Inquirer.js/#objects
 [18]: ../config/release-it.json

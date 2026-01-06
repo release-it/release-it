@@ -235,7 +235,7 @@ jobs:
 
 [1]: https://docs.npmjs.com/about-scopes
 [2]: https://registry.npmjs.org
-[3]: #skip-git-steps
+[3]: ./git.md#skip-git-steps
 [4]: https://github.com/release-it/bumper
 [5]: ./recipes/monorepo.md
 [6]: https://github.com/release-it-plugins/workspaces
