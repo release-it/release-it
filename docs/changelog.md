@@ -6,6 +6,22 @@ commits since the latest tag.
 The [default command][1] is based on `git log ...`. This setting (`git.changelog`) can be overridden. Make sure any of
 these commands output the changelog to `stdout`.
 
+## Hide changelog preview
+
+For projects with very long changelogs, you can hide the changelog preview during the release preview to avoid flooding
+the console. This only affects the preview output during the normal release flow, not the `--changelog` mode which prints
+the changelog and exits.
+
+```json
+{
+  "logs": {
+    "preview": {
+      "changelog": "hide"
+    }
+  }
+}
+```
+
 - [GitHub and GitLab Releases][2]
 - [auto-changelog][3]
 - [Conventional Changelog][4]
