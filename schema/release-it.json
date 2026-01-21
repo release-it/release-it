@@ -88,6 +88,24 @@
         "type": "boolean",
         "default": false
       }
+    },
+    "logs": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "preview": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "changelog": {
+              "type": "string",
+              "enum": ["show", "hide"],
+              "default": "show",
+              "description": "Control whether the changelog preview is shown during release preview. Only affects the preview output, not the --changelog mode."
+            }
+          }
+        }
+      }
     }
   }
 }
