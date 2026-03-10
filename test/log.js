@@ -24,6 +24,14 @@ describe('log', () => {
     assert.equal(stripVTControlCharacters(stderr), 'ERROR foo\n');
   });
 
+  test('should print info', () => {
+    const log = new Log();
+    mockStdIo.start();
+    log.info('foo');
+    const { stderr } = mockStdIo.end();
+    assert.equal(stripVTControlCharacters(stderr), 'foo\n');
+  });
+
   test('should print a warning', () => {
     const log = new Log();
     mockStdIo.start();
