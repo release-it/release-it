@@ -97,7 +97,7 @@
     "proxy-agent": "6.5.0",
     "semver": "7.7.3",
     "tinyglobby": "0.2.15",
-    "undici": "6.23.0",
+    "undici": "7.24.3",
     "url-join": "5.0.0",
     "wildcard-match": "5.1.4",
     "yargs-parser": "21.1.1"
@@ -125,7 +125,7 @@
     "glob": "13.0.0"
   },
   "engines": {
-    "node": "^20.12.0 || >=22.0.0"
+    "node": "^20.18.1 || >=22.0.0"
   },
   "remarkConfig": {
     "plugins": [
