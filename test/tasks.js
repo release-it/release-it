@@ -34,7 +34,7 @@ describe('tasks', () => {
     'https://gitlab.com/api/v4'
   ]);
 
-  const npmMajorVersion = semver.major(process.env.npm_config_user_agent.match(/npm\/([^ ]+)/)[1]);
+  const npmMajorVersion = semver.major(process.env.npm_config_user_agent?.match(/npm\/([^ ]+)/)?.[1] ?? '10.0.0');
 
   const testConfig = {
     ci: true,
