@@ -348,6 +348,39 @@ describe('git', () => {
     assert.equal(exec.mock.calls[15].arguments[0], 'git push origin --delete v1.2.4');
   });
 
+  test('should skip rollback when push fails but package is already published', async t => {
+    childProcess.execSync('git init', execOpts);
+    childProcess.execSync(`git remote add origin file://foo`, execOpts);
+    sh.exec(`git remote update`, execOpts);
+    const version = '1.2.3';
+    gitAdd(`{"version":"${version}"}`, 'package.json', 'Add package.json');
+    const options = { git: { requireCleanWorkingDir: true, commit: true, tag: true, tagName: 'v${version}' } };
+    const gitClient = await factory(Git, { options });
+    const exec = t.mock.method(gitClient.shell, 'execFormattedCommand');
+    const warn = t.mock.method(gitClient.log, 'warn');
+    sh.exec(`git push`, execOpts);
+    sh.exec(`git checkout HEAD~1`, execOpts);
+    gitAdd('line', 'file', 'Add file');
+
+    await gitClient.init();
+
+    childProcess.execSync('npm --no-git-tag-version version patch', execOpts);
+
+    gitClient.bump('1.2.4');
+    await gitClient.beforeRelease();
+    await gitClient.stage('package.json');
+    await gitClient.commit({ message: 'Add this' });
+    await gitClient.tag();
+
+    gitClient.config.setContext({ isReleased: true });
+
+    await gitClient.push();
+
+    const execCalls = exec.mock.calls.map(c => c.arguments[0]);
+    assert.equal(execCalls.includes('git push origin --delete v1.2.4'), false);
+    assert(warn.mock.calls.some(c => /git push failed/.test(c.arguments[0])));
+  });
+
   test('should not touch existing history when rolling back', async t => {
     childProcess.execSync('git init', execOpts);
     const version = '1.2.3';
