@@ -44,14 +44,22 @@ describe('npm', async () => {
 
   test('should resolve default tag for pre-release', async t => {
     const npmClient = await factory(npm);
-    t.mock.method(npmClient, 'getRegistryPreReleaseTags', () => []);
+    t.mock.method(npmClient, 'getRegistryDistTags', () => ({}));
     const tag = await npmClient.resolveTag('1.0.0-0');
     assert.equal(tag, 'next');
   });
 
-  test('should guess tag from registry for pre-release', async t => {
+  test('should guess tag from registry for pre-release matching current version', async t => {
     const npmClient = await factory(npm);
-    t.mock.method(npmClient, 'getRegistryPreReleaseTags', () => ['alpha']);
+    npmClient.setContext({ latestVersion: '1.0.0-0' });
+    t.mock.method(npmClient, 'getRegistryDistTags', () => ({ latest: '0.9.0', alpha: '1.0.0-alpha.1', next: '1.0.0-0' }));
+    const tag = await npmClient.resolveTag('1.0.0-1');
+    assert.equal(tag, 'next');
+  });
+
+  test('should guess first pre-release tag from registry when no version match', async t => {
+    const npmClient = await factory(npm);
+    t.mock.method(npmClient, 'getRegistryDistTags', () => ({ latest: '0.9.0', alpha: '1.0.0-alpha.1' }));
     const tag = await npmClient.resolveTag('1.0.0-0');
     assert.equal(tag, 'alpha');
   });
