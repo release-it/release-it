@@ -2,8 +2,14 @@
 
 This document lists breaking changes for each major release.
 
-See the GitHub Releases page for detailed changelogs:
-[https://github.com/release-it/release-it/releases](https://github.com/release-it/release-it/releases)
+See the GitHub Releases page for detailed changelogs: [https://github.com/release-it/release-it/releases][1]
+
+## v20 (2026-03-24)
+
+- Upgraded `undici` from v6 to v7 to resolve security vulnerabilities.
+- Upgraded `proxy-agent` from v6 to v7 to fix DEP0169 (`url.parse()` deprecation).
+- Migrated from deprecated `inquirer` to `@inquirer/prompts`.
+- Bumped `engines.node` to minimum Node.js v20.19.0 (was v20.12.0).
 
 ## v19 (2025-04-18)
 
@@ -39,7 +45,7 @@ Use release-it v14 in legacy environments.
 
 - Dropped support for Node v8
 - Dropped support for GitLab v11.6 and lower.
-- Deprecated `scripts` are removed (in favor of [hooks](https://github.com/release-it/release-it#hooks)).
+- Deprecated `scripts` are removed (in favor of [hooks][2]).
 - Removed deprecated `--non-interactive` (`-n`) argument. Use `--ci` instead.
 - Removed old `%s` and `[REV_RANGE]` syntax in command substitutions. Use `${version}` and `${latestTag}` instead.
 
@@ -51,22 +57,18 @@ Use release-it v14 in legacy environments.
 ## v11
 
 - The custom `conventional-changelog` increment (e.g. `"increment": "conventional:angular"`) with additional script
-  configuration is replaced with a plugin. Please see
-  [conventional changelog](https://github.com/release-it/release-it/blob/main/docs/changelog.md#conventional-changelog)
-  how to use this plugin.
+  configuration is replaced with a plugin. Please see [conventional changelog][3] how to use this plugin.
 - The `pkgFiles` option has been removed. If there's a need to bump other files than what `npm version` bumps, it should
   be (part of) a plugin.
 - By default, the latest version was derived from the latest Git tag. From v11, if the repo has a `package.json` then
-  that `version` is used instead. The `use` option has been removed. Also see
-  [latest version](https://github.com/release-it/release-it#latest-version).
+  that `version` is used instead. The `use` option has been removed. Also see [latest version][4].
 - `scripts.changelog` has been moved to `git.changelog`
 
 ## v10
 
 - Dropped support for Node v6
-- Deprecated options from v9 are removed, the `dist.repo` config in particular (also see
-  [distribution repository](https://github.com/release-it/release-it/blob/main/docs/recipes/distribution-repo.md) for
-  alternatives).
+- Deprecated options from v9 are removed, the `dist.repo` config in particular (also see [distribution repository][5]
+  for alternatives).
 - Drop the `--debug` flag. `DEBUG=release-it:* ...` still works.
 
 ## v9
@@ -98,30 +100,41 @@ next major release (v10).
 
 - Drop support for Node v4.
 
-[Release notes for v5](https://github.com/release-it/release-it/releases/tag/5.0.0-beta.0)
+[Release notes for v5][6]
 
 ## v4
 
 - Use `shell.exec` for build commands by default (previously this required a `!` prefix).
 
-[Release notes for v4](https://github.com/release-it/release-it/releases/tag/4.0.0-rc.0)
+[Release notes for v4][7]
 
 ## v3
 
 - Configuration filename must be `.release-it.json` (previously `.release.json`).
 - Refactored configuration structure in this file (and the CLI arguments with it).
 
-[Release notes for v3](https://github.com/release-it/release-it/releases/tag/3.0.0)
+[Release notes for v3][8]
 
 ## v2
 
 - Build command is executed before git commit/push.
 - Configuration options are better organized. Most of them are backwards compatible with a deprecation notice.
 
-[Release notes for v2](https://github.com/release-it/release-it/releases/tag/2.0.0)
+[Release notes for v2][9]
 
 ## v1
 
 Initial major release.
 
-[Release notes for v1](https://github.com/release-it/release-it/releases/tag/1.0.0)
+[Release notes for v1][10]
+
+[1]: https://github.com/release-it/release-it/releases
+[2]: https://github.com/release-it/release-it#hooks
+[3]: https://github.com/release-it/release-it/blob/main/docs/changelog.md#conventional-changelog
+[4]: https://github.com/release-it/release-it#latest-version
+[5]: https://github.com/release-it/release-it/blob/main/docs/recipes/distribution-repo.md
+[6]: https://github.com/release-it/release-it/releases/tag/5.0.0-beta.0
+[7]: https://github.com/release-it/release-it/releases/tag/4.0.0-rc.0
+[8]: https://github.com/release-it/release-it/releases/tag/3.0.0
+[9]: https://github.com/release-it/release-it/releases/tag/2.0.0
+[10]: https://github.com/release-it/release-it/releases/tag/1.0.0

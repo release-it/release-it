@@ -44,7 +44,7 @@ npm install -D release-it
     "release": "release-it"
   },
   "devDependencies": {
-    "release-it": "^19.0.0"
+    "release-it": "^20.0.0"
   }
 }
 ```
@@ -99,7 +99,7 @@ Here's a quick example `.release-it.json`:
 
 ```json
 {
-  "$schema": "https://unpkg.com/release-it@19/schema/release-it.json",
+  "$schema": "https://unpkg.com/release-it@20/schema/release-it.json",
   "git": {
     "commitMessage": "chore: release v${version}"
   },
@@ -280,7 +280,7 @@ Note that arguments need to be quoted properly when used from the command line:
 release-it --'hooks.after:release="echo Successfully released ${name} v${version} to ${repo.repository}."'
 ```
 
-Using Inquirer.js inside custom hook scripts might cause issues (since release-it also uses this itself).
+Using @inquirer/prompts inside custom hook scripts might cause issues (since release-it also uses this itself).
 
 ## Dry Runs
 
@@ -353,15 +353,16 @@ release-it programmatically][58] for example code.
 
 ## Node.js version support
 
-The latest major version is v19, supporting Node.js 20 and up:
+The latest major version is v20, supporting Node.js 20 and up:
 
-| release-it | Node.js |
-| :--------: | :-----: |
-|    v19     |   v20   |
-|    v18     |   v20   |
-|    v17     |   v18   |
-|    v16     |   v16   |
-|    v15     |   v14   |
+| release-it | Node.js  |
+| :--------: | :------- |
+|    v20     | v20.19.0 |
+|    v19     | v20.12.0 |
+|    v18     | v20      |
+|    v17     | v18      |
+|    v16     | v16      |
+|    v15     | v14      |
 
 Also see [CHANGELOG.md][80] for dates and details.
 
