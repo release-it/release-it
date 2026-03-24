@@ -10,33 +10,28 @@ import { factory } from './util/index.js';
 
 const prompts = { git, github, gitlab, npm };
 
-const yes = ([options]) => Promise.resolve({ [options.name]: true });
-const no = ([options]) => Promise.resolve({ [options.name]: false });
+const yes = () => Promise.resolve(true);
+const no = () => Promise.resolve(false);
 
 test('should not create prompt if disabled', async t => {
   const task = t.mock.fn();
-  const promptMock = t.mock.fn(yes);
-  const inquirer = { prompt: promptMock };
-  const prompt = await factory(Prompt, { container: { inquirer } });
+  const createPrompt = t.mock.fn(yes);
+  const prompt = await factory(Prompt, { container: { createPrompt } });
   prompt.register(prompts.git);
   await prompt.show({ enabled: false, prompt: 'push', task });
-  assert.equal(promptMock.mock.callCount(), 0);
+  assert.equal(createPrompt.mock.callCount(), 0);
   assert.equal(task.mock.callCount(), 0);
 });
 
 test('should create prompt', async t => {
-  const promptMock = t.mock.fn(yes);
-  const inquirer = { prompt: promptMock };
-  const prompt = await factory(Prompt, { container: { inquirer } });
+  const createPrompt = t.mock.fn(yes);
+  const prompt = await factory(Prompt, { container: { createPrompt } });
   prompt.register(prompts.git);
   await prompt.show({ prompt: 'push' });
-  assert.equal(promptMock.mock.callCount(), 1);
-  assert.deepEqual(promptMock.mock.calls[0].arguments[0][0], {
-    type: 'confirm',
+  assert.equal(createPrompt.mock.callCount(), 1);
+  assert.equal(createPrompt.mock.calls[0].arguments[0], 'confirm');
+  assert.deepEqual(createPrompt.mock.calls[0].arguments[1], {
     message: 'Push?',
-    name: 'push',
-    choices: false,
-    transformer: undefined,
     default: true
   });
 });
@@ -51,7 +46,7 @@ test('should create prompt', async t => {
   ['npm', 'otp', 'Please enter OTP for npm:']
 ].map(async ([namespace, prompt, message]) => {
   test(`should create prompt and render template message (${namespace}.${prompt})`, async t => {
-    const promptMock = t.mock.fn(yes);
+    const createPrompt = t.mock.fn(yes);
     const config = new Config({
       isPreRelease: true,
       git: { tagName: 'v${version}' },
@@ -59,34 +54,31 @@ test('should create prompt', async t => {
     });
     await config.init();
     config.setContext({ version: '1.0.0', tagName: '1.0.0' });
-    const inquirer = { prompt: promptMock };
-    const p = await factory(Prompt, { container: { inquirer } });
+    const p = await factory(Prompt, { container: { createPrompt } });
     p.register(prompts[namespace], namespace);
     await p.show({ namespace, prompt, context: config.getContext() });
-    assert.equal(promptMock.mock.callCount(), 1);
-    assert.equal(promptMock.mock.calls[0].arguments[0][0].message, message);
+    assert.equal(createPrompt.mock.callCount(), 1);
+    assert.equal(createPrompt.mock.calls[0].arguments[1].message, message);
   });
 });
 
 test('should execute task after positive answer', async t => {
   const task = t.mock.fn();
-  const promptMock = t.mock.fn(yes);
-  const inquirer = { prompt: promptMock };
-  const prompt = await factory(Prompt, { container: { inquirer } });
+  const createPrompt = t.mock.fn(yes);
+  const prompt = await factory(Prompt, { container: { createPrompt } });
   prompt.register(prompts.git);
   await prompt.show({ prompt: 'push', task });
-  assert.equal(promptMock.mock.callCount(), 1);
+  assert.equal(createPrompt.mock.callCount(), 1);
   assert.equal(task.mock.callCount(), 1);
   assert.equal(task.mock.calls[0].arguments[0], true);
 });
 
 test('should not execute task after negative answer', async t => {
   const task = t.mock.fn();
-  const promptMock = t.mock.fn(no);
-  const inquirer = { prompt: promptMock };
-  const prompt = await factory(Prompt, { container: { inquirer } });
+  const createPrompt = t.mock.fn(no);
+  const prompt = await factory(Prompt, { container: { createPrompt } });
   prompt.register(prompts.git);
   await prompt.show({ prompt: 'push', task });
-  assert.equal(promptMock.mock.callCount(), 1);
+  assert.equal(createPrompt.mock.callCount(), 1);
   assert.equal(task.mock.callCount(), 0);
 });

@@ -25,7 +25,7 @@ describe('tasks.interactive', () => {
 
   afterEach(() => {
     mocker.clearAll();
-    prompt.mock.resetCalls();
+    createPrompt.mock.resetCalls();
     log.resetCalls();
   });
 
@@ -54,17 +54,18 @@ describe('tasks.interactive', () => {
   const log = new LogStub();
   const spinner = new SpinnerStub();
 
-  const prompt = mock.fn(([options]) => {
-    const answer = options.type === 'list' ? options.choices[0].value : options.name === 'version' ? '0.0.1' : true;
-    return { [options.name]: answer };
+  const createPrompt = mock.fn((type, options) => {
+    if (type === 'list') return options.choices[0].value;
+    if (type === 'input') return '0.0.1';
+    return true;
   });
 
-  const defaultInquirer = { prompt };
+  const defaultCreatePrompt = createPrompt;
 
-  const getContainer = (options, inquirer = defaultInquirer) => {
+  const getContainer = (options, promptFn = defaultCreatePrompt) => {
     const config = new Config(Object.assign({}, testConfig, options));
     const shell = new ShellStub({ container: { log, config } });
-    const prompt = new Prompt({ container: { inquirer } });
+    const prompt = new Prompt({ container: { createPrompt: promptFn } });
     return { log, spinner, config, shell, prompt };
   };
 
@@ -181,8 +182,7 @@ describe('tasks.interactive', () => {
     childProcess.execSync('git tag 1.0.0', execOpts);
 
     const hooks = getHooks(['version', 'git', 'github', 'gitlab', 'npm']);
-    const prompt = mock.fn(([options]) => ({ [options.name]: false }));
-    const inquirer = { prompt };
+    const rejectAll = mock.fn(() => false);
 
     const container = getContainer(
       {
@@ -192,7 +192,7 @@ describe('tasks.interactive', () => {
         gitlab: { release: true, skipChecks: true },
         npm: { publish: true, skipChecks: true }
       },
-      inquirer
+      rejectAll
     );
 
     const exec = t.mock.method(container.shell, 'execFormattedCommand');
@@ -268,7 +268,7 @@ describe('tasks.interactive', () => {
   test('should show only version prompt', async () => {
     const config = { ci: false, 'only-version': true };
     await runTasks({}, getContainer(config));
-    assert.equal(prompt.mock.callCount(), 1);
-    assert.equal(prompt.mock.calls[0].arguments[0][0].name, 'incrementList');
+    assert.equal(createPrompt.mock.callCount(), 1);
+    assert.equal(createPrompt.mock.calls[0].arguments[0], 'list');
   });
 });

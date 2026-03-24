@@ -78,6 +78,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@inquirer/prompts": "8.3.2",
     "@nodeutils/defaults-deep": "1.1.0",
     "@octokit/rest": "22.0.1",
     "@phun-ky/typeof": "2.0.3",
@@ -86,7 +87,6 @@
     "ci-info": "^4.4.0",
     "eta": "4.5.1",
     "git-url-parse": "16.1.0",
-    "inquirer": "13.3.2",
     "issue-parser": "7.0.1",
     "lodash.merge": "4.6.2",
     "mime-types": "3.0.2",
