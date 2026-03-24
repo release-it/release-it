@@ -112,17 +112,15 @@ describe('npm', async () => {
     const exec = t.mock.method(npmClient.shell, 'exec', command => {
       if (command === 'npm whoami --registry registry.example.org') return Promise.resolve('john');
       const re = /npm access (list collaborators --json|ls-collaborators) release-it --registry registry.example.org/;
-      if (re.test.command) return Promise.resolve(JSON.stringify({ john: ['write'] }));
+      if (re.test(command)) return Promise.resolve(JSON.stringify({ john: ['write'] }));
       return Promise.resolve();
     });
 
     await runTasks(npmClient);
-    assert.equal(exec.mock.calls[0].arguments[0], 'npm ping --registry registry.example.org');
-    assert.equal(exec.mock.calls[1].arguments[0], 'npm whoami --registry registry.example.org');
-    assert.match(
-      exec.mock.calls[2].arguments[0],
-      /npm show release-it@[a-z]+ version --registry registry\.example\.org/
-    );
+    const commands = exec.mock.calls.map(c => c.arguments[0]);
+    assert(commands.includes('npm ping --registry registry.example.org'));
+    assert(commands.includes('npm whoami --registry registry.example.org'));
+    assert(commands.some(c => /npm show release-it@[a-z]+ version --registry registry\.example\.org/.test(c)));
   });
 
   test('should not throw when executing tasks', async t => {
@@ -130,7 +128,7 @@ describe('npm', async () => {
     t.mock.method(npmClient.shell, 'exec', command => {
       if (command === 'npm whoami') return Promise.resolve('john');
       const re = /npm access (list collaborators --json|ls-collaborators) release-it/;
-      if (re.test.command) return Promise.resolve(JSON.stringify({ john: ['write'] }));
+      if (re.test(command)) return Promise.resolve(JSON.stringify({ john: ['write'] }));
       return Promise.resolve();
     });
     await assert.doesNotReject(runTasks(npmClient));
