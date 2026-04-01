@@ -99,7 +99,7 @@ export interface Config {
 
     /** @default 10 */
     timeout?: number;
-  };
+  } | false;
 
   github?: {
     /** @default false */
