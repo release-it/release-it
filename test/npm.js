@@ -407,4 +407,16 @@ describe('npm', async () => {
     const versionArgs = getArgs(exec, 'npm version');
     assert.match(versionArgs[0], / --workspaces-update=false --allow-same-version/);
   });
+
+  test('should not bypass dry-run guard for `npm version`', async t => {
+    const options = { 'dry-run': true, npm: { skipChecks: true } };
+    const npmClient = await factory(npm, { options });
+    const exec = t.mock.method(npmClient.shell, 'exec', () => Promise.resolve());
+    await runTasks(npmClient);
+    const versionCall = exec.mock.calls.find(call =>
+      (typeof call.arguments[0] === 'string' ? call.arguments[0] : '').startsWith('npm version')
+    );
+    assert.ok(versionCall, 'expected `npm version` to be invoked');
+    assert.notEqual(versionCall.arguments[1]?.write, false);
+  });
 });
