@@ -205,4 +205,11 @@ export interface Config {
     /** @default false */
     skipChecks?: boolean;
   };
+
+  logs?: {
+    preview?: {
+      /** @default "show" */
+      changelog?: 'show' | 'hide';
+    };
+  };
 }
