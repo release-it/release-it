@@ -52,7 +52,11 @@ describe('npm', async () => {
   test('should guess tag from registry for pre-release matching current version', async t => {
     const npmClient = await factory(npm);
     npmClient.setContext({ latestVersion: '1.0.0-0' });
-    t.mock.method(npmClient, 'getRegistryDistTags', () => ({ latest: '0.9.0', alpha: '1.0.0-alpha.1', next: '1.0.0-0' }));
+    t.mock.method(npmClient, 'getRegistryDistTags', () => ({
+      latest: '0.9.0',
+      alpha: '1.0.0-alpha.1',
+      next: '1.0.0-0'
+    }));
     const tag = await npmClient.resolveTag('1.0.0-1');
     assert.equal(tag, 'next');
   });
