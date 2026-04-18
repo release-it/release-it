@@ -1,0 +1,12 @@
+# release-it Telemetry Registry
+# OpenTelemetry Weaver schema for release-it semantic versioning and release automation
+
+name: release_it
+description: OpenTelemetry semantic conventions for release-it release automation tool
+semconv_version: 0.1.0
+
+schema_base_url: https://release-it.dev/schemas/
+
+dependencies:
+  - name: otel
+    registry_path: https://github.com/open-telemetry/semantic-conventions/archive/refs/tags/v1.37.0.zip[model]

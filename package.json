@@ -119,6 +119,14 @@
     "tar": "7.5.13",
     "typescript": "6.0.2"
   },
+  "peerDependencies": {
+    "@opentelemetry/api": ">=1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@opentelemetry/api": {
+      "optional": true
+    }
+  },
   "overrides": {
     "pac-resolver": "7.0.1",
     "socks": "2.8.3",

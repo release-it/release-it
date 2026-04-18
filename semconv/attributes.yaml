@@ -1,0 +1,318 @@
+# release-it Attribute Definitions
+# Custom attributes for release-it release automation operations
+
+groups:
+  # ==========================================================================
+  # VERSION ATTRIBUTES
+  # Describes version determination and bumping operations
+  # ==========================================================================
+  - id: registry.release_it.version
+    type: attribute_group
+    display_name: Version Attributes
+    brief: Attributes describing version bumping and increment operations
+    attributes:
+      - id: release_it.version.current
+        type: string
+        stability: development
+        brief: The current/latest version before this release
+        examples:
+          - "19.7.5"
+          - "0.0.0"
+
+      - id: release_it.version.next
+        type: string
+        stability: development
+        brief: The new version being released
+        examples:
+          - "20.0.0"
+          - "19.8.0"
+          - "19.7.6"
+
+      - id: release_it.version.increment
+        type:
+          members:
+            - id: patch
+              value: patch
+              brief: Patch version increment (bug fixes)
+              stability: development
+            - id: minor
+              value: minor
+              brief: Minor version increment (new features)
+              stability: development
+            - id: major
+              value: major
+              brief: Major version increment (breaking changes)
+              stability: development
+            - id: prepatch
+              value: prepatch
+              brief: Pre-release patch increment
+              stability: development
+            - id: preminor
+              value: preminor
+              brief: Pre-release minor increment
+              stability: development
+            - id: premajor
+              value: premajor
+              brief: Pre-release major increment
+              stability: development
+            - id: prerelease
+              value: prerelease
+              brief: Pre-release continuation increment
+              stability: development
+        stability: development
+        brief: The type of version increment performed
+
+  # ==========================================================================
+  # RELEASE ATTRIBUTES
+  # Top-level release run configuration
+  # ==========================================================================
+  - id: registry.release_it.release
+    type: attribute_group
+    display_name: Release Attributes
+    brief: Attributes describing the overall release operation
+    attributes:
+      - id: release_it.is_dry_run
+        type: boolean
+        stability: development
+        brief: Whether the release ran in dry-run mode (no writes)
+        examples:
+          - true
+          - false
+
+      - id: release_it.is_ci
+        type: boolean
+        stability: development
+        brief: Whether the release ran in CI mode (non-interactive)
+        examples:
+          - true
+          - false
+
+      - id: release_it.package_name
+        type: string
+        stability: development
+        brief: The name of the package or project being released
+        examples:
+          - "release-it"
+          - "my-library"
+
+  # ==========================================================================
+  # GIT ATTRIBUTES
+  # Describes git operations performed during release
+  # ==========================================================================
+  - id: registry.release_it.git
+    type: attribute_group
+    display_name: Git Attributes
+    brief: Attributes for git commit, tag, and push operations
+    attributes:
+      - id: release_it.git.tag_name
+        type: string
+        stability: development
+        brief: The git tag name created for this release
+        examples:
+          - "v20.0.0"
+          - "20.0.0"
+
+      - id: release_it.git.commit_message
+        type: string
+        stability: development
+        brief: The commit message used for the release commit
+        examples:
+          - "Release 20.0.0"
+          - "chore: release v20.0.0"
+
+      - id: release_it.git.remote_url
+        type: string
+        stability: development
+        brief: The remote URL of the git repository
+        examples:
+          - "https://github.com/release-it/release-it"
+          - "git@github.com:release-it/release-it.git"
+
+      - id: release_it.git.commits_since_tag
+        type: int
+        stability: development
+        brief: Number of commits since the last release tag
+        examples:
+          - 12
+          - 1
+
+      - id: release_it.git.branch
+        type: string
+        stability: development
+        brief: The current git branch name
+        examples:
+          - "main"
+          - "master"
+
+  # ==========================================================================
+  # CHANGELOG ATTRIBUTES
+  # Describes changelog generation
+  # ==========================================================================
+  - id: registry.release_it.changelog
+    type: attribute_group
+    display_name: Changelog Attributes
+    brief: Attributes for changelog generation operations
+    attributes:
+      - id: release_it.changelog.length
+        type: int
+        stability: development
+        brief: Character length of the generated changelog text
+        examples:
+          - 1240
+          - 342
+
+  # ==========================================================================
+  # GITHUB RELEASE ATTRIBUTES
+  # Describes GitHub release creation via Octokit
+  # ==========================================================================
+  - id: registry.release_it.github
+    type: attribute_group
+    display_name: GitHub Release Attributes
+    brief: Attributes for GitHub release creation operations
+    attributes:
+      - id: release_it.github.owner
+        type: string
+        stability: development
+        brief: The GitHub repository owner (user or organization)
+        examples:
+          - "release-it"
+          - "wiggitywhitney"
+
+      - id: release_it.github.repository
+        type: string
+        stability: development
+        brief: The GitHub repository name
+        examples:
+          - "release-it"
+          - "my-project"
+
+      - id: release_it.github.release_id
+        type: int
+        stability: development
+        brief: The ID of the created GitHub release
+        examples:
+          - 123456789
+
+      - id: release_it.github.draft
+        type: boolean
+        stability: development
+        brief: Whether the GitHub release was created as a draft
+        examples:
+          - false
+          - true
+
+      - id: release_it.github.prerelease
+        type: boolean
+        stability: development
+        brief: Whether the GitHub release is marked as a pre-release
+        examples:
+          - false
+          - true
+
+      - id: release_it.github.assets_count
+        type: int
+        stability: development
+        brief: Number of asset files uploaded to the GitHub release
+        examples:
+          - 0
+          - 3
+
+  # ==========================================================================
+  # NPM PUBLISH ATTRIBUTES
+  # Describes npm package publishing
+  # ==========================================================================
+  - id: registry.release_it.npm
+    type: attribute_group
+    display_name: npm Publish Attributes
+    brief: Attributes for npm package publication operations
+    attributes:
+      - id: release_it.npm.package_name
+        type: string
+        stability: development
+        brief: The npm package name being published
+        examples:
+          - "release-it"
+          - "@myorg/my-package"
+
+      - id: release_it.npm.dist_tag
+        type: string
+        stability: development
+        brief: The npm distribution tag applied to this publish
+        examples:
+          - "latest"
+          - "next"
+          - "beta"
+
+      - id: release_it.npm.registry
+        type: string
+        stability: development
+        brief: The npm registry URL used for publishing
+        examples:
+          - "https://registry.npmjs.org"
+          - "https://npm.pkg.github.com"
+
+  # ==========================================================================
+  # PLUGIN ATTRIBUTES
+  # Describes plugin lifecycle execution
+  # ==========================================================================
+  - id: registry.release_it.plugin
+    type: attribute_group
+    display_name: Plugin Attributes
+    brief: Attributes for release-it plugin lifecycle operations
+    attributes:
+      - id: release_it.plugin.namespace
+        type: string
+        stability: development
+        brief: The namespace identifier for the plugin
+        examples:
+          - "git"
+          - "github"
+          - "npm"
+          - "version"
+
+      - id: release_it.plugin.hook
+        type: string
+        stability: development
+        brief: The lifecycle hook name being executed
+        examples:
+          - "init"
+          - "beforeBump"
+          - "bump"
+          - "beforeRelease"
+          - "release"
+          - "afterRelease"
+
+  # ==========================================================================
+  # HOOK ATTRIBUTES
+  # Describes user-defined lifecycle hook script execution
+  # ==========================================================================
+  - id: registry.release_it.hook
+    type: attribute_group
+    display_name: Hook Script Attributes
+    brief: Attributes for user-defined hook script execution
+    attributes:
+      - id: release_it.hook.name
+        type: string
+        stability: development
+        brief: The lifecycle event name that triggered this hook
+        examples:
+          - "before:git:tag"
+          - "after:git:push"
+          - "before:release"
+          - "after:release"
+
+      - id: release_it.hook.command
+        type: string
+        stability: development
+        brief: The shell command executed by the hook
+        examples:
+          - "npm run build"
+          - "echo \"Releasing ${version}\""
+
+      - id: release_it.hook.exit_code
+        type: int
+        stability: development
+        brief: Exit code returned by the hook script
+        examples:
+          - 0
+          - 1
