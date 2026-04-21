@@ -120,13 +120,9 @@ groups:
           - "Release 20.0.0"
           - "chore: release v20.0.0"
 
-      - id: release_it.git.remote_url
-        type: string
-        stability: development
-        brief: The remote URL of the git repository
-        examples:
-          - "https://github.com/release-it/release-it"
-          - "git@github.com:release-it/release-it.git"
+      # Use OTel VCS semconv for repository URL and branch name
+      - ref: vcs.repository.url.full
+        brief: The remote URL of the git repository being released
 
       - id: release_it.git.commits_since_tag
         type: int
@@ -136,13 +132,9 @@ groups:
           - 12
           - 1
 
-      - id: release_it.git.branch
-        type: string
-        stability: development
-        brief: The current git branch name
-        examples:
-          - "main"
-          - "master"
+      # Use OTel VCS semconv for branch name
+      - ref: vcs.ref.head.name
+        brief: The git branch being released from
 
   # ==========================================================================
   # CHANGELOG ATTRIBUTES
