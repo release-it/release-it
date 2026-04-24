@@ -591,7 +591,7 @@ describe('tasks', () => {
     assert(changelogCalls[0].arguments[0].text.includes('Add file'));
   });
 
-  test('should show changelog preview when logs.preview.changelog is "show"', async () => {
+  test('should show changelog preview when quiet is false', async () => {
     gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
     childProcess.execSync('git tag 1.2.3', execOpts);
     gitAdd('line', 'file', 'Add file');
@@ -599,14 +599,14 @@ describe('tasks', () => {
       {},
       getContainer({
         increment: 'patch',
-        logs: { preview: { changelog: 'show' } }
+        quiet: false
       })
     );
     const changelogCalls = log.preview.mock.calls.filter(call => call.arguments[0].title === 'changelog');
     assert.equal(changelogCalls.length, 1);
   });
 
-  test('should hide changelog preview when logs.preview.changelog is "hide"', async () => {
+  test('should announce hidden preview when quiet is true', async () => {
     gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
     childProcess.execSync('git tag 1.2.3', execOpts);
     gitAdd('line', 'file', 'Add file');
@@ -614,11 +614,10 @@ describe('tasks', () => {
       {},
       getContainer({
         increment: 'patch',
-        logs: { preview: { changelog: 'hide' } }
+        quiet: true
       })
     );
     assert(log.obtrusive.mock.calls[0].arguments[0].includes('release my-package'));
-    const changelogCalls = log.preview.mock.calls.filter(call => call.arguments[0].title === 'changelog');
-    assert.equal(changelogCalls.length, 0);
+    assert(log.info.mock.calls.some(call => call.arguments[0] === 'Preview output hidden (--quiet).'));
   });
 });

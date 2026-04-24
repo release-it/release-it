@@ -206,10 +206,6 @@ export interface Config {
     skipChecks?: boolean;
   };
 
-  logs?: {
-    preview?: {
-      /** @default "show" */
-      changelog?: 'show' | 'hide';
-    };
-  };
+  /** @default false */
+  quiet?: boolean;
 }
