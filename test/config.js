@@ -65,6 +65,19 @@ describe('config', async () => {
     assert.equal(config.options.npm.publish, false);
   });
 
+  test('should replace (not concatenate) array options with user-provided arrays', async () => {
+    const config = new Config({ git: { pushArgs: ['--force'] }, npm: { publishArgs: ['--tag=next'] } });
+    await config.init();
+    assert.deepEqual(config.options.git.pushArgs, ['--force']);
+    assert.deepEqual(config.options.npm.publishArgs, ['--tag=next']);
+  });
+
+  test('should allow empty array to clear default array option', async () => {
+    const config = new Config({ git: { pushArgs: [] } });
+    await config.init();
+    assert.deepEqual(config.options.git.pushArgs, []);
+  });
+
   test('should read YAML config', async () => {
     const config = new Config({ configDir: './test/stub/config/yaml' });
     await config.init();
