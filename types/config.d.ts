@@ -205,4 +205,7 @@ export interface Config {
     /** @default false */
     skipChecks?: boolean;
   };
+
+  /** @default false */
+  quiet?: boolean;
 }
