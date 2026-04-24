@@ -121,6 +121,27 @@ export const interceptUpdate = (
   );
 };
 
+export const interceptPublish = (
+  server,
+  { host = 'github.com', owner = 'user', project = 'repo', body: { tag_name } = {} } = {}
+) => {
+  server.patch(
+    {
+      url: `/repos/${owner}/${project}/releases/1`,
+      body: { draft: false }
+    },
+    {
+      status: 200,
+      body: {
+        id: 1,
+        tag_name,
+        draft: false,
+        html_url: `https://${host}/${owner}/${project}/releases/tag/${tag_name}`
+      }
+    }
+  );
+};
+
 export const interceptAsset = (
   server,
   { api = 'https://api.github.com', host = 'github.com', owner = 'user', project = 'repo', tagName } = {}

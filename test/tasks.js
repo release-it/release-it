@@ -20,6 +20,7 @@ import {
   interceptAuthentication as interceptGitHubAuthentication,
   interceptCollaborator as interceptGitHubCollaborator,
   interceptCreate as interceptGitHubCreate,
+  interceptPublish as interceptGitHubPublish,
   interceptAsset as interceptGitHubAsset
 } from './stub/github.js';
 import { factory, LogStub, SpinnerStub } from './util/index.js';
@@ -256,9 +257,11 @@ describe('tasks', () => {
         tag_name: 'v1.1.0-alpha.0',
         name: 'Release 1.1.0-alpha.0',
         body: `Notes for ${pkgName} [v1.1.0-alpha.0]: ${sha}`,
-        prerelease: true
+        prerelease: true,
+        draft: true
       }
     });
+    interceptGitHubPublish(github, { owner, project, body: { tag_name: 'v1.1.0-alpha.0' } });
 
     interceptGitLabUser(gitlab, { owner });
     interceptGitLabCollaborator(gitlab, { owner, project });
