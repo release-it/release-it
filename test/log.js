@@ -151,4 +151,22 @@ describe('log', () => {
     const { stdout } = mockStdIo.end();
     assert.equal(stripVTControlCharacters(stdout), `Title:${EOL}changelog\n`);
   });
+
+  test('should print preview when not quiet', () => {
+    const log = new Log({ isQuiet: false });
+    mockStdIo.start();
+    log.preview({ title: 'changelog', text: 'x' });
+    const { stdout } = mockStdIo.end();
+    assert.notEqual(stdout, '');
+  });
+
+  test('should suppress every preview when quiet', () => {
+    const log = new Log({ isQuiet: true });
+    mockStdIo.start();
+    log.preview({ title: 'changelog', text: 'x' });
+    log.preview({ title: 'changeset', text: 'y' });
+    log.preview({ title: 'release notes', text: 'z' });
+    const { stdout } = mockStdIo.end();
+    assert.equal(stdout, '');
+  });
 });

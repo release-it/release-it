@@ -1,4 +1,5 @@
 {
+  "quiet": false,
   "hooks": {},
   "git": {
     "changelog": "git log --pretty=format:\"* %s (%h)\" ${from}...${to}",
