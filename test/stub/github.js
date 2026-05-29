@@ -38,7 +38,7 @@ export const interceptCreate = (
     body: {
       tag_name,
       name = '',
-      body = null,
+      body = '',
       prerelease = false,
       draft = false,
       generate_release_notes = false,
@@ -81,7 +81,7 @@ export const interceptUpdate = (
     body: {
       tag_name,
       name = '',
-      body = null,
+      body = '',
       prerelease = false,
       draft = false,
       generate_release_notes = false,
