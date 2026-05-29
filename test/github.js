@@ -615,7 +615,7 @@ describe('github', () => {
         tag_name: '2.0.2',
         name: 'Release 2.0.2',
         generate_release_notes: false,
-        body: null,
+        body: '',
         discussion_category_name: 'Announcement'
       }
     });
