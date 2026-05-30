@@ -10,6 +10,7 @@ import {
   interceptListReleases,
   interceptCreate,
   interceptUpdate,
+  interceptPublish,
   interceptAsset
 } from './stub/github.js';
 import { mockFetch } from './util/mock.js';
@@ -88,11 +89,84 @@ describe('github', () => {
 
     interceptAuthentication(api);
     interceptCollaborator(api);
-    interceptCreate(api, { body: { tag_name: '2.0.2', name: 'Release 2.0.2', body: 'Custom notes' } });
+    interceptCreate(api, { body: { tag_name: '2.0.2', name: 'Release 2.0.2', body: 'Custom notes', draft: true } });
+    interceptAsset(assets, { body: '*' });
+    interceptPublish(api, { body: { tag_name: '2.0.2' } });
+
+    await runTasks(github);
+
+    const { isReleased, releaseUrl } = github.getContext();
+    assert(isReleased);
+    assert.equal(releaseUrl, 'https://github.com/user/repo/releases/tag/2.0.2');
+  });
+
+  test('should keep release as draft when draft:true with assets', async t => {
+    const options = {
+      git,
+      github: {
+        pushRepo,
+        tokenRef,
+        release: true,
+        releaseName: 'Release ${tagName}',
+        releaseNotes: 'echo Custom notes',
+        draft: true,
+        assets: 'test/resources/file-v${version}.txt'
+      }
+    };
+    const github = await factory(GitHub, { options });
+
+    const original = github.shell.exec.bind(github.shell);
+    t.mock.method(github.shell, 'exec', (...args) => {
+      if (args[0] === 'git log --pretty=format:"* %s (%h)" ${from}...${to}') return Promise.resolve('');
+      if (args[0] === 'git describe --tags --match=* --abbrev=0') return Promise.resolve('2.0.1');
+      return original(...args);
+    });
+
+    interceptAuthentication(api);
+    interceptCollaborator(api);
+    interceptCreate(api, {
+      body: { tag_name: '2.0.2', name: 'Release 2.0.2', body: 'Custom notes', draft: true }
+    });
     interceptAsset(assets, { body: '*' });
 
     await runTasks(github);
 
+    const execLabels = github.log.exec.mock.calls.map(c => c.arguments[0]);
+    assert(!execLabels.some(label => /updateRelease \(publish/.test(label)));
+    const { isReleased } = github.getContext();
+    assert(isReleased);
+  });
+
+  test('should create release without draft flow when no assets', async t => {
+    const options = {
+      git,
+      github: {
+        pushRepo,
+        tokenRef,
+        release: true,
+        releaseName: 'Release ${tagName}',
+        releaseNotes: 'echo Custom notes'
+      }
+    };
+    const github = await factory(GitHub, { options });
+
+    const original = github.shell.exec.bind(github.shell);
+    t.mock.method(github.shell, 'exec', (...args) => {
+      if (args[0] === 'git log --pretty=format:"* %s (%h)" ${from}...${to}') return Promise.resolve('');
+      if (args[0] === 'git describe --tags --match=* --abbrev=0') return Promise.resolve('2.0.1');
+      return original(...args);
+    });
+
+    interceptAuthentication(api);
+    interceptCollaborator(api);
+    interceptCreate(api, {
+      body: { tag_name: '2.0.2', name: 'Release 2.0.2', body: 'Custom notes', draft: false }
+    });
+
+    await runTasks(github);
+
+    const execLabels = github.log.exec.mock.calls.map(c => c.arguments[0]);
+    assert(!execLabels.some(label => /updateRelease \(publish/.test(label)));
     const { isReleased, releaseUrl } = github.getContext();
     assert(isReleased);
     assert.equal(releaseUrl, 'https://github.com/user/repo/releases/tag/2.0.2');
@@ -463,7 +537,8 @@ describe('github', () => {
 
     assert.equal(get.mock.callCount(), 0);
     assert.equal(github.log.exec.mock.calls[1].arguments[0], 'octokit repos.createRelease "R 1.0.1" (v1.0.1)');
-    assert.equal(github.log.exec.mock.calls.at(-1).arguments[0], 'octokit repos.uploadReleaseAssets');
+    assert.equal(github.log.exec.mock.calls.at(-2).arguments[0], 'octokit repos.uploadReleaseAssets');
+    assert.equal(github.log.exec.mock.calls.at(-1).arguments[0], 'octokit repos.updateRelease (publish v1.0.1)');
     const { isReleased, releaseUrl } = github.getContext();
     assert(isReleased);
     assert.equal(releaseUrl, 'https://github.com/user/repo/releases/tag/v1.0.1');
