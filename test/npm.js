@@ -391,6 +391,33 @@ describe('npm', async () => {
     assert.match(scoped.log.log.mock.calls.map(c => c.arguments[0]).join('\n'), /settings\/release-it\/staged-packages/);
   });
 
+  test('should surface the stage id from publish output in the approval message', async t => {
+    const npmClient = await factory(npm, { options: { npm: { stage: true } } });
+    npmClient.setContext({ name: 'pkg', username: 'webpro' });
+    const id = '71289309-c232-432b-a2d4-32a14fa08177';
+    t.mock.method(npmClient.shell, 'exec', () => Promise.resolve(`+ pkg@1.0.0 (staged with id ${id})`));
+    await npmClient.publish();
+    const logged = npmClient.log.log.mock.calls.map(c => c.arguments[0]).join('\n');
+    assert.match(logged, new RegExp(`npm stage approve ${id}`));
+  });
+
+  test('should describe a staged dry-run, whether npm resolves or rejects the un-bumped version', async t => {
+    const execs = [
+      () => Promise.resolve('staged with id 71289309-c232-432b-a2d4-32a14fa08177'),
+      () => Promise.reject(new Error('npm error You cannot publish over the previously published versions: 1.0.0.'))
+    ];
+    for (const exec of execs) {
+      const npmClient = await factory(npm, { options: { 'dry-run': true, npm: { stage: true } } });
+      npmClient.setContext({ name: 'pkg', username: 'webpro' });
+      t.mock.method(npmClient.shell, 'exec', exec);
+      await npmClient.publish();
+      const logged = npmClient.log.log.mock.calls.map(c => c.arguments[0]).join('\n');
+      assert.match(logged, /Would stage \(dry-run\)/);
+      assert.match(logged, /settings\/webpro\/staged-packages/);
+      assert.doesNotMatch(logged, /stage approve 71289309/);
+    }
+  });
+
   test('should skip checks', async () => {
     const options = { npm: { skipChecks: true } };
     const npmClient = await factory(npm, { options });
