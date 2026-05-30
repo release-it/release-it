@@ -3,6 +3,9 @@
   "hooks": {
     "after:init": ["npm run lint", "npm run knip", "npm run knip -- --production", "npm test"]
   },
+  "npm": {
+    "stage": true
+  },
   "github": {
     "tokenRef": "GITHUB_TOKEN_RELEASE_IT",
     "release": true,
