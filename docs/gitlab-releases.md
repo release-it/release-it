@@ -28,6 +28,7 @@ GitLab Releases do not support pre-releases or drafts.
 | `gitlab.assets`                      | Glob pattern path to assets to add to the GitLab release                    |
 | `gitlab.origin`                      | Base URL to use for the GitLab API (default: `https://${repo.host}`)        |
 | `gitlab.skipChecks`                  | Skip checks on `GITLAB_TOKEN` environment variable and milestone(s)         |
+| `gitlab.repoId`                      | Useful when not possible to use namespaced paths in API requests.           |
 
 ## Prerequisite checks
 
