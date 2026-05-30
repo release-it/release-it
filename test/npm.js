@@ -377,6 +377,20 @@ describe('npm', async () => {
     assert.deepEqual(exec.mock.calls.at(-1).arguments[0], ['pnpm', 'stage', 'publish', '.', '--tag', 'latest']);
   });
 
+  test('should print the staged-packages approval URL after stage publish', async t => {
+    const unscoped = await factory(npm, { options: { npm: { stage: true } } });
+    unscoped.setContext({ name: 'pkg', username: 'webpro' });
+    t.mock.method(unscoped.shell, 'exec', () => Promise.resolve());
+    await unscoped.publish();
+    assert.match(unscoped.log.log.mock.calls.map(c => c.arguments[0]).join('\n'), /settings\/webpro\/staged-packages/);
+
+    const scoped = await factory(npm, { options: { npm: { stage: true } } });
+    scoped.setContext({ name: '@release-it/x', username: 'webpro' });
+    t.mock.method(scoped.shell, 'exec', () => Promise.resolve());
+    await scoped.publish();
+    assert.match(scoped.log.log.mock.calls.map(c => c.arguments[0]).join('\n'), /settings\/release-it\/staged-packages/);
+  });
+
   test('should skip checks', async () => {
     const options = { npm: { skipChecks: true } };
     const npmClient = await factory(npm, { options });
