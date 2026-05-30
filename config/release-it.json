@@ -30,6 +30,7 @@
     "publishArgs": [],
     "publishPackageManager": "npm",
     "tag": null,
+    "stage": false,
     "otp": null,
     "ignoreVersion": false,
     "allowSameVersion": false,

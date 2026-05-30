@@ -83,6 +83,9 @@ export interface Config {
     /** @default null */
     tag?: any;
 
+    /** @default false */
+    stage?: boolean;
+
     /** @default null */
     otp?: any;
 

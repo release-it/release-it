@@ -29,6 +29,10 @@
       "type": "string",
       "default": null
     },
+    "stage": {
+      "type": "boolean",
+      "default": false
+    },
     "otp": {
       "type": "string",
       "default": null

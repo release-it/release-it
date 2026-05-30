@@ -12,6 +12,7 @@ With a `package.json` in the current directory, release-it will let `npm` bump t
 | Option                      | Description                                                                          |
 | :-------------------------- | :----------------------------------------------------------------------------------- |
 | `npm.publish`               | Set to `false` to skip the npm publish step                                          |
+| `npm.stage`                 | Submit to the staging queue (`stage publish`) for later 2FA approval (npm, pnpm)     |
 | `npm.publishPath`           | Publish only a specific folder (e.g. `dist`)                                         |
 | `npm.publishArgs`           | In case extra arguments should be provided to npm for the publish operation          |
 | `npm.publishPackageManager` | Use `pnpm` or `bun` to publish (default: `npm`)                                      |
@@ -226,6 +227,38 @@ jobs:
           # Delete your NPM_TOKEN/NODE_AUTH_TOKEN -- you don't need it!
 ```
 
+## Staged publishing
+
+npm's [staged publishing][12] adds a human approval step before a version goes
+live. Instead of publishing directly, release-it submits the tarball to a stage queue. A maintainer then reviews and
+approves it with 2FA (from the CLI or npmjs.com) before it becomes installable.
+
+```json
+{
+  "npm": {
+    "stage": true
+  }
+}
+```
+
+release-it then runs `npm stage publish` (or `pnpm stage publish`) instead of a direct publish. Submitting to the stage does **not** require 2FA (so
+it works non-interactively from CI); the 2FA "proof of presence" happens at approval. release-it will not prompt for an
+OTP, and the package is **not** live when release-it finishes. Approve it afterwards:
+
+```
+npm stage list                # find the staged version
+npm stage view <stage-id>     # inspect it
+npm stage approve <stage-id>  # publish it (prompts for 2FA)
+# or reject it:  npm stage reject <stage-id>
+```
+
+Staged packages can also be reviewed and approved from the "Staged" tab on npmjs.com.
+
+- Supported by npm (CLI v11.15.0+) and pnpm (v11.3.0+), on Node v22.14.0+.
+- It composes with the other options (`tag`, `publishPath`, `publishArgs`, scoped/private registries).
+- A [trusted publisher](#trusted-publishing-oidc) can be set to **stage-only**, accepting `npm stage publish` and
+  rejecting `npm publish`, so CI publishes also require approval.
+
 ## Miscellaneous
 
 - When `npm version` fails, the release is aborted (except when using [`--no-increment`][9]).
@@ -244,3 +277,4 @@ jobs:
 [9]: ../README.md#update-or-re-run-existing-releases
 [10]: ./ci.md#npm
 [11]: https://github.com/release-it/release-it/issues/95#issuecomment-344919384
+[12]: https://docs.npmjs.com/staged-publishing

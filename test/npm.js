@@ -323,6 +323,46 @@ describe('npm', async () => {
     ]);
   });
 
+  test('should publish to the staging area when `stage` is enabled', async t => {
+    const options = { npm: { skipChecks: true, stage: true } };
+    const npmClient = await factory(npm, { options });
+    const exec = t.mock.method(npmClient.shell, 'exec', () => Promise.resolve());
+    await runTasks(npmClient);
+    assert.deepEqual(exec.mock.calls.at(-1).arguments[0], [
+      'npm',
+      'stage',
+      'publish',
+      '.',
+      '--tag',
+      'latest',
+      '--workspaces=false'
+    ]);
+  });
+
+  test('should not pass --otp when staging (2FA happens at approval)', async t => {
+    const npmClient = await factory(npm, { options: { npm: { stage: true } } });
+    npmClient.setContext({ name: 'pkg' });
+    const exec = t.mock.method(npmClient.shell, 'exec', () => Promise.resolve());
+    await npmClient.publish({ otp: '123456' });
+    assert.deepEqual(exec.mock.calls.at(-1).arguments[0], [
+      'npm',
+      'stage',
+      'publish',
+      '.',
+      '--tag',
+      'latest',
+      '--workspaces=false'
+    ]);
+  });
+
+  test('should stage publish with pnpm', async t => {
+    const npmClient = await factory(npm, { options: { npm: { stage: true, publishPackageManager: 'pnpm' } } });
+    npmClient.setContext({ name: 'pkg' });
+    const exec = t.mock.method(npmClient.shell, 'exec', () => Promise.resolve());
+    await npmClient.publish();
+    assert.deepEqual(exec.mock.calls.at(-1).arguments[0], ['pnpm', 'stage', 'publish', '.', '--tag', 'latest']);
+  });
+
   test('should skip checks', async () => {
     const options = { npm: { skipChecks: true } };
     const npmClient = await factory(npm, { options });
