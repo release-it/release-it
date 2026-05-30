@@ -194,6 +194,13 @@ download from the GitHub release page. Example:
 }
 ```
 
+## Immutable releases
+
+GitHub repositories and organizations can enable [release immutability][12], which locks a release's Git tag and assets
+once it's published. Because assets can't be added after a release is locked, release-it publishes a release with assets
+in two steps: it creates a draft, uploads the assets, then publishes it. Releases without assets are published in a
+single step.
+
 ## Pre-release
 
 If the release is a pre-release (according to semver), release-it automatically sets `github.preRelease` to `true`. This
@@ -207,8 +214,8 @@ In case the release should not be made public yet, set `github.draft: true`.
 
 Use a different host from what would be derived from the Git url (e.g. when using GitHub Enterprise).
 
-By default, the GitHub API host is [https://api.github.com][12]. Setting `github.host` to `"private.example.org"` would
-result in release-it using [https://private.example.org/api/v3][13].
+By default, the GitHub API host is [https://api.github.com][13]. Setting `github.host` to `"private.example.org"` would
+result in release-it using [https://private.example.org/api/v3][14].
 
 ## Proxy
 
@@ -265,7 +272,7 @@ To submit a comment to each merged pull requests and closed issue that is part o
 
 Example comment:
 
-\:rocket: _This issue has been resolved in v15.10.0. See [Release 15.10.0][14] for release notes._
+\:rocket: _This issue has been resolved in v15.10.0. See [Release 15.10.0][15] for release notes._
 
 This only works with `github.release: true` and not with [manual release via the web interface][9].
 
@@ -282,6 +289,8 @@ Since this is an experimental feature, it's disabled by default for now. Set `gi
 [9]: #manual
 [10]: ./changelog.md
 [11]: https://docs.github.com/en/rest/commits/commits?apiVersion=2022-11-28#compare-two-commits
-[12]: https://api.github.com
-[13]: https://private.example.org/api/v3
-[14]: https://github.com/release-it/release-it/releases/tag/15.10.0
+[12]:
+  https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/establish-provenance-and-integrity/preventing-changes-to-your-releases
+[13]: https://api.github.com
+[14]: https://private.example.org/api/v3
+[15]: https://github.com/release-it/release-it/releases/tag/15.10.0
