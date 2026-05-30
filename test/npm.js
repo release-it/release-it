@@ -288,6 +288,20 @@ describe('npm', async () => {
     assert.equal(npmClient.log.warn.mock.calls[0].arguments[0], 'The provided OTP is incorrect or has expired.');
   });
 
+  test('should let npm own the terminal under --only-version so passkey 2FA works (#1234)', async t => {
+    const onlyVersion = await factory(npm, { options: { 'only-version': true } });
+    onlyVersion.setContext({ name: 'pkg' });
+    const exec = t.mock.method(onlyVersion.shell, 'exec', () => Promise.resolve());
+    await onlyVersion.publish();
+    assert.equal(exec.mock.calls.at(-1).arguments[1].interactive, true);
+
+    const ci = await factory(npm);
+    ci.setContext({ name: 'pkg' });
+    const exec2 = t.mock.method(ci.shell, 'exec', () => Promise.resolve());
+    await ci.publish();
+    assert.equal(exec2.mock.calls.at(-1).arguments[1].interactive, false);
+  });
+
   test('should publish', async t => {
     const npmClient = await factory(npm);
     const exec = t.mock.method(npmClient.shell, 'exec', command => {

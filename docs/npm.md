@@ -135,6 +135,11 @@ In case two-factor authentication (2FA) is enabled for the package, release-it w
 The OTP can be provided from the command line (`--npm.otp=123456`). However, providing the OTP without a prompt
 basically defeats the purpose of 2FA (also, the OTP expires after a short period).
 
+With a **security key / passkey (WebAuthn)** there is no one-time password; npm opens a browser/device approval when you
+publish. release-it runs `npm publish` on an inherited terminal so this works in interactive runs (including
+`--only-version`). For CI or non-interactive publishing, use [staged publishing](#staged-publishing), which defers the
+2FA approval to `npm stage approve`.
+
 ## Publish path
 
 Use `npm.publishPath` to publish only a specific folder. For example, set `npm.publishPath` to `"dist"`. The default
