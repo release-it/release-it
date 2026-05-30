@@ -137,8 +137,8 @@ basically defeats the purpose of 2FA (also, the OTP expires after a short period
 
 With a **security key / passkey (WebAuthn)** there is no one-time password; npm opens a browser/device approval when you
 publish. release-it runs `npm publish` on an inherited terminal so this works in interactive runs (including
-`--only-version`). For CI or non-interactive publishing, use [staged publishing](#staged-publishing), which defers the
-2FA approval to `npm stage approve`.
+`--only-version`). For CI or non-interactive publishing, use [staged publishing][3], which defers the 2FA approval to
+`npm stage approve`.
 
 ## Publish path
 
@@ -165,17 +165,17 @@ version. This option may become deprecated, it is recommended to use `versionArg
 ## Monorepos
 
 Monorepos do not require extra configuration, but release-it handles only one package at a time. Also see how [Git steps
-can be skipped][3]. This is useful if, for instance, tagging the Git repo should be skipped.
+can be skipped][4]. This is useful if, for instance, tagging the Git repo should be skipped.
 
-To bump multiple `package.json` files in a monorepo to the same version, use the [@release-it/bumper][4] plugin.
+To bump multiple `package.json` files in a monorepo to the same version, use the [@release-it/bumper][5] plugin.
 
-Also see this [monorepo recipe][5].
+Also see this [monorepo recipe][6].
 
-For Yarn workspaces, see the [release-it-yarn-workspaces][6] plugin.
+For Yarn workspaces, see the [release-it-yarn-workspaces][7] plugin.
 
 ## Trusted Publishing (OIDC)
 
-npm's [Trusted Publishing][7] uses OpenID Connect (OIDC) for secure, token-free publishing from CI/CD. This eliminates
+npm's [Trusted Publishing][8] uses OpenID Connect (OIDC) for secure, token-free publishing from CI/CD. This eliminates
 long-lived tokens and automatically generates provenance attestations.
 
 Note that none of these steps are optional.
@@ -188,7 +188,7 @@ Note that none of these steps are optional.
 
 ### Step 2: configure `release-it`
 
-When using Trusted Publishing, you **must** configure release-it to **skip npm authentication checks** (see [#1244][8]):
+When using Trusted Publishing, you **must** configure release-it to **skip npm authentication checks** (see [#1244][9]):
 
 ```json
 {
@@ -234,9 +234,9 @@ jobs:
 
 ## Staged publishing
 
-npm's [staged publishing][12] adds a human approval step before a version goes
-live. Instead of publishing directly, release-it submits the tarball to a stage queue. A maintainer then reviews and
-approves it with 2FA (from the CLI or npmjs.com) before it becomes installable.
+npm's [staged publishing][10] adds a human approval step before a version goes live. Instead of publishing directly,
+release-it submits the tarball to a stage queue. A maintainer then reviews and approves it with 2FA (from the CLI or
+npmjs.com) before it becomes installable.
 
 ```json
 {
@@ -246,9 +246,9 @@ approves it with 2FA (from the CLI or npmjs.com) before it becomes installable.
 }
 ```
 
-release-it then runs `npm stage publish` (or `pnpm stage publish`) instead of a direct publish. Submitting to the stage does **not** require 2FA (so
-it works non-interactively from CI); the 2FA "proof of presence" happens at approval. release-it will not prompt for an
-OTP, and the package is **not** live when release-it finishes. Approve it afterwards:
+release-it then runs `npm stage publish` (or `pnpm stage publish`) instead of a direct publish. Submitting to the stage
+does **not** require 2FA (so it works non-interactively from CI); the 2FA "proof of presence" happens at approval.
+release-it will not prompt for an OTP, and the package is **not** live when release-it finishes. Approve it afterwards:
 
 ```
 npm stage list                # find the staged version
@@ -261,25 +261,27 @@ Staged packages can also be reviewed and approved from the "Staged" tab on npmjs
 
 - Supported by npm (CLI v11.15.0+) and pnpm (v11.3.0+), on Node v22.14.0+.
 - It composes with the other options (`tag`, `publishPath`, `publishArgs`, scoped/private registries).
-- A [trusted publisher](#trusted-publishing-oidc) can be set to **stage-only**, accepting `npm stage publish` and
-  rejecting `npm publish`, so CI publishes also require approval.
+- A [trusted publisher][11] can be set to **stage-only**, accepting `npm stage publish` and rejecting `npm publish`, so
+  CI publishes also require approval.
 
 ## Miscellaneous
 
-- When `npm version` fails, the release is aborted (except when using [`--no-increment`][9]).
-- Learn how to [authenticate and publish from a CI/CD environment][10].
+- When `npm version` fails, the release is aborted (except when using [`--no-increment`][12]).
+- Learn how to [authenticate and publish from a CI/CD environment][13].
 - The `"private": true` setting in package.json will be respected, and `release-it` will skip this step.
-- Getting an `ENEEDAUTH` error while a manual `npm publish` works? Please see [#95][11].
+- Getting an `ENEEDAUTH` error while a manual `npm publish` works? Please see [#95][14].
 
 [1]: https://docs.npmjs.com/about-scopes
 [2]: https://registry.npmjs.org
-[3]: ./git.md#skip-git-steps
-[4]: https://github.com/release-it/bumper
-[5]: ./recipes/monorepo.md
-[6]: https://github.com/release-it-plugins/workspaces
-[7]: https://docs.npmjs.com/trusted-publishers
-[8]: https://github.com/release-it/release-it/issues/1244#issuecomment-3217898680
-[9]: ../README.md#update-or-re-run-existing-releases
-[10]: ./ci.md#npm
-[11]: https://github.com/release-it/release-it/issues/95#issuecomment-344919384
-[12]: https://docs.npmjs.com/staged-publishing
+[3]: #staged-publishing
+[4]: ./git.md#skip-git-steps
+[5]: https://github.com/release-it/bumper
+[6]: ./recipes/monorepo.md
+[7]: https://github.com/release-it-plugins/workspaces
+[8]: https://docs.npmjs.com/trusted-publishers
+[9]: https://github.com/release-it/release-it/issues/1244#issuecomment-3217898680
+[10]: https://docs.npmjs.com/staged-publishing
+[11]: #trusted-publishing-oidc
+[12]: ../README.md#update-or-re-run-existing-releases
+[13]: ./ci.md#npm
+[14]: https://github.com/release-it/release-it/issues/95#issuecomment-344919384
