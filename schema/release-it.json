@@ -93,6 +93,11 @@
       "type": "boolean",
       "default": false,
       "description": "Suppress preview output (changelog, changeset, release notes) during the release flow. Does not affect the --changelog mode."
+    },
+    "requireVersionFail": {
+      "type": "boolean",
+      "default": true,
+      "description": "Exit with code 1 and show a warning when --release-version cannot determine a new version."
     }
   }
 }

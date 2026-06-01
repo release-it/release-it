@@ -1,5 +1,6 @@
 {
   "quiet": false,
+  "requireVersionFail": true,
   "hooks": {},
   "git": {
     "changelog": "git log --pretty=format:\"* %s (%h)\" ${from}...${to}",

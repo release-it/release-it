@@ -8,6 +8,7 @@ test('should parse boolean arguments', () => {
     '--ci',
     '--github=false',
     '--no-npm',
+    '--no-requireVersionFail',
     '--git.addUntrackedFiles=true',
     '--git.commit=false',
     '--no-git.tag',
@@ -20,6 +21,7 @@ test('should parse boolean arguments', () => {
   assert.equal(result.ci, true);
   assert.equal(result.github, false);
   assert.equal(result.npm, false);
+  assert.equal(result.requireVersionFail, false);
   assert.equal(result.git.addUntrackedFiles, true);
   assert.equal(result.git.commit, false);
   assert.equal(result.git.tag, false);
