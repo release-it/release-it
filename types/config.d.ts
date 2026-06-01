@@ -211,4 +211,7 @@ export interface Config {
 
   /** @default false */
   quiet?: boolean;
+
+  /** @default true */
+  requireVersionFail?: boolean;
 }

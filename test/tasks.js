@@ -51,6 +51,13 @@ describe('tasks', () => {
     return { log, spinner, config, shell };
   };
 
+  const mockExit = t =>
+    t.mock.method(process, 'exit', code => {
+      const err = new Error(`process.exit: ${code}`);
+      err.code = code;
+      throw err;
+    });
+
   before(() => {
     mocker.mockGlobal();
   });
@@ -116,6 +123,36 @@ describe('tasks', () => {
     assert.match(log.log.mock.calls.at(-1).arguments[0], /Done \(in [0-9]+s\.\)/);
     const stdout = childProcess.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
     assert.equal(stdout.trim(), '1.2.4');
+  });
+
+  test('should fail release-version when no new version is available by default', async t => {
+    const exit = mockExit(t);
+
+    await assert.rejects(runTasks({}, getContainer({ 'release-version': true, increment: 'foo' })), err => {
+      assert.equal(err.code, 1);
+      return true;
+    });
+
+    assert.equal(exit.mock.callCount(), 1);
+    assert.equal(exit.mock.calls[0].arguments[0], 1);
+    assert.equal(log.warn.mock.callCount(), 1);
+    assert.equal(log.warn.mock.calls[0].arguments[0], 'No new version to release');
+  });
+
+  test('should pass release-version when no new version is available and requireVersionFail is false', async t => {
+    const exit = mockExit(t);
+
+    await assert.rejects(
+      runTasks({}, getContainer({ 'release-version': true, increment: 'foo', requireVersionFail: false })),
+      err => {
+        assert.equal(err.code, 0);
+        return true;
+      }
+    );
+
+    assert.equal(exit.mock.callCount(), 1);
+    assert.equal(exit.mock.calls[0].arguments[0], 0);
+    assert.equal(log.warn.mock.callCount(), 0);
   });
 
   test('should use pkg.version', async () => {

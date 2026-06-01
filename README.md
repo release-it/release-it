@@ -139,6 +139,9 @@ Alternatively, a plugin can be used to override this (e.g. to manage a `VERSION`
 
 Add the `--release-version` flag to print the **next** version without releasing anything.
 
+By default, `--release-version` exits with code `1` when no new version can be determined. Set
+`requireVersionFail: false` or pass `--no-requireVersionFail` to exit with code `0` without a warning instead.
+
 ## Git
 
 Git projects are supported well by release-it, automating the tasks to stage, commit, tag and push releases to any Git
