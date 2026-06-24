@@ -247,7 +247,7 @@ describe('tasks.interactive', () => {
       increment: 'minor',
       hooks,
       github: { release: true, pushRepo: `https://github.com/${owner}/${project}`, skipChecks: true },
-      gitlab: { release: true, pushRepo: `https://gitlab.com/${owner}/${project}`, skipChecks: true },
+      gitlab: { release: true, pushRepo: `https://gitlab.com/${owner}/${project}`, skipChecks: true, secure: true },
       npm: { name: pkgName, skipChecks: true }
     });
 

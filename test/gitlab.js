@@ -1,7 +1,7 @@
 import fs from 'node:fs';
+import https from 'node:https';
 import test, { before, after, afterEach, beforeEach, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { Agent } from 'undici';
 import Git from '../lib/plugin/git/Git.js';
 import GitLab from '../lib/plugin/gitlab/GitLab.js';
 import { GitlabTestServer } from './util/https-server/server.js';
@@ -315,67 +315,59 @@ describe('GitLab', () => {
     );
   });
 
-  test('should not create fetch agent', async () => {
+  test('should not create https agent', async () => {
     const options = { gitlab: {} };
     const gitlab = await factory(GitLab, { options });
 
-    assert.deepEqual(gitlab.certificateAuthorityOption, {});
+    assert.equal(gitlab.httpsAgent, undefined);
   });
 
-  test('should create fetch agent if secure == false', async () => {
+  test('should create https agent if secure == false', async () => {
     const options = { gitlab: { secure: false } };
     const gitlab = await factory(GitLab, { options });
-    const { dispatcher } = gitlab.certificateAuthorityOption;
 
-    assert(dispatcher instanceof Agent, "Fetch dispatcher should be an instance of undici's Agent class");
-
-    const kOptions = Object.getOwnPropertySymbols(dispatcher).find(symbol => symbol.description === 'options');
-    assert.deepEqual(dispatcher[kOptions].connect, { rejectUnauthorized: false, ca: undefined });
+    assert(gitlab.httpsAgent instanceof https.Agent, 'HTTPS agent should be an instance of https.Agent');
+    assert.equal(gitlab.httpsAgent.options.rejectUnauthorized, false);
+    assert.equal(gitlab.httpsAgent.options.ca, undefined);
   });
 
-  test('should create fetch agent if certificateAuthorityFile', async t => {
+  test('should create https agent if certificateAuthorityFile', async t => {
     const readFileSync = t.mock.method(fs, 'readFileSync', () => 'test certificate');
 
     const options = { gitlab: { certificateAuthorityFile: 'cert.crt' } };
     const gitlab = await factory(GitLab, { options });
-    const { dispatcher } = gitlab.certificateAuthorityOption;
 
-    assert(dispatcher instanceof Agent, "Fetch dispatcher should be an instance of undici's Agent class");
-
-    const kOptions = Object.getOwnPropertySymbols(dispatcher).find(symbol => symbol.description === 'options');
-    assert.deepEqual(dispatcher[kOptions].connect, { rejectUnauthorized: undefined, ca: 'test certificate' });
+    assert(gitlab.httpsAgent instanceof https.Agent, 'HTTPS agent should be an instance of https.Agent');
+    assert.equal(gitlab.httpsAgent.options.rejectUnauthorized, undefined);
+    assert.equal(gitlab.httpsAgent.options.ca, 'test certificate');
 
     readFileSync.mock.restore();
   });
 
-  test('should create fetch agent if CI_SERVER_TLS_CA_FILE env is set', async t => {
+  test('should create https agent if CI_SERVER_TLS_CA_FILE env is set', async t => {
     const readFileSync = t.mock.method(fs, 'readFileSync', () => 'test certificate');
     process.env[certificateAuthorityFileRef] = 'ca.crt';
 
     const options = { gitlab: {} };
     const gitlab = await factory(GitLab, { options });
-    const { dispatcher } = gitlab.certificateAuthorityOption;
 
-    assert(dispatcher instanceof Agent, "Fetch dispatcher should be an instance of undici's Agent class");
-
-    const kOptions = Object.getOwnPropertySymbols(dispatcher).find(symbol => symbol.description === 'options');
-    assert.deepEqual(dispatcher[kOptions].connect, { rejectUnauthorized: undefined, ca: 'test certificate' });
+    assert(gitlab.httpsAgent instanceof https.Agent, 'HTTPS agent should be an instance of https.Agent');
+    assert.equal(gitlab.httpsAgent.options.rejectUnauthorized, undefined);
+    assert.equal(gitlab.httpsAgent.options.ca, 'test certificate');
 
     readFileSync.mock.restore();
   });
 
-  test('should create fetch agent if certificateAuthorityFileRef env is set', async t => {
+  test('should create https agent if certificateAuthorityFileRef env is set', async t => {
     const readFileSync = t.mock.method(fs, 'readFileSync', () => 'test certificate');
     process.env['GITLAB_CA_FILE'] = 'custom-ca.crt';
 
     const options = { gitlab: { certificateAuthorityFileRef: 'GITLAB_CA_FILE' } };
     const gitlab = await factory(GitLab, { options });
-    const { dispatcher } = gitlab.certificateAuthorityOption;
 
-    assert(dispatcher instanceof Agent, "Fetch dispatcher should be an instance of undici's Agent class");
-
-    const kOptions = Object.getOwnPropertySymbols(dispatcher).find(symbol => symbol.description === 'options');
-    assert.deepEqual(dispatcher[kOptions].connect, { rejectUnauthorized: undefined, ca: 'test certificate' });
+    assert(gitlab.httpsAgent instanceof https.Agent, 'HTTPS agent should be an instance of https.Agent');
+    assert.equal(gitlab.httpsAgent.options.rejectUnauthorized, undefined);
+    assert.equal(gitlab.httpsAgent.options.ca, 'test certificate');
 
     readFileSync.mock.restore();
   });
@@ -451,5 +443,153 @@ describe('GitLab', () => {
     interceptCollaborator(local);
 
     await assert.doesNotReject(gitlab.init());
+  });
+
+  describe('HTTPS transport', () => {
+    const startSelfHostedGitLab = async (t, { port = 3000, protocol = 'https', gitlab: gitlabOptions = {} } = {}) => {
+      const host = `${protocol}://localhost:${port}`;
+      const server = new GitlabTestServer({ protocol });
+
+      t.after(async () => {
+        await server.stop();
+      });
+
+      await server.run(port);
+
+      const gitlab = await factory(GitLab, {
+        options: {
+          ci: true,
+          git: { pushRepo: `${host}/user/repo` },
+          gitlab: {
+            tokenRef,
+            origin: host,
+            secure: false,
+            skipChecks: true,
+            release: true,
+            ...gitlabOptions
+          }
+        }
+      });
+
+      await gitlab.init();
+      gitlab.config.setContext({
+        version: '2.0.1',
+        tagName: '2.0.1',
+        branchName: 'main',
+        name: 'test'
+      });
+      gitlab.setContext({
+        version: '2.0.1',
+        tagName: '2.0.1',
+        branchName: 'main'
+      });
+
+      return { gitlab, host };
+    };
+
+    test('should upload asset via https transport', async t => {
+      const { gitlab, host } = await startSelfHostedGitLab(t);
+
+      await gitlab.uploadAsset('test/resources/file-v2.0.1.txt');
+
+      assert.equal(
+        gitlab.assets[0].url,
+        `${host}/user/repo/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/file-v2.0.1.txt`
+      );
+    });
+
+    test('should upload asset to generic repo via https transport', async t => {
+      const { gitlab, host } = await startSelfHostedGitLab(t, {
+        gitlab: {
+          useGenericPackageRepositoryForAssets: true,
+          genericPackageRepositoryName: 'release-it'
+        }
+      });
+
+      await gitlab.uploadAsset('test/resources/file-v2.0.1.txt');
+
+      assert.equal(
+        gitlab.assets[0].url,
+        `${host}/api/v4/projects/user%2Frepo/packages/generic/release-it/2.0.1/file-v2.0.1.txt`
+      );
+    });
+
+    test('should throw when generic asset upload response is invalid via https transport', async t => {
+      const { gitlab } = await startSelfHostedGitLab(t, {
+        gitlab: {
+          useGenericPackageRepositoryForAssets: true,
+          genericPackageRepositoryName: 'release-it'
+        }
+      });
+
+      await assert.rejects(gitlab.uploadAsset('test/resources/invalid-upload.txt'), /GitLab asset upload failed/);
+    });
+
+    test('should create release via https transport', async t => {
+      const { gitlab, host } = await startSelfHostedGitLab(t);
+
+      await gitlab.createRelease();
+
+      const { isReleased, releaseUrl } = gitlab.getContext();
+      assert(isReleased);
+      assert.equal(releaseUrl, `${host}/user/repo/-/releases/2.0.1`);
+    });
+
+    test('should upload assets and release via https transport', async t => {
+      const { gitlab, host } = await startSelfHostedGitLab(t, {
+        gitlab: {
+          assets: 'test/resources/file-v2.0.1.txt',
+          releaseName: 'Release ${version}'
+        }
+      });
+
+      await gitlab.uploadAssets();
+      await gitlab.createRelease();
+
+      assert.equal(
+        gitlab.assets[0].url,
+        `${host}/user/repo/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/file-v2.0.1.txt`
+      );
+
+      const { isReleased, releaseUrl } = gitlab.getContext();
+      assert(isReleased);
+      assert.equal(releaseUrl, `${host}/user/repo/-/releases/2.0.1`);
+    });
+
+    test('should reject https requests with json error response', async t => {
+      const { gitlab } = await startSelfHostedGitLab(t);
+
+      await assert.rejects(gitlab.request('forbidden-json', { method: 'GET' }), /Forbidden/);
+    });
+
+    test('should reject https requests with text error response', async t => {
+      const { gitlab } = await startSelfHostedGitLab(t);
+
+      await assert.rejects(gitlab.request('forbidden-text', { method: 'GET' }), /Internal Server Error/);
+    });
+
+    test('should communicate over http transport when origin uses http', async t => {
+      const host = 'http://localhost:3001';
+      const server = new GitlabTestServer({ protocol: 'http' });
+
+      t.after(async () => {
+        await server.stop();
+      });
+
+      await server.run(3001);
+
+      const gitlab = await factory(GitLab, {
+        options: {
+          git: { pushRepo: `${host}/user/repo` },
+          gitlab: {
+            tokenRef,
+            origin: host,
+            secure: false
+          }
+        }
+      });
+
+      await assert.doesNotReject(gitlab.init());
+    });
   });
 });

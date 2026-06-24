@@ -171,7 +171,7 @@ the `secure` flag to false:
 }
 ```
 
-The `secure` option is passed down to the `fetch` agent as the `connect.rejectUnauthorized` option.
+The `secure` option is passed down to the `https` agent as the `rejectUnauthorized` option.
 
 ## Update the latest release
 

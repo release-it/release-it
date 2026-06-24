@@ -304,7 +304,8 @@ describe('tasks', () => {
         release: true,
         pushRepo: url,
         releaseNotes: 'echo Notes for ${name}: ${changelog}',
-        assets: ['file']
+        assets: ['file'],
+        secure: true
       },
       npm: { name: pkgName }
     });
