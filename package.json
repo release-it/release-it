@@ -97,7 +97,7 @@
     "proxy-agent": "7.0.0",
     "semver": "7.7.4",
     "tinyglobby": "0.2.15",
-    "undici": "7.24.5",
+    "undici": "7.28.0",
     "url-join": "5.0.0",
     "wildcard-match": "5.1.4",
     "yargs-parser": "22.0.0"
@@ -116,13 +116,16 @@
     "prettier": "3.8.1",
     "remark-cli": "12.0.1",
     "remark-preset-webpro": "2.1.1",
-    "tar": "7.5.13",
+    "tar": "7.5.17",
     "typescript": "6.0.2"
   },
   "overrides": {
     "pac-resolver": "7.0.1",
-    "socks": "2.8.3",
-    "glob": "13.0.0"
+    "socks": "2.8.9",
+    "glob": "13.0.6",
+    "minimatch@^10.0.0": {
+      "brace-expansion": "5.0.6"
+    }
   },
   "engines": {
     "node": "^20.19.0 || ^22.13.0 || >=24.0.0"
