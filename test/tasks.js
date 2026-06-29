@@ -189,7 +189,7 @@ describe('tasks', () => {
       'npm --version',
       `npm access ${npmMajorVersion >= 9 ? 'list collaborators --json' : 'ls-collaborators'} ${pkgName}`,
       'npm version 1.0.1 --no-git-tag-version --workspaces=false',
-      'npm publish . --tag latest --workspaces=false'
+      'npm publish . --tag latest'
     ]);
 
     assert(log.obtrusive.mock.calls[0].arguments[0].endsWith(`release ${pkgName} (1.0.0...1.0.1)`));
@@ -324,7 +324,7 @@ describe('tasks', () => {
       'npm --version',
       `npm access ${npmMajorVersion >= 9 ? 'list collaborators --json' : 'ls-collaborators'} ${pkgName}`,
       'npm version 1.1.0-alpha.0 --no-git-tag-version --workspaces=false',
-      'npm publish . --tag alpha --workspaces=false'
+      'npm publish . --tag alpha'
     ]);
 
     const commitMessage = childProcess.execSync('git log --oneline --format=%B -n 1 HEAD', {
@@ -365,7 +365,7 @@ describe('tasks', () => {
       'npm --version',
       `npm access ${npmMajorVersion >= 9 ? 'list collaborators --json' : 'ls-collaborators'} ${pkgName}`,
       'npm version 2.0.0-0 --no-git-tag-version --workspaces=false',
-      'npm publish . --tag next --workspaces=false'
+      'npm publish . --tag next'
     ]);
 
     const stdout = childProcess.execSync('git describe --tags --match=* --abbrev=0', { encoding: 'utf-8' });
@@ -407,7 +407,7 @@ describe('tasks', () => {
     await runTasks({}, container);
 
     const npmArgs = getArgs(exec, 'npm');
-    assert.equal(npmArgs[6], 'npm publish . --tag latest --workspaces=false');
+    assert.equal(npmArgs[6], 'npm publish . --tag latest');
   });
 
   test('should use pkg.publishConfig.registry', async t => {

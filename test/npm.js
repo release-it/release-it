@@ -165,14 +165,7 @@ describe('npm', async () => {
     exec.mock.mockImplementationOnce(() => Promise.reject(new Error(whoamiError)), 1);
     exec.mock.mockImplementationOnce(() => Promise.reject(new Error(accessError)), 2);
     await runTasks(npmClient);
-    assert.deepEqual(exec.mock.calls.at(-1).arguments[0], [
-      'npm',
-      'publish',
-      '.',
-      '--tag',
-      'latest',
-      '--workspaces=false'
-    ]);
+    assert.deepEqual(exec.mock.calls.at(-1).arguments[0], ['npm', 'publish', '.', '--tag', 'latest']);
   });
 
   test('should not throw if npm returns 400 for unsupported ping/whoami/access', async t => {
@@ -185,14 +178,7 @@ describe('npm', async () => {
     exec.mock.mockImplementationOnce(() => Promise.reject(new Error(whoamiError)), 1);
     exec.mock.mockImplementationOnce(() => Promise.reject(new Error(accessError)), 2);
     await runTasks(npmClient);
-    assert.deepEqual(exec.mock.calls.at(-1).arguments[0], [
-      'npm',
-      'publish',
-      '.',
-      '--tag',
-      'latest',
-      '--workspaces=false'
-    ]);
+    assert.deepEqual(exec.mock.calls.at(-1).arguments[0], ['npm', 'publish', '.', '--tag', 'latest']);
   });
 
   test('should throw if user is not authenticated', async t => {
@@ -262,27 +248,9 @@ describe('npm', async () => {
     });
 
     assert.equal(exec.mock.callCount(), 3);
-    assert.deepEqual(exec.mock.calls[0].arguments[0], ['npm', 'publish', '.', '--tag', 'latest', '--workspaces=false']);
-    assert.deepEqual(exec.mock.calls[1].arguments[0], [
-      'npm',
-      'publish',
-      '.',
-      '--tag',
-      'latest',
-      '--workspaces=false',
-      '--otp',
-      '123'
-    ]);
-    assert.deepEqual(exec.mock.calls[2].arguments[0], [
-      'npm',
-      'publish',
-      '.',
-      '--tag',
-      'latest',
-      '--workspaces=false',
-      '--otp',
-      '123456'
-    ]);
+    assert.deepEqual(exec.mock.calls[0].arguments[0], ['npm', 'publish', '.', '--tag', 'latest']);
+    assert.deepEqual(exec.mock.calls[1].arguments[0], ['npm', 'publish', '.', '--tag', 'latest', '--otp', '123']);
+    assert.deepEqual(exec.mock.calls[2].arguments[0], ['npm', 'publish', '.', '--tag', 'latest', '--otp', '123456']);
 
     assert.equal(npmClient.log.warn.mock.callCount(), 1);
     assert.equal(npmClient.log.warn.mock.calls[0].arguments[0], 'The provided OTP is incorrect or has expired.');
@@ -302,7 +270,7 @@ describe('npm', async () => {
     assert.equal(exec2.mock.calls.at(-1).arguments[1].interactive, false);
   });
 
-  test('should publish', async t => {
+  test('should publish without forcing workspaces off', async t => {
     const npmClient = await factory(npm);
     const exec = t.mock.method(npmClient.shell, 'exec', command => {
       if (command === 'npm whoami') return Promise.resolve('john');
@@ -311,14 +279,7 @@ describe('npm', async () => {
       return Promise.resolve();
     });
     await runTasks(npmClient);
-    assert.deepEqual(exec.mock.calls.at(-1).arguments[0], [
-      'npm',
-      'publish',
-      '.',
-      '--tag',
-      'latest',
-      '--workspaces=false'
-    ]);
+    assert.deepEqual(exec.mock.calls.at(-1).arguments[0], ['npm', 'publish', '.', '--tag', 'latest']);
   });
 
   test('should use extra publish arguments', async t => {
@@ -332,7 +293,6 @@ describe('npm', async () => {
       '.',
       '--tag',
       'latest',
-      '--workspaces=false',
       '--registry=http://my-internal-registry.local'
     ]);
   });
@@ -342,15 +302,7 @@ describe('npm', async () => {
     const npmClient = await factory(npm, { options });
     const exec = t.mock.method(npmClient.shell, 'exec', () => Promise.resolve());
     await runTasks(npmClient);
-    assert.deepEqual(exec.mock.calls.at(-1).arguments[0], [
-      'npm',
-      'stage',
-      'publish',
-      '.',
-      '--tag',
-      'latest',
-      '--workspaces=false'
-    ]);
+    assert.deepEqual(exec.mock.calls.at(-1).arguments[0], ['npm', 'stage', 'publish', '.', '--tag', 'latest']);
   });
 
   test('should not pass --otp when staging (2FA happens at approval)', async t => {
@@ -358,15 +310,7 @@ describe('npm', async () => {
     npmClient.setContext({ name: 'pkg' });
     const exec = t.mock.method(npmClient.shell, 'exec', () => Promise.resolve());
     await npmClient.publish({ otp: '123456' });
-    assert.deepEqual(exec.mock.calls.at(-1).arguments[0], [
-      'npm',
-      'stage',
-      'publish',
-      '.',
-      '--tag',
-      'latest',
-      '--workspaces=false'
-    ]);
+    assert.deepEqual(exec.mock.calls.at(-1).arguments[0], ['npm', 'stage', 'publish', '.', '--tag', 'latest']);
   });
 
   test('should stage publish with pnpm', async t => {
@@ -388,7 +332,10 @@ describe('npm', async () => {
     scoped.setContext({ name: '@release-it/x', username: 'webpro' });
     t.mock.method(scoped.shell, 'exec', () => Promise.resolve());
     await scoped.publish();
-    assert.match(scoped.log.log.mock.calls.map(c => c.arguments[0]).join('\n'), /settings\/release-it\/staged-packages/);
+    assert.match(
+      scoped.log.log.mock.calls.map(c => c.arguments[0]).join('\n'),
+      /settings\/release-it\/staged-packages/
+    );
   });
 
   test('should surface the stage id from publish output in the approval message', async t => {
@@ -456,7 +403,7 @@ describe('npm', async () => {
       'npm show @my-scope/my-pkg@latest version --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
       'npm --version',
       'npm version 1.0.1 --no-git-tag-version --workspaces=false',
-      'npm publish . --tag latest --workspaces=false --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/'
+      'npm publish . --tag latest --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/'
     ]);
   });
 
