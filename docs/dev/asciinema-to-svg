@@ -1,2 +1,0 @@
-asciinema rec release-it.cast
-cat release-it.cast | svg-term --out release-it.svg --padding 10

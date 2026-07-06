@@ -68,7 +68,10 @@
     "knip": "knip",
     "lint": "eslint lib test",
     "format": "prettier --write eslint.config.mjs \"{lib,test}/**/*.js\"",
-    "docs": "remark README.md 'docs/**/*.md' '.github/*.md' -o",
+    "docs": "remark README.md '.github/*.md' -o",
+    "docs:dev": "npm --prefix docs run dev",
+    "docs:build": "npm --prefix docs run build",
+    "docs:preview": "npm --prefix docs run preview",
     "test": "node --env-file=.env.test --test && installed-check",
     "release": "./bin/release-it.js"
   },

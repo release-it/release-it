@@ -1,0 +1,111 @@
+@import '@fontsource-variable/fraunces/index.css';
+@import '@fontsource-variable/fraunces/wght-italic.css';
+
+@layer starlight, sidebar, tables;
+
+:root {
+  --sl-font: 'Fraunces Variable', 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
+  --sl-font-system-mono:
+    ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+
+  --sl-content-width: 50rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-optical-sizing: auto;
+  letter-spacing: -0.01em;
+}
+
+:root {
+  --sl-color-accent-low: #3a2214;
+  --sl-color-accent: #ff6b2b;
+  --sl-color-accent-high: #ffbc9f;
+  --sl-color-white: #f2ead3;
+  --sl-color-gray-1: #d8d0be;
+  --sl-color-gray-2: #b5ab95;
+  --sl-color-gray-3: #8c8270;
+  --sl-color-gray-4: #5c5446;
+  --sl-color-gray-5: #3a342a;
+  --sl-color-gray-6: #1e1b14;
+  --sl-color-black: #14120e;
+}
+
+:root[data-theme='light'] {
+  --sl-color-accent-low: #f8e1d5;
+  --sl-color-accent: #d84a0d;
+  --sl-color-accent-high: #6c2304;
+  --sl-color-white: #14110c;
+  --sl-color-gray-1: #2a2620;
+  --sl-color-gray-2: #5c5446;
+  --sl-color-gray-3: #6c6456;
+  --sl-color-gray-4: #8c8270;
+  --sl-color-gray-5: #c9bfa8;
+  --sl-color-gray-6: #ede6d6;
+  --sl-color-gray-7: #f7f2e8;
+  --sl-color-black: #ffffff;
+}
+
+:root[data-theme='light'] .dark-only,
+:root[data-theme='dark'] .light-only {
+  display: none;
+}
+
+@layer tables {
+  .sl-markdown-content table:not(:where(.not-content *)) {
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.5rem;
+  }
+
+  .sl-markdown-content table:not(:where(.not-content *)) :is(th, td) {
+    padding: 0.6rem 1rem;
+    border: 0;
+    border-bottom: 1px solid var(--sl-color-gray-5);
+    vertical-align: middle;
+  }
+
+  .sl-markdown-content table:not(:where(.not-content *)) tr:last-child :is(th, td) {
+    border-bottom: 0;
+  }
+
+  .sl-markdown-content table:not(:where(.not-content *)) thead th {
+    background-color: var(--sl-color-gray-6);
+    color: var(--sl-color-white);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    text-transform: none;
+  }
+
+  .sl-markdown-content table:not(:where(.not-content *)) tbody tr:nth-child(even) {
+    background-color: color-mix(in oklab, var(--sl-color-gray-6) 45%, transparent);
+  }
+
+  .sl-markdown-content table:not(:where(.not-content *)) tbody tr:hover {
+    background-color: color-mix(in oklab, var(--sl-color-accent) 8%, transparent);
+  }
+}
+
+@layer sidebar {
+  sl-sidebar-state-persist ul.top-level > li:not(:has(details)) {
+    margin-block: 0;
+  }
+
+  sl-sidebar-state-persist ul.top-level > li:has(details) + li:not(:has(details)) {
+    margin-top: 0.5rem;
+  }
+
+  sl-sidebar-state-persist ul.top-level > li > a:not([aria-current='page']) {
+    font-weight: 400;
+    color: var(--sl-color-gray-2);
+  }
+}

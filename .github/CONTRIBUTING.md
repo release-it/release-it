@@ -79,6 +79,13 @@ npm link
 npm link release-it
 ```
 
+## 🔧 Maintainer tooling
+
+Notes on maintainer-specific tooling — running a local GitLab CE for
+integration testing, generating the animated terminal recordings shipped with
+the docs, and useful third-party API references — live in
+[`DEVELOPMENT.md`](./DEVELOPMENT.md).
+
 [1]: ./CODE_OF_CONDUCT.md
 [2]: https://github.com/release-it/release-it/issues/new
 [3]: https://github.com/release-it/release-it/releases

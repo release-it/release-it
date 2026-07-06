@@ -1,0 +1,33 @@
+---
+// src/components/TableOfContents.astro
+import Default from '@astrojs/starlight/components/TableOfContents.astro';
+import SponsorCard from './SponsorCard.astro';
+---
+
+<Default><slot /></Default>
+<div class="starlight-table-of-contents-wrapper-container">
+  <SponsorCard />
+</div>
+
+<style>
+  .starlight-table-of-contents-wrapper-container {
+    margin-top: 1rem;
+  }
+</style>
+
+<style is:global>
+  @media (min-width: 72rem) {
+    .right-sidebar-panel {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .right-sidebar-panel > .sl-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex: 1;
+    }
+  }
+</style>

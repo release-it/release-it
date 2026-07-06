@@ -1,0 +1,23 @@
+{
+  "name": "release-it-docs",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "description": "Documentation site for release-it, built with Astro Starlight.",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "0.41.3",
+    "@fontsource-variable/fraunces": "5.2.9",
+    "astro": "7.0.6",
+    "sharp": "0.35.3",
+    "starlight-github-alerts": "0.4.0",
+    "starlight-links-validator": "0.25.2",
+    "starlight-sidebar-topics": "0.8.0"
+  }
+}

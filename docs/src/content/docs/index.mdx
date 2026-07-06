@@ -1,0 +1,59 @@
+---
+title: Release It!
+description: Generic CLI tool to automate versioning and package publishing-related tasks.
+head:
+  - tag: title
+    content: Release It!
+  - tag: style
+    content: |
+      .hero-html {
+        --size: 12rem;
+        font-size: var(--size);
+        justify-content: center;
+        line-height: var(--size);
+      }
+template: splash
+hero:
+  tagline: |
+    Automate versioning, changelogs, tags, and publishing — from your terminal or your CI.
+  image:
+    html: '🚀'
+  actions:
+    - text: Install release-it
+      link: /release-it/start/installation/
+      icon: right-arrow
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/release-it/release-it
+      icon: external
+      variant: minimal
+editUrl: false
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid stagger>
+  <Card title="Version bumping" icon="rocket">
+    Bump the version in `package.json` — or in any file via [plugins](/release-it/explanations/plugin-architecture/).
+  </Card>
+  <Card title="Git & GitHub / GitLab" icon="seti:git">
+    Commit, tag, push, and open a release on [GitHub](/release-it/guides/publishing/github-releases/) or
+    [GitLab](/release-it/guides/publishing/gitlab-releases/) — all in one command.
+  </Card>
+  <Card title="Changelogs & pre-releases" icon="pencil">
+    Generate [changelogs](/release-it/guides/core-workflow/changelog/) from Git history and manage
+    [`alpha` / `beta` / `rc`](/release-it/guides/core-workflow/pre-releases/) versions.
+  </Card>
+  <Card title="npm publishing" icon="seti:npm">
+    [Publish](/release-it/guides/publishing/npm/) to any registry — with support for OTP, WebAuthn, staged
+    publishing and OIDC Trusted Publishing.
+  </Card>
+  <Card title="Runs anywhere" icon="approve-check">
+    Interactive locally, non-interactive in [GitHub Actions, GitLab CI, Travis, CircleCI](/release-it/guides/ci/environments/),
+    or your own shell scripts.
+  </Card>
+  <Card title="Extendable" icon="puzzle">
+    A [plugin API](/release-it/reference/plugin-api/) lets you hook into every step — bring your
+    own version file, notifier, or release strategy.
+  </Card>
+</CardGrid>

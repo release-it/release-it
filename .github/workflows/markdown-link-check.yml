@@ -18,3 +18,5 @@ jobs:
         with:
           use-quiet-mode: 'yes'
           config-file: .github/workflows/markdown-link-check.json
+          folder-path: '.github'
+          file-path: './README.md, ./CHANGELOG.md'

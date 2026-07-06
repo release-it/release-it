@@ -1,0 +1,90 @@
+---
+// src/components/SponsorCard.astro
+const sponsorUrl = 'https://github.com/sponsors/webpro';
+---
+
+<aside class="not-content sponsor-card">
+  <h2>
+    🧡 Support release-it
+  </h2>
+  <p>release-it is free and open source. Sponsor its maintainer to help keep it thriving.</p>
+  <a class="sponsor-card-link" href={sponsorUrl} target="_blank" rel="noopener noreferrer">
+    Sponsor @webpro
+    <svg
+      viewBox="0 0 16 16"
+      width="12"
+      height="12"
+      fill="currentColor"
+      aria-hidden="true"
+      class="sponsor-card-link-icon"
+    >
+      <path
+        d="M3.75 2h3.5a.75.75 0 0 1 0 1.5h-3.5a.25.25 0 0 0-.25.25v8.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-3.5a.75.75 0 0 1 1.5 0v3.5A1.75 1.75 0 0 1 12.25 14h-8.5A1.75 1.75 0 0 1 2 12.25v-8.5C2 2.784 2.784 2 3.75 2Zm6.854-1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 8.53 8.53a.75.75 0 0 1-1.06-1.06l4.5-4.5-1.543-1.543A.25.25 0 0 1 10.604 1Z"
+      ></path>
+    </svg>
+  </a>
+</aside>
+
+<style>
+  .sponsor-card {
+    position: relative;
+    background-color: var(--sl-color-gray-6);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--sl-color-text-accent);
+    box-shadow: var(--sl-shadow-md);
+    overflow-y: hidden;
+  }
+
+  .sponsor-card h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--sl-color-white);
+    font-size: var(--sl-text-h5);
+    font-weight: 600;
+    text-decoration: none !important;
+    line-height: var(--sl-line-height-headings);
+    margin: 0 0 0.5rem;
+  }
+
+  .sponsor-card-heart {
+    display: inline-flex;
+    color: #db61a2;
+  }
+
+  .sponsor-card p {
+    font-size: var(--sl-text-xs);
+    line-height: normal;
+    text-decoration: none !important;
+    color: var(--sl-color-gray-3);
+    overflow-wrap: anywhere;
+    margin: 0 0 0.75rem;
+  }
+
+  .sponsor-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.375rem 0.75rem;
+    background-color: var(--sl-color-text-accent);
+    color: var(--sl-color-black);
+    border-radius: 0.375rem;
+    text-decoration: none;
+    font-size: var(--sl-text-xs);
+    font-weight: 600;
+    transition:
+      opacity 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  .sponsor-card-link:hover,
+  .sponsor-card-link:focus-visible {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .sponsor-card-link-icon {
+    opacity: 0.75;
+  }
+</style>

@@ -2,7 +2,7 @@
 
 🚀 Generic CLI tool to automate versioning and package publishing-related tasks:
 
-<img align="right" src="./docs/assets/release-it.svg?raw=true" height="280" />
+<img align="right" src="./docs/src/assets/release-it.svg?raw=true" height="280" />
 
 - Bump version (in e.g. `package.json`)
 - [Git commit, tag, push][1]
@@ -115,7 +115,7 @@ Here's a quick example `.release-it.json`:
 
 By default, release-it is **interactive** and allows you to confirm each task before execution:
 
-<img src="./docs/assets/release-it-interactive.gif?raw=true" height="290" />
+<img src="./docs/src/assets/release-it-interactive.gif?raw=true" height="290" />
 
 By using the `--ci` option, the process is fully automated without prompts. The configured tasks will be executed as
 demonstrated in the first animation above. In a Continuous Integration (CI) environment, this non-interactive mode is
@@ -386,39 +386,39 @@ Are you using release-it at work? Please consider [sponsoring me][14]!
 [6]: #publish-to-npm
 [7]: #manage-pre-releases
 [8]: #plugins
-[9]: ./docs/ci.md
+[9]: https://release-it.github.io/release-it/guides/ci/
 [10]: https://github.com/release-it/release-it/actions
 [11]: https://github.com/release-it/release-it/workflows/Cross-OS%20Tests/badge.svg
 [12]: https://www.npmjs.com/package/release-it
 [13]: https://badge.fury.io/js/release-it.svg
 [14]: https://github.com/sponsors/webpro
-[15]: ./docs/npm.md#yarn
+[15]: https://release-it.github.io/release-it/guides/npm/#yarn
 [16]: https://github.com/hyoban/release-it-pnpm
-[17]: ./docs/recipes/monorepo.md
+[17]: https://release-it.github.io/release-it/guides/recipes/monorepo/
 [18]: https://github.com/juancarlosjr97/release-it-containerized
 [19]: https://github.com/juancarlosjr97
 [20]: https://www.youtube.com/watch?v=7pBcuT7j_A0
 [21]: https://medium.com/valtech-ch/monorepo-semantic-releases-db114811efa5
 [22]: https://github.com/b12k/monorepo-semantic-releases
 [23]: ./config/release-it.json
-[24]: ./docs/configuration.md
-[25]: ./docs/npm.md
+[24]: https://release-it.github.io/release-it/guides/configuration/
+[25]: https://release-it.github.io/release-it/guides/npm/
 [26]: https://github.com/release-it/bumper
 [27]: https://github.com/release-it/conventional-changelog
 [28]: https://github.com/casmith/release-it-calver-plugin
-[29]: ./docs/git.md
+[29]: https://release-it.github.io/release-it/guides/git/
 [30]: https://docs.npmjs.com/trusted-publishers
-[31]: ./docs/npm.md#trusted-publishing-oidc
+[31]: https://release-it.github.io/release-it/guides/npm/#trusted-publishing-oidc
 [32]: https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases
-[33]: ./docs/github-releases.md
+[33]: https://release-it.github.io/release-it/guides/github-releases/
 [34]: https://docs.gitlab.com/api/releases/
 [35]: https://gitlab.com/profile/personal_access_tokens
-[36]: ./docs/environment-variables.md
-[37]: ./docs/gitlab-releases.md
-[38]: ./docs/changelog.md
-[39]: ./docs/pre-releases.md
-[40]: ./docs/plugins.md#execution-order
-[41]: ./docs/dry-runs.md
+[36]: https://release-it.github.io/release-it/guides/environment-variables/
+[37]: https://release-it.github.io/release-it/guides/gitlab-releases/
+[38]: https://release-it.github.io/release-it/guides/changelog/
+[39]: https://release-it.github.io/release-it/guides/pre-releases/
+[40]: https://release-it.github.io/release-it/explanations/execution-order/
+[41]: https://release-it.github.io/release-it/guides/dry-runs/
 [42]: https://github.com/release-it/keep-a-changelog
 [43]: https://github.com/release-it-plugins/lerna-changelog
 [44]: https://github.com/jcamp-code/release-it-changelogen
@@ -434,8 +434,8 @@ Are you using release-it at work? Please consider [sponsoring me][14]!
 [54]: https://github.com/lib-pack/release-it-gitea
 [55]: https://github.com/mohammadGh/release-it-beautiful-changelog
 [56]: https://www.npmjs.com/search?q=keywords:release-it-plugin
-[57]: ./docs/plugins.md
-[58]: ./docs/recipes/programmatic.md
+[57]: https://release-it.github.io/release-it/reference/plugin-api/
+[58]: https://release-it.github.io/release-it/guides/recipes/programmatic/
 [59]: https://github.com/adonisjs/core
 [60]: https://github.com/axios/axios
 [61]: https://github.com/chakra-ui/chakra-ui
