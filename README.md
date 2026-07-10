@@ -137,7 +137,8 @@ Alternatively, a plugin can be used to override this (e.g. to manage a `VERSION`
 - [@release-it/conventional-changelog][27] to get a recommended bump based on commit messages
 - [release-it-calver-plugin][28] to use CalVer (Calendar Versioning)
 
-Add the `--release-version` flag to print the **next** version without releasing anything.
+Add the `--release-version` flag to print the **next** version without releasing anything. If no next version is
+available, it prints nothing and exits successfully.
 
 ## Git
 

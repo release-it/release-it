@@ -118,6 +118,30 @@ describe('tasks', () => {
     assert.equal(stdout.trim(), '1.2.4');
   });
 
+  test('should exit successfully when release-version finds no new version', async t => {
+    const stdout = t.mock.method(console, 'log');
+    const exit = t.mock.method(process, 'exit', code => {
+      const error = new Error(`process.exit: ${code}`);
+      error.code = code;
+      throw error;
+    });
+
+    await assert.rejects(
+      runTasks(
+        {},
+        getContainer({
+          'release-version': true,
+          plugins: { [new URL('./stub/plugin-no-version.js', import.meta.url).href]: {} }
+        })
+      ),
+      error => error.code === 0
+    );
+
+    assert.equal(exit.mock.callCount(), 1);
+    assert.equal(stdout.mock.callCount(), 0);
+    assert.equal(log.warn.mock.callCount(), 0);
+  });
+
   test('should use pkg.version', async () => {
     gitAdd('{"name":"my-package","version":"1.2.3"}', 'package.json', 'Add package.json');
     await runTasks({}, getContainer({ increment: 'minor' }));
