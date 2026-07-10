@@ -116,6 +116,8 @@ Any option can also be set on the command-line, and will have highest priority. 
 release-it minor --git.requireBranch=main --github.release
 ```
 
+Unknown release-it options are rejected. Hook names and options for external plugins are accepted dynamically.
+
 Boolean arguments can be negated by using the `no-` prefix:
 
 ```bash

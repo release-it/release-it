@@ -3,7 +3,14 @@
 import release from '../lib/cli.js';
 import { parseCliArguments } from '../lib/args.js';
 
-const options = parseCliArguments([].slice.call(process.argv, 2));
+let options;
+
+try {
+  options = parseCliArguments([].slice.call(process.argv, 2));
+} catch (error) {
+  console.error(`ERROR ${error.message}`);
+  process.exit(1);
+}
 
 release(options).then(
   () => process.exit(0),
