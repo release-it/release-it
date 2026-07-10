@@ -12,7 +12,7 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-
+    if: ${{ github.repository_owner == 'release-it' }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
