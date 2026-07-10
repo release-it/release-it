@@ -1,3 +1,6 @@
+const getProjectId = ({ projectId, group, owner, project }) =>
+  String(projectId ?? [group, owner, project].filter(Boolean).join('%2F'));
+
 export const interceptMembers = (server, { owner = 'emma' } = {}) => {
   server.get(`/projects/john%2Frepo/members/all/1`, { status: 200, username: owner });
 };
@@ -8,12 +11,12 @@ export const interceptUser = (server, { owner = 'user' } = {}, options = {}) => 
 
 export const interceptCollaborator = (
   server,
-  { owner = 'user', project = 'repo', group, userId = 1 } = {},
+  { owner = 'user', project = 'repo', group, projectId, userId = 1 } = {},
   options = {}
 ) =>
   server.get(
     {
-      url: `/projects/${group ? `${group}%2F` : ''}${owner}%2F${project}/members/all/${userId}`,
+      url: `/projects/${getProjectId({ projectId, group, owner, project })}/members/all/${userId}`,
       ...options
     },
     {
@@ -22,9 +25,9 @@ export const interceptCollaborator = (
     }
   );
 
-export const interceptPublish = (server, { owner = 'user', project = 'repo', body } = {}) =>
+export const interceptPublish = (server, { owner = 'user', project = 'repo', projectId, body } = {}) =>
   server.post(
-    { url: `/projects/${owner}%2F${project}/releases`, body },
+    { url: `/projects/${getProjectId({ projectId, owner, project })}/releases`, body },
     {
       status: 200,
       body: {
@@ -50,10 +53,10 @@ export const interceptMilestones = (server, { owner = 'user', project = 'repo', 
     }
   );
 
-export const interceptAsset = (server, { owner = 'user', project = 'repo' } = {}) =>
+export const interceptAsset = (server, { owner = 'user', project = 'repo', projectId } = {}) =>
   server.post(
     {
-      url: `/projects/${owner}%2F${project}/uploads`
+      url: `/projects/${getProjectId({ projectId, owner, project })}/uploads`
     },
     async request => {
       const formData = await request.formData();

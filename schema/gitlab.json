@@ -77,7 +77,7 @@
       "default": false
     },
     "repoId": {
-      "type": "string",
+      "type": ["string", "integer"],
       "default": null
     }
   }

@@ -240,9 +240,32 @@ describe('GitLab', () => {
 
     await runTasks(gitlab);
 
-    const { isReleased, releaseUrl } = gitlab.getContext();
+    const { id, isReleased, releaseUrl } = gitlab.getContext();
+    assert.equal(id, 'group%2Fsub-group%2Frepo');
     assert(isReleased);
     assert.match(releaseUrl, /https:\/\/gitlab.com\/group\/sub-group(\/|%2F)repo\/-\/releases\//);
+  });
+
+  test('should use configured project ID for API requests', async t => {
+    const options = {
+      git: { pushRepo: 'git@gitlab.com:group/sub-group/repo.git' },
+      gitlab: { tokenRef, repoId: 1234, assets: 'test/resources/file-v${version}.txt' }
+    };
+    const gitlab = await factory(GitLab, { options });
+    t.mock.method(gitlab, 'getLatestVersion', () => Promise.resolve('2.0.0'));
+
+    interceptUser(api);
+    interceptCollaborator(api, { projectId: 1234 });
+    interceptAsset(api, { projectId: 1234 });
+    interceptPublish(api, { projectId: 1234 });
+
+    await runTasks(gitlab);
+
+    assert.equal(gitlab.getContext().id, '1234');
+    assert.equal(
+      gitlab.assets[0].url,
+      'https://gitlab.com/group/sub-group/repo/uploads/7e8bec1fe27cc46a4bc6a91b9e82a07c/file-v2.0.1.txt'
+    );
   });
 
   test('should throw for unauthenticated user', async () => {

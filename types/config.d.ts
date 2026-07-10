@@ -209,7 +209,7 @@ export interface Config {
     skipChecks?: boolean;
 
     /** @default null */
-    repoId?: string;
+    repoId?: string | number;
   };
 
   /** @default false */
