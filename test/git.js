@@ -406,6 +406,12 @@ describe('git', () => {
     assert.equal('rollbackOnce' in gitClient, false);
   });
 
+  test('should identify newly initialized repository with no commits as clean', async () => {
+    const gitClient = await factory(Git);
+    childProcess.execSync('git init', execOpts);
+    assert.equal(await gitClient.isWorkingDirClean(), true);
+  });
+
   test('should return latest tag from default branch (not parent commit)', async () => {
     childProcess.execSync('git init', execOpts);
 

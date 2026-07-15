@@ -73,4 +73,16 @@ describe('shell', async () => {
     const shell = new Shell({ container: {} });
     await assert.rejects(shell.exec('foo'));
   });
+
+  test('should bypass cache with options.cache: false', async () => {
+    const shell = new Shell({ container: { log: { exec: () => {}, verbose: () => {} }, config: { isDryRun: false } } });
+    await shell.exec('echo foo', { cache: false });
+    assert.equal(shell.cache.has('echo foo'), false);
+  });
+
+  test('should not cache rejected commands', async () => {
+    const shell = new Shell({ container: { log: { exec: () => {}, verbose: () => {} }, config: { isDryRun: false } } });
+    await assert.rejects(shell.exec('foo'));
+    assert.equal(shell.cache.has('foo'), false);
+  });
 });
