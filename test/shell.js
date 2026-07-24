@@ -73,4 +73,38 @@ describe('shell', async () => {
     const shell = new Shell({ container: {} });
     await assert.rejects(shell.exec('foo'));
   });
+
+  test('should bypass an existing cached result with options.cache: false', async t => {
+    const shell = await factory(Shell);
+    let result = 'first';
+    const exec = t.mock.method(shell, 'execStringCommand', () => Promise.resolve(result));
+
+    assert.equal(await shell.exec('command'), 'first');
+    result = 'second';
+    assert.equal(await shell.exec('command'), 'first');
+    assert.equal(await shell.exec('command', { cache: false }), 'second');
+    assert.equal(exec.mock.callCount(), 2);
+  });
+
+  test('should retry rejected commands', async t => {
+    const shell = await factory(Shell);
+    let shouldFail = true;
+    const exec = t.mock.method(shell, 'execStringCommand', () =>
+      shouldFail ? Promise.reject(new Error('failed')) : Promise.resolve('success')
+    );
+
+    await assert.rejects(shell.exec('command'), /failed/);
+    shouldFail = false;
+    assert.equal(await shell.exec('command'), 'success');
+    assert.equal(exec.mock.callCount(), 2);
+  });
+
+  test('should not pass the cache option to command execution', async t => {
+    const shell = await factory(Shell);
+    const exec = t.mock.method(shell, 'execWithArguments', (_command, options) => Promise.resolve(options));
+    const env = { TEST: 'true' };
+
+    assert.deepEqual(await shell.exec(['command'], { cache: false, env }), { env });
+    assert.equal(exec.mock.callCount(), 1);
+  });
 });

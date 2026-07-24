@@ -4,6 +4,7 @@ import { EOL } from 'node:os';
 import childProcess from 'node:child_process';
 import { appendFileSync } from 'node:fs';
 import Git from '../lib/plugin/git/Git.js';
+import Shell from '../lib/shell.js';
 import { execOpts, touch } from '../lib/util.js';
 import sh from './util/sh.js';
 import { factory } from './util/index.js';
@@ -404,6 +405,19 @@ describe('git', () => {
     const gitClient = await factory(Git, { options });
     await gitClient.beforeRelease();
     assert.equal('rollbackOnce' in gitClient, false);
+  });
+
+  test('should refresh working dir state', async () => {
+    childProcess.execSync('git init', execOpts);
+    gitAdd('line', 'file', 'Add file');
+    const gitClient = await factory(Git);
+    gitClient.shell = new Shell({ container: { config: gitClient.config, log: gitClient.log } });
+
+    assert.equal(await gitClient.isWorkingDirClean(), true);
+    assert.equal(await gitClient.status(), '');
+    appendFileSync('file', 'changed');
+    assert.equal(await gitClient.isWorkingDirClean(), false);
+    assert.equal(await gitClient.status(), ' M file');
   });
 
   test('should return latest tag from default branch (not parent commit)', async () => {
