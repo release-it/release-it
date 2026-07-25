@@ -362,7 +362,7 @@ describe('GitLab', () => {
     const { dispatcher } = gitlab.certificateAuthorityOption;
 
     assert(dispatcher instanceof Agent);
-    assert.deepEqual(readFileSync.mock.calls[0].arguments, ['cert.crt']);
+    assert.deepEqual(readFileSync.mock.calls.at(-1).arguments, ['cert.crt']);
 
     readFileSync.mock.restore();
   });
@@ -376,7 +376,7 @@ describe('GitLab', () => {
     const { dispatcher } = gitlab.certificateAuthorityOption;
 
     assert(dispatcher instanceof Agent);
-    assert.deepEqual(readFileSync.mock.calls[0].arguments, ['ca.crt']);
+    assert.deepEqual(readFileSync.mock.calls.at(-1).arguments, ['ca.crt']);
 
     readFileSync.mock.restore();
   });
@@ -390,7 +390,7 @@ describe('GitLab', () => {
     const { dispatcher } = gitlab.certificateAuthorityOption;
 
     assert(dispatcher instanceof Agent);
-    assert.deepEqual(readFileSync.mock.calls[0].arguments, ['custom-ca.crt']);
+    assert.deepEqual(readFileSync.mock.calls.at(-1).arguments, ['custom-ca.crt']);
 
     readFileSync.mock.restore();
   });
