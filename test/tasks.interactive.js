@@ -6,13 +6,12 @@ import assert from 'node:assert/strict';
 import Prompt from '../lib/prompt.js';
 import Config from '../lib/config.js';
 import runTasks from '../lib/index.js';
-import Git from '../lib/plugin/git/Git.js';
 import { execOpts } from '../lib/util.js';
 import { mkTmpDir, gitAdd, getArgs } from './util/helpers.js';
 import ShellStub from './stub/shell.js';
 import { interceptPublish as interceptGitLabPublish } from './stub/gitlab.js';
 import { interceptCreate as interceptGitHubCreate } from './stub/github.js';
-import { factory, LogStub, SpinnerStub } from './util/index.js';
+import { LogStub, SpinnerStub } from './util/index.js';
 import { mockFetch } from './util/mock.js';
 import { createTarBlobByRawContents } from './util/fetch.js';
 
@@ -220,9 +219,6 @@ describe('tasks.interactive', () => {
     childProcess.execSync('git tag 1.0.0', execOpts);
     const sha = gitAdd('line', 'file', 'More file');
 
-    const git = await factory(Git);
-    const ref = (await git.getBranchName()) ?? 'HEAD';
-
     interceptGitHubCreate(github, {
       owner,
       project,
@@ -234,7 +230,6 @@ describe('tasks.interactive', () => {
       project,
       body: {
         name: 'Release 1.1.0',
-        ref,
         tag_name: '1.1.0',
         tag_message: 'Release 1.1.0',
         description: `* More file (${sha})`

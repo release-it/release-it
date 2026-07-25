@@ -6,7 +6,6 @@ import assert from 'node:assert/strict';
 import semver from 'semver';
 import Config from '../lib/config.js';
 import runTasks from '../lib/index.js';
-import Git from '../lib/plugin/git/Git.js';
 import { execOpts } from '../lib/util.js';
 import { mkTmpDir, gitAdd, getArgs } from './util/helpers.js';
 import ShellStub from './stub/shell.js';
@@ -23,7 +22,7 @@ import {
   interceptPublish as interceptGitHubPublish,
   interceptAsset as interceptGitHubAsset
 } from './stub/github.js';
-import { factory, LogStub, SpinnerStub } from './util/index.js';
+import { LogStub, SpinnerStub } from './util/index.js';
 import { mockFetch } from './util/mock.js';
 
 describe('tasks', () => {
@@ -268,9 +267,6 @@ describe('tasks', () => {
     childProcess.execSync('git tag v1.0.0', execOpts);
     const sha = gitAdd('line', 'file', 'More file');
     childProcess.execSync('git push --follow-tags', execOpts);
-    const git = await factory(Git);
-    const ref = (await git.getBranchName()) ?? 'HEAD';
-
     interceptGitHubAuthentication(github);
     interceptGitHubCollaborator(github, { owner, project });
     interceptGitHubAsset(assets, { owner, project, body: 'lineline' });
@@ -295,7 +291,6 @@ describe('tasks', () => {
       project,
       body: {
         name: 'Release 1.1.0-alpha.0',
-        ref,
         tag_name: 'v1.1.0-alpha.0',
         tag_message: `${owner} ${owner}/${project} ${project}`,
         description: `Notes for ${pkgName}: ${sha}`,

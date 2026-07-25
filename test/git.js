@@ -32,6 +32,17 @@ describe('git', () => {
     assert.equal(await gitClient.getBranchName(), 'feat');
   });
 
+  test('should return the current commit from detached HEAD', async () => {
+    const gitClient = await factory(Git);
+    childProcess.execSync('git init', execOpts);
+    gitAdd('line', 'file', 'Add file');
+    const commit = childProcess.execSync('git rev-parse HEAD', execOpts).toString().trim();
+    childProcess.execSync('git checkout --detach', execOpts);
+
+    assert.equal(await gitClient.getBranchName(), 'HEAD');
+    assert.equal(await gitClient.getCurrentCommit(), commit);
+  });
+
   test('should return whether tag exists and if working dir is clean', async () => {
     const gitClient = await factory(Git);
     childProcess.execSync('git init', execOpts);

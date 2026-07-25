@@ -1,8 +1,8 @@
 import fs from 'node:fs';
+import childProcess from 'node:child_process';
 import test, { before, after, afterEach, beforeEach, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import { Agent } from 'undici';
-import Git from '../lib/plugin/git/Git.js';
 import GitLab from '../lib/plugin/gitlab/GitLab.js';
 import { GitlabTestServer } from './util/https-server/server.js';
 import { factory, runTasks } from './util/index.js';
@@ -98,8 +98,7 @@ describe('GitLab', () => {
     const gitlab = await factory(GitLab, { options });
     t.mock.method(gitlab, 'getLatestVersion', () => Promise.resolve('2.0.0'));
 
-    const git = await factory(Git);
-    const ref = (await git.getBranchName()) ?? 'HEAD';
+    const ref = childProcess.execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
 
     interceptUser(api);
     interceptCollaborator(api);
