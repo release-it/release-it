@@ -4,6 +4,12 @@ This document lists breaking changes for each major release.
 
 See the GitHub Releases page for detailed changelogs: [https://github.com/release-it/release-it/releases][1]
 
+## v21 (2026-07-25)
+
+- Removed support for Node.js v20 and raised the Node.js v22 minimum to v22.21.0.
+- CLI argument parsing is now strict. Unknown options, invalid booleans, and extra positional arguments are rejected.
+- GitLab server certificates are verified by default. Configure private CA or explicitly set `gitlab.secure` to `false`.
+
 ## v20 (2026-03-24)
 
 - Upgraded `undici` from v6 to v7 to resolve security vulnerabilities.
