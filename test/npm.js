@@ -397,6 +397,15 @@ describe('npm', async () => {
     });
     await runTasks(npmClient);
 
+    assert.deepEqual(exec.mock.calls.at(-1).arguments[0], [
+      'npm',
+      'publish',
+      '.',
+      '--tag',
+      'latest',
+      '--registry',
+      'https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/'
+    ]);
     assert.deepEqual(getArgs(exec, 'npm'), [
       'npm ping --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
       'npm whoami --registry https://gitlab.com/api/v4/projects/my-scope%2Fmy-pkg/packages/npm/',
