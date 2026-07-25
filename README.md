@@ -354,11 +354,11 @@ release-it programmatically][58] for example code.
 
 ## Node.js version support
 
-The latest major version is v21, supporting Node.js 22.19 and up:
+The latest major version is v21, supporting Node.js 22.21 and up:
 
 | release-it | Node.js  |
 | :--------: | :------- |
-|    v21     | v22.19.0 |
+|    v21     | v22.21.0 |
 |    v20     | v20.19.0 |
 |    v19     | v20.12.0 |
 |    v18     | v20      |
