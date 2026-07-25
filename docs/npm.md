@@ -223,7 +223,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       # OIDC requires npm v11.5.1 or later
-      # Node.js v20 comes with v10.8, so we need to update it:
+      # Ensure the bundled npm version is recent enough:
       - run: npm install -g npm@latest
       - run: npm ci
       - run: npx release-it --ci
