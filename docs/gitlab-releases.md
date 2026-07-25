@@ -24,7 +24,7 @@ GitLab Releases do not support pre-releases or drafts.
 | `gitlab.tokenHeader`                 | HTTP header name for the GitLab token (default: `Private-Token`)            |
 | `gitlab.certificateAuthorityFile`    | Path of the GitLab CA file for self-hosted installations                    |
 | `gitlab.certificateAuthorityFileRef` | GitLab CA file environment variable name (default: `CI_SERVER_TLS_CA_FILE`) |
-| `gitlab.secure`                      | Flag to disable server certificate verification (default: `false`)          |
+| `gitlab.secure`                      | Verify server certificates (default: `true`); set to `false` to disable     |
 | `gitlab.assets`                      | Glob pattern path to assets to add to the GitLab release                    |
 | `gitlab.origin`                      | Base URL to use for the GitLab API (default: `https://${repo.host}`)        |
 | `gitlab.skipChecks`                  | Skip checks on `GITLAB_TOKEN` environment variable and milestone(s)         |

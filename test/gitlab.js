@@ -3,6 +3,7 @@ import childProcess from 'node:child_process';
 import test, { before, after, afterEach, beforeEach, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import { Agent } from 'undici';
+import Config from '../lib/config.js';
 import GitLab from '../lib/plugin/gitlab/GitLab.js';
 import { GitlabTestServer } from './util/https-server/server.js';
 import { factory, runTasks } from './util/index.js';
@@ -339,10 +340,12 @@ describe('GitLab', () => {
     );
   });
 
-  test('should not create fetch agent', async () => {
-    const options = { gitlab: {} };
-    const gitlab = await factory(GitLab, { options });
+  test('should verify server certificates by default', async () => {
+    const config = new Config({ config: false });
+    await config.init();
+    const gitlab = await factory(GitLab, { options: config.options });
 
+    assert.equal(gitlab.options.secure, true);
     assert.deepEqual(gitlab.certificateAuthorityOption, {});
   });
 
