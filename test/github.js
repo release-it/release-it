@@ -2,7 +2,7 @@ import test, { describe, before, after, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { RequestError } from '@octokit/request-error';
 import GitHub from '../lib/plugin/github/GitHub.js';
-import { getSearchQueries } from '../lib/plugin/github/util.js';
+import { getResolvedIssuesFromChangelog, getSearchQueries } from '../lib/plugin/github/util.js';
 import { factory, runTasks } from './util/index.js';
 import {
   interceptAuthentication,
@@ -665,6 +665,16 @@ describe('github', () => {
       longResult.every(query => encodeURIComponent(query).length <= 256),
       'Each query should not exceed 256 characters after encoding'
     );
+  });
+
+  test('should ignore resolved issue references in HTML comments', () => {
+    const issues = getResolvedIssuesFromChangelog(
+      'github.com',
+      'release-it',
+      'release-it',
+      'fixes #1 <!-- fixes #2 -->'
+    );
+    assert.deepEqual(issues, [{ type: 'issue', number: 1 }]);
   });
 
   test('should create auto-generated discussion', async t => {

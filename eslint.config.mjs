@@ -10,8 +10,7 @@ export default [
     },
     languageOptions: {
       globals: {
-        ...globals.node,
-        ...globals.es6
+        ...globals.node
       },
       ecmaVersion: 2020,
       sourceType: 'module'

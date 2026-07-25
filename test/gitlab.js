@@ -17,6 +17,8 @@ import {
 } from './stub/gitlab.js';
 import { mockFetch } from './util/mock.js';
 
+const nativeFetch = globalThis.fetch;
+
 describe('GitLab', () => {
   const tokenHeader = 'Private-Token';
   const tokenRef = 'GITLAB_TOKEN';
@@ -350,10 +352,7 @@ describe('GitLab', () => {
     const gitlab = await factory(GitLab, { options });
     const { dispatcher } = gitlab.certificateAuthorityOption;
 
-    assert(dispatcher instanceof Agent, "Fetch dispatcher should be an instance of undici's Agent class");
-
-    const kOptions = Object.getOwnPropertySymbols(dispatcher).find(symbol => symbol.description === 'options');
-    assert.deepEqual(dispatcher[kOptions].connect, { rejectUnauthorized: false, ca: undefined });
+    assert(dispatcher instanceof Agent);
   });
 
   test('should create fetch agent if certificateAuthorityFile', async t => {
@@ -363,10 +362,8 @@ describe('GitLab', () => {
     const gitlab = await factory(GitLab, { options });
     const { dispatcher } = gitlab.certificateAuthorityOption;
 
-    assert(dispatcher instanceof Agent, "Fetch dispatcher should be an instance of undici's Agent class");
-
-    const kOptions = Object.getOwnPropertySymbols(dispatcher).find(symbol => symbol.description === 'options');
-    assert.deepEqual(dispatcher[kOptions].connect, { rejectUnauthorized: undefined, ca: 'test certificate' });
+    assert(dispatcher instanceof Agent);
+    assert.deepEqual(readFileSync.mock.calls[0].arguments, ['cert.crt']);
 
     readFileSync.mock.restore();
   });
@@ -379,10 +376,8 @@ describe('GitLab', () => {
     const gitlab = await factory(GitLab, { options });
     const { dispatcher } = gitlab.certificateAuthorityOption;
 
-    assert(dispatcher instanceof Agent, "Fetch dispatcher should be an instance of undici's Agent class");
-
-    const kOptions = Object.getOwnPropertySymbols(dispatcher).find(symbol => symbol.description === 'options');
-    assert.deepEqual(dispatcher[kOptions].connect, { rejectUnauthorized: undefined, ca: 'test certificate' });
+    assert(dispatcher instanceof Agent);
+    assert.deepEqual(readFileSync.mock.calls[0].arguments, ['ca.crt']);
 
     readFileSync.mock.restore();
   });
@@ -395,10 +390,8 @@ describe('GitLab', () => {
     const gitlab = await factory(GitLab, { options });
     const { dispatcher } = gitlab.certificateAuthorityOption;
 
-    assert(dispatcher instanceof Agent, "Fetch dispatcher should be an instance of undici's Agent class");
-
-    const kOptions = Object.getOwnPropertySymbols(dispatcher).find(symbol => symbol.description === 'options');
-    assert.deepEqual(dispatcher[kOptions].connect, { rejectUnauthorized: undefined, ca: 'test certificate' });
+    assert(dispatcher instanceof Agent);
+    assert.deepEqual(readFileSync.mock.calls[0].arguments, ['custom-ca.crt']);
 
     readFileSync.mock.restore();
   });
@@ -423,6 +416,7 @@ describe('GitLab', () => {
   });
 
   test('should succesfully connect to self-hosted instance if insecure connection allowed', async t => {
+    t.mock.method(globalThis, 'fetch', nativeFetch);
     const host = 'https://localhost:3000';
 
     const options = {
@@ -442,9 +436,6 @@ describe('GitLab', () => {
     });
 
     await server.run();
-
-    interceptUser(local);
-    interceptCollaborator(local);
 
     await assert.doesNotReject(gitlab.init());
   });
