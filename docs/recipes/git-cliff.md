@@ -10,34 +10,25 @@ Add git-cliff to the project:
 npm install --save-dev git-cliff
 ```
 
-Git-cliff has the ability to use the Conventional Commits convention to automatically set the package version.
-Release-it allows the user to select the version that should be released. Therefore, it may be helpful to generate the
-changelog from the version in the `package.json` that was bumped by release-it.
-
-```sh
-#!/usr/bin/env bash
-
-NODE_VERSION=$(node -p -e "require('./package.json').version")
-
-if [ "$1" = "stdout" ]; then
-    npm exec git-cliff -o - --unreleased --tag $NODE_VERSION
-else
-    npm exec git-cliff -o './CHANGELOG.md' --tag $NODE_VERSION
-fi
-```
-
-Example configuration in the release-it config:
+The `git.changelog` command runs before the version is selected, so it should render the unreleased changes. Once the
+version is selected, `${version}` is available to hooks and release note commands:
 
 ```json
 {
+  "git": {
+    "changelog": "npm exec -- git-cliff --unreleased"
+  },
   "hooks": {
-    "after:bump": "./changelog.sh"
+    "after:bump": "npm exec -- git-cliff --output CHANGELOG.md --tag ${version}"
   },
   "github": {
-    "releaseNotes": "./changelog.sh stdout"
+    "releaseNotes": "npm exec -- git-cliff --output - --unreleased --tag ${version}"
   }
 }
 ```
+
+The `github.releaseNotes` command is needed when the GitHub release should contain the final version heading. Otherwise,
+release-it reuses the initial changelog output. Use `gitlab.releaseNotes` instead when publishing a GitLab release.
 
 ## Template
 
