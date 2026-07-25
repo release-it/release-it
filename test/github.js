@@ -384,6 +384,9 @@ describe('github', () => {
       }
     };
     const github = await factory(GitHub, { options });
+    const agent = github.client.request.endpoint.DEFAULTS.request.agent;
+
+    assert.equal(await agent.getProxyForUrl('https://custom.example.org/api/v3'), 'http://proxy:8080');
 
     const original = github.shell.exec.bind(github.shell);
     t.mock.method(github.shell, 'exec', (...args) => {
