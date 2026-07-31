@@ -240,6 +240,8 @@ Note that hooks like `after:git:release` will not run when either the `git push`
 be executed (e.g. `git.push: false`). See [execution order][40] for more details on execution order of plugin lifecycle
 methods.
 
+Use `--no-hooks` to skip all hooks, or disable a single hook from the command line (e.g. `--no-hooks.before:init`).
+
 All commands can use configuration variables (like template strings). An array of commands can also be provided, they
 will run one after another. Some example release-it configuration:
 

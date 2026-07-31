@@ -119,6 +119,7 @@ describe('CLI arguments', () => {
     assert.equal(parseCliArguments(['--github.makeLatest=legacy']).github.makeLatest, 'legacy');
     assert.equal(parseCliArguments(['--no-increment']).increment, false);
     assert.equal(parseCliArguments(['--no-git.requireBranch']).git.requireBranch, false);
+    assert.equal(parseCliArguments(['--no-hooks']).hooks, false);
   });
 
   test('parses less common public options', () => {
