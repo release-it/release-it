@@ -47,8 +47,8 @@ Pull requests are welcome! If you never created a pull request before, here are 
 
 Please keep the following in mind:
 
-- To match the existing code styling, use `npm run format` before committing code.
-- Make sure the tests pass (run `npm test`). Your changes probably deserve new tests as well.
+- To match the existing code styling, use `pnpm format` before committing code.
+- Make sure the tests pass (run `pnpm test`). Your changes probably deserve new tests as well.
 - Remember that this project is cross-platform compatible (macOS, Windows, Linux), and that it runs in different
   versions of Node. On PR submission, a [GitHub Action][8] will run the tests in multiple supported platforms and
   Node.js versions.
@@ -60,23 +60,20 @@ Unsure about whether you should open a pull request? Feel free to discuss it fir
 ```bash
 git clone https://github.com/<your-github-username>/release-it
 cd release-it
-npm install
+pnpm install
 ```
 
 Verify the tests are passing:
 
 ```bash
-npm test
+pnpm test
 ```
 
-To use your modified version of release-it in your project, [npm-link][10] it:
+To use your modified version of release-it in your project, [pnpm link][10] it:
 
 ```bash
-# From your release-it clone:
-npm link
-
 # From your project that uses release-it:
-npm link release-it
+pnpm link <path-to-release-it-clone>
 ```
 
 [1]: ./CODE_OF_CONDUCT.md
@@ -89,4 +86,4 @@ npm link release-it
 [7]: https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github
 [8]: https://github.com/release-it/release-it/actions
 [9]: https://docs.github.com/en/get-started/quickstart/fork-a-repo
-[10]: https://docs.npmjs.com/cli/link.html
+[10]: https://pnpm.io/cli/link

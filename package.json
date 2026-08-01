@@ -69,7 +69,7 @@
     "lint": "eslint lib test",
     "format": "prettier --write eslint.config.mjs \"{lib,test}/**/*.js\"",
     "docs": "remark README.md 'docs/**/*.md' '.github/*.md' -o",
-    "test": "node --env-file=.env.test --test && installed-check",
+    "test": "node --env-file=.env.test --test && installed-check --no-workspaces",
     "release": "./bin/release-it.js"
   },
   "author": {
@@ -79,12 +79,12 @@
   "license": "MIT",
   "dependencies": {
     "@inquirer/prompts": "8.5.2",
-    "defu": "^6.1.7",
     "@octokit/rest": "22.0.1",
     "@phun-ky/typeof": "2.0.3",
     "async-retry": "1.3.3",
     "c12": "3.3.4",
     "ci-info": "^4.4.0",
+    "defu": "^6.1.7",
     "eta": "4.6.0",
     "git-url-parse": "16.1.0",
     "issue-parser": "7.0.2",
@@ -103,13 +103,13 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
-    "@octokit/request-error": "7.1.0",
-    "@types/node": "26.1.1",
-    "eslint": "10.8.0",
+    "@octokit/request-error": "7.1.1",
+    "@types/node": "24.13.3",
+    "eslint": "10.8.1",
     "eslint-plugin-import-x": "4.17.1",
-    "globals": "17.7.0",
+    "globals": "17.9.0",
     "installed-check": "10.0.1",
-    "knip": "6.29.0",
+    "knip": "6.32.0",
     "mentoss": "0.13.0",
     "mock-stdio": "1.0.3",
     "prettier": "3.9.6",
@@ -118,17 +118,10 @@
     "tar": "7.5.22",
     "typescript": "7.0.2"
   },
-  "overrides": {
-    "@npmcli/map-workspaces": "5.0.3",
-    "socks": "2.8.9",
-    "glob": "13.0.6",
-    "minimatch@^10.0.0": {
-      "brace-expansion": "5.0.8"
-    }
-  },
   "engines": {
     "node": "^22.21.0 || >=24.0.0"
   },
+  "packageManager": "pnpm@11.17.0",
   "remarkConfig": {
     "plugins": [
       "preset-webpro"

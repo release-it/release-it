@@ -37,7 +37,8 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ matrix.node }}
+      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5
       - run: git config --global user.name User
       - run: git config --global user.email user@example.org
-      - run: npm install
-      - run: npm test
+      - run: pnpm install
+      - run: pnpm test
