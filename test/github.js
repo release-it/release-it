@@ -667,6 +667,81 @@ describe('github', () => {
     );
   });
 
+  test('should not comment on the same pull request more than once', async t => {
+    const options = {
+      // The shared `git` constant sets changelog to '', which makes getChangelog()
+      // return before ever running the log command - this test needs a real
+      // changelog to reach commentOnResolvedItems, so it restores the default template.
+      git: { changelog: 'git log --pretty=format:"* %s (%h)" ${from}...${to}' },
+      github: {
+        pushRepo,
+        tokenRef,
+        release: true,
+        releaseName: 'Release ${tagName}',
+        releaseNotes: 'echo Custom notes',
+        comments: { submit: true }
+      }
+    };
+    const github = await factory(GitHub, { options });
+
+    // Enough commits that getSearchQueries splits them into more than one search
+    // query - the situation in which a pull request whose commits span multiple
+    // queries is returned, and therefore commented on, once per query.
+    const commits = Array.from({ length: 24 }, (_, i) => String(1000000 + i));
+    const changelog = commits.map(sha => `* Some commit (${sha})`).join('\n');
+    const [firstQuery, secondQuery] = getSearchQueries('repo:user/repo+type:pr+is:merged', commits, '+');
+
+    const original = github.shell.exec.bind(github.shell);
+    t.mock.method(github.shell, 'exec', (...args) => {
+      if (args[0] === 'git log --pretty=format:"* %s (%h)" ${from}...${to}') return Promise.resolve(changelog);
+      if (args[0] === 'git describe --tags --match=* --abbrev=0') return Promise.resolve('2.0.1');
+      return original(...args);
+    });
+
+    interceptAuthentication(api);
+    interceptCollaborator(api);
+    interceptCreate(api, {
+      body: { tag_name: '2.0.2', name: 'Release 2.0.2', body: 'Custom notes', draft: false }
+    });
+
+    // Pull request #42's commits are spread across both batches, so both searches
+    // return it. The `+` separator is decoded back to a space by URLSearchParams,
+    // so the matcher has to expect that form rather than the literal query text.
+    api.get(
+      { url: '/search/issues', query: { q: firstQuery.replace(/\+/g, ' '), advanced_search: 'true' } },
+      { status: 200, body: { items: [{ number: 42 }, { number: 43 }] } }
+    );
+    api.get(
+      { url: '/search/issues', query: { q: secondQuery.replace(/\+/g, ' '), advanced_search: 'true' } },
+      { status: 200, body: { items: [{ number: 42 }] } }
+    );
+
+    // Each mentoss route is consumed on its first match, so a route only meant
+    // to be hit once cannot observe a second, buggy request - it would just
+    // silently fail to match instead of proving the duplicate happened. Register
+    // more copies than any single pull request could plausibly need, so every
+    // real request the code makes succeeds and is counted.
+    const commented = [];
+    for (let i = 0; i < 5; i++) {
+      api.post('/repos/user/repo/issues/42/comments', () => {
+        commented.push(42);
+        return { status: 201, body: {} };
+      });
+      api.post('/repos/user/repo/issues/43/comments', () => {
+        commented.push(43);
+        return { status: 201, body: {} };
+      });
+    }
+
+    await runTasks(github);
+
+    assert.deepEqual(
+      commented.sort(),
+      [42, 43],
+      'each pull request should be commented on exactly once, however many search queries returned it'
+    );
+  });
+
   test('should ignore resolved issue references in HTML comments', () => {
     const issues = getResolvedIssuesFromChangelog(
       'github.com',
@@ -675,6 +750,19 @@ describe('github', () => {
       'fixes #1 <!-- fixes #2 -->'
     );
     assert.deepEqual(issues, [{ type: 'issue', number: 1 }]);
+  });
+
+  test('should resolve an issue referenced by multiple changelog entries only once', () => {
+    const issues = getResolvedIssuesFromChangelog(
+      'github.com',
+      'release-it',
+      'release-it',
+      '* fix crash, fixes #1 (abc1234)\n* more fixes, fixes #1, closes #2 (def5678)'
+    );
+    assert.deepEqual(issues, [
+      { type: 'issue', number: 1 },
+      { type: 'issue', number: 2 }
+    ]);
   });
 
   test('should create auto-generated discussion', async t => {
