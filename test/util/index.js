@@ -1,5 +1,5 @@
 import { mock } from 'node:test';
-import semver from 'semver';
+import { increment as incrementVersion } from 'verkit';
 import { parseVersion } from '../../lib/util.js';
 import Config from '../../lib/config.js';
 import ShellStub from '../stub/shell.js';
@@ -64,7 +64,7 @@ const getVersion = async (plugin, options) => {
   return (
     (await plugin.getIncrementedVersionCI(options)) ||
     (await plugin.getIncrementedVersion(options)) ||
-    (increment !== false ? semver.inc(latestVersion, increment || 'patch') : latestVersion)
+    (increment !== false ? incrementVersion(latestVersion, increment || 'patch') : latestVersion)
   );
 };
 
