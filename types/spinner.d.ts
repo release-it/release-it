@@ -10,6 +10,6 @@ export default interface Spinner {
     task: TaskType;
     label?: string;
     external?: boolean;
-    context?: Record<string, any> | null;
+    context?: object | null;
   }): ReturnType<TaskType>;
 }

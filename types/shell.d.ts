@@ -12,11 +12,11 @@ export default interface Shell {
   exec(
     command: string,
     options: CommonExecOptions,
-    context: object
+    context?: object | null
   ): Promise<any>;
   exec(
     command: string[],
     options: CommonExecOptions & SpawnOptions,
-    context: object
+    context?: object | null
   ): Promise<any>;
 }
