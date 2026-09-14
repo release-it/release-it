@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "release-it#git",
+  "$id": "git.json",
   "title": "JSON schema for release-it Git configuration",
   "type": "object",
   "additionalItems": false,

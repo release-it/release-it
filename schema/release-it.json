@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "release-it#release-it",
+  "$id": "release-it.json",
   "title": "JSON schema for release-it configuration",
   "type": "object",
   "additionalProperties": false,
