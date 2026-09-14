@@ -50,7 +50,7 @@ test('should create prompt', async t => {
     const config = new Config({
       isPreRelease: true,
       git: { tagName: 'v${version}' },
-      npm: { name: 'my-pkg', tag: 'next' }
+      npm: { name: 'my-pkg', tag: 'next', stage: false }
     });
     await config.init();
     config.setContext({ version: '1.0.0', tagName: '1.0.0' });

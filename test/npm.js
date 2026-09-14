@@ -321,21 +321,41 @@ describe('npm', async () => {
     assert.deepEqual(exec.mock.calls.at(-1).arguments[0], ['pnpm', 'stage', 'publish', '.', '--tag', 'latest']);
   });
 
-  test('should print the staged-packages approval URL after stage publish', async t => {
-    const unscoped = await factory(npm, { options: { npm: { stage: true } } });
-    unscoped.setContext({ name: 'pkg', username: 'webpro' });
-    t.mock.method(unscoped.shell, 'exec', () => Promise.resolve());
-    await unscoped.publish();
-    assert.match(unscoped.log.log.mock.calls.map(c => c.arguments[0]).join('\n'), /settings\/webpro\/staged-packages/);
+  test('should print the authenticated user staged-packages approval URL after stage publish', async t => {
+    for (const name of ['pkg', '@release-it/conventional-changelog', '@other-user/pkg']) {
+      const npmClient = await factory(npm, { options: { npm: { stage: true } } });
+      npmClient.setContext({ name, username: 'webpro' });
+      t.mock.method(npmClient.shell, 'exec', () => Promise.resolve());
+      await npmClient.publish();
+      assert.equal(
+        npmClient.log.log.mock.calls[0].arguments[0],
+        '📦 Staged, not yet published. Approve at https://www.npmjs.com/settings/webpro/staged-packages (or `npm stage approve`).'
+      );
+    }
+  });
 
-    const scoped = await factory(npm, { options: { npm: { stage: true } } });
-    scoped.setContext({ name: '@release-it/x', username: 'webpro' });
-    t.mock.method(scoped.shell, 'exec', () => Promise.resolve());
-    await scoped.publish();
-    assert.match(
-      scoped.log.log.mock.calls.map(c => c.arguments[0]).join('\n'),
-      /settings\/release-it\/staged-packages/
-    );
+  test('should fall back to npmjs.com when the staged package publisher username is unknown', async () => {
+    for (const name of ['pkg', '@release-it/conventional-changelog']) {
+      const npmClient = await factory(npm, { options: { npm: { stage: true } } });
+      npmClient.setContext({ name });
+      assert.equal(npmClient.getStagedPackagesUrl(), 'https://www.npmjs.com');
+    }
+  });
+
+  test('should ask to stage or publish according to the npm stage option', async t => {
+    for (const [stage, tag, message] of [
+      [true, 'latest', 'Stage @release-it/conventional-changelog to npm?'],
+      [true, 'next', 'Stage @release-it/conventional-changelog@next to npm?'],
+      [false, 'latest', 'Publish @release-it/conventional-changelog to npm?'],
+      [false, 'next', 'Publish @release-it/conventional-changelog@next to npm?']
+    ]) {
+      const createPrompt = t.mock.fn(() => false);
+      const npmClient = await factory(npm, { options: { ci: false, npm: { stage } }, container: { createPrompt } });
+      npmClient.setContext({ name: '@release-it/conventional-changelog', tag });
+      await npmClient.release();
+      assert.equal(createPrompt.mock.callCount(), 1);
+      assert.deepEqual(createPrompt.mock.calls[0].arguments, ['confirm', { message, default: true }]);
+    }
   });
 
   test('should surface the stage id from publish output in the approval message', async t => {
