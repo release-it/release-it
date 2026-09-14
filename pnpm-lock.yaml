@@ -59,9 +59,6 @@ importers:
       proxy-agent:
         specifier: 8.0.2
         version: 8.0.2(supports-color@9.4.0)
-      semver:
-        specifier: 7.8.5
-        version: 7.8.5
       tinyglobby:
         specifier: 0.2.17
         version: 0.2.17
@@ -71,6 +68,9 @@ importers:
       url-join:
         specifier: 5.0.0
         version: 5.0.0
+      verkit:
+        specifier: 0.3.2
+        version: 0.3.2
       wildcard-match:
         specifier: 5.1.4
         version: 5.1.4
@@ -2404,6 +2404,10 @@ packages:
   validate-npm-package-name@5.0.1:
     resolution: {integrity: sha512-OljLrQ9SQdOUqTaQxqL5dEfZWrXExyyWsozYlAWFawPVNuD83igl7uJD2RTkNMbniIYgt8l81eCJGIdQF7avLQ==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
+
+  verkit@0.3.2:
+    resolution: {integrity: sha512-zj/ob3UsvJGN0whEAKFp53REA5X66hvffVqoCtVQAakJKnKlH+/PcOfMoFwIG/o4rElqLv/ycAFlx8ZlXUorCg==}
+    engines: {node: '>=18.12.0'}
 
   version-guard@1.1.3:
     resolution: {integrity: sha512-JwPr6erhX53EWH/HCSzfy1tTFrtPXUe927wdM1jqBBeYp1OM+qPHjWbsvv6pIBduqdgxxS+ScfG7S28pzyr2DQ==}
@@ -4920,6 +4924,8 @@ snapshots:
       spdx-expression-parse: 3.0.1
 
   validate-npm-package-name@5.0.1: {}
+
+  verkit@0.3.2: {}
 
   version-guard@1.1.3: {}
 

@@ -3,7 +3,7 @@ import childProcess from 'node:child_process';
 import { appendFileSync, mkdirSync, renameSync } from 'node:fs';
 import test, { after, afterEach, before, beforeEach, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import semver from 'semver';
+import { getMajor } from 'verkit';
 import Config from '../lib/config.js';
 import runTasks from '../lib/index.js';
 import { execOpts } from '../lib/util.js';
@@ -34,7 +34,7 @@ describe('tasks', () => {
     'https://gitlab.com/api/v4'
   ]);
 
-  const npmMajorVersion = semver.major(process.env.npm_config_user_agent?.match(/npm\/([^ ]+)/)?.[1] ?? '10.0.0');
+  const npmMajorVersion = getMajor(process.env.npm_config_user_agent?.match(/npm\/([^ ]+)/)?.[1] ?? '10.0.0');
 
   const testConfig = {
     ci: true,

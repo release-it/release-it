@@ -95,10 +95,10 @@
     "ora": "9.4.1",
     "os-name": "7.0.0",
     "proxy-agent": "8.0.2",
-    "semver": "7.8.5",
     "tinyglobby": "0.2.17",
     "undici": "7.29.0",
     "url-join": "5.0.0",
+    "verkit": "0.3.2",
     "wildcard-match": "5.1.4"
   },
   "devDependencies": {
