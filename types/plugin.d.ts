@@ -79,6 +79,7 @@ export default class Plugin {
   prompt: Prompt;
   debug: DebugLogger;
 
+  getInitialOptions(options: Options, namespace: string): unknown;
   getContext(path: string): any;
   exec(command: string, { options, context }: { options: Record<string, any>; context: Context }): Promise<any>;
 
