@@ -41,21 +41,35 @@ export interface Container {
   shell: Shell;
 }
 
+export type ReleaseType = 'major' | 'minor' | 'patch';
+export type PreReleaseType = 'premajor' | 'preminor' | 'prepatch';
+export type ContinuationType = 'prerelease' | 'pre';
+
+export type Increment = ReleaseType | PreReleaseType | ContinuationType;
+
+export interface IncrementBase {
+  latestVersion: string;
+  increment: Increment;
+  isPreRelease: boolean;
+  preReleaseId: string;
+  preReleaseBase: string;
+}
+
 export default class Plugin {
   constructor({ namespace, options, container }: { namespace: string; options: Options; container: Container });
 
-  init(): void;
-  getName(): string;
-  getLatestVersion(): string;
-  getChangelog(): string;
-  getIncrement(): string;
-  getIncrementedVersionCI(): string;
-  getIncrementedVersion(): string;
-  beforeBump(): void;
-  bump(): void;
-  beforeRelease(): void;
-  release(): void;
-  afterRelease(): void;
+  init(): void | Promise<void>;
+  getName(): undefined | string | Promise<string>;
+  getLatestVersion(): undefined | string | Promise<string>;
+  getChangelog(latestVersion: string): undefined | string | Promise<string>;
+  getIncrement(incrementBase: IncrementBase): undefined | string | Promise<string>;
+  getIncrementedVersionCI(incrementBase: IncrementBase): undefined | string | Promise<string>;
+  getIncrementedVersion(incrementBase: IncrementBase): undefined | string | Promise<string>;
+  beforeBump(): void | Promise<void>;
+  bump(version: string): void | Promise<void>;
+  beforeRelease(): void | Promise<void>;
+  release(): void | Promise<void>;
+  afterRelease(): void | Promise<void>;
 
   options: Options;
   config: Config;
