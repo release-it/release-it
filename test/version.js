@@ -4,16 +4,59 @@ import Version from '../lib/plugin/version/Version.js';
 import { factory, runTasks } from './util/index.js';
 
 describe('version', () => {
-  test('isValidVersion', async () => {
+  test('should validate custom versions', async () => {
     const v = await factory(Version);
-    assert.equal(v.isValid('1.0.0'), true);
-    assert.equal(v.isValid(1.0), false);
+    const { validate } = v.prompt.prompts.version.version;
+    assert.equal(validate('1.0.0'), true);
+    assert.equal(validate('1.0'), 'The version must follow the semver standard.');
   });
 
-  test('isPreRelease', async () => {
+  test('should detect whether the latest version is a prerelease', async () => {
     const v = await factory(Version);
-    assert.equal(v.isPreRelease('1.0.0-beta.0'), true);
-    assert.equal(v.isPreRelease('1.0.0'), false);
+    v.incrementVersion({ latestVersion: '1.0.0-beta.0', increment: '1.0.0' });
+    assert.equal(v.getContext('latestIsPreRelease'), true);
+    v.incrementVersion({ latestVersion: '1.0.0', increment: '1.0.0' });
+    assert.equal(v.getContext('latestIsPreRelease'), false);
+  });
+
+  test('should render increment choices', async () => {
+    const v = await factory(Version);
+    const choices = v.prompt.prompts.version.incrementList.choices({ latestVersion: '1.2.3', version: {} });
+    assert.deepEqual(choices.slice(0, -2), [
+      { name: 'patch (1.2.4)', value: 'patch' },
+      { name: 'minor (1.3.0)', value: 'minor' },
+      { name: 'major (2.0.0)', value: 'major' },
+      { name: 'prepatch (1.2.4-0)', value: 'prepatch' },
+      { name: 'preminor (1.3.0-0)', value: 'preminor' },
+      { name: 'premajor (2.0.0-0)', value: 'premajor' }
+    ]);
+  });
+
+  test('should render prerelease choices with the configured identifier and base', async () => {
+    const v = await factory(Version);
+    const choices = v.prompt.prompts.version.incrementList.choices({
+      latestVersion: '1.2.3',
+      version: { isPreRelease: true, preReleaseId: 'beta', preReleaseBase: '1' }
+    });
+    assert.deepEqual(choices.slice(0, -2), [
+      { name: 'prepatch (1.2.4-beta.1)', value: 'prepatch' },
+      { name: 'preminor (1.3.0-beta.1)', value: 'preminor' },
+      { name: 'premajor (2.0.0-beta.1)', value: 'premajor' }
+    ]);
+  });
+
+  test('should render choices for continuing or finalizing a prerelease', async () => {
+    const v = await factory(Version);
+    const choices = v.prompt.prompts.version.incrementList.choices({
+      latestVersion: '2.0.0-beta.1',
+      version: { latestIsPreRelease: true, preReleaseId: 'rc', preReleaseBase: '1' }
+    });
+    assert.deepEqual(choices.slice(0, -2), [
+      { name: 'prerelease (2.0.0-rc.1)', value: 'prerelease' },
+      { name: 'patch (2.0.0)', value: 'patch' },
+      { name: 'minor (2.0.0)', value: 'minor' },
+      { name: 'major (2.0.0)', value: 'major' }
+    ]);
   });
 
   test('should return the same version in both interactive and ci mode', async () => {
@@ -55,10 +98,26 @@ describe('version', () => {
   });
 
   test('should increment latest version (coerce)', async () => {
-    const v = await factory(Version);
+    const v = await factory(Version, { options: { ci: false } });
+    assert.equal(v.incrementVersion({ increment: 0 }), '0.0.0');
+    assert.equal(v.incrementVersion({ increment: 1 }), '1.0.0');
     assert.equal(v.incrementVersion({ increment: '1.2' }), '1.2.0');
     assert.equal(v.incrementVersion({ increment: '1' }), '1.0.0');
     assert.equal(v.incrementVersion({ increment: 'v1.2.0.0' }), '1.2.0');
+  });
+
+  test('should default to a prerelease patch in CI mode', async () => {
+    const v = await factory(Version);
+    assert.equal(
+      v.getIncrementedVersionCI({
+        latestVersion: '1.2.3',
+        increment: null,
+        isPreRelease: true,
+        preReleaseId: 'beta',
+        preReleaseBase: '1'
+      }),
+      '1.2.4-beta.1'
+    );
   });
 
   test('should increment version (pre-release continuation)', async () => {
@@ -179,6 +238,20 @@ describe('version', () => {
       }),
       '1.2.3-alpha.6'
     );
+  });
+
+  test('should use the prerelease base without an identifier', async () => {
+    const v = await factory(Version);
+    assert.equal(v.incrementVersion({ latestVersion: '1.2.3', increment: 'prepatch', preReleaseBase: '1' }), '1.2.4-1');
+    const choices = v.prompt.prompts.version.incrementList.choices({
+      latestVersion: '1.2.3',
+      version: { isPreRelease: true, preReleaseBase: '1' }
+    });
+    assert.deepEqual(choices.slice(0, -2), [
+      { name: 'prepatch (1.2.4-1)', value: 'prepatch' },
+      { name: 'preminor (1.3.0-1)', value: 'preminor' },
+      { name: 'premajor (2.0.0-1)', value: 'premajor' }
+    ]);
   });
 
   test('should run tasks without errors', async t => {
