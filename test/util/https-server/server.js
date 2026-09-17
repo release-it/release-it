@@ -33,6 +33,7 @@ const options = {
 export class GitlabTestServer {
   constructor() {
     this.server = createServer(options, (req, res) => this._requestHandler(req, res));
+    this.requests = 0;
     this.debug = debug('release-it:gitlab-test-server');
   }
 
@@ -103,6 +104,8 @@ export class GitlabTestServer {
    * @returns {void}
    */
   _requestHandler(req, res) {
+    this.requests++;
+
     if (req.url === '/api/v4/user') {
       this._json(res, { id: '1234', username: 'release_bot' });
       return;

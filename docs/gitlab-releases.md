@@ -25,6 +25,7 @@ GitLab Releases do not support pre-releases or drafts.
 | `gitlab.certificateAuthorityFile`    | Path of the GitLab CA file for self-hosted installations                    |
 | `gitlab.certificateAuthorityFileRef` | GitLab CA file environment variable name (default: `CI_SERVER_TLS_CA_FILE`) |
 | `gitlab.secure`                      | Verify server certificates (default: `true`); set to `false` to disable     |
+| `gitlab.proxy`                       | Read the standard proxy environment variables (default: `false`)            |
 | `gitlab.assets`                      | Glob pattern path to assets to add to the GitLab release                    |
 | `gitlab.origin`                      | Base URL to use for the GitLab API (default: `https://${repo.host}`)        |
 | `gitlab.skipChecks`                  | Skip checks on `GITLAB_TOKEN` environment variable and milestone(s)         |
@@ -173,6 +174,24 @@ the `secure` flag to false:
 ```
 
 The `secure` option is passed down to the `fetch` agent as the `connect.rejectUnauthorized` option.
+
+## Proxy
+
+If release-it runs behind an HTTP proxy, set the `proxy` flag to route GitLab API requests through the proxy configured
+in the standard `http_proxy`, `https_proxy` and `no_proxy` environment variables (either case):
+
+```json
+{
+  "gitlab": {
+    "release": true,
+    "proxy": true
+  }
+}
+```
+
+This option is opt-in so enabling GitLab releases does not silently change network routing. The `proxy` option is passed
+down to the `fetch` agent as an `EnvHttpProxyAgent`, and can be combined with `certificateAuthorityFile` or `secure`, in
+which case a single agent carries both the proxy and the certificate settings.
 
 ## Update the latest release
 

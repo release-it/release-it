@@ -53,6 +53,10 @@
     "secure": {
       "default": true
     },
+    "proxy": {
+      "type": "boolean",
+      "default": false
+    },
     "assets": {
       "default": null
     },

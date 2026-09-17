@@ -67,6 +67,7 @@
     "tokenHeader": "Private-Token",
     "certificateAuthorityFile": null,
     "secure": true,
+    "proxy": false,
     "assets": null,
     "useIdsForUrls": false,
     "useGenericPackageRepositoryForAssets": false,

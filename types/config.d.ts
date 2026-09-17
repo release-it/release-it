@@ -190,6 +190,9 @@ export interface Config {
     /** @default true */
     secure?: boolean;
 
+    /** @default false */
+    proxy?: boolean;
+
     /** @default null */
     assets?: any;
 

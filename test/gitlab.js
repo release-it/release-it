@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import childProcess from 'node:child_process';
 import test, { before, after, afterEach, beforeEach, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { Agent } from 'undici';
+import { Agent, EnvHttpProxyAgent } from 'undici';
 import Config from '../lib/config.js';
 import GitLab from '../lib/plugin/gitlab/GitLab.js';
 import { GitlabTestServer } from './util/https-server/server.js';
@@ -17,6 +17,7 @@ import {
   interceptMembers
 } from './stub/gitlab.js';
 import { mockFetch } from './util/mock.js';
+import { ConnectProxy } from './util/proxy.js';
 
 const nativeFetch = globalThis.fetch;
 
@@ -398,6 +399,37 @@ describe('GitLab', () => {
     readFileSync.mock.restore();
   });
 
+  test('should create fetch agent if proxy is enabled', async () => {
+    const options = { gitlab: { proxy: true } };
+    const gitlab = await factory(GitLab, { options });
+    const { dispatcher } = gitlab.certificateAuthorityOption;
+
+    assert(dispatcher instanceof EnvHttpProxyAgent);
+  });
+
+  test('should not read proxy environment variables by default', async () => {
+    const config = new Config({ config: false });
+    await config.init();
+    const gitlab = await factory(GitLab, { options: config.options });
+
+    assert.equal(gitlab.options.proxy, false);
+    assert.deepEqual(gitlab.certificateAuthorityOption, {});
+  });
+
+  test('should create a single fetch agent if proxy is enabled and certificateAuthorityFile', async t => {
+    const readFileSync = t.mock.method(fs, 'readFileSync', () => 'test certificate');
+
+    const options = { gitlab: { proxy: true, certificateAuthorityFile: 'cert.crt' } };
+    const gitlab = await factory(GitLab, { options });
+    const { dispatcher, ...rest } = gitlab.certificateAuthorityOption;
+
+    assert(dispatcher instanceof EnvHttpProxyAgent);
+    assert.deepEqual(rest, {});
+    assert.deepEqual(readFileSync.mock.calls.at(-1).arguments, ['cert.crt']);
+
+    readFileSync.mock.restore();
+  });
+
   test('should throw for insecure connections to self-hosted instances', async t => {
     const host = 'https://localhost:3000';
 
@@ -467,5 +499,46 @@ describe('GitLab', () => {
     interceptCollaborator(local);
 
     await assert.doesNotReject(gitlab.init());
+  });
+
+  test('should successfully connect to self-hosted instance with valid CA file and proxy enabled', async t => {
+    t.mock.method(globalThis, 'fetch', nativeFetch);
+    const host = 'https://localhost:3000';
+
+    const proxy = new ConnectProxy();
+    await proxy.run();
+
+    t.after(async () => {
+      await proxy.stop();
+    });
+
+    for (const key of ['http_proxy', 'https_proxy', 'HTTP_PROXY', 'HTTPS_PROXY', 'no_proxy', 'NO_PROXY']) {
+      delete process.env[key];
+    }
+    process.env.HTTPS_PROXY = proxy.url;
+
+    const options = {
+      git: { pushRepo: `${host}/user/repo` },
+      gitlab: {
+        host,
+        tokenRef,
+        origin: host,
+        proxy: true,
+        certificateAuthorityFile: 'test/util/https-server/client/my-private-root-ca.cert.pem'
+      }
+    };
+    const gitlab = await factory(GitLab, { options });
+    const server = new GitlabTestServer();
+
+    t.after(async () => {
+      await server.stop();
+    });
+
+    await server.run();
+
+    await assert.doesNotReject(gitlab.init());
+
+    assert.equal(server.requests, 2);
+    assert.ok(proxy.requests > 0);
   });
 });
