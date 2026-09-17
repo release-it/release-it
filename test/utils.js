@@ -97,6 +97,25 @@ test('parseVersion', () => {
   assert.deepEqual(parseVersion('21.04.1'), { version: '21.04.1', isPreRelease: false, preReleaseId: null });
 });
 
+test('parseVersion preserves valid version strings', () => {
+  assert.deepEqual(parseVersion('v1.2.3+build.4'), {
+    version: 'v1.2.3+build.4',
+    isPreRelease: false,
+    preReleaseId: null
+  });
+  assert.deepEqual(parseVersion('1.2.3-beta.1+build.4'), {
+    version: '1.2.3-beta.1+build.4',
+    isPreRelease: true,
+    preReleaseId: 'beta'
+  });
+});
+
+test('parseVersion preserves inputs that cannot be coerced', () => {
+  assert.deepEqual(parseVersion(null), { version: null, isPreRelease: false, preReleaseId: null });
+  assert.deepEqual(parseVersion(''), { version: '', isPreRelease: false, preReleaseId: null });
+  assert.deepEqual(parseVersion('invalid'), { version: 'invalid', isPreRelease: false, preReleaseId: null });
+});
+
 const sample = {
   root: {
     level1: {

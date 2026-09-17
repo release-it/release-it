@@ -106,6 +106,12 @@ describe('version', () => {
     assert.equal(v.incrementVersion({ increment: 'v1.2.0.0' }), '1.2.0');
   });
 
+  test('should log the coerced version', async () => {
+    const v = await factory(Version);
+    v.incrementVersion({ latestVersion: '1.0.0', increment: '1.2' });
+    assert.deepEqual(v.log.warn.mock.calls[0].arguments, ['Coerced invalid semver version "1.2" into "1.2.0".']);
+  });
+
   test('should default to a prerelease patch in CI mode', async () => {
     const v = await factory(Version);
     assert.equal(
