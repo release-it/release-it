@@ -119,7 +119,7 @@
     "typescript": "7.0.2"
   },
   "engines": {
-    "node": "^22.21.0 || >=24.0.0"
+    "node": "^22.22.2 || ^24.15.0 || >=26.0.0"
   },
   "packageManager": "pnpm@11.17.0",
   "remarkConfig": {
