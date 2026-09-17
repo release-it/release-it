@@ -17,6 +17,7 @@ import {
   interceptMembers
 } from './stub/gitlab.js';
 import { mockFetch } from './util/mock.js';
+import { ConnectProxy } from './util/proxy.js';
 
 const nativeFetch = globalThis.fetch;
 
@@ -501,9 +502,20 @@ describe('GitLab', () => {
   });
 
   test('should successfully connect to self-hosted instance with valid CA file and proxy enabled', async t => {
+    t.mock.method(globalThis, 'fetch', nativeFetch);
     const host = 'https://localhost:3000';
 
-    for (const key of ['http_proxy', 'https_proxy', 'HTTP_PROXY', 'HTTPS_PROXY']) delete process.env[key];
+    const proxy = new ConnectProxy();
+    await proxy.run();
+
+    t.after(async () => {
+      await proxy.stop();
+    });
+
+    for (const key of ['http_proxy', 'https_proxy', 'HTTP_PROXY', 'HTTPS_PROXY', 'no_proxy', 'NO_PROXY']) {
+      delete process.env[key];
+    }
+    process.env.HTTPS_PROXY = proxy.url;
 
     const options = {
       git: { pushRepo: `${host}/user/repo` },
@@ -524,9 +536,9 @@ describe('GitLab', () => {
 
     await server.run();
 
-    interceptUser(local);
-    interceptCollaborator(local);
-
     await assert.doesNotReject(gitlab.init());
+
+    assert.equal(server.requests, 2);
+    assert.ok(proxy.requests > 0);
   });
 });
