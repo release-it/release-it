@@ -1,7 +1,7 @@
-import { join } from 'node:path';
-import test, { describe } from 'node:test';
+import { join, resolve } from 'node:path';
+import test, { beforeEach, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { writeFileSync } from 'node:fs';
+import fs, { writeFileSync } from 'node:fs';
 import npm from '../lib/plugin/npm/npm.js';
 import { factory, runTasks } from './util/index.js';
 import { mkTmpDir, getArgs } from './util/helpers.js';
@@ -186,6 +186,157 @@ describe('npm', async () => {
     const exec = t.mock.method(npmClient.shell, 'exec', () => Promise.resolve());
     exec.mock.mockImplementationOnce(() => Promise.reject(), 1);
     await assert.rejects(runTasks(npmClient), { message: /^Not authenticated with npm/ });
+  });
+
+  describe('login recovery', () => {
+    beforeEach(t => {
+      const descriptor = Object.getOwnPropertyDescriptor(process.stdin, 'isTTY');
+      Object.defineProperty(process.stdin, 'isTTY', { configurable: true, value: true });
+      t.after(() => {
+        if (descriptor) Object.defineProperty(process.stdin, 'isTTY', descriptor);
+        else delete process.stdin.isTTY;
+      });
+    });
+
+    const setup = async (
+      t,
+      { options = {}, answer = true, error = 'npm error code ENEEDAUTH', loginError, retryError } = {}
+    ) => {
+      const createPrompt = t.mock.fn(() => answer);
+      const client = await factory(npm, { options: { ci: false, ...options }, container: { createPrompt } });
+      let checks = 0;
+      const exec = t.mock.method(client.shell, 'exec', async command => {
+        if (typeof command === 'string' && command.startsWith('npm whoami')) {
+          checks++;
+          if (checks === 1 && error) throw new Error(error);
+          if (checks > 1 && retryError) throw new Error(retryError);
+          return 'ada';
+        }
+        if (Array.isArray(command) && command[1] === 'login' && loginError) throw new Error(loginError);
+        if (command === 'npm --version') return '11.9.0';
+        if (typeof command === 'string' && command.startsWith('npm access')) return JSON.stringify({ ada: ['write'] });
+        return '';
+      });
+      return { client, createPrompt, exec };
+    };
+
+    for (const error of ['npm error code ENEEDAUTH', 'npm error code E401']) {
+      test(`should log in and continue the release after ${error}`, async t => {
+        const { client, createPrompt, exec } = await setup(t, { error });
+        await runTasks(client);
+        const calls = exec.mock.calls.map(call => call.arguments);
+        const login = calls.find(args => Array.isArray(args[0]) && args[0][1] === 'login');
+        assert.deepEqual(login[0], ['npm', 'login']);
+        assert.equal(login[1].interactive, true);
+        assert.equal(login[1].write, true);
+        assert.equal(login[1].cache, false);
+        assert.equal(client.getContext('username'), 'ada');
+        const checks = calls.filter(args => args[0] === 'npm whoami');
+        assert.equal(checks.length, 2);
+        assert.equal(checks[1][1].cache, false);
+        assert.equal(createPrompt.mock.callCount(), 1);
+        assert.match(createPrompt.mock.calls[0].arguments[1].message, /^Publish /);
+        assert(calls.some(args => Array.isArray(args[0]) && args[0][1] === 'publish'));
+      });
+    }
+
+    test('should allow login to take longer than the registry timeout', async t => {
+      t.mock.timers.enable({ apis: ['setTimeout'] });
+      const { client } = await setup(t, { options: { npm: { timeout: 1 } } });
+      const login = client.login.bind(client);
+      t.mock.method(client, 'login', async () => {
+        t.mock.timers.tick(2000);
+        await Promise.resolve();
+        return login();
+      });
+      await client.init();
+      assert.equal(client.getContext('username'), 'ada');
+    });
+
+    test('should skip authentication for a private package', async t => {
+      const { client, exec, createPrompt } = await setup(t);
+      const readFileSync = fs.readFileSync;
+      t.mock.method(fs, 'readFileSync', (file, ...args) =>
+        file === resolve('package.json')
+          ? JSON.stringify({ name: 'private-package', version: '1.0.0', private: true })
+          : readFileSync(file, ...args)
+      );
+      await client.init();
+      assert.equal(exec.mock.callCount(), 0);
+      assert.equal(createPrompt.mock.callCount(), 0);
+    });
+
+    test('should log in to the registry used by the authentication check', async t => {
+      const { client, exec } = await setup(t);
+      t.mock.method(client, 'getRegistry', () => 'https://registry.example.org/');
+      await client.init();
+      const commands = exec.mock.calls.map(call => call.arguments[0]);
+      assert.deepEqual(
+        commands.find(command => Array.isArray(command)),
+        ['npm', 'login', '--registry', 'https://registry.example.org/']
+      );
+      assert.equal(
+        commands.filter(command => command === 'npm whoami --registry https://registry.example.org/').length,
+        2
+      );
+    });
+
+    test('should log in automatically without a release-it confirmation', async t => {
+      const { client, createPrompt, exec } = await setup(t, { answer: false });
+      await client.init();
+      assert.equal(createPrompt.mock.callCount(), 0);
+      assert.deepEqual(exec.mock.calls.find(call => Array.isArray(call.arguments[0])).arguments[0], ['npm', 'login']);
+      assert.equal(client.getContext('username'), 'ada');
+    });
+
+    test('should stop after a failed login without retrying', async t => {
+      const { client, exec } = await setup(t, { loginError: 'Login cancelled' });
+      await assert.rejects(client.init(), /Login cancelled/);
+      assert.equal(exec.mock.calls.filter(call => call.arguments[0] === 'npm whoami').length, 1);
+    });
+
+    test('should stop if authentication still fails after login', async t => {
+      const { client, createPrompt, exec } = await setup(t, { retryError: 'npm error code E401' });
+      await assert.rejects(client.init(), /^Error: Not authenticated with npm/);
+      assert.equal(createPrompt.mock.callCount(), 0);
+      assert.equal(exec.mock.calls.filter(call => call.arguments[0] === 'npm whoami').length, 2);
+    });
+
+    for (const [name, settings] of [
+      ['CI', { options: { ci: true } }],
+      ['dry run', { options: { 'dry-run': true } }],
+      ['network error', { error: 'npm error code ECONNRESET' }],
+      ['server error', { error: 'npm error code E500' }]
+    ]) {
+      test(`should not log in for ${name}`, async t => {
+        const { client, createPrompt, exec } = await setup(t, settings);
+        await assert.rejects(client.init(), /^Error: Not authenticated with npm/);
+        assert.equal(createPrompt.mock.callCount(), 0);
+        assert(!exec.mock.calls.some(call => Array.isArray(call.arguments[0])));
+      });
+    }
+
+    test('should not log in without a terminal', async t => {
+      Object.defineProperty(process.stdin, 'isTTY', { configurable: true, value: false });
+      const { client, createPrompt } = await setup(t);
+      await assert.rejects(client.init(), /^Error: Not authenticated with npm/);
+      assert.equal(createPrompt.mock.callCount(), 0);
+    });
+
+    for (const options of [{ npm: { publish: false } }, { npm: { skipChecks: true } }]) {
+      test(`should not authenticate with ${JSON.stringify(options)}`, async t => {
+        const { client, createPrompt, exec } = await setup(t, { options });
+        await client.init();
+        assert.equal(createPrompt.mock.callCount(), 0);
+        assert.equal(exec.mock.callCount(), 0);
+      });
+    }
+
+    test('should not log in when already authenticated', async t => {
+      const { client, createPrompt } = await setup(t, { error: null });
+      await client.init();
+      assert.equal(createPrompt.mock.callCount(), 0);
+    });
   });
 
   test('should throw if user is not a collaborator (v9)', async t => {

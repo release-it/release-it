@@ -34,6 +34,14 @@ error is a `E400` or `E404`, release-it will give a warning but continue.
 
 To skip these checks, use `npm.skipChecks`.
 
+When publishing is enabled and credentials are missing or expired, interactive releases automatically run `npm login`
+for the publishing registry, recheck authentication, and continue. Publishing may still require 2FA.
+
+Automatic login is disabled in CI, dry runs, or without a terminal.
+
+Put expensive validation hooks such as linting and tests in `after:init` to run them after authentication checks.
+Hooks in `before:init` run before these checks.
+
 ## Skip publish
 
 To bump the version in `package.json` with the release, but not publish to the registry:
