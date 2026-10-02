@@ -1,9 +1,10 @@
 import Logger from './log';
-import Spinner from './spinner';
-import Prompt, { PromptConfig } from './prompt';
-import Shell from './shell';
+import Spinner, { SpinnerShowOptions } from './spinner';
+import Prompt, { PromptConfig, PromptShowOptions } from './prompt';
+import Shell, { CommonExecOptions } from './shell';
 import { DebugLogger } from 'node:util';
 import { Config as Options } from './config';
+import { SpawnOptions } from 'node:child_process';
 
 export interface Config {
   getContext(path: string): any;
@@ -23,15 +24,6 @@ export interface Config {
 
   options: Options;
   localConfig: any;
-}
-
-export interface Context {
-  [key: string]: any;
-
-  log: Logger;
-  shell: Shell;
-  spinner: Spinner;
-  prompt: Prompt;
 }
 
 export interface Container {
@@ -55,8 +47,14 @@ export interface IncrementBase {
   preReleaseBase: string;
 }
 
-export default class Plugin {
-  constructor({ namespace, options, container }: { namespace: string; options: Options; container: Container });
+export interface PluginConstructorArgs {
+  namespace: string;
+  options: Options;
+  container: Container;
+}
+
+export default class Plugin<PluginOptions = any, ContextType = Record<PropertyKey, any>> {
+  constructor(constructorArgs: PluginConstructorArgs);
 
   init(): void | Promise<void>;
   getName(): undefined | string | Promise<string>;
@@ -71,7 +69,9 @@ export default class Plugin {
   release(): void | Promise<void>;
   afterRelease(): void | Promise<void>;
 
-  options: Options;
+  namespace: string;
+  options: Readonly<PluginOptions>;
+  context: ContextType;
   config: Config;
   log: Logger;
   shell: Shell;
@@ -79,10 +79,17 @@ export default class Plugin {
   prompt: Prompt;
   debug: DebugLogger;
 
-  getInitialOptions(options: Options, namespace: string): unknown;
-  getContext(path: string): any;
-  exec(command: string, { options, context }: { options: Record<string, any>; context: Context }): Promise<any>;
+  getInitialOptions(options: Options, namespace: string): PluginOptions;
+  getContext(path?: string): any;
+  setContext(options: Partial<typeof this.context>): void;
+  exec(
+    command: string | string[],
+    { options, context }?: { options: CommonExecOptions & SpawnOptions; context?: object | null }
+  ): Promise<any>;
 
-  registerPrompts(prompts: PromptConfig[]): void;
+  registerPrompts(prompts: Record<string, PromptConfig>): void;
   showPrompt: Prompt['show'];
+  step<TaskReturnType>(
+    options: SpinnerShowOptions<TaskReturnType> & PromptShowOptions<TaskReturnType>
+  ): Spinner['show'] | Prompt['show'];
 }

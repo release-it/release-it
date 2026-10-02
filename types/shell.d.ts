@@ -8,15 +8,15 @@ export interface CommonExecOptions {
   env?: NonNullable<Parameters<typeof exec>[1]>['env'];
 }
 
-export default interface Shell {
+export default class Shell {
   exec(
     command: string,
-    options: CommonExecOptions,
+    options?: CommonExecOptions,
     context?: object | null
-  ): Promise<any>;
+  ): Promise<string>;
   exec(
     command: string[],
-    options: CommonExecOptions & SpawnOptions,
+    options?: CommonExecOptions & SpawnOptions,
     context?: object | null
-  ): Promise<any>;
+  ): Promise<string>;
 }
