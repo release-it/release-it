@@ -1,15 +1,13 @@
-export default interface Spinner {
-  show<TaskReturnType, TaskType extends () => Promise<TaskReturnType>>({
-    enabled,
-    task,
-    label,
-    external,
-    context
-  }: {
-    enabled?: boolean;
-    task: TaskType;
-    label?: string;
-    external?: boolean;
-    context?: object | null;
-  }): ReturnType<TaskType>;
+export type SpinnerShowOptions<TaskReturnType> = {
+  enabled?: boolean;
+  task: () => TaskReturnType | Promise<TaskReturnType>;
+  label?: string;
+  external?: boolean;
+  context?: object | null;
+};
+
+export default class Spinner {
+  show<TaskReturnType>(
+    options: SpinnerShowOptions<TaskReturnType>
+  ): TaskReturnType | Promise<TaskReturnType>;
 }

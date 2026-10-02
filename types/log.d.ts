@@ -1,4 +1,4 @@
-export default interface Logger {
+export default class Logger {
   log(...args: any[]): void;
   error(...args: any[]): void;
   info(...args: any[]): void;
