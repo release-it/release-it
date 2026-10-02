@@ -1,0 +1,13 @@
+{
+	"compilerOptions": {
+		"types": [
+			"node"
+		],
+		"noEmit": true,
+		"strict": true,
+		"forceConsistentCasingInFileNames": true,
+	},
+	"include": [
+		"*.ts"
+	]
+}
