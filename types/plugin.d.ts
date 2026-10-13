@@ -6,9 +6,12 @@ import { DebugLogger } from 'node:util';
 import { Config as Options } from './config';
 import { SpawnOptions } from 'node:child_process';
 
+export type GenericContextType = Record<PropertyKey, any>;
+
 export interface Config {
+  getContext(): Options & GenericContextType;
   getContext(path: string): any;
-  setContext(options: Record<string, any>): void;
+  setContext(options: Record<PropertyKey, any>): void;
   setCI(value: boolean): void;
 
   isDryRun: boolean;
@@ -53,7 +56,7 @@ export interface PluginConstructorArgs {
   container: Container;
 }
 
-export default class Plugin<PluginOptions = any, ContextType = Record<PropertyKey, any>> {
+export default class Plugin<PluginOptions = any, ContextType = GenericContextType> {
   constructor(constructorArgs: PluginConstructorArgs);
 
   init(): void | Promise<void>;
@@ -80,7 +83,8 @@ export default class Plugin<PluginOptions = any, ContextType = Record<PropertyKe
   debug: DebugLogger;
 
   getInitialOptions(options: Options, namespace: string): PluginOptions;
-  getContext(path?: string): any;
+  getContext(): PluginOptions & ContextType;
+  getContext(path: string): any;
   setContext(options: Partial<typeof this.context>): void;
   exec(
     command: string | string[],
