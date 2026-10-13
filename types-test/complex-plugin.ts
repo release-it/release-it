@@ -7,7 +7,7 @@ interface PluginOptions {
   optionalBoolean?: boolean;
   nested: {
     myNestedString: string;
-  }
+  };
 }
 
 interface PluginContext {
@@ -35,7 +35,7 @@ export class ComplexPlugin extends Plugin<PluginOptions, PluginContext> {
     this.setContext({
       nested: {
         contextProp: 'contextValue'
-      },
+      }
     });
 
     this.registerPrompts({
@@ -65,7 +65,7 @@ export class ComplexPlugin extends Plugin<PluginOptions, PluginContext> {
     return Promise.resolve(`Dummy Changelog for ${latestVersion}`);
   }
 
-  override async getIncrement(): Promise<string> {
+  override async getIncrement(incrementBase: IncrementBase): Promise<string> {
     return this.showPrompt({
       prompt: 'some-prompt',
       context: { contextProp: 'contextValue' }
@@ -82,6 +82,9 @@ export class ComplexPlugin extends Plugin<PluginOptions, PluginContext> {
 
   override beforeBump(): void {}
   override async bump(version: string): Promise<void> {
+    const { myRequiredString } = this.getContext();
+    assertIsString(myRequiredString);
+
     this.log.info('Nested context prop: ' + this.getContext('nested.contextProp'));
     this.step({
       prompt: 'bump-prompt',
@@ -103,3 +106,5 @@ export class ComplexPlugin extends Plugin<PluginOptions, PluginContext> {
   }
   override afterRelease(): void {}
 }
+
+function assertIsString(value: string): void {}

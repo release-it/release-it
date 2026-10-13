@@ -58,6 +58,8 @@ function typeTest(fileName, expectedError = null) {
 
 describe('Type Declarations', () => {
   typeTest('empty-plugin.ts');
+  typeTest('example-plugin.ts');
   typeTest('complex-plugin.ts');
+  typeTest('config-properties.ts');
   typeTest('options-is-readonly.ts', /error TS2540: Cannot assign to 'someString' because it is a read-only property/);
 });

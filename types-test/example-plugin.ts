@@ -17,7 +17,7 @@ interface MyVersionPluginContext {
   isReleased: boolean;
 }
 
-class MyVersionPlugin extends Plugin<any, MyVersionPluginContext> {
+class MyVersionPlugin extends Plugin<{}, MyVersionPluginContext> {
   constructor(constructorArgs: PluginConstructorArgs) {
     super(constructorArgs);
     this.registerPrompts(prompts);
