@@ -4,12 +4,11 @@ import path from 'node:path';
 import fs from 'node:fs';
 import childProcess from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import JSON5 from 'json5';
 
 const typeTestDir = path.dirname(fileURLToPath(import.meta.url));
 
 function getTSConfig() {
-  return JSON5.parse(fs.readFileSync(path.join(typeTestDir, 'tsconfig.json'), { encoding: 'utf8' }));
+  return JSON.parse(fs.readFileSync(path.join(typeTestDir, 'tsconfig.json'), { encoding: 'utf8' }));
 }
 
 const tsConfig = getTSConfig();

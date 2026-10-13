@@ -5,7 +5,7 @@
 		],
 		"noEmit": true,
 		"strict": true,
-		"forceConsistentCasingInFileNames": true,
+		"forceConsistentCasingInFileNames": true
 	},
 	"include": [
 		"*.ts"
