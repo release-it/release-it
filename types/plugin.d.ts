@@ -59,6 +59,9 @@ export interface PluginConstructorArgs {
 export default class Plugin<PluginOptions = any, ContextType = GenericContextType> {
   constructor(constructorArgs: PluginConstructorArgs);
 
+  static isEnabled(): boolean | Promise<boolean>;
+  static disablePlugin(): null | string | string[];
+
   init(): void | Promise<void>;
   getName(): undefined | string | Promise<string>;
   getLatestVersion(): undefined | string | Promise<string>;
