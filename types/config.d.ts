@@ -1,4 +1,4 @@
-import { Hooks } from './hooks';
+import { Hooks } from './hooks.js';
 
 export interface Config {
   hooks?: Hooks;
@@ -13,7 +13,7 @@ export interface Config {
     requireCleanWorkingDir?: boolean;
 
     /** @default false */
-    requireBranch?: false | string;
+    requireBranch?: false | string | string[];
 
     /** @default true */
     requireUpstream?: boolean;
@@ -217,4 +217,14 @@ export interface Config {
 
   /** @default false */
   quiet?: boolean;
+
+  /** @default false */
+  'dry-run'?: boolean;
+
+  /**
+   * Increment level or explicit release version. Use `false` to skip
+   * incrementing (a plain update). Read by lib/config.js
+   * (`isIncrement`, `increment`).
+   */
+  increment?: string | false;
 }
