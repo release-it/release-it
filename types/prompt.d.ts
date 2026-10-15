@@ -24,18 +24,31 @@ export type UnknownPromptConfig = { type: string } & MessageProvider &
 
 export type PromptConfig = ConfirmPromptConfig | InputPromptConfig | ListPromptConfig | UnknownPromptConfig;
 
-export type PromptShowOptions<TaskReturnType> = {
+
+export type PromptShowOptions<AnswerType,TaskReturnType> = {
   enabled?: boolean;
   prompt: string;
   namespace?: string;
-  task?: (answer: string) => TaskReturnType | Promise<TaskReturnType>;
+  task?: (answer: AnswerType) => TaskReturnType;
   context?: any;
 };
+export type EnabledPromptShowOptions<AnswerType, TaskReturnType> = {
+  enabled?: true;
+} & PromptShowOptions<AnswerType, TaskReturnType>;
+export type DisabledPromptShowOptions<AnswerType, TaskReturnType> = {
+  enabled: false;
+} & PromptShowOptions<AnswerType, TaskReturnType>;
 
 export default class Prompt {
   register(pluginPrompts: Record<string, PromptConfig>, namespace?: string): void;
 
-  show<TaskReturnType>(
-    options: PromptShowOptions<TaskReturnType>
-  ): TaskReturnType | Promise<TaskReturnType>;
+  show<AnswerType, TaskReturnType>(
+    options: EnabledPromptShowOptions<AnswerType, TaskReturnType>
+  ): TaskReturnType;
+  show<AnswerType, TaskReturnType>(
+    options: DisabledPromptShowOptions<AnswerType, TaskReturnType>
+  ): Promise<false>;
+  show<AnswerType, TaskReturnType>(
+    options: PromptShowOptions<AnswerType, TaskReturnType>
+  ): Promise<false> | TaskReturnType;
 }

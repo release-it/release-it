@@ -68,7 +68,10 @@ export class ComplexPlugin extends Plugin<PluginOptions, PluginContext> {
   override async getIncrement(incrementBase: IncrementBase): Promise<string> {
     return this.showPrompt({
       prompt: 'some-prompt',
-      context: { contextProp: 'contextValue' }
+      context: { contextProp: 'contextValue' },
+      task: (answer: string) => {
+        return answer;
+      },
     });
   }
 
@@ -86,11 +89,12 @@ export class ComplexPlugin extends Plugin<PluginOptions, PluginContext> {
     assertIsString(myRequiredString);
 
     this.log.info('Nested context prop: ' + this.getContext('nested.contextProp'));
+    const constructedCommand = 'echo "Bumping version to "' + version;
     this.step({
       prompt: 'bump-prompt',
       label: 'Bumping version...',
-      task: async () => {
-        await this.shell.exec(`echo "Bumping version to ${version}"`);
+      task: async (): Promise<string> => {
+        return this.shell.exec(constructedCommand) as Promise<string>;
       }
     });
   }
@@ -101,7 +105,7 @@ export class ComplexPlugin extends Plugin<PluginOptions, PluginContext> {
       label: 'Releasing...',
       task: async () => {
         await this.shell.exec('echo "Releasing..."');
-      }
+      },
     });
   }
   override afterRelease(): void {}

@@ -8,15 +8,22 @@ export interface CommonExecOptions {
   env?: NonNullable<Parameters<typeof exec>[1]>['env'];
 }
 
+export type NonEmptyString<T extends string> = '' extends T ? never : T;
+
 export default class Shell {
-  exec(
-    command: string,
+  exec<CommandLiteralType extends string>(
+    command: NonEmptyString<CommandLiteralType>,
     options?: CommonExecOptions,
     context?: object | null
   ): Promise<string>;
   exec(
+    command: string,
+    options?: CommonExecOptions,
+    context?: object | null
+  ): undefined | Promise<string>;
+  exec(
     command: string[],
     options?: CommonExecOptions & SpawnOptions,
     context?: object | null
-  ): Promise<string>;
+  ): undefined | Promise<string>;
 }

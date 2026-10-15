@@ -96,7 +96,7 @@ export default class Plugin<PluginOptions = any, ContextType = GenericContextTyp
 
   registerPrompts(prompts: Record<string, PromptConfig>): void;
   showPrompt: Prompt['show'];
-  step<TaskReturnType>(
-    options: SpinnerShowOptions<TaskReturnType> & PromptShowOptions<TaskReturnType>
+  step<TaskReturnType, AnswerType>(
+    options: PromptShowOptions<AnswerType, TaskReturnType> & SpinnerShowOptions<TaskReturnType>
   ): Spinner['show'] | Prompt['show'];
 }
