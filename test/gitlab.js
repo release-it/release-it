@@ -213,6 +213,37 @@ describe('GitLab', () => {
     );
   });
 
+  for (const { name, endpoint, assets } of [
+    { name: 'release', endpoint: 'releases' },
+    { name: 'asset upload', endpoint: 'uploads', assets: 'test/resources/file-v2.0.1.txt' }
+  ]) {
+    for (const [description, body, message] of [
+      ['a message', { message: 'Release already exists' }, 'Release already exists'],
+      ['a validation message', { message: { tag_name: ['is invalid'] } }, '{"tag_name":["is invalid"]}'],
+      ['a message array', { message: ['first', 'second'] }, '["first","second"]'],
+      ['an error', { error: 'tag_name is missing' }, 'tag_name is missing'],
+      ['an error array', { error: ['first', 'second'] }, 'first,second'],
+      ['a null message', { message: null }, ''],
+      ['an empty message', { message: '' }, '']
+    ]) {
+      test(`should report ${description} from failed GitLab ${name}`, async t => {
+        const options = {
+          git: { pushRepo: 'https://gitlab.com/user/repo' },
+          gitlab: { tokenRef, release: true, assets }
+        };
+        const gitlab = await factory(GitLab, { options });
+        t.mock.method(gitlab, 'getLatestVersion', () => Promise.resolve('2.0.0'));
+
+        interceptUser(api);
+        interceptCollaborator(api);
+        api.post(`/projects/user%2Frepo/${endpoint}`, { status: 400, body });
+
+        await assert.rejects(runTasks(gitlab), { message });
+        assert.equal(api.allRoutesCalled(), true);
+      });
+    }
+  }
+
   test('should release to self-managed host', async t => {
     const host = 'https://gitlab.example.org';
     const options = {
