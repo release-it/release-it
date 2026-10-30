@@ -2,13 +2,13 @@ import test, { beforeEach, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import { EOL } from 'node:os';
 import childProcess from 'node:child_process';
-import { appendFileSync } from 'node:fs';
+import { appendFileSync, existsSync } from 'node:fs';
 import Git from '../lib/plugin/git/Git.js';
 import Shell from '../lib/shell.js';
 import { execOpts, touch } from '../lib/util.js';
 import sh from './util/sh.js';
 import { factory } from './util/index.js';
-import { mkTmpDir, readFile, gitAdd } from './util/helpers.js';
+import { mkTmpDir, readFile, gitAdd, getArgs } from './util/helpers.js';
 
 describe('git', () => {
   beforeEach(() => {
@@ -109,6 +109,137 @@ describe('git', () => {
     childProcess.execSync('git remote rename origin upstream', execOpts);
     const gitClient = await factory(Git);
     assert.equal(await gitClient.getRemoteUrl(), bare);
+  });
+
+  for (const method of ['getRemoteUrl', 'hasUpstreamBranch']) {
+    test(`should treat branch names literally in ${method}`, async () => {
+      const bare = mkTmpDir();
+      childProcess.execFileSync('git', ['init', '--bare', bare], execOpts);
+      childProcess.execFileSync('git', ['clone', bare, '.'], execOpts);
+      gitAdd('line', 'file', 'Add file');
+      const branch = 'fix;touch$IFS.injected;';
+      childProcess.execFileSync('git', ['checkout', '-b', branch], execOpts);
+      childProcess.execFileSync('git', ['push', '--set-upstream', 'origin', branch], execOpts);
+      childProcess.execFileSync('git', ['remote', 'rename', 'origin', 'upstream'], execOpts);
+      const gitClient = await factory(Git, { options: { 'dry-run': true } });
+
+      const result = await gitClient[method]();
+      assert.equal(existsSync('.injected'), false);
+      assert.equal(result, method === 'getRemoteUrl' ? bare : true);
+    });
+  }
+
+  test('should treat remote names literally', async () => {
+    childProcess.execFileSync('git', ['init'], execOpts);
+    const remote = 'upstream;touch$IFS.injected;';
+    childProcess.execFileSync('git', ['remote', 'add', remote, 'https://example.org/repo.git'], execOpts);
+    const gitClient = await factory(Git, { options: { git: { pushRepo: remote } } });
+
+    const result = await gitClient.getRemoteUrl();
+    assert.equal(existsSync('.injected'), false);
+    assert.equal(result, 'https://example.org/repo.git');
+  });
+
+  test('should preserve template syntax in branch names', async () => {
+    childProcess.execFileSync('git', ['init'], execOpts);
+    gitAdd('line', 'file', 'Add file');
+    childProcess.execFileSync('git', ['checkout', '-b', 'fix-${process.pid}'], execOpts);
+    childProcess.execFileSync('git', ['config', 'branch.fix-${process.pid}.remote', 'upstream'], execOpts);
+    childProcess.execFileSync('git', ['remote', 'add', 'upstream', 'https://example.org/repo.git'], execOpts);
+    const gitClient = await factory(Git);
+
+    assert.equal(await gitClient.getRemoteUrl(), 'https://example.org/repo.git');
+  });
+
+  for (const [method, expected] of [
+    ['getCommitsSinceLatestTag', 1],
+    ['getSecondLatestTagName', '1.0.0'],
+    ['tagExists', true]
+  ]) {
+    test(`should treat tag names literally in ${method}`, async () => {
+      childProcess.execFileSync('git', ['init'], execOpts);
+      gitAdd('line', 'file', 'Add file');
+      childProcess.execFileSync('git', ['tag', '1.0.0'], execOpts);
+      gitAdd('line', 'file', 'Update file');
+      childProcess.execFileSync('git', ['tag', '1.1.0;touch$IFS.injected;'], execOpts);
+      gitAdd('line', 'file', 'Update file again');
+      const gitClient = await factory(Git);
+
+      const latestTag = await gitClient.getLatestTagName();
+      let result;
+      try {
+        result =
+          method === 'getCommitsSinceLatestTag'
+            ? await gitClient.getCommitsSinceLatestTag()
+            : await gitClient[method](latestTag);
+      } finally {
+        assert.equal(existsSync('.injected'), false);
+      }
+      assert.equal(latestTag, '1.1.0;touch$IFS.injected;');
+      assert.equal(result, expected);
+    });
+  }
+
+  for (const gitOptions of [
+    { tagName: '${branchName}-${version}' },
+    { tagName: '${branchName}-${version}', getLatestTagFromAllRefs: true },
+    { tagMatch: '${branchName}-*' },
+    { tagExclude: '${branchName}-*' }
+  ]) {
+    test(`should treat rendered tag patterns literally: ${JSON.stringify(gitOptions)}`, async () => {
+      childProcess.execFileSync('git', ['init'], execOpts);
+      gitAdd('line', 'file', 'Add file');
+      childProcess.execFileSync('git', ['tag', '1.0.0'], execOpts);
+      childProcess.execFileSync('git', ['checkout', '-b', 'fix;touch$IFS.injected;'], execOpts);
+      gitAdd('line', 'file', 'Update file');
+      childProcess.execFileSync('git', ['tag', 'fix;touch$IFS.injected;-1.1.0'], execOpts);
+      const gitClient = await factory(Git, {
+        options: { git: { pushRepo: 'https://example.org/repo.git', requireUpstream: false, ...gitOptions } }
+      });
+
+      await gitClient.init();
+      assert.equal(existsSync('.injected'), false);
+      assert.equal(
+        gitClient.config.getContext('latestTag'),
+        gitOptions.tagExclude ? '1.0.0' : 'fix;touch$IFS.injected;-1.1.0'
+      );
+    });
+  }
+
+  test('should treat tag names literally during local rollback', async t => {
+    childProcess.execFileSync('git', ['init'], execOpts);
+    gitAdd('line', 'file', 'Add file');
+    const gitClient = await factory(Git);
+    gitClient.config.setContext({ tagName: '1.1.0;touch$IFS.injected;' });
+    await gitClient.tag();
+    const exec = t.mock.method(gitClient, 'exec');
+
+    gitClient.rollback();
+    const results = await Promise.allSettled(exec.mock.calls.map(call => call.result));
+    assert.equal(existsSync('.injected'), false);
+    assert.equal(
+      results.every(result => result.status === 'fulfilled'),
+      true
+    );
+    assert.equal(childProcess.execFileSync('git', ['tag', '--list'], { encoding: 'utf8' }).trim(), '');
+  });
+
+  test('should treat tag names literally during remote rollback', async () => {
+    const bare = mkTmpDir();
+    childProcess.execFileSync('git', ['init', '--bare', bare], execOpts);
+    childProcess.execFileSync('git', ['clone', bare, '.'], execOpts);
+    gitAdd('line', 'file', 'Add file');
+    const gitClient = await factory(Git);
+    gitClient.config.setContext({ tagName: '1.1.0;touch$IFS.injected;' });
+    await gitClient.tag();
+    childProcess.execFileSync('git', ['push', 'origin', 'refs/tags/1.1.0;touch$IFS.injected;'], execOpts);
+
+    await gitClient.rollbackTagPush();
+    assert.equal(existsSync('.injected'), false);
+    assert.equal(
+      childProcess.execFileSync('git', ['--git-dir', bare, 'tag', '--list'], { encoding: 'utf8' }).trim(),
+      ''
+    );
   });
 
   test('should stage, commit, tag and push', async () => {
@@ -325,7 +456,7 @@ describe('git', () => {
     await gitClient.tag();
     await gitClient.rollbackOnce();
 
-    assert.equal(exec.mock.calls[11].arguments[0], 'git tag --delete v1.2.4');
+    assert.deepEqual(exec.mock.calls[11].arguments[0], ['git', 'tag', '--delete', 'v1.2.4']);
     assert.equal(exec.mock.calls[12].arguments[0], 'git reset --hard HEAD~1');
   });
 
@@ -357,7 +488,7 @@ describe('git', () => {
     } catch (e) {
       // push would fail with an error since HEAD is behind origin
     }
-    assert.equal(exec.mock.calls[15].arguments[0], 'git push origin --delete v1.2.4');
+    assert.deepEqual(exec.mock.calls[15].arguments[0], ['git', 'push', 'origin', '--delete', 'v1.2.4']);
   });
 
   test('should skip rollback when push fails but package is already published', async t => {
@@ -388,7 +519,7 @@ describe('git', () => {
 
     await gitClient.push();
 
-    const execCalls = exec.mock.calls.map(c => c.arguments[0]);
+    const execCalls = getArgs(exec, 'git push origin --delete');
     assert.equal(execCalls.includes('git push origin --delete v1.2.4'), false);
     assert(warn.mock.calls.some(c => /git push failed/.test(c.arguments[0])));
   });

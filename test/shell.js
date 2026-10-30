@@ -69,6 +69,13 @@ describe('shell', async () => {
     );
   });
 
+  test('exec (with args, verbose)', async () => {
+    const shell = await factory(Shell, { options: { verbose: true } });
+    assert.equal(await shell.exec(['echo', 'foo']), 'foo');
+    assert.equal(shell.log.verbose.mock.calls[0].arguments[0], 'foo');
+    assert.equal(shell.log.verbose.mock.callCount(), 1);
+  });
+
   test('should bail out on failed command execution', async () => {
     const shell = new Shell({ container: {} });
     await assert.rejects(shell.exec('foo'));
