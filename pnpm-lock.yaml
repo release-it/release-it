@@ -63,8 +63,8 @@ importers:
         specifier: 0.2.17
         version: 0.2.17
       undici:
-        specifier: 7.29.1
-        version: 7.29.1
+        specifier: 7.30.1
+        version: 7.30.1
       url-join:
         specifier: 5.0.0
         version: 5.0.0
@@ -2461,8 +2461,8 @@ packages:
   undici-types@7.18.2:
     resolution: {integrity: sha512-AsuCzffGHJybSaRrmr5eHr81mwJU3kjw6M+uprWvCXiNeN9SOGwQ3Jn8jb8m3Z6izVgknn1R0FTCEAP2QrLY/w==}
 
-  undici@7.29.1:
-    resolution: {integrity: sha512-RYONW2MeafgYlkVOKYKkA/Ag7BmXqgIWCa8t1m0JcxrQg9pI9lEqRhAOruOBCbAohOa/gkCF+iPi9hrgvTzu6Q==}
+  undici@7.30.1:
+    resolution: {integrity: sha512-03KrMbjIFDWQR5RNPrSw3bd1r12JpyFQl9/yxjUbJtqkjmllqC5lFjZh6ujeuJCKr8EOQvRW872Oy/az+nLYxg==}
     engines: {node: '>=20.18.1'}
 
   unicorn-magic@0.4.1:
@@ -5067,7 +5067,7 @@ snapshots:
 
   undici-types@7.18.2: {}
 
-  undici@7.29.1: {}
+  undici@7.30.1: {}
 
   unicorn-magic@0.4.1: {}
 
