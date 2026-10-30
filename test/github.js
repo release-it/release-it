@@ -373,6 +373,23 @@ describe('github', () => {
     assert.equal(releaseUrl, 'https://github.example.org/user/repo/releases/tag/1.0.1');
   });
 
+  test('should use the public GitHub API for a rewritten SSH remote', async t => {
+    const github = await factory(GitHub, {
+      options: { github: { pushRepo: 'origin', tokenRef, skipChecks: true } }
+    });
+    const original = github.shell.exec.bind(github.shell);
+    t.mock.method(github.shell, 'exec', (...args) => {
+      if (args[0] === 'git remote get-url origin') return Promise.resolve('ssh://git@ssh.github.com:443/user/repo.git');
+      return original(...args);
+    });
+
+    await github.init();
+
+    assert.equal(github.client.request.endpoint.DEFAULTS.baseUrl, 'https://api.github.com');
+    assert.equal(github.config.getContext('repo.host'), 'github.com');
+    assert.equal(github.getContext('repo.remote'), 'ssh://git@ssh.github.com:443/user/repo.git');
+  });
+
   test('should release to alternative host and proxy', async t => {
     const options = {
       git,
@@ -545,6 +562,40 @@ describe('github', () => {
     const { isReleased, releaseUrl } = github.getContext();
     assert(isReleased);
     assert.equal(releaseUrl, 'https://github.com/user/repo/releases/tag/v1.0.1');
+  });
+
+  test('should build release URLs from an SSH-over-443 remote', async t => {
+    const github = await factory(GitHub, {
+      options: {
+        'dry-run': true,
+        git,
+        github: {
+          tokenRef,
+          pushRepo: 'ssh://git@ssh.github.com:443/user/repo.git',
+          releaseName: 'Release ${version}'
+        }
+      }
+    });
+    const original = github.shell.exec.bind(github.shell);
+    t.mock.method(github.shell, 'exec', (...args) => {
+      if (args[0] === 'git describe --tags --match=* --abbrev=0') return Promise.resolve('1.0.0');
+      return original(...args);
+    });
+
+    await runTasks(github);
+
+    assert.equal(github.getContext('releaseUrl'), 'https://github.com/user/repo/releases/tag/1.0.1');
+    assert.equal(
+      await github.generateWebUrl(),
+      'https://github.com/user/repo/releases/new?tag=1.0.1&title=Release+1.0.1&body=&prerelease=false'
+    );
+  });
+
+  test('should use the configured host in the release URL fallback', async () => {
+    const github = await factory(GitHub, { options: { github: { host: 'web.example.org' } } });
+    github.setContext({ repo: { host: 'ghe.example.org', repository: 'user/repo' } });
+
+    assert.equal(github.getReleaseUrlFallback('v1.2.3'), 'https://web.example.org/user/repo/releases/tag/v1.2.3');
   });
 
   test('should generate GitHub web release url', async t => {

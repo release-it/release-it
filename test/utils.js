@@ -85,6 +85,44 @@ test('parseGitUrl', () => {
   });
 });
 
+for (const [remote, host, protocol] of [
+  ['ssh://git@ssh.github.com:443/owner/repo.git', 'github.com', 'ssh'],
+  ['ssh://git@ssh.github.com/owner/repo.git', 'github.com', 'ssh'],
+  ['git@ssh.github.com:owner/repo.git', 'github.com', 'ssh'],
+  ['git+ssh://git@ssh.github.com:443/owner/repo.git', 'github.com', 'ssh'],
+  ['https://ssh.github.com/owner/repo.git', 'github.com', 'https'],
+  ['ssh://git@ssh.github.com:22/owner/repo.git', 'github.com', 'ssh'],
+  ['ssh://git@ssh.github.com:443/owner/repo', 'github.com', 'ssh'],
+  ['ssh://git@github.com:443/owner/repo.git', 'github.com', 'ssh'],
+  ['ssh://git@github.com/owner/repo.git', 'github.com', 'ssh'],
+  ['git@github.com:owner/repo.git', 'github.com', 'ssh'],
+  ['git+ssh://git@github.com:443/owner/repo.git', 'github.com', 'ssh'],
+  ['https://github.com/owner/repo.git', 'github.com', 'https'],
+  ['git://github.com/owner/repo.git', 'github.com', 'git'],
+  ['ssh://git@ghe.example.org:443/owner/repo.git', 'ghe.example.org', 'ssh'],
+  ['git@ghe.example.org:owner/repo.git', 'ghe.example.org', 'ssh'],
+  ['https://ghe.example.org/owner/repo.git', 'ghe.example.org', 'https'],
+  ['git@ssh.ghe.example.org:owner/repo.git', 'ssh.ghe.example.org', 'ssh'],
+  ['ssh://git@ssh.github.com.evil.example:443/owner/repo.git', 'ssh.github.com.evil.example', 'ssh'],
+  ['git@notssh.github.com:owner/repo.git', 'notssh.github.com', 'ssh'],
+  ['git@altssh.gitlab.com:owner/repo.git', 'altssh.gitlab.com', 'ssh'],
+  ['git@altssh.bitbucket.org:owner/repo.git', 'altssh.bitbucket.org', 'ssh'],
+  ['ssh://git@SSH.GITHUB.COM:443/owner/repo.git', 'SSH.GITHUB.COM', 'ssh'],
+  ['ssh://git@GITHUB.COM:443/owner/repo.git', 'GITHUB.COM', 'ssh'],
+  ['file://users/john/doe/owner/repo', 'users', 'file']
+]) {
+  test(`parseGitUrl (${remote})`, () => {
+    assert.deepEqual(parseGitUrl(remote), {
+      host,
+      owner: 'owner',
+      project: 'repo',
+      protocol,
+      remote,
+      repository: 'owner/repo'
+    });
+  });
+}
+
 test('parseVersion', () => {
   assert.deepEqual(parseVersion(), { version: undefined, isPreRelease: false, preReleaseId: null });
   assert.deepEqual(parseVersion(0), { version: '0.0.0', isPreRelease: false, preReleaseId: null });
