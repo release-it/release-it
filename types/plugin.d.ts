@@ -26,7 +26,6 @@ export interface Config {
   isChangelog: boolean;
 
   options: Options;
-  localConfig: any;
 }
 
 export interface Container {

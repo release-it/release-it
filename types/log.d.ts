@@ -16,6 +16,4 @@ export default class Logger {
   obtrusive(...args: any[]): void;
 
   preview({ title, text }: { title: string; text: string }): void;
-
-  shouldLog(isExternal?: boolean): boolean;
 }
