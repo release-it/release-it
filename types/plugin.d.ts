@@ -65,18 +65,19 @@ export default class Plugin<PluginOptions = any, ContextType = GenericContextTyp
   static isEnabled(): boolean | Promise<boolean>;
   static disablePlugin(): null | string | string[];
 
-  init(): void | Promise<void>;
-  getName(): undefined | string | Promise<string>;
-  getLatestVersion(): undefined | string | Promise<string>;
-  getChangelog(latestVersion: string): undefined | string | Promise<string>;
-  getIncrement(incrementBase: IncrementBase): undefined | string | Promise<string>;
-  getIncrementedVersionCI(incrementBase: IncrementBase): undefined | string | Promise<string>;
-  getIncrementedVersion(incrementBase: IncrementBase): undefined | string | Promise<string>;
-  beforeBump(): void | Promise<void>;
-  bump(version: string): void | Promise<void>;
-  beforeRelease(): void | Promise<void>;
-  release(): void | Promise<void>;
-  afterRelease(): void | Promise<void>;
+  getName(): undefined | string | Promise<undefined | string>;
+  getLatestVersion(): undefined | string | Promise<undefined | string>;
+  getChangelog(latestVersion: string): undefined | string | Promise<undefined | string>;
+  getIncrement(incrementBase: IncrementBase): undefined | string | Promise<undefined | string>;
+  getIncrementedVersionCI(incrementBase: IncrementBase): undefined | string | Promise<undefined | string>;
+  getIncrementedVersion(incrementBase: IncrementBase): undefined | string | Promise<undefined | string>;
+
+  init(): void | boolean | Promise<void | boolean>;
+  beforeBump(): void | boolean | Promise<void | boolean>;
+  bump(version: string): void | boolean | Promise<void | boolean>;
+  beforeRelease(): void | boolean | Promise<void | boolean>;
+  release(): void | boolean | Promise<void | boolean>;
+  afterRelease(): void | boolean | Promise<void | boolean>;
 
   namespace: string;
   options: Readonly<PluginOptions>;
