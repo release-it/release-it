@@ -44,11 +44,11 @@ export default class Prompt {
 
   show<AnswerType, TaskReturnType>(
     options: EnabledPromptShowOptions<AnswerType, TaskReturnType>
-  ): TaskReturnType;
+  ): Promise<Awaited<TaskReturnType>>;
   show<AnswerType, TaskReturnType>(
     options: DisabledPromptShowOptions<AnswerType, TaskReturnType>
   ): Promise<false>;
   show<AnswerType, TaskReturnType>(
     options: PromptShowOptions<AnswerType, TaskReturnType>
-  ): Promise<false> | TaskReturnType;
+  ): Promise<false | Awaited<TaskReturnType>>;
 }

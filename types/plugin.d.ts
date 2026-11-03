@@ -1,8 +1,8 @@
 import { DebugLogger } from 'node:util';
 import { SpawnOptions } from 'node:child_process';
 import Logger from './log.js';
-import Spinner, { SpinnerShowOptions } from './spinner.js';
-import Prompt, { PromptConfig, PromptShowOptions } from './prompt.js';
+import Spinner, { DisabledSpinnerShowOptions, EnabledSpinnerShowOptions, SpinnerShowOptions } from './spinner.js';
+import Prompt, { DisabledPromptShowOptions, EnabledPromptShowOptions, PromptConfig, PromptShowOptions } from './prompt.js';
 import Shell, { CommonExecOptions } from './shell.js';
 import { Config as Options } from './config.js';
 
@@ -55,6 +55,10 @@ export interface PluginConstructorArgs {
   container: Container;
 }
 
+export type EnabledStepOptions<AnswerType, TaskReturnType> = EnabledPromptShowOptions<AnswerType, TaskReturnType> & EnabledSpinnerShowOptions<TaskReturnType>
+export type DisabledStepOptions<AnswerType, TaskReturnType> = DisabledPromptShowOptions<AnswerType, TaskReturnType> & DisabledSpinnerShowOptions<TaskReturnType>
+export type StepOptions<AnswerType, TaskReturnType> = PromptShowOptions<AnswerType, TaskReturnType> & SpinnerShowOptions<TaskReturnType>
+
 export default class Plugin<PluginOptions = any, ContextType = GenericContextType> {
   constructor(constructorArgs: PluginConstructorArgs);
 
@@ -96,6 +100,15 @@ export default class Plugin<PluginOptions = any, ContextType = GenericContextTyp
   registerPrompts(prompts: Record<string, PromptConfig>): void;
   showPrompt: Prompt['show'];
   step<TaskReturnType, AnswerType>(
-    options: PromptShowOptions<AnswerType, TaskReturnType> & SpinnerShowOptions<TaskReturnType>
-  ): Spinner['show'] | Prompt['show'];
+    options: EnabledStepOptions<AnswerType, TaskReturnType>
+  ): TaskReturnType | Promise<Awaited<TaskReturnType>>;
+  step<TaskReturnType, AnswerType>(
+    options: DisabledStepOptions<AnswerType, TaskReturnType>
+  ): Promise<false | undefined>;
+  step<TaskReturnType, AsyncTaskReturnType extends Promise<TaskReturnType>, AnswerType>(
+    options: StepOptions<AnswerType, AsyncTaskReturnType>
+  ): Promise<false | undefined | TaskReturnType>;
+  step<TaskReturnType, AnswerType>(
+    options: StepOptions<AnswerType, TaskReturnType>
+  ): TaskReturnType | Promise<false | undefined | Awaited<TaskReturnType>>;
 }
