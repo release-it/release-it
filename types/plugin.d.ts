@@ -62,8 +62,8 @@ export type StepOptions<AnswerType, TaskReturnType> = PromptShowOptions<AnswerTy
 export default class Plugin<PluginOptions = any, ContextType = GenericContextType> {
   constructor(constructorArgs: PluginConstructorArgs);
 
-  static isEnabled(): boolean | Promise<boolean>;
-  static disablePlugin(): null | string | string[];
+  static isEnabled<PluginOptions>(options: PluginOptions | any): boolean | Promise<boolean>;
+  static disablePlugin<PluginOptions>(options: PluginOptions | any): null | string | string[];
 
   getName(): undefined | string | Promise<undefined | string>;
   getLatestVersion(): undefined | string | Promise<undefined | string>;
