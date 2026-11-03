@@ -1,10 +1,10 @@
-import Logger from './log';
-import Spinner, { SpinnerShowOptions } from './spinner';
-import Prompt, { PromptConfig, PromptShowOptions } from './prompt';
-import Shell, { CommonExecOptions } from './shell';
 import { DebugLogger } from 'node:util';
-import { Config as Options } from './config';
 import { SpawnOptions } from 'node:child_process';
+import Logger from './log.js';
+import Spinner, { SpinnerShowOptions } from './spinner.js';
+import Prompt, { PromptConfig, PromptShowOptions } from './prompt.js';
+import Shell, { CommonExecOptions } from './shell.js';
+import { Config as Options } from './config.js';
 
 export type GenericContextType = Record<PropertyKey, any>;
 

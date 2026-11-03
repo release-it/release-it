@@ -1,4 +1,4 @@
-import { Hooks } from './hooks';
+import { Hooks } from './hooks.js';
 
 export interface Config {
   hooks?: Hooks;
