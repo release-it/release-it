@@ -1,12 +1,14 @@
 import { Plugin } from "../";
 
+export type PluginOptions = false | { dummy: string };
+
 export class PluginStaticMethods extends Plugin {
 
-	static override isEnabled(): Promise<boolean> {
-		return Promise.resolve(true);
+	static override isEnabled(options: PluginOptions): Promise<boolean> {
+		return Promise.resolve(options !== false);
 	}
 
-	static override disablePlugin(): string[] {
+	static override disablePlugin(options: PluginOptions): string[] {
 		return ['plugin1', 'plugin2'];
 	}
 }
