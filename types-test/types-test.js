@@ -61,5 +61,6 @@ describe('Type Declarations', () => {
   typeTest('complex-plugin.ts');
   typeTest('config-properties.ts');
   typeTest('plugin-static-methods.ts');
+  typeTest('prompts.ts');
   typeTest('options-is-readonly.ts', /error TS2540: Cannot assign to 'someString' because it is a read-only property/);
 });
