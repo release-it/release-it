@@ -93,10 +93,18 @@ export default class Plugin<PluginOptions = any, ContextType = GenericContextTyp
   getContext(): PluginOptions & ContextType;
   getContext(path: string): any;
   setContext(options: Partial<typeof this.context>): void;
+  exec<CommandLiteralType extends string>(
+    command: '',
+    { options, context }?: { options?: CommonExecOptions & SpawnOptions; context?: object | null }
+  ): undefined;
+  exec<CommandLiteralType extends string>(
+    command: NonEmptyString<CommandLiteralType>,
+    { options, context }?: { options?: CommonExecOptions & SpawnOptions; context?: object | null }
+  ): Promise<string>;
   exec(
     command: string | string[],
-    { options, context }?: { options: CommonExecOptions & SpawnOptions; context?: object | null }
-  ): Promise<any>;
+    { options, context }?: { options?: CommonExecOptions & SpawnOptions; context?: object | null }
+  ): undefined | Promise<string>;
 
   registerPrompts(prompts: Record<string, PromptConfig>): void;
   showPrompt: Prompt['show'];
