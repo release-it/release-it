@@ -2,8 +2,13 @@ import { DebugLogger } from 'node:util';
 import { SpawnOptions } from 'node:child_process';
 import Logger from './log.js';
 import Spinner, { DisabledSpinnerShowOptions, EnabledSpinnerShowOptions, SpinnerShowOptions } from './spinner.js';
-import Prompt, { DisabledPromptShowOptions, EnabledPromptShowOptions, PromptConfig, PromptShowOptions } from './prompt.js';
-import Shell, { CommonExecOptions } from './shell.js';
+import Prompt, {
+  DisabledPromptShowOptions,
+  EnabledPromptShowOptions,
+  PromptConfig,
+  PromptShowOptions
+} from './prompt.js';
+import Shell, { CommonExecOptions, NonEmptyString } from './shell.js';
 import { Config as Options } from './config.js';
 
 export type GenericContextType = Record<PropertyKey, any>;
@@ -55,9 +60,12 @@ export interface PluginConstructorArgs {
   container: Container;
 }
 
-export type EnabledStepOptions<AnswerType, TaskReturnType> = EnabledPromptShowOptions<AnswerType, TaskReturnType> & EnabledSpinnerShowOptions<TaskReturnType>
-export type DisabledStepOptions<AnswerType, TaskReturnType> = DisabledPromptShowOptions<AnswerType, TaskReturnType> & DisabledSpinnerShowOptions<TaskReturnType>
-export type StepOptions<AnswerType, TaskReturnType> = PromptShowOptions<AnswerType, TaskReturnType> & SpinnerShowOptions<TaskReturnType>
+export type EnabledStepOptions<AnswerType, TaskReturnType> = EnabledPromptShowOptions<AnswerType, TaskReturnType> &
+  EnabledSpinnerShowOptions<TaskReturnType>;
+export type DisabledStepOptions<AnswerType, TaskReturnType> = DisabledPromptShowOptions<AnswerType, TaskReturnType> &
+  DisabledSpinnerShowOptions<TaskReturnType>;
+export type StepOptions<AnswerType, TaskReturnType> = PromptShowOptions<AnswerType, TaskReturnType> &
+  SpinnerShowOptions<TaskReturnType>;
 
 export default class Plugin<PluginOptions = any, ContextType = GenericContextType> {
   constructor(constructorArgs: PluginConstructorArgs);
