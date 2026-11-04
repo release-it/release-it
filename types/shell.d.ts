@@ -11,21 +11,13 @@ export interface CommonExecOptions {
 export type NonEmptyString<T extends string> = '' extends T ? never : T;
 
 export default class Shell {
-  exec(
-    command: '',
-    options?: CommonExecOptions,
-    context?: object | null
-  ): undefined;
+  exec(command: '', options?: CommonExecOptions, context?: object | null): undefined;
   exec<CommandLiteralType extends string>(
     command: NonEmptyString<CommandLiteralType>,
     options?: CommonExecOptions,
     context?: object | null
   ): Promise<string>;
-  exec(
-    command: string,
-    options?: CommonExecOptions,
-    context?: object | null
-  ): undefined | Promise<string>;
+  exec(command: string, options?: CommonExecOptions, context?: object | null): undefined | Promise<string>;
   exec(
     command: string[],
     options?: CommonExecOptions & SpawnOptions,

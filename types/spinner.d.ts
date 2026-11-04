@@ -13,13 +13,7 @@ export type DisabledSpinnerShowOptions<TaskReturnType> = {
 } & SpinnerShowOptions<TaskReturnType>;
 
 export default class Spinner {
-  show<TaskReturnType>(
-    options: EnabledSpinnerShowOptions<TaskReturnType>
-  ): TaskReturnType;
-  show<TaskReturnType>(
-    options: DisabledSpinnerShowOptions<TaskReturnType>
-  ): Promise<undefined>;
-  show<TaskReturnType>(
-    options: SpinnerShowOptions<TaskReturnType>
-  ): TaskReturnType | Promise<undefined>;
+  show<TaskReturnType>(options: EnabledSpinnerShowOptions<TaskReturnType>): TaskReturnType;
+  show<TaskReturnType>(options: DisabledSpinnerShowOptions<TaskReturnType>): Promise<undefined>;
+  show<TaskReturnType>(options: SpinnerShowOptions<TaskReturnType>): TaskReturnType | Promise<undefined>;
 }

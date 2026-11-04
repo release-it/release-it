@@ -24,8 +24,7 @@ export type UnknownPromptConfig = { type: string } & MessageProvider &
 
 export type PromptConfig = ConfirmPromptConfig | InputPromptConfig | ListPromptConfig | UnknownPromptConfig;
 
-
-export type PromptShowOptions<AnswerType,TaskReturnType> = {
+export type PromptShowOptions<AnswerType, TaskReturnType> = {
   enabled?: boolean;
   prompt: string;
   namespace?: string;
@@ -45,9 +44,7 @@ export default class Prompt {
   show<AnswerType, TaskReturnType>(
     options: EnabledPromptShowOptions<AnswerType, TaskReturnType>
   ): Promise<Awaited<TaskReturnType>>;
-  show<AnswerType, TaskReturnType>(
-    options: DisabledPromptShowOptions<AnswerType, TaskReturnType>
-  ): Promise<false>;
+  show<AnswerType, TaskReturnType>(options: DisabledPromptShowOptions<AnswerType, TaskReturnType>): Promise<false>;
   show<AnswerType, TaskReturnType>(
     options: PromptShowOptions<AnswerType, TaskReturnType>
   ): Promise<false | Awaited<TaskReturnType>>;
