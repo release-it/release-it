@@ -69,6 +69,29 @@ describe('shell', async () => {
     );
   });
 
+  test('should not share cached results between different arguments', async () => {
+    const shell = await factory(Shell);
+    const printArgs = [process.execPath, '-e', 'console.log(JSON.stringify(process.argv.slice(1)))'];
+    assert.equal(await shell.exec([...printArgs, 'a b']), '["a b"]');
+    assert.equal(await shell.exec([...printArgs, 'a', 'b']), '["a","b"]');
+    assert.equal(await shell.exec([...printArgs, 'a', 'b']), '["a","b"]');
+    assert.deepEqual(
+      shell.log.exec.mock.calls.map(call => call.arguments[1].isCached),
+      [false, false, true]
+    );
+  });
+
+  test('should not share cached results between string and array commands', async t => {
+    const shell = await factory(Shell);
+    const execString = t.mock.method(shell, 'execStringCommand', () => Promise.resolve('string'));
+    const execArgs = t.mock.method(shell, 'execWithArguments', () => Promise.resolve('array'));
+
+    assert.equal(await shell.exec('command arg'), 'string');
+    assert.equal(await shell.exec(['command', 'arg']), 'array');
+    assert.equal(execString.mock.callCount(), 1);
+    assert.equal(execArgs.mock.callCount(), 1);
+  });
+
   test('exec (with args, verbose)', async () => {
     const shell = await factory(Shell, { options: { verbose: true } });
     assert.equal(await shell.exec(['echo', 'foo']), 'foo');
