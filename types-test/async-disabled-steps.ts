@@ -1,4 +1,4 @@
-import { Plugin } from '../';
+import { Plugin } from 'release-it';
 
 class PluginWithAsyncDisabledSteps extends Plugin {
   override async getName() {

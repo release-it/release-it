@@ -5,7 +5,9 @@
 		],
 		"noEmit": true,
 		"strict": true,
-		"forceConsistentCasingInFileNames": true
+		"forceConsistentCasingInFileNames": true,
+		"module": "nodenext",
+		"moduleResolution": "nodenext"
 	},
 	"include": [
 		"*.ts"

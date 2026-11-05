@@ -1,4 +1,4 @@
-import { Plugin } from '../';
+import { Plugin } from 'release-it';
 
 export type PluginOptions = false | { dummy: string };
 
