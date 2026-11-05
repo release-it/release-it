@@ -1,7 +1,7 @@
-import { Plugin } from '../';
+import { Plugin } from 'release-it';
 import fs from 'fs';
 import path from 'path';
-import { PluginConstructorArgs } from '../types/plugin';
+import { PluginConstructorArgs } from '../types/plugin.js';
 
 const prompts = {
   publish: {

@@ -1,5 +1,5 @@
-import { Plugin } from '../';
-import { IncrementBase } from '../types/plugin';
+import { Plugin } from 'release-it';
+import { IncrementBase } from '../types/plugin.js';
 
 interface PluginOptions {
   myRequiredString: string;
@@ -71,7 +71,7 @@ export class ComplexPlugin extends Plugin<PluginOptions, PluginContext> {
       context: { contextProp: 'contextValue' },
       task: (answer: string) => {
         return answer;
-      },
+      }
     });
   }
 
@@ -105,7 +105,7 @@ export class ComplexPlugin extends Plugin<PluginOptions, PluginContext> {
       label: 'Releasing...',
       task: async () => {
         await this.shell.exec('echo "Releasing..."');
-      },
+      }
     });
   }
   override afterRelease(): void {}

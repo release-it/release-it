@@ -22,9 +22,11 @@ function execTypeTest(fileName) {
       windowsHide: true
     });
   } catch (error) {
-    const typeScriptError = new Error(`Compilation of ${path.join(typeTestDir, fileName)} failed:\n${error.stdout}`, { cause: error });
-	typeScriptError.stdout = error.stdout;
-	throw typeScriptError;
+    const typeScriptError = new Error(`Compilation of ${path.join(typeTestDir, fileName)} failed:\n${error.stdout}`, {
+      cause: error
+    });
+    typeScriptError.stdout = error.stdout;
+    throw typeScriptError;
   }
 }
 

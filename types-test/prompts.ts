@@ -1,4 +1,4 @@
-import { Plugin } from '../';
+import { Plugin } from 'release-it';
 
 class Prompts extends Plugin {
   override async bump() {

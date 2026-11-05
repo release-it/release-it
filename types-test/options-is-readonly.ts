@@ -1,13 +1,12 @@
-import { Plugin } from "../";
+import { Plugin } from 'release-it';
 
 interface PluginOptions {
-	someString:string;
+  someString: string;
 }
 
 export class OptionsIsReadonlyPlugin extends Plugin<PluginOptions> {
-
-	override init(): void {
-		super.init();
-		this.options.someString = 'new value';
-	}
+  override init(): void {
+    super.init();
+    this.options.someString = 'new value';
+  }
 }

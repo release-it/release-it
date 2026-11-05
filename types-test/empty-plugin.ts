@@ -1,5 +1,3 @@
-import { Plugin } from "../";
+import { Plugin } from 'release-it';
 
-export class EmptyPlugin extends Plugin {
-
-}
+export class EmptyPlugin extends Plugin {}
