@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"types": [
+			"node"
+		],
+		"noEmit": true,
+		"strict": true,
+		"forceConsistentCasingInFileNames": true,
+		"module": "nodenext",
+		"moduleResolution": "nodenext"
+	},
+	"include": [
+		"*.ts"
+	]
+}
