@@ -41,9 +41,6 @@ export type DisabledPromptShowOptions<AnswerType, TaskReturnType> = {
 export default class Prompt {
   register(pluginPrompts: Record<string, PromptConfig>, namespace?: string): void;
 
-  show<AnswerType, TaskReturnType>(
-    options: EnabledPromptShowOptions<AnswerType, TaskReturnType>
-  ): Promise<Awaited<TaskReturnType>>;
   show<AnswerType, TaskReturnType>(options: DisabledPromptShowOptions<AnswerType, TaskReturnType>): Promise<false>;
   show<AnswerType, TaskReturnType>(
     options: PromptShowOptions<AnswerType, TaskReturnType>

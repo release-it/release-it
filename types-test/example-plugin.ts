@@ -1,7 +1,6 @@
 import { Plugin } from 'release-it';
 import fs from 'fs';
 import path from 'path';
-import { PluginConstructorArgs } from '../types/plugin.js';
 
 const prompts = {
   publish: {
@@ -16,6 +15,8 @@ interface MyVersionPluginContext {
   version: string;
   isReleased: boolean;
 }
+
+type PluginConstructorArgs = ConstructorParameters<typeof Plugin>[0];
 
 class MyVersionPlugin extends Plugin<{}, MyVersionPluginContext> {
   constructor(constructorArgs: PluginConstructorArgs) {

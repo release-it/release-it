@@ -60,12 +60,15 @@ export interface PluginConstructorArgs {
   container: Container;
 }
 
-export type EnabledStepOptions<AnswerType, TaskReturnType> = EnabledPromptShowOptions<AnswerType, TaskReturnType> &
-  EnabledSpinnerShowOptions<TaskReturnType>;
-export type DisabledStepOptions<AnswerType, TaskReturnType> = DisabledPromptShowOptions<AnswerType, TaskReturnType> &
-  DisabledSpinnerShowOptions<TaskReturnType>;
-export type StepOptions<AnswerType, TaskReturnType> = PromptShowOptions<AnswerType, TaskReturnType> &
-  SpinnerShowOptions<TaskReturnType>;
+export type EnabledStepOptions<AnswerType, TaskReturnType> =
+  | (Partial<EnabledSpinnerShowOptions<TaskReturnType>> & EnabledPromptShowOptions<AnswerType, TaskReturnType>)
+  | (Partial<EnabledPromptShowOptions<AnswerType, TaskReturnType>> & EnabledSpinnerShowOptions<TaskReturnType>);
+export type DisabledStepOptions<AnswerType, TaskReturnType> =
+  | (Partial<DisabledSpinnerShowOptions<TaskReturnType>> & DisabledPromptShowOptions<AnswerType, TaskReturnType>)
+  | (Partial<DisabledPromptShowOptions<AnswerType, TaskReturnType>> & DisabledSpinnerShowOptions<TaskReturnType>);
+export type StepOptions<AnswerType, TaskReturnType> =
+  | (Partial<SpinnerShowOptions<TaskReturnType>> & PromptShowOptions<AnswerType, TaskReturnType>)
+  | (Partial<PromptShowOptions<AnswerType, TaskReturnType>> & SpinnerShowOptions<TaskReturnType>);
 
 export default class Plugin<PluginOptions = any, ContextType = GenericContextType> {
   constructor(constructorArgs: PluginConstructorArgs);
@@ -118,7 +121,7 @@ export default class Plugin<PluginOptions = any, ContextType = GenericContextTyp
   showPrompt: Prompt['show'];
   step<TaskReturnType, AnswerType>(
     options: EnabledStepOptions<AnswerType, TaskReturnType>
-  ): TaskReturnType | Promise<Awaited<TaskReturnType>>;
+  ): TaskReturnType | Promise<false | Awaited<TaskReturnType>>;
   step<TaskReturnType, AnswerType>(
     options: DisabledStepOptions<AnswerType, TaskReturnType>
   ): Promise<false | undefined>;

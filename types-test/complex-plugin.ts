@@ -1,5 +1,4 @@
 import { Plugin } from 'release-it';
-import { IncrementBase } from '../types/plugin.js';
 
 interface PluginOptions {
   myRequiredString: string;
@@ -15,6 +14,8 @@ interface PluginContext {
     contextProp: string;
   };
 }
+
+type IncrementBase = Parameters<Plugin['getIncrement']>[0];
 
 export class ComplexPlugin extends Plugin<PluginOptions, PluginContext> {
   override init(): void {
@@ -66,13 +67,17 @@ export class ComplexPlugin extends Plugin<PluginOptions, PluginContext> {
   }
 
   override async getIncrement(incrementBase: IncrementBase): Promise<string> {
-    return this.showPrompt({
+    const answer = await this.showPrompt({
       prompt: 'some-prompt',
       context: { contextProp: 'contextValue' },
       task: (answer: string) => {
         return answer;
       }
     });
+    if (!answer) {
+      throw new Error('No answer provided for increment');
+    }
+    return answer;
   }
 
   override getIncrementedVersion(incrementBase: IncrementBase): string {
