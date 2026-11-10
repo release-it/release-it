@@ -1,81 +1,95 @@
 import { Plugin } from 'release-it';
+import { assertType, Equals } from './utils.js';
+
+type StringPromise = Promise<string>;
+type StringOrFalsePromise = Promise<string | false>;
+type FalsePromise = Promise<false>;
+type UndefinedPromise = Promise<undefined>;
+type StringOrStringOrFalsePromise = string | Promise<string | false>;
+type FalseOrUndefinedPromise = Promise<false | undefined>;
 
 class Prompts extends Plugin {
   override async bump() {
-    let expectStringPromise: Promise<string>;
-    let expectFalsePromise: Promise<false>;
-
-    expectStringPromise = this.prompt.show({
+    const synchronousPromptShowResult = this.prompt.show({
       prompt: 'synchronous',
       task: (answer: unknown): string => {
         return 'foo';
       }
     });
+    assertType<Equals<typeof synchronousPromptShowResult, StringOrFalsePromise>>();
 
-    expectStringPromise = this.prompt.show({
+    const asynchronousPromptShowResult = this.prompt.show({
       prompt: 'asynchronous',
       task: async (answer: unknown): Promise<string> => {
         return 'foo';
       }
     });
+    assertType<Equals<typeof asynchronousPromptShowResult, StringOrFalsePromise>>();
 
-    expectFalsePromise = this.prompt.show({
+    const disabledPromptShowResult = this.prompt.show({
       prompt: 'disabled',
       enabled: false,
       task: (answer: unknown): string => {
         return 'foo';
       }
     });
+    assertType<Equals<typeof disabledPromptShowResult, FalsePromise>>();
 
-    let expectString: string;
-    let expectUndefinedPromise: Promise<undefined>;
-
-    expectString = this.spinner.show({
+    const synchronousSpinnerShowResult = this.spinner.show({
       label: 'synchronous',
       task: (): string => {
         return 'foo';
       }
     });
+    assertType<Equals<typeof synchronousSpinnerShowResult, string>>();
 
-    expectStringPromise = this.spinner.show({
+    const asynchronousSpinnerShowResult = this.spinner.show({
       label: 'asynchronous',
       task: async (): Promise<string> => {
         return 'foo';
       }
     });
+    assertType<Equals<typeof asynchronousSpinnerShowResult, StringPromise>>();
 
-    expectUndefinedPromise = this.spinner.show({
+    const disabledSpinnerShowResult = this.spinner.show({
       label: 'disabled',
       enabled: false,
       task: (): string => {
         return 'foo';
       }
     });
+    assertType<Equals<typeof disabledSpinnerShowResult, UndefinedPromise>>();
 
-    let stringOrStringPromise: string | Promise<string>;
-
-    stringOrStringPromise = this.step({
+    const synchronousStepResult = this.step({
       prompt: 'synchronous',
       task: (): string => {
         return 'foo';
       }
     });
+    assertType<Equals<typeof synchronousStepResult, StringOrStringOrFalsePromise>>();
 
-    expectStringPromise = this.step({
+    const asynchronousStepResult = this.step({
       prompt: 'asynchronous',
       task: async (): Promise<string> => {
         return 'foo';
       }
     });
+    assertType<Equals<typeof asynchronousStepResult, StringOrFalsePromise | StringPromise>>();
 
-    let falseOrUndefinedPromise: Promise<false | undefined>;
-
-    falseOrUndefinedPromise = this.step({
+    const disabledStepResult = this.step({
       prompt: 'disabled',
       enabled: false,
       task: async (): Promise<string> => {
         return 'foo';
       }
     });
+    assertType<Equals<typeof disabledStepResult, FalseOrUndefinedPromise>>();
+
+    const minimalStepParametersResult = this.step({
+      task: (): string => {
+        return 'foo';
+      }
+    });
+    assertType<Equals<typeof minimalStepParametersResult, StringOrStringOrFalsePromise>>();
   }
 }
