@@ -68,41 +68,43 @@ export interface Config {
     pushRepo?: string;
   };
 
-  npm?: {
-    /** @default true */
-    publish?: boolean;
+  npm?:
+    | {
+        /** @default true */
+        publish?: boolean;
 
-    /** @default "." */
-    publishPath?: string;
+        /** @default "." */
+        publishPath?: string;
 
-    publishArgs?: Array<any>;
+        publishArgs?: Array<any>;
 
-    /** @default "npm" */
-    publishPackageManager?: 'npm' | 'pnpm' | 'bun';
+        /** @default "npm" */
+        publishPackageManager?: 'npm' | 'pnpm' | 'bun';
 
-    /** @default null */
-    tag?: any;
+        /** @default null */
+        tag?: any;
 
-    /** @default false */
-    stage?: boolean;
+        /** @default false */
+        stage?: boolean;
 
-    /** @default null */
-    otp?: any;
+        /** @default null */
+        otp?: any;
 
-    /** @default false */
-    ignoreVersion?: boolean;
+        /** @default false */
+        ignoreVersion?: boolean;
 
-    /** @default false */
-    allowSameVersion?: boolean;
+        /** @default false */
+        allowSameVersion?: boolean;
 
-    versionArgs?: Array<any>;
+        versionArgs?: Array<any>;
 
-    /** @default false */
-    skipChecks?: boolean;
+        /** @default false */
+        skipChecks?: boolean;
 
-    /** @default 10 */
-    timeout?: number;
-  } | false;
+        /** @default 10 */
+        timeout?: number;
+      }
+    | false;
 
   github?: {
     /** @default false */
@@ -221,10 +223,6 @@ export interface Config {
   /** @default false */
   'dry-run'?: boolean;
 
-  /**
-   * Increment level or explicit release version. Use `false` to skip
-   * incrementing (a plain update). Read by lib/config.js
-   * (`isIncrement`, `increment`).
-   */
+  /** Increment type or version to release, or `false` to keep the latest version */
   increment?: string | false;
 }

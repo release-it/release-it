@@ -6,14 +6,8 @@ export interface ReleaseResult {
   name?: string;
   changelog?: string;
   latestVersion: string;
-  version?: string;
+  version?: string | null;
 }
 
-/**
- * Programmatic API entry point (lib/index.js `runTasks`).
- * Accepts the same options as the CLI, plus hooks and plugin configuration.
- */
-export default function release(
-  options: Config,
-  dependencies?: Record<string, unknown>
-): Promise<ReleaseResult>;
+/** Runs a release and resolves with the name, changelog, latest version and new version (`null` if there is none) */
+export default function release(options: Config, dependencies?: Record<string, unknown>): Promise<ReleaseResult>;
