@@ -7,6 +7,7 @@ type FalsePromise = Promise<false>;
 type UndefinedPromise = Promise<undefined>;
 type StringOrStringOrFalsePromise = string | Promise<string | false>;
 type FalseOrUndefinedPromise = Promise<false | undefined>;
+type StringFalseOrUndefinedPromise = Promise<string | false | undefined>;
 
 class Prompts extends Plugin {
   override async bump() {
@@ -91,5 +92,14 @@ class Prompts extends Plugin {
       }
     });
     assertType<Equals<typeof minimalStepParametersResult, StringOrStringOrFalsePromise>>();
+
+    const someBoolean = true as boolean;
+    const booleanEnabledStepResult = this.step({
+      enabled: someBoolean,
+      task: async (): Promise<string> => {
+        return 'foo';
+      }
+    });
+    assertType<Equals<typeof booleanEnabledStepResult, StringFalseOrUndefinedPromise>>();
   }
 }

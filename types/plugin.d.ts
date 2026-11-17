@@ -60,15 +60,16 @@ export interface PluginConstructorArgs {
   container: Container;
 }
 
-export type EnabledStepOptions<AnswerType, TaskReturnType> =
-  | (Partial<EnabledSpinnerShowOptions<TaskReturnType>> & EnabledPromptShowOptions<AnswerType, TaskReturnType>)
-  | (Partial<EnabledPromptShowOptions<AnswerType, TaskReturnType>> & EnabledSpinnerShowOptions<TaskReturnType>);
-export type DisabledStepOptions<AnswerType, TaskReturnType> =
-  | (Partial<DisabledSpinnerShowOptions<TaskReturnType>> & DisabledPromptShowOptions<AnswerType, TaskReturnType>)
-  | (Partial<DisabledPromptShowOptions<AnswerType, TaskReturnType>> & DisabledSpinnerShowOptions<TaskReturnType>);
-export type StepOptions<AnswerType, TaskReturnType> =
-  | (Partial<SpinnerShowOptions<TaskReturnType>> & PromptShowOptions<AnswerType, TaskReturnType>)
-  | (Partial<PromptShowOptions<AnswerType, TaskReturnType>> & SpinnerShowOptions<TaskReturnType>);
+export type EnabledStepOptions<AnswerType, TaskReturnType> = Partial<
+  EnabledPromptShowOptions<AnswerType, TaskReturnType>
+> &
+  EnabledSpinnerShowOptions<TaskReturnType>;
+export type DisabledStepOptions<AnswerType, TaskReturnType> = Partial<
+  DisabledPromptShowOptions<AnswerType, TaskReturnType>
+> &
+  DisabledSpinnerShowOptions<TaskReturnType>;
+export type StepOptions<AnswerType, TaskReturnType> = Partial<PromptShowOptions<AnswerType, TaskReturnType>> &
+  SpinnerShowOptions<TaskReturnType>;
 
 export default class Plugin<PluginOptions = any, ContextType = GenericContextType> {
   constructor(constructorArgs: PluginConstructorArgs);
@@ -125,9 +126,9 @@ export default class Plugin<PluginOptions = any, ContextType = GenericContextTyp
   step<TaskReturnType, AnswerType>(
     options: DisabledStepOptions<AnswerType, TaskReturnType>
   ): Promise<false | undefined>;
-  step<TaskReturnType, AsyncTaskReturnType extends Promise<TaskReturnType>, AnswerType>(
+  step<AsyncTaskReturnType extends Promise<unknown>, AnswerType>(
     options: StepOptions<AnswerType, AsyncTaskReturnType>
-  ): Promise<false | undefined | TaskReturnType>;
+  ): Promise<false | undefined | Awaited<AsyncTaskReturnType>>;
   step<TaskReturnType, AnswerType>(
     options: StepOptions<AnswerType, TaskReturnType>
   ): TaskReturnType | Promise<false | undefined | Awaited<TaskReturnType>>;

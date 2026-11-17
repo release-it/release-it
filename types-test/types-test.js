@@ -68,4 +68,5 @@ describe('Type Declarations', () => {
   typeTest('prompts.ts');
   typeTest('exec.ts');
   typeTest('options-is-readonly.ts', /error TS2540: Cannot assign to 'someString' because it is a read-only property/);
+  typeTest('step-requires-task.ts', /error TS2769: No overload matches this call.*Property 'task' is missing in type/s);
 });
