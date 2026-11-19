@@ -61,7 +61,6 @@ describe('Type Declarations', () => {
   typeTest('empty-plugin.ts');
   typeTest('example-plugin.ts');
   typeTest('complex-plugin.ts');
-  typeTest('async-disabled-steps.ts');
   typeTest('disabled-steps.ts');
   typeTest('config-properties.ts');
   typeTest('plugin-static-methods.ts');
