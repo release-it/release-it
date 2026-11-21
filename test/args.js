@@ -150,6 +150,26 @@ describe('CLI arguments', () => {
     }
   });
 
+  test('preserves the positional increment after inline option values', () => {
+    assert.equal(parseCliArguments(['--preRelease=rc', 'major', '--ci']).increment, 'major');
+    assert.equal(parseCliArguments(['--preRelease=rc', 'major']).preRelease, 'rc');
+    assert.equal(parseCliArguments(['--preRelease=true', 'major']).preRelease, true);
+    assert.equal(parseCliArguments(['--preRelease=true', 'major']).increment, 'major');
+    assert.equal(parseCliArguments(['--preRelease=false', 'major']).preRelease, false);
+    assert.equal(parseCliArguments(['--preRelease=false', 'major']).increment, 'major');
+    assert.equal(parseCliArguments(['--no-preRelease', 'major']).preRelease, false);
+    assert.equal(parseCliArguments(['--no-preRelease', 'major']).increment, 'major');
+    assert.equal(parseCliArguments(['--snapshot=beta', 'minor']).snapshot, 'beta');
+    assert.equal(parseCliArguments(['--snapshot=beta', 'minor']).increment, 'minor');
+    assert.equal(parseCliArguments(['--preRelease', 'rc', 'major']).preRelease, 'rc');
+    assert.equal(parseCliArguments(['--preRelease', 'rc', 'major']).increment, 'major');
+    assert.equal(parseCliArguments(['major', '--preRelease=rc']).increment, 'major');
+    assert.equal(parseCliArguments(['--dry-run=false', 'minor'])['dry-run'], false);
+    assert.equal(parseCliArguments(['--dry-run=false', 'minor']).increment, 'minor');
+    assert.equal(parseCliArguments(['--git.commit', 'false', 'major']).git.commit, false);
+    assert.equal(parseCliArguments(['--git.commit', 'false', 'major']).increment, 'major');
+  });
+
   test('parses an increment after the option terminator', () => {
     assert.equal(parseCliArguments(['--', 'minor']).increment, 'minor');
   });
