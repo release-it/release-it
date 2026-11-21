@@ -1,6 +1,7 @@
 import type { Config } from './config.js';
 
 export type { Config } from './config.js';
+export { default as Plugin } from './plugin.js';
 
 export interface ReleaseResult {
   name?: string;
