@@ -94,7 +94,7 @@
     "open": "11.0.4",
     "ora": "9.4.1",
     "os-name": "7.0.1",
-    "proxy-agent": "8.0.2",
+    "proxy-agent": "8.0.3",
     "tinyglobby": "0.2.17",
     "undici": "7.30.1",
     "url-join": "5.0.0",
