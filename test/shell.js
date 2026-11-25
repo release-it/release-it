@@ -86,6 +86,17 @@ describe('shell', async () => {
     );
   });
 
+  test('should not share cached results between different working directories', async () => {
+    const shell = await factory(Shell);
+    assert.equal(await shell.exec('pwd'), cwd);
+    assert.equal(await shell.exec('pwd', { cwd: 'test' }), `${cwd}/test`);
+    assert.equal(await shell.exec('pwd', { cwd: 'test' }), `${cwd}/test`);
+    assert.deepEqual(
+      shell.log.exec.mock.calls.map(call => call.arguments[1].isCached),
+      [false, false, true]
+    );
+  });
+
   test('should not share cached results between string and array commands', async t => {
     const shell = await factory(Shell);
     const execString = t.mock.method(shell, 'execStringCommand', () => Promise.resolve('string'));
