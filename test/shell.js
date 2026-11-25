@@ -28,6 +28,11 @@ describe('shell', async () => {
     assert.equal(await shell.exec(['echo', '"a"']), '"a"');
   });
 
+  test('exec (with cwd)', async () => {
+    const shell = await factory(Shell);
+    assert.equal(await shell.exec('pwd', { cwd: 'test' }), `${cwd}/test`);
+  });
+
   test('exec (dry-run/read-only)', async () => {
     const shell = await factory(Shell, { options: { 'dry-run': true } });
     {
