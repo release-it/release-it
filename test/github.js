@@ -259,7 +259,7 @@ describe('github', () => {
     t.mock.method(github.shell, 'exec', (...args) => {
       if (args[0] === 'git log --pretty=format:"* %s (%h)" ${from}...${to}') return Promise.resolve('');
       if (toCommand(args[0]) === 'git describe --tags --match=* --abbrev=0') return Promise.resolve('2.0.1');
-      if (toCommand(args[0]) === 'git rev-list 2.0.1 --tags --max-count=1') return Promise.resolve('a123456');
+      if (toCommand(args[0]) === 'git rev-list 2.0.1 --max-count=1') return Promise.resolve('a123456');
       if (toCommand(args[0]) === 'git describe --tags --match=* --abbrev=0') return Promise.resolve('2.0.1');
       return original(...args);
     });
@@ -330,8 +330,8 @@ describe('github', () => {
     t.mock.method(github.shell, 'exec', (...args) => {
       if (args[0] === 'git log --pretty=format:"* %s (%h)" ${from}...${to}') return Promise.resolve('');
       if (toCommand(args[0]) === 'git describe --tags --match=* --abbrev=0') return Promise.resolve('2.0.1');
-      if (toCommand(args[0]) === 'git rev-list 2.0.1 --tags --max-count=1') return Promise.resolve('b123456');
-      if (toCommand(args[0]) === 'git describe --tags --abbrev=0 b123456^') return Promise.resolve('2.0.1');
+      if (toCommand(args[0]) === 'git rev-list 2.0.1 --max-count=1') return Promise.resolve('b123456');
+      if (toCommand(args[0]) === 'git describe --tags --match=* --abbrev=0 b123456^') return Promise.resolve('2.0.1');
       return original(...args);
     });
 
