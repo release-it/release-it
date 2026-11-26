@@ -8,7 +8,7 @@ import Prompt, {
   PromptConfig,
   PromptShowOptions
 } from './prompt.js';
-import Shell, { CommonExecOptions, NonEmptyString } from './shell.js';
+import Shell, { ArrayCommandExecOptions, NonEmptyString, StringCommandExecOptions } from './shell.js';
 import { Config as Options } from './config.js';
 
 export type GenericContextType = Record<PropertyKey, any>;
@@ -107,16 +107,20 @@ export default class Plugin<PluginOptions = any, ContextType = GenericContextTyp
   setContext(options: Partial<typeof this.context>): void;
   exec<CommandLiteralType extends string>(
     command: '',
-    { options, context }?: { options?: CommonExecOptions & SpawnOptions; context?: object | null }
+    { options, context }?: { options?: StringCommandExecOptions; context?: object | null }
   ): undefined;
   exec<CommandLiteralType extends string>(
     command: NonEmptyString<CommandLiteralType>,
-    { options, context }?: { options?: CommonExecOptions & SpawnOptions; context?: object | null }
+    { options, context }: { options: StringCommandExecOptions & { write: false }; context?: object | null }
   ): Promise<string>;
+  exec<CommandLiteralType extends string>(
+    command: NonEmptyString<CommandLiteralType>,
+    { options, context }?: { options?: StringCommandExecOptions; context?: object | null }
+  ): Promise<string | undefined>;
   exec(
     command: string | string[],
-    { options, context }?: { options?: CommonExecOptions & SpawnOptions; context?: object | null }
-  ): undefined | Promise<string>;
+    { options, context }?: { options?: ArrayCommandExecOptions; context?: object | null }
+  ): undefined | Promise<string | undefined>;
 
   registerPrompts(prompts: Record<string, PromptConfig>): void;
   showPrompt: Prompt['show'];

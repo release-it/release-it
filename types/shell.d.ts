@@ -1,12 +1,14 @@
-import { exec, SpawnOptions } from 'node:child_process';
+import { ExecOptions as NodeExecOptions, SpawnOptions as NodeSpawnOptions } from 'node:child_process';
 
 export interface CommonExecOptions {
   write?: boolean;
   external?: boolean;
   cache?: boolean;
-  interactive?: boolean;
-  env?: NonNullable<Parameters<typeof exec>[1]>['env'];
 }
+
+export type StringCommandExecOptions = CommonExecOptions & NodeExecOptions;
+
+export type ArrayCommandExecOptions = CommonExecOptions & NodeSpawnOptions & { interactive?: boolean };
 
 export type NonEmptyString<T extends string> = '' extends T ? never : T;
 
@@ -14,13 +16,18 @@ export default class Shell {
   exec(command: '', options?: CommonExecOptions, context?: object | null): undefined;
   exec<CommandLiteralType extends string>(
     command: NonEmptyString<CommandLiteralType>,
-    options?: CommonExecOptions,
+    options: StringCommandExecOptions & { write: false },
     context?: object | null
   ): Promise<string>;
-  exec(command: string, options?: CommonExecOptions, context?: object | null): undefined | Promise<string>;
+  exec<CommandLiteralType extends string>(
+    command: NonEmptyString<CommandLiteralType>,
+    options?: StringCommandExecOptions,
+    context?: object | null
+  ): Promise<string | undefined>;
+  exec(command: string, options?: CommonExecOptions, context?: object | null): undefined | Promise<string | undefined>;
   exec(
     command: string[],
-    options?: CommonExecOptions & SpawnOptions,
+    options?: ArrayCommandExecOptions,
     context?: object | null
-  ): undefined | Promise<string>;
+  ): undefined | Promise<string | undefined>;
 }

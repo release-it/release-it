@@ -59,7 +59,7 @@ export class ComplexPlugin extends Plugin<PluginOptions, PluginContext> {
   }
 
   override async getLatestVersion(): Promise<string> {
-    return this.exec('echo "1.2.3"');
+    return this.exec('echo "1.2.3"', { options: { write: false } });
   }
 
   override getChangelog(latestVersion: string): Promise<string> {
