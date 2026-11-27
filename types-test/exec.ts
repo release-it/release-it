@@ -3,6 +3,7 @@ import { assertType, Equals } from './utils.js';
 
 type StringOrUndefinedPromise = Promise<string | undefined>;
 type UndefinedOrStringOrUndefinedPromise = undefined | Promise<string | undefined>;
+type UndefinedOrStringPromise = undefined | Promise<string>;
 
 class Exec extends Plugin {
   override async bump() {
@@ -12,8 +13,8 @@ class Exec extends Plugin {
     const stringCommandResult = this.exec('echo "Executing command..."');
     assertType<Equals<typeof stringCommandResult, StringOrUndefinedPromise>>();
 
-    const readonlyCommandResult = this.exec('echo "Executing command..."', { options: { write: false } });
-    assertType<Equals<typeof readonlyCommandResult, Promise<string>>>();
+    const readonlyStringCommandResult = this.exec('echo "Executing command..."', { options: { write: false } });
+    assertType<Equals<typeof readonlyStringCommandResult, Promise<string>>>();
 
     const stringCommandWithOptionsResult = this.exec('echo "Executing command with options..."', {
       options: { cwd: '/tmp' }
@@ -37,6 +38,11 @@ class Exec extends Plugin {
     const arrayCommandResult = this.exec(['echo', 'Executing command with array...']);
     assertType<Equals<typeof arrayCommandResult, UndefinedOrStringOrUndefinedPromise>>();
 
+    const readOnlyArrayCommandResult = this.exec(['echo', 'Executing command with array...'], {
+      options: { write: false }
+    });
+    assertType<Equals<typeof readOnlyArrayCommandResult, UndefinedOrStringPromise>>();
+
     const arrayCommandWithOptionsAndContextResult = this.exec(
       ['echo', 'Executing command with array, options and context...'],
       {
@@ -56,8 +62,8 @@ class ShellExec extends Plugin {
     const stringCommandResult = this.shell.exec('echo "Executing command..."');
     assertType<Equals<typeof stringCommandResult, StringOrUndefinedPromise>>();
 
-    const readonlyCommandResult = this.shell.exec('echo "Executing command..."', { write: false });
-    assertType<Equals<typeof readonlyCommandResult, Promise<string>>>();
+    const readonlyStringCommandResult = this.shell.exec('echo "Executing command..."', { write: false });
+    assertType<Equals<typeof readonlyStringCommandResult, Promise<string>>>();
 
     const stringCommandWithOptionsResult = this.shell.exec('echo "Executing command with options..."', {
       cwd: '/tmp'
@@ -83,6 +89,11 @@ class ShellExec extends Plugin {
 
     const arrayCommandResult = this.shell.exec(['echo', 'Executing command with array...']);
     assertType<Equals<typeof arrayCommandResult, UndefinedOrStringOrUndefinedPromise>>();
+
+    const readOnlyArrayCommandResult = this.shell.exec(['echo', 'Executing command with array...'], {
+      write: false
+    });
+    assertType<Equals<typeof readOnlyArrayCommandResult, UndefinedOrStringPromise>>();
 
     const arrayCommandWithOptionsAndContextResult = this.shell.exec(
       ['echo', 'Executing command with array, options and context...'],

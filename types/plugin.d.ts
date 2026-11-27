@@ -118,7 +118,11 @@ export default class Plugin<PluginOptions = any, ContextType = GenericContextTyp
     { options, context }?: { options?: StringCommandExecOptions; context?: object | null }
   ): Promise<string | undefined>;
   exec(
-    command: string | string[],
+    command: string[],
+    { options, context }: { options: ArrayCommandExecOptions & { write: false }; context?: object | null }
+  ): undefined | Promise<string>;
+  exec(
+    command: string[],
     { options, context }?: { options?: ArrayCommandExecOptions; context?: object | null }
   ): undefined | Promise<string | undefined>;
 

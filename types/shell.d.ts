@@ -27,6 +27,11 @@ export default class Shell {
   exec(command: string, options?: CommonExecOptions, context?: object | null): undefined | Promise<string | undefined>;
   exec(
     command: string[],
+    options: ArrayCommandExecOptions & { write: false },
+    context?: object | null
+  ): undefined | Promise<string>;
+  exec(
+    command: string[],
     options?: ArrayCommandExecOptions,
     context?: object | null
   ): undefined | Promise<string | undefined>;
